@@ -24,6 +24,8 @@ namespace PuzzleKingdoms.Views.Puzzle
         private const float ClearSeconds = 0.08f;
         private const float FillSeconds = 0.16f;
         private const float RejectSeconds = 0.2f;
+        /// <summary>Idle time before a valid move is pointed out (GDD §5 hint).</summary>
+        private const float HintDelaySeconds = 5f;
 
         private StageRun _run;
         private Action _onDone;
@@ -37,6 +39,8 @@ namespace PuzzleKingdoms.Views.Puzzle
         private readonly List<(string key, RectTransform fill, Text label)> _meters =
             new List<(string, RectTransform, Text)>();
         private GridPos? _selected;
+        private float _idleSeconds;
+        private (GridPos a, GridPos b)? _hint;
 
         /// <summary>True while a move is being animated; input is ignored.</summary>
         public bool IsBusy { get; private set; }
@@ -126,6 +130,50 @@ namespace PuzzleKingdoms.Views.Puzzle
             }
         }
 
+        private void Update()
+        {
+            if (IsBusy || _run.Puzzle.IsFinished)
+            {
+                return;
+            }
+            _idleSeconds += Time.deltaTime;
+            if (_hint == null && _idleSeconds >= HintDelaySeconds
+                && _run.Puzzle.Board.TryFindValidMove(out GridPos a, out GridPos b))
+            {
+                _hint = (a, b);
+            }
+            if (_hint != null)
+            {
+                // Pulse the two hinted gems' outlines.
+                float alpha = 0.35f + 0.65f * Mathf.PingPong(Time.time * 2f, 1f);
+                foreach (GridPos cell in new[] { _hint.Value.a, _hint.Value.b })
+                {
+                    if (_selected == cell)
+                    {
+                        continue;
+                    }
+                    Outline outline = _outlines[cell.X, cell.Y];
+                    outline.effectColor = new Color(Palette.Gold.r, Palette.Gold.g, Palette.Gold.b, alpha);
+                    outline.enabled = true;
+                }
+            }
+        }
+
+        private void ClearHint()
+        {
+            _idleSeconds = 0f;
+            if (_hint == null)
+            {
+                return;
+            }
+            foreach (GridPos cell in new[] { _hint.Value.a, _hint.Value.b })
+            {
+                _outlines[cell.X, cell.Y].enabled = _selected == cell;
+                _outlines[cell.X, cell.Y].effectColor = Palette.Highlight;
+            }
+            _hint = null;
+        }
+
         // --- Input (called by GemCell) -------------------------------------
 
         public void OnCellPressed(GridPos cell)
@@ -134,6 +182,7 @@ namespace PuzzleKingdoms.Views.Puzzle
             {
                 return;
             }
+            ClearHint();
             if (_selected == null || _selected.Value == cell)
             {
                 Select(_selected == null ? cell : (GridPos?)null);
@@ -171,6 +220,7 @@ namespace PuzzleKingdoms.Views.Puzzle
             {
                 return false;
             }
+            ClearHint();
             int[,] before = _run.Puzzle.Board.ToGrid();
             MoveResult result = _run.Puzzle.PlaySwap(a, b);
             StartCoroutine(result.IsValid ? Animate(before, result) : Reject(a, b));

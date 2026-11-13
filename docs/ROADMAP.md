@@ -26,7 +26,7 @@ ported to C# with its tests.
 - [ ] M0: Android build verified on a device (see SETUP.md §4)
 - [x] M1: puzzle logic (`BoardModel`, `RecruitmentMeter`, `PuzzleSession`) + tests
 - [x] M1: unit/enemy/stage data assets (ScriptableObjects, verified by Data.Tests in Unity)
-- [x] M1: puzzle grey-box view (tap/swipe, animated cascades, enemy preview, meters)
+- [x] M1: puzzle grey-box view (tap/swipe, animated cascades, enemy preview, meters, idle hint)
 - [x] M1: war camp logic (`ArmyUnit`, `Formation`, `Roster`, `MergeRules`) + tests
 - [x] M1: war camp grey-box view (deploy/move/bench, merge, auto, fight)
 - [x] M1: battle simulator + Rally + tests
