@@ -117,3 +117,12 @@ upgrades make gold matter.
 The whole attempt (puzzle → war camp → battle → reward) is one engine-free
 `StageRun`, testable headless. Scenes call it and listen to its events;
 `GameContent` (ScriptableObject) builds it from data.
+
+## D-024 Unity 6000.3.28f1, lean package set, one mobile URP asset, 2026-11-14
+Pinned to Unity 6.3 LTS 6000.3.28f1. The manifest keeps only what we use:
+URP, uGUI (includes TextMeshPro), Test Framework, Timeline, 2D Sprite, IDE
+integrations and the engine modules they need. Template extras (Purchasing,
+Analytics, Collab, XR, Terrain, Vehicles…) were removed; add them back when a
+feature needs them. `ProjectSetup` creates one URP asset (`URP_Mobile`,
+Universal Renderer, HDR off, MSAA 2x) and assigns it to every quality level,
+so the 2D grey-box and the later 3D battle share one pipeline.

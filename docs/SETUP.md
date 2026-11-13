@@ -4,8 +4,8 @@
 
 | Tool | Version | Notes |
 |---|---|---|
-| Unity Hub | latest | https://unity.com/download, sign in with a Unity account (free Personal license) |
-| Unity Editor | 6 LTS, exact version in `ProjectSettings/ProjectVersion.txt` | install via Hub with **Android Build Support** (incl. OpenJDK and Android SDK & NDK) |
+| Unity Hub | latest | https://unity.com/download, sign in, then add a license: profile icon → *Manage licenses* → *Add license* → *Get a free personal license* (signing in alone is not enough) |
+| Unity Editor | 6.3 LTS **6000.3.28f1** (`ProjectSettings/ProjectVersion.txt`) | install via Hub with **Android Build Support** (incl. OpenJDK and Android SDK & NDK) |
 | .NET SDK | 8 | runs logic tests without Unity: `winget install Microsoft.DotNet.SDK.8` |
 | Git | any recent | |
 | IDE | Visual Studio Community or JetBrains Rider | set it in *Edit → Preferences → External Tools* |
@@ -34,6 +34,15 @@ dotnet test Tools/LogicTests
 
 In Unity: *Window → General → Test Runner → EditMode → Run All*. This also
 runs `PuzzleKingdoms.Data.Tests`, which checks the ScriptableObject assets.
+
+From the command line (Unity closed; it cannot open a project twice):
+
+```bash
+"<Unity>/Editor/Unity.exe" -batchmode -projectPath . -runTests -testPlatform EditMode -testResults results.xml
+```
+
+After changing `ProjectSetup.cs`, re-run *Puzzle Kingdoms → Apply Project
+Settings* (or `-batchmode -quit -executeMethod PuzzleKingdoms.EditorTools.ProjectSetup.Apply`).
 
 ## 4. Android build (Milestone 0)
 

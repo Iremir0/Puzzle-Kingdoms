@@ -22,12 +22,12 @@ puzzle-kingdoms/
 │       │   │   ├── Stages/       ✅ StageDef, EnemySlot
 │       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot)
 │       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward
-│       │   ├── Data/             🧪 PuzzleKingdoms.Data: UnitDefinition, StageDefinition, GameContent,
+│       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, StageDefinition, GameContent,
 │       │   │                        Puzzle/Army/Battle/ProgressionRulesAsset (ScriptableObjects)
-│       │   ├── Editor/           🧪 PuzzleKingdoms.Editor: ProjectSetup (Android player settings)
+│       │   ├── Editor/           ✅ PuzzleKingdoms.Editor: ProjectSetup (player settings + URP asset)
 │       │   ├── Flow/             ⬜ M1: SceneRouter, SaveService, Audio (MonoBehaviours)
 │       │   └── Views/            ⬜ M1 grey-box: Puzzle, WarCamp, Battle, Menus
-│       ├── Data/                 🧪 .asset files
+│       ├── Data/                 ✅ .asset files
 │       │   ├── Units/            Warrior, Archer, Mage
 │       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief
 │       │   ├── Stages/           Stage_1_1 … Stage_1_3
@@ -36,16 +36,17 @@ puzzle-kingdoms/
 │       │   ├── ArmyRules.asset
 │       │   ├── BattleRules.asset
 │       │   └── ProgressionRules.asset
+│       ├── Settings/             ✅ URP_Mobile (+ renderer), URP global settings, default volume (made by ProjectSetup)
 │       ├── Scenes/               ⬜ M1: Boot, MainMenu, Puzzle, WarCamp, Battle
 │       ├── Prefabs/              ⬜
 │       ├── Art/                  ⬜ sprites, models, materials, VFX (see CREDITS.md)
 │       ├── Audio/                ⬜
 │       └── Tests/
 │           ├── EditMode/         ✅ PuzzleKingdoms.Tests: logic tests (also run by dotnet)
-│           └── EditModeData/     🧪 PuzzleKingdoms.Data.Tests: assets match GDD (Unity only)
+│           └── EditModeData/     ✅ PuzzleKingdoms.Data.Tests: assets match GDD (Unity only)
 │
-├── Packages/                     ⬜ created with the Unity project (manifest.json)
-├── ProjectSettings/              ⬜ created with the Unity project
+├── Packages/                     ✅ manifest.json (URP, uGUI, Test Framework; see D-024)
+├── ProjectSettings/              ✅ Unity 6000.3.28f1; applied by ProjectSetup
 │
 └── Tools/
     └── LogicTests/               ✅ dotnet test project for Logic + EditMode tests

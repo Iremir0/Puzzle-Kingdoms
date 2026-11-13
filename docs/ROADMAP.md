@@ -22,10 +22,10 @@ ported to C# with its tests.
 
 - [x] M0: design decisions, docs
 - [x] M0: logic test runner (`dotnet test Tools/LogicTests`)
-- [ ] M0: Unity 6 LTS project created (ProjectSettings, Packages, URP, portrait)
+- [x] M0: Unity 6 LTS project created (6000.3.28f1, URP, portrait); 91 EditMode tests pass in Unity
 - [ ] M0: Android build verified on a device (see SETUP.md §4)
 - [x] M1: puzzle logic (`BoardModel`, `RecruitmentMeter`, `PuzzleSession`) + tests
-- [~] M1: unit/enemy/stage data assets (ScriptableObjects; not yet opened in Unity)
+- [x] M1: unit/enemy/stage data assets (ScriptableObjects, verified by Data.Tests in Unity)
 - [ ] M1: puzzle grey-box view
 - [x] M1: war camp logic (`ArmyUnit`, `Formation`, `Roster`, `MergeRules`) + tests
 - [ ] M1: war camp grey-box view

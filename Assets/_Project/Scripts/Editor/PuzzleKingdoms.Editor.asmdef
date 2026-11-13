@@ -3,7 +3,9 @@
     "rootNamespace": "PuzzleKingdoms.EditorTools",
     "references": [
         "PuzzleKingdoms.Logic",
-        "PuzzleKingdoms.Data"
+        "PuzzleKingdoms.Data",
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [
         "Editor"
