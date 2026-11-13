@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81c94d4df39d45a1ad4d3ad991a5aba0, type: 3}
+  m_Name: GameContent
+  m_EditorClassIdentifier: 
+  recruitableUnits:
+  - {fileID: 11400000, guid: 0948e59e05944d11aa74dbd8fc05ea12, type: 2}
+  - {fileID: 11400000, guid: dc58bbfad0514bb8ad47f83d17782247, type: 2}
+  - {fileID: 11400000, guid: 72933b41701440aebb60a1d23926b896, type: 2}
+  campaign:
+  - {fileID: 11400000, guid: 179fd51987194e5b829ace8e1ff3e120, type: 2}
+  - {fileID: 11400000, guid: e7903c40966246d38f80892935d4f106, type: 2}
+  - {fileID: 11400000, guid: 6b5b830248214845af7eabc170c9a09b, type: 2}
+  puzzleRules: {fileID: 11400000, guid: 9f531eef03cb4df6b416a11d0ce32a9b, type: 2}
+  armyRules: {fileID: 11400000, guid: 75c3b719b2ac4af3b347a79fc4354ba3, type: 2}
+  battleRules: {fileID: 11400000, guid: d75dad277eea405e96ae59a57e35a46a, type: 2}
+  progressionRules: {fileID: 11400000, guid: b8a15d65a3c04103add37c8ddeb749ef, type: 2}

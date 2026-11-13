@@ -105,3 +105,15 @@ Combat uses `float` (`System.Numerics.Vector2`). Results are identical on one
 device and build, which covers tests and local replays. Floating-point results
 can differ between CPUs/compilers; if shared replays or competitive daily
 challenges need cross-device equality, switch the simulator to fixed-point.
+
+## D-022 Stage rewards: earned gold is kept on defeat, stage gold only on victory
+Dismissal gold (5 per bench unit) and Banner overflow gold (1 per point) are
+earned during the attempt and paid even on defeat; the stage's gold reward and
+stars only on victory, every time it is won. Next stage unlocks with 1 star.
+Open question: repeat wins pay full gold; revisit (first-clear bonus) once
+upgrades make gold matter.
+
+## D-023 StageRun is logic, screens only drive it
+The whole attempt (puzzle → war camp → battle → reward) is one engine-free
+`StageRun`, testable headless. Scenes call it and listen to its events;
+`GameContent` (ScriptableObject) builds it from data.

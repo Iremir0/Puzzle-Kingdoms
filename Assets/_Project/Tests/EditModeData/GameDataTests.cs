@@ -88,6 +88,35 @@ namespace PuzzleKingdoms.Tests.Data
         }
 
         [Test]
+        public void GameContentIsComplete()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            CollectionAssert.AreEqual(new[] { "warrior", "archer", "mage" },
+                content.RecruitableUnits.Select(u => u.Def.Id).ToArray(), "gem order");
+            CollectionAssert.AreEqual(new[] { "stage_1_1", "stage_1_2", "stage_1_3" }, content.CampaignOrder());
+            Assert.IsNotNull(content.PuzzleRules);
+            Assert.IsNotNull(content.ArmyRules);
+            Assert.IsNotNull(content.BattleRules);
+            Assert.IsNotNull(content.ProgressionRules);
+        }
+
+        [Test]
+        public void Stage11CanBePlayedHeadlessFromGameContent()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            Logic.Flow.StageRun run = content.CreateRun(content.Campaign[0], new SeededRandom(5));
+            while (!run.Puzzle.IsFinished)
+            {
+                run.Puzzle.Board.TryFindValidMove(out GridPos a, out GridPos b);
+                run.Puzzle.PlaySwap(a, b);
+            }
+            AutoFormation.Fill(run.Roster);
+            Assert.IsTrue(run.StartBattle());
+            run.Battle.RunToEnd();
+            Assert.IsNotNull(run.Finish());
+        }
+
+        [Test]
         public void Stage11IsWinnableWithABasicArmy()
         {
             UnitDef warrior = Load<UnitDefinition>("Units/Warrior.asset").Def;

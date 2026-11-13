@@ -32,4 +32,5 @@ ported to C# with its tests.
 - [x] M1: battle simulator + Rally + tests
 - [ ] M1: battle 2D debug view
 - [ ] M1: balance pass: battles last 5–15 s with current numbers (target 20–40 s)
-- [ ] M1: stage flow (SceneRouter, RunContext, results)
+- [x] M1: stage flow logic (`StageRun`, `AutoFormation`) + progression (`StageReward`, `PlayerProfile`) + tests
+- [ ] M1: stage flow scenes (SceneRouter, SaveService, results screen)

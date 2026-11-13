@@ -1,0 +1,19 @@
+{
+    "name": "PuzzleKingdoms.Editor",
+    "rootNamespace": "PuzzleKingdoms.EditorTools",
+    "references": [
+        "PuzzleKingdoms.Logic",
+        "PuzzleKingdoms.Data"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

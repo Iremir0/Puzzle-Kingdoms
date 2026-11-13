@@ -14,21 +14,28 @@ puzzle-kingdoms/
 │       ├── Scripts/
 │       │   ├── Logic/            ✅ PuzzleKingdoms.Logic (no engine references)
 │       │   │   ├── Core/         ✅ GridPos, IRandom, SeededRandom (PCG32)
-│       │   │   ├── Puzzle/       ✅ BoardModel, MatchGroup, MoveResult, RecruitmentMeter, PuzzleSession
-│       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster, MergeRules
+│       │   │   ├── Puzzle/       ✅ BoardModel, MatchGroup, MoveResult, RecruitmentMeter, PuzzleSession,
+│       │   │   │                    PuzzleRules
+│       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster, MergeRules, AutoFormation
 │       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,
 │       │   │   │                    Rally, BattleEvent, BattleResult
-│       │   │   └── Stages/       ✅ StageDef, EnemySlot
-│       │   ├── Data/             🧪 PuzzleKingdoms.Data: UnitDefinition, StageDefinition,
-│       │   │                        ArmyRulesAsset, BattleRulesAsset (ScriptableObjects)
-│       │   ├── Flow/             ⬜ M1: SceneRouter, RunContext, SaveService, Audio
+│       │   │   ├── Stages/       ✅ StageDef, EnemySlot
+│       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot)
+│       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward
+│       │   ├── Data/             🧪 PuzzleKingdoms.Data: UnitDefinition, StageDefinition, GameContent,
+│       │   │                        Puzzle/Army/Battle/ProgressionRulesAsset (ScriptableObjects)
+│       │   ├── Editor/           🧪 PuzzleKingdoms.Editor: ProjectSetup (Android player settings)
+│       │   ├── Flow/             ⬜ M1: SceneRouter, SaveService, Audio (MonoBehaviours)
 │       │   └── Views/            ⬜ M1 grey-box: Puzzle, WarCamp, Battle, Menus
 │       ├── Data/                 🧪 .asset files
 │       │   ├── Units/            Warrior, Archer, Mage
 │       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief
 │       │   ├── Stages/           Stage_1_1 … Stage_1_3
+│       │   ├── GameContent.asset   root: units in gem order, campaign, rules
+│       │   ├── PuzzleRules.asset
 │       │   ├── ArmyRules.asset
-│       │   └── BattleRules.asset
+│       │   ├── BattleRules.asset
+│       │   └── ProgressionRules.asset
 │       ├── Scenes/               ⬜ M1: Boot, MainMenu, Puzzle, WarCamp, Battle
 │       ├── Prefabs/              ⬜
 │       ├── Art/                  ⬜ sprites, models, materials, VFX (see CREDITS.md)

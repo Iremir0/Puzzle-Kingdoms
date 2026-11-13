@@ -62,7 +62,7 @@ next stage.
 - **Cascades** count fully and are shown as "Bonus!". With 4 gem types the
   cascade rate stays moderate (to be measured).
 - **Rally meter:** 3 Banner points = 1 Rally charge, max 3 charges. Banner points
-  beyond the cap convert to gold.
+  beyond the cap convert to gold (1 gold per point, start value).
 - If no valid move exists, the board reshuffles for free.
 - The initial board never contains a ready-made match and always has at least
   one valid move.
