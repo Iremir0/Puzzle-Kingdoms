@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UnitDef" format=3]
+
+[ext_resource type="Script" path="res://data/schema/unit_def.gd" id="1_85r4g"]
+
+[resource]
+script = ExtResource("1_85r4g")
+id = &"mage"
+display_name = "Mage"
+max_hp = 55
+damage = 22
+damage_type = 1
+attack_interval = 1.6
+attack_range = 3.5
+move_speed = 0.9
+color = Color(0.654902, 0.48235294, 0.9098039, 1)

@@ -112,6 +112,17 @@ Damage types: **Physical** is reduced by Armor (%), **Magic** by Ward (%).
 | Goblin Brute | armored melee (50% armor) | bring Mages |
 | (Stage 3 boss) Goblin Chief | tanky melee, larger | merging / Rally timing |
 
+Start values (unbalanced; tune with headless sims once the simulator exists):
+
+| Enemy | HP | Damage | Interval (s) | Range | Speed | Armor |
+|---|---|---|---|---|---|---|
+| Goblin Grunt | 90 | 10 | 1.0 | 1.0 | 1.2 | 0% |
+| Goblin Archer | 50 | 9 | 0.9 | 4.0 | 1.0 | 0% |
+| Goblin Brute | 160 | 16 | 1.4 | 1.0 | 0.9 | 50% |
+| Goblin Chief | 420 | 24 | 1.2 | 1.2 | 1.0 | 20% |
+
+All goblins deal Physical damage and have 0% Ward.
+
 Enemies use the same rules as player units and their own 3×3 formation.
 
 ## 9. Battle
@@ -152,3 +163,7 @@ Enemies use the same rules as player units and their own 3×3 formation.
 | 1-1 | Border Watch | 3 Grunts | match, recruit, place |
 | 1-2 | Arrow Rain | 3 Grunts, 2 Archers | protect your back line, merge |
 | 1-3 | The Chief's Guard | 2 Brutes, 2 Archers, Chief | Mages vs armor, Rally timing |
+
+Formations (row 0 = front): 1-1 Grunts across the front; 1-2 adds Archers in
+the back corners; 1-3 has Brute–Chief–Brute in front and Archers in the back
+corners. Gold rewards: 30 / 40 / 60 (start values).

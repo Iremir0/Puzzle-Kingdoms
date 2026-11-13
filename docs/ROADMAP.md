@@ -20,11 +20,12 @@ Work continues on the developers' local machines (see SETUP.md).
 `[x]` done · `[~]` written but unverified · `[ ]` to do
 
 - [x] M0: design decisions, docs, project skeleton, test runner
-- [ ] M0: run the test suite locally and fix failures (tests never executed yet)
+- [x] M0: run the test suite locally (Godot 4.6 stable, all puzzle tests pass)
 - [ ] M0: Android export verified on a device (see SETUP.md §4)
-- [~] M1: puzzle logic (`BoardModel`, `RecruitmentMeter`, `PuzzleSession`) + tests: written, not yet verified
-- [ ] M1: unit/enemy/stage data resources
+- [x] M1: puzzle logic (`BoardModel`, `RecruitmentMeter`, `PuzzleSession`) + tests
+- [x] M1: unit/enemy/stage data resources (`data/schema/`, `.tres` + validation tests)
 - [ ] M1: puzzle grey-box view
-- [ ] M1: war camp logic (formation, bench, merge) + grey-box view
+- [x] M1: war camp logic (`ArmyUnit`, `Formation`, `Roster`, `MergeRules`) + tests
+- [ ] M1: war camp grey-box view
 - [ ] M1: battle simulator + 2D debug view + Rally
 - [ ] M1: stage flow (SceneRouter, RunContext, results)

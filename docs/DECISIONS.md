@@ -57,3 +57,16 @@ we need mocking, parameterized tests or scene tests.
 Semi-realistic quality is concentrated in 2D (portraits, cards, UI,
 backgrounds). Battlefield units are mid-poly 3D with strong silhouettes, because
 they render at roughly 80–120 px on a phone. Prototype uses CC0 placeholders.
+
+## D-015 Enemies reuse UnitDef; data schemas live in data/schema/
+Why: D-008 (same rules for both sides) means one definition type is enough.
+Resource scripts sit next to the `.tres` they describe; logic depends on them,
+never the other way round.
+Rejected: separate EnemyDef (duplicate fields); schema scripts under features/
+(stages and units are shared by several features).
+
+## D-016 Merge consumes bench copies first; merged unit takes the target's place
+Why: merging should not silently punch holes in a formation the player built.
+The unit the player merges into keeps its cell (or stays on the bench).
+Rejected: consuming deployed copies first; always returning the result to the
+bench.

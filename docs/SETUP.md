@@ -32,8 +32,7 @@ godot --headless --path . -s tests/run_tests.gd
 Exit code 0 means all tests passed. On Windows use the console executable
 (`Godot_v4.6-stable_win64_console.exe`) so output is printed.
 
-> Status: the puzzle tests were written without a Godot binary available and
-> have **not been run yet**. Running and fixing them is the first task.
+> Status: the full suite passes on Godot 4.6 stable (Windows console build).
 
 ## 4. Android export (Milestone 0)
 

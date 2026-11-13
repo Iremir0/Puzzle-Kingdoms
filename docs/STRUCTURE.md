@@ -28,14 +28,18 @@ puzzle-kingdoms/
 ├── features/
 │   ├── puzzle/
 │   │   ├── logic/
-│   │   │   ├── board_model.gd        🧪 board rules, cascades, reshuffle
-│   │   │   ├── match_group.gd        🧪 connected match shape
-│   │   │   ├── move_result.gd        🧪 playback steps of one move
-│   │   │   ├── recruitment_meter.gd  🧪 gems → units / Rally charges
-│   │   │   └── puzzle_session.gd     🧪 moves + meters for one stage
+│   │   │   ├── board_model.gd        ✅ board rules, cascades, reshuffle
+│   │   │   ├── match_group.gd        ✅ connected match shape
+│   │   │   ├── move_result.gd        ✅ playback steps of one move
+│   │   │   ├── recruitment_meter.gd  ✅ gems → units / Rally charges
+│   │   │   └── puzzle_session.gd     ✅ moves + meters for one stage
 │   │   └── view/                     ⬜ M1 grey-box, M2 polish
 │   ├── army/
-│   │   ├── logic/                    ⬜ M1: army_unit, roster, formation, merge_rules
+│   │   ├── logic/
+│   │   │   ├── army_unit.gd          ✅ UnitDef + tier, scaled stats
+│   │   │   ├── formation.gd          ✅ 3×3 grid (x = lane, y = row, 0 = front)
+│   │   │   ├── roster.gd             ✅ bench + formation, deploy, merge
+│   │   │   └── merge_rules.gd        ✅ which units a merge consumes
 │   │   └── view/                     ⬜ M1 grey-box, M3 drag & drop
 │   ├── combat/
 │   │   ├── logic/                    ⬜ M1: battle_simulator, combatant, targeting, damage, rally
@@ -47,10 +51,12 @@ puzzle-kingdoms/
 │       └── main_menu.gd              ✅ placeholder
 │                                     ⬜ stage_select, results screens
 │
-├── data/                         ⬜ M1: .tres resources
-│   ├── units/                    warrior, archer, mage
-│   ├── enemies/                  goblin_grunt, goblin_archer, goblin_brute, goblin_chief
-│   └── stages/                   stage_1_1 … stage_1_3
+├── data/
+│   ├── schema/                   ✅ UnitDef, EnemySlot, StageDef, ArmyRules (Resource scripts)
+│   ├── army_rules.tres           ✅ tier multipliers, merge count
+│   ├── units/                    ✅ warrior, archer, mage
+│   ├── enemies/                  ✅ goblin_grunt, goblin_archer, goblin_brute, goblin_chief
+│   └── stages/                   ✅ stage_1_1 … stage_1_3
 │
 ├── shared/ui/                    ⬜ theme, fonts, reusable widgets
 │
@@ -58,11 +64,11 @@ puzzle-kingdoms/
 │   ├── characters/  environments/  ui/  audio/  effects/
 │
 └── tests/
-    ├── run_tests.gd              🧪 headless runner
-    ├── test_case.gd              🧪 assertion base class
-    └── puzzle/
-        ├── test_board_model.gd   🧪
-        └── test_recruitment.gd   🧪
+    ├── run_tests.gd              ✅ headless runner
+    ├── test_case.gd              ✅ assertion base class
+    ├── puzzle/                   ✅ board model, recruitment
+    ├── army/                     ✅ army unit, formation, roster, merge
+    └── data/                     ✅ .tres files match GDD and invariants
 ```
 
 Each folder also contains a short `README.md` describing what belongs in it.
@@ -90,4 +96,4 @@ view ──► logic ──► data
 - `logic` never references `view`, `core` or any Node.
 - Features do not reach into each other's `view/`. They share data via
   `RunContext` and logic classes.
-- `tests/` only test `logic/`.
+- `tests/` test `logic/`, plus `tests/data/` which validates the shipped `.tres`.
