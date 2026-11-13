@@ -56,12 +56,15 @@ next stage.
   and costs no move.
 - **Moves:** 12 per stage (stage data can override).
 - **Recruitment meter:** every cleared gem adds 1 point to its meter; every
-  **3 points = 1 unit** (remainder carries over within the stage). So a match-3
-  gives 1 unit, match-4 gives 1⅓, match-5 gives 1⅔. This rewards big matches
-  smoothly and makes cascades predictable in value.
-- **Cascades** count fully and are shown as "Bonus!". With 4 gem types the
-  cascade rate stays moderate (to be measured).
-- **Rally meter:** 3 Banner points = 1 Rally charge, max 3 charges. Banner points
+  **6 points = 1 unit** (remainder carries over within the stage). So two
+  match-3s give 1 unit and a match-4 gives ⅔. This rewards big matches
+  smoothly and makes cascades predictable in value. Measured (D-026): a random
+  player recruits ~10 units in 12 moves, a greedy one ~14, so filling the 9
+  slots and merging the surplus are real decisions.
+- **Cascades** count fully and are shown as "Bonus!". With 4 gem types on 6×6
+  a move clears ~7 gems on average, cascades included.
+- **Rally meter:** 10 Banner points = 1 Rally charge, max 3 charges (typically
+  1–2 per stage). Banner points
   beyond the cap convert to gold (1 gold per point, start value).
 - If no valid move exists, the board reshuffles for free.
 - The initial board never contains a ready-made match and always has at least
@@ -97,9 +100,9 @@ more, merging is. Verified by headless simulation.
 
 | Class | HP | Damage | Type | Interval (s) | Range (cells) | Move speed (cells/s) | Notes |
 |---|---|---|---|---|---|---|---|
-| Warrior | 120 | 12 | Physical | 1.0 | 1.0 (melee) | 1.2 | Frontline |
-| Archer | 60 | 10 | Physical | 0.8 | 4.0 | 1.0 | Back line DPS |
-| Mage | 55 | 22 | Magic | 1.6 | 3.5 | 0.9 | Ignores armor; AoE post-MVP |
+| Warrior | 360 | 12 | Physical | 1.0 | 1.0 (melee) | 1.2 | Frontline |
+| Archer | 180 | 10 | Physical | 0.8 | 4.0 | 1.0 | Back line DPS |
+| Mage | 165 | 22 | Magic | 1.6 | 3.5 | 0.9 | Ignores armor; AoE post-MVP |
 
 Damage types: **Physical** is reduced by Armor (%), **Magic** by Ward (%).
 
@@ -112,14 +115,14 @@ Damage types: **Physical** is reduced by Armor (%), **Magic** by Ward (%).
 | Goblin Brute | armored melee (50% armor) | bring Mages |
 | (Stage 3 boss) Goblin Chief | tanky melee, larger | merging / Rally timing |
 
-Start values (unbalanced; tune with headless sims once the simulator exists):
+Values after the first headless balance pass (D-026, `Tools/Balance`):
 
 | Enemy | HP | Damage | Interval (s) | Range | Speed | Armor |
 |---|---|---|---|---|---|---|
-| Goblin Grunt | 90 | 10 | 1.0 | 1.0 | 1.2 | 0% |
-| Goblin Archer | 50 | 9 | 0.9 | 4.0 | 1.0 | 0% |
-| Goblin Brute | 160 | 16 | 1.4 | 1.0 | 0.9 | 50% |
-| Goblin Chief | 420 | 24 | 1.2 | 1.2 | 1.0 | 20% |
+| Goblin Grunt | 270 | 10 | 1.0 | 1.0 | 1.2 | 0% |
+| Goblin Archer | 150 | 9 | 0.9 | 4.0 | 1.0 | 0% |
+| Goblin Brute | 480 | 16 | 1.4 | 1.0 | 0.9 | 50% |
+| Goblin Chief | 1260 | 30 | 1.2 | 1.2 | 1.0 | 20% |
 
 All goblins deal Physical damage and have 0% Ward.
 
@@ -135,8 +138,8 @@ Enemies use the same rules as player units and their own 3×3 formation.
 - Melee units advance until in range; ranged units hold position until a target
   is in range, then fire; if nothing is in range they advance.
 - No randomness. No pathfinding: straight-line movement with simple separation.
-- **Rally:** the player taps the Rally button: all allies gain +50% damage and
-  +50% attack speed for 5 seconds. One activation at a time; charges come from
+- **Rally:** the player taps the Rally button: all allies gain +35% damage and
+  +35% attack speed for 5 seconds. One activation at a time; charges come from
   the puzzle.
 - Battle ends when one side is wiped out. A 60 s timeout counts as a defeat.
 - Controls: 1×/2× speed, pause.
@@ -164,10 +167,15 @@ Enemies use the same rules as player units and their own 3×3 formation.
 
 | Stage | Name | Enemies | Lesson |
 |---|---|---|---|
-| 1-1 | Border Watch | 3 Grunts | match, recruit, place |
-| 1-2 | Arrow Rain | 3 Grunts, 2 Archers | protect your back line, merge |
+| 1-1 | Border Watch | 4 Grunts | match, recruit, place |
+| 1-2 | Arrow Rain | 4 Grunts, 3 Archers | protect your back line, merge |
 | 1-3 | The Chief's Guard | 2 Brutes, 2 Archers, Chief | Mages vs armor, Rally timing |
 
-Formations (row 0 = front): 1-1 Grunts across the front; 1-2 adds Archers in
-the back corners; 1-3 has Brute–Chief–Brute in front and Archers in the back
-corners. Gold rewards: 30 / 40 / 60 (start values).
+Formations (row 0 = front): 1-1 Grunts across the front plus one in the middle
+center; 1-2 the same plus a full back row of Archers; 1-3 has Brute–Chief–Brute
+in front and Archers in the back corners. Gold rewards: 30 / 40 / 60 (start
+values).
+
+Measured difficulty (D-026; random/greedy puzzle bot, auto formation, no merges):
+1-1 always won in 7–12 s; 1-2 won 96–100% in 12–19 s; 1-3 won 36–49% without
+Rally and 77–95% with it, in 25–39 s.

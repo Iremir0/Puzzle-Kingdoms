@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: goblin_archer
   displayName: Goblin Archer
-  maxHp: 50
+  maxHp: 150
   damage: 9
   damageType: 0
   attackInterval: 0.9

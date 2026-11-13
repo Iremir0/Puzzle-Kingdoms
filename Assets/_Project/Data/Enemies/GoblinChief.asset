@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: goblin_chief
   displayName: Goblin Chief
-  maxHp: 420
-  damage: 24
+  maxHp: 1260
+  damage: 30
   damageType: 0
   attackInterval: 1.2
   attackRange: 1.2

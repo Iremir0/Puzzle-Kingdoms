@@ -31,7 +31,7 @@ ported to C# with its tests.
 - [x] M1: war camp grey-box view (deploy/move/bench, merge, auto, fight)
 - [x] M1: battle simulator + Rally + tests
 - [x] M1: battle 2D debug view (Rally, 1x/2x, pause, skip, damage numbers)
-- [ ] M1: balance pass: battles last 5–15 s with current numbers (target 20–40 s)
+- [x] M1: first balance pass with `Tools/Balance` (D-026); revisit after playtests
 - [x] M1: stage flow logic (`StageRun`, `AutoFormation`) + progression (`StageReward`, `PlayerProfile`) + tests
 - [x] M1: stage flow (GameApp, stage map, results, JSON save) + PlayMode smoke test
 - [ ] M1: playtest with 5+ people, go/pivot decision

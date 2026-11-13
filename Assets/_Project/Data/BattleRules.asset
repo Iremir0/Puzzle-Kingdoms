@@ -19,6 +19,6 @@ MonoBehaviour:
   laneSpacing: 1.2
   sameLaneTieDistance: 0.5
   separationDistance: 0.6
-  rallyDamageBonus: 0.5
-  rallyAttackSpeedBonus: 0.5
+  rallyDamageBonus: 0.35
+  rallyAttackSpeedBonus: 0.35
   rallyDurationSeconds: 5

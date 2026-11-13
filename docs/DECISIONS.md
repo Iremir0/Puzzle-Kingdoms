@@ -136,3 +136,20 @@ changes daily, screens are testable from PlayMode tests, and nobody on the
 team needs editor skills yet. Replaces the planned SceneRouter + one scene per
 screen; revisit at M2/M3 when real UI (prefabs, TextMeshPro, art) arrives.
 Views get callbacks and never reference Flow.
+
+## D-026 First balance pass from headless runs, 2026-11-14
+`Tools/Balance` plays every stage 300–500 times with bots (random or greedy
+puzzle moves, `AutoFormation`, Rally never or as soon as possible) on the
+real assets. Before: ~22 units and 3 Rally charges every stage, battles 3–15 s,
+boss stage won 89–100%. Changes:
+- 6 points per unit (was 3) and 10 Banner points per Rally charge (was 3):
+  ~10 units (random) / ~14 (greedy), 1.8 / 2.4 Rally charges.
+- All HP ×3 (damage unchanged) so fights last longer and read better.
+- Rally +35% damage and attack speed (was +50%): at +50% the boss stage was
+  0% without Rally and ~90% with it; Rally should help, not decide alone.
+- Goblin Chief damage 24 → 30; 1-1 has 4 Grunts, 1-2 4 Grunts + 3 Archers.
+Targets (random bot with Rally / greedy bot with Rally): 1-1 ~100%,
+1-2 ≥ 90%, 1-3 60–80% / ≥ 90%. Results in GDD §11. Known gaps: 1-1 and 1-2
+battles are 7–19 s (GDD wants 20–40 s; accepted for tutorial stages); bots do
+not merge or time Rally, so real players should do somewhat better. Re-run the
+tool after every data change.

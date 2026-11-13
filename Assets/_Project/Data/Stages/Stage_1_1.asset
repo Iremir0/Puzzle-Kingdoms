@@ -26,4 +26,7 @@ MonoBehaviour:
   - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
     tier: 1
     cell: {x: 2, y: 0}
+  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
+    tier: 1
+    cell: {x: 1, y: 1}
   goldReward: 30

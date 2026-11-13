@@ -52,7 +52,8 @@ puzzle-kingdoms/
 ├── ProjectSettings/              ✅ Unity 6000.3.28f1; applied by ProjectSetup
 │
 └── Tools/
-    └── LogicTests/               ✅ dotnet test project for Logic + EditMode tests
+    ├── LogicTests/               ✅ dotnet test project for Logic + EditMode tests
+    └── Balance/                  ✅ headless balance runs over the data assets (D-026)
 ```
 
 ## Where does new code go?

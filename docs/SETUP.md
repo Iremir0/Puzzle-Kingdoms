@@ -45,6 +45,16 @@ PlayMode (full grey-box loop): same command with `-testPlatform PlayMode`.
 Screenshots of every screen (1080×1920 PNGs in `Logs/Screenshots/`, not
 committed): add `-testFilter GreyboxScreenshots`.
 
+## 3a. Balance runs
+
+```bash
+dotnet run -c Release --project Tools/Balance 300
+```
+
+Plays every stage 300 times per bot setting on the real `.asset` files and
+prints win rate, battle length and army size. Run it after changing any
+number in `Assets/_Project/Data/` and compare with the targets in D-026.
+
 ## 3b. Play the grey-box
 
 Open `Assets/_Project/Scenes/Main.unity` and press Play. In the Game view pick
