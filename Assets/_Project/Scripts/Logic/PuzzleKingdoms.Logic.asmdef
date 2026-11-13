@@ -1,0 +1,14 @@
+{
+    "name": "PuzzleKingdoms.Logic",
+    "rootNamespace": "PuzzleKingdoms.Logic",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

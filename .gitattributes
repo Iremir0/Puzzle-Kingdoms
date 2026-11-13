@@ -1,7 +1,23 @@
 * text=auto eol=lf
+
+# Unity YAML: merge with UnityYAMLMerge when configured (see docs/SETUP.md)
+*.unity text merge=unityyamlmerge eol=lf
+*.prefab text merge=unityyamlmerge eol=lf
+*.asset text merge=unityyamlmerge eol=lf
+*.mat text merge=unityyamlmerge eol=lf
+*.anim text merge=unityyamlmerge eol=lf
+*.controller text merge=unityyamlmerge eol=lf
+*.meta text eol=lf
+
+# Binary assets
 *.png binary
 *.jpg binary
+*.psd binary
+*.tga binary
 *.ogg binary
 *.wav binary
+*.mp3 binary
+*.fbx binary
 *.glb binary
 *.ttf binary
+*.otf binary

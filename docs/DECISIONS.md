@@ -40,16 +40,16 @@ Why: honest losses, easy testing, enables replays and seeded Daily Challenges.
 Why: core differentiator; gives the auto battle a moment of command and links
 puzzle decisions directly to battle.
 
-## D-011 Do not fork the Kenney Match-3 Starter Kit
+## D-011 Do not fork the Kenney Match-3 Starter Kit (Godot-era; still valid for its art)
 Why: its logic is coupled to nodes and lacks group detection, move limits and
 deadlock handling. We write our own tested `BoardModel` and may reuse its CC0
 art/audio as placeholders. (Code: MIT — keep the notice if any is copied.)
 
-## D-012 Godot 4.6, Mobile renderer, GDScript, portrait 1080×1920 base
+## D-012 ~~Godot 4.6, Mobile renderer, GDScript~~ (superseded by D-018), portrait 1080×1920 base
 Why: Mobile renderer targets Android Vulkan devices; fall back to Compatibility
 if low-end device tests fail.
 
-## D-013 Minimal in-house test runner instead of GUT for now
+## D-013 ~~Minimal in-house test runner instead of GUT~~ (superseded by D-019)
 Why: zero third-party code to vendor, enough for pure-logic tests. Revisit if
 we need mocking, parameterized tests or scene tests.
 
@@ -58,12 +58,11 @@ Semi-realistic quality is concentrated in 2D (portraits, cards, UI,
 backgrounds). Battlefield units are mid-poly 3D with strong silhouettes, because
 they render at roughly 80–120 px on a phone. Prototype uses CC0 placeholders.
 
-## D-015 Enemies reuse UnitDef; data schemas live in data/schema/
+## D-015 Enemies reuse UnitDef
 Why: D-008 (same rules for both sides) means one definition type is enough.
-Resource scripts sit next to the `.tres` they describe; logic depends on them,
-never the other way round.
-Rejected: separate EnemyDef (duplicate fields); schema scripts under features/
-(stages and units are shared by several features).
+In Unity: one `UnitDefinition` ScriptableObject type for player units and
+goblins; it builds the plain logic `UnitDef`.
+Rejected: separate EnemyDef (duplicate fields).
 
 ## D-016 Merge consumes bench copies first; merged unit takes the target's place
 Why: merging should not silently punch holes in a formation the player built.
@@ -77,3 +76,32 @@ resolving all hits of a tick together removes any advantage from unit order.
 A defeat on mutual wipe keeps "win" unambiguous for stars.
 Rejected: simulated projectiles (more state, little gameplay value in M1);
 sequential damage in id order (player side would always strike first).
+
+## D-018 Switch from Godot to Unity 6 LTS (C#, URP), 2026-11-13
+Why: the game is a free-to-play mobile title. Unity has first-party, mature
+SDKs for ads, in-app purchases, analytics and remote config; a much larger
+asset store for the 3D battle (M4); better-proven Android/iOS tooling; and far
+more learning material for a team new to game engines. Switching cost was
+small: only engine-free logic existed (ported 1:1 with its tests).
+Rejected: staying on Godot (monetization plugins are community-maintained,
+smaller asset ecosystem). Kept from D-012: portrait 1080×1920 base, Android
+first. Render pipeline: URP (mobile default). UI: uGUI + TextMeshPro.
+
+## D-019 Engine-free logic assembly, tested with dotnet and Unity
+`PuzzleKingdoms.Logic` has `noEngineReferences: true`. `Tools/LogicTests`
+compiles the same logic and NUnit test files with C# 9 and runs them via
+`dotnet test`, so tests run in seconds without opening Unity (and in CI
+later). The same tests run in Unity's Test Runner.
+Rejected: tests only inside Unity (slow, editor needed); logic using Unity
+types like `Vector2Int` (would tie tests to the editor).
+
+## D-020 PCG32 for all gameplay randomness
+`SeededRandom` (PCG32) gives bit-identical sequences on Mono, IL2CPP and
+.NET, which daily challenges and replays need. `System.Random` and
+`UnityEngine.Random` make no such promise.
+
+## D-021 Float combat for now; fixed-point only if replays must match across devices
+Combat uses `float` (`System.Numerics.Vector2`). Results are identical on one
+device and build, which covers tests and local replays. Floating-point results
+can differ between CPUs/compilers; if shared replays or competitive daily
+challenges need cross-device equality, switch the simulator to fixed-point.

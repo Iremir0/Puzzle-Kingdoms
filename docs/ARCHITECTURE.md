@@ -3,52 +3,57 @@
 ## Layers
 
 ```
-Data (Resources, .tres)  →  Logic (RefCounted, no Nodes)  →  View (Scenes/Nodes)
-                                     ↑
-                              Flow (SceneRouter + RunContext)
+Data (ScriptableObject assets)  →  Logic (plain C#, no engine)  →  Views (MonoBehaviours, scenes)
+                                          ↑
+                                Flow (SceneRouter + RunContext)
 ```
 
-- **Data**: `UnitDef`, `EnemyDef`, `StageDef`, ... edited in the Godot inspector.
-- **Logic**: pure GDScript classes (`extends RefCounted`). No `Node`, no timers, no
-  input. Deterministic given a seed. Fully unit-tested.
-- **View**: scenes that read logic state and play back the *step lists* that the
-  logic returns. Views never change game rules.
-- **Flow**: `SceneRouter` (autoload) switches screens and hands a `RunContext`
-  (stage, recruited army, formation, result) from screen to screen.
+- **Data** (`PuzzleKingdoms.Data`): `UnitDefinition`, `StageDefinition`,
+  `ArmyRulesAsset`, `BattleRulesAsset`, edited in the Unity Inspector. Each
+  asset builds the matching plain logic object (`UnitDef`, `StageDef`, ...).
+- **Logic** (`PuzzleKingdoms.Logic`): plain C# classes in an assembly with
+  `noEngineReferences: true`, so Unity types cannot leak in. No
+  MonoBehaviour, no coroutines, no input, no time. Deterministic given a seed.
+  Fully unit-tested, also outside Unity.
+- **Views**: MonoBehaviours and scenes that read logic state and play back the
+  *step lists* the logic returns. Views never change game rules.
+- **Flow**: `SceneRouter` switches screens and hands a `RunContext` (stage,
+  recruited army, formation, result) from screen to screen.
 
 ## Key patterns
 
-- **Compute, then animate.** `BoardModel.try_swap()` resolves the entire move
+- **Compute, then animate.** `BoardModel.TrySwap()` resolves the entire move
   (all cascades) instantly and returns a `MoveResult` with ordered steps. The
   puzzle view animates those steps. Animation timing can never break the rules.
-- **Fixed-tick combat.** `BattleSimulator.step()` advances 1/20 s. The view runs
-  N steps per frame (2× speed = twice the steps) and renders the state. Player
-  input (Rally) is applied at a tick, so a battle is reproducible from
-  `(seed, armies, input log)`.
-- **Seeded randomness.** Every random decision uses an injected
-  `RandomNumberGenerator`. Never the global `randi()`.
-- **Signals for view-to-flow communication**, direct calls from view to logic.
-- **Autoloads** (keep the list short): `SceneRouter`, `SaveService`, `Audio`.
+- **Fixed-tick combat.** `BattleSimulator.Step()` advances 1/20 s and returns
+  `BattleEvent`s. The view runs N steps per frame (2× speed = twice the steps)
+  and renders the state. Rally is applied at a tick, so a battle is
+  reproducible from `(armies, rules, InputLog)`.
+- **Seeded randomness.** Every random decision uses an injected `IRandom`
+  (`SeededRandom`, PCG32). Never `UnityEngine.Random` or `System.Random`.
+- **C# events for logic-to-view notifications**, direct calls from view to logic.
+- **Few singletons.** Only `SceneRouter`, `SaveService` and `Audio` may be
+  global (one bootstrap scene, `DontDestroyOnLoad`).
 
-## Folder layout
+## Assemblies
 
-Full annotated tree and "where does this go?" table: [STRUCTURE.md](STRUCTURE.md).
+| Assembly | References | Notes |
+|---|---|---|
+| `PuzzleKingdoms.Logic` | none | `noEngineReferences`, also compiled by `Tools/LogicTests` |
+| `PuzzleKingdoms.Data` | Logic, UnityEngine | ScriptableObjects |
+| `PuzzleKingdoms.Views` (planned) | Logic, Data, UnityEngine | scenes, UI |
+| `PuzzleKingdoms.Tests` | Logic, NUnit | EditMode, also run by `dotnet test` |
+| `PuzzleKingdoms.Data.Tests` | Logic, Data, UnityEditor | EditMode, Unity only |
 
-```
-core/                 autoloads and cross-cutting helpers
-features/<feature>/
-    logic/            pure rules (tested)
-    view/             scenes and node scripts
-data/                 .tres game data (units, enemies, stages)
-shared/ui/            theme and reusable widgets
-assets/               art and audio (see CREDITS.md)
-tests/                headless unit tests
-docs/                 GDD, architecture, decisions
-```
+Folder layout and "where does this go?": [STRUCTURE.md](STRUCTURE.md).
 
 ## Testing
 
-`godot --headless --path . -s tests/run_tests.gd`
+```bash
+dotnet test Tools/LogicTests
+```
 
-The runner discovers every `tests/**/test_*.gd`, runs each `test_*` method and
-exits non-zero on failure. Test classes extend `TestCase` (`tests/test_case.gd`).
+`Tools/LogicTests/LogicTests.csproj` compiles the logic and its tests from
+`Assets/` with C# 9 (Unity's language level) and runs them with NUnit. The
+same test files run in Unity's Test Runner (EditMode), together with the
+data-asset tests that need the editor.

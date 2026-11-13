@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31ef4f8adc7749fdb1a736e9ace3124a, type: 3}
+  m_Name: BattleRules
+  m_EditorClassIdentifier: 
+  ticksPerSecond: 20
+  timeoutSeconds: 60
+  frontGap: 6
+  rowSpacing: 1
+  laneSpacing: 1.2
+  sameLaneTieDistance: 0.5
+  separationDistance: 0.6
+  rallyDamageBonus: 0.5
+  rallyAttackSpeedBonus: 0.5
+  rallyDurationSeconds: 5

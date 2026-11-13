@@ -1,108 +1,69 @@
 # Project Structure
 
-Legend: ✅ exists · 🧪 exists, tests not yet run · ⬜ planned (milestone)
+Legend: ✅ exists · 🧪 exists, not yet verified in the Unity editor · ⬜ planned (milestone)
 
 ```
 puzzle-kingdoms/
-├── project.godot                 ✅ Godot 4.6, Mobile renderer, portrait 1080×1920
 ├── README.md                     ✅ entry point
 ├── CLAUDE.md                     ✅ rules for Claude Code sessions
 ├── CREDITS.md                    ✅ third-party licenses (fill before adding assets)
+├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap
 │
-├── docs/
-│   ├── README.md                 ✅ documentation index
-│   ├── GDD.md                    ✅ game design (rules and numbers)
-│   ├── ARCHITECTURE.md           ✅ layers and patterns
-│   ├── STRUCTURE.md              ✅ this file
-│   ├── CONVENTIONS.md            ✅ code style, naming, git workflow
-│   ├── SETUP.md                  ✅ local machine setup, tests, Android export
-│   ├── DECISIONS.md              ✅ decision log
-│   └── ROADMAP.md                ✅ milestones and status
+├── Assets/
+│   └── _Project/                 everything we make (third-party packs go in their own folders)
+│       ├── Scripts/
+│       │   ├── Logic/            ✅ PuzzleKingdoms.Logic (no engine references)
+│       │   │   ├── Core/         ✅ GridPos, IRandom, SeededRandom (PCG32)
+│       │   │   ├── Puzzle/       ✅ BoardModel, MatchGroup, MoveResult, RecruitmentMeter, PuzzleSession
+│       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster, MergeRules
+│       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,
+│       │   │   │                    Rally, BattleEvent, BattleResult
+│       │   │   └── Stages/       ✅ StageDef, EnemySlot
+│       │   ├── Data/             🧪 PuzzleKingdoms.Data: UnitDefinition, StageDefinition,
+│       │   │                        ArmyRulesAsset, BattleRulesAsset (ScriptableObjects)
+│       │   ├── Flow/             ⬜ M1: SceneRouter, RunContext, SaveService, Audio
+│       │   └── Views/            ⬜ M1 grey-box: Puzzle, WarCamp, Battle, Menus
+│       ├── Data/                 🧪 .asset files
+│       │   ├── Units/            Warrior, Archer, Mage
+│       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief
+│       │   ├── Stages/           Stage_1_1 … Stage_1_3
+│       │   ├── ArmyRules.asset
+│       │   └── BattleRules.asset
+│       ├── Scenes/               ⬜ M1: Boot, MainMenu, Puzzle, WarCamp, Battle
+│       ├── Prefabs/              ⬜
+│       ├── Art/                  ⬜ sprites, models, materials, VFX (see CREDITS.md)
+│       ├── Audio/                ⬜
+│       └── Tests/
+│           ├── EditMode/         ✅ PuzzleKingdoms.Tests: logic tests (also run by dotnet)
+│           └── EditModeData/     🧪 PuzzleKingdoms.Data.Tests: assets match GDD (Unity only)
 │
-├── core/                         ⬜ M1
-│   ├── scene_router.gd           ⬜ autoload: screen switching
-│   ├── run_context.gd            ⬜ data handed between screens
-│   ├── save_service.gd           ⬜ autoload: local JSON save
-│   └── audio.gd                  ⬜ autoload: sfx/music
+├── Packages/                     ⬜ created with the Unity project (manifest.json)
+├── ProjectSettings/              ⬜ created with the Unity project
 │
-├── features/
-│   ├── puzzle/
-│   │   ├── logic/
-│   │   │   ├── board_model.gd        ✅ board rules, cascades, reshuffle
-│   │   │   ├── match_group.gd        ✅ connected match shape
-│   │   │   ├── move_result.gd        ✅ playback steps of one move
-│   │   │   ├── recruitment_meter.gd  ✅ gems → units / Rally charges
-│   │   │   └── puzzle_session.gd     ✅ moves + meters for one stage
-│   │   └── view/                     ⬜ M1 grey-box, M2 polish
-│   ├── army/
-│   │   ├── logic/
-│   │   │   ├── army_unit.gd          ✅ UnitDef + tier, scaled stats
-│   │   │   ├── formation.gd          ✅ 3×3 grid (x = lane, y = row, 0 = front)
-│   │   │   ├── roster.gd             ✅ bench + formation, deploy, merge
-│   │   │   └── merge_rules.gd        ✅ which units a merge consumes
-│   │   └── view/                     ⬜ M1 grey-box, M3 drag & drop
-│   ├── combat/
-│   │   ├── logic/
-│   │   │   ├── battle_simulator.gd   ✅ fixed-tick battle, events, result
-│   │   │   ├── combatant.gd          ✅ runtime unit state
-│   │   │   ├── targeting.gd          ✅ nearest enemy, same-lane tie-break
-│   │   │   ├── damage.gd             ✅ armor / ward formula
-│   │   │   ├── rally.gd              ✅ charges and duration
-│   │   │   ├── battle_event.gd       ✅ playback events
-│   │   │   └── battle_result.gd      ✅ victory, survivors, stars
-│   │   └── view/                     ⬜ M1 2D debug view, M4 3D isometric view
-│   ├── progression/
-│   │   └── logic/                    ⬜ M5: player_profile, reward_rules
-│   └── menus/
-│       ├── main_menu.tscn            ✅ placeholder
-│       └── main_menu.gd              ✅ placeholder
-│                                     ⬜ stage_select, results screens
-│
-├── data/
-│   ├── schema/                   ✅ UnitDef, EnemySlot, StageDef, ArmyRules, BattleRules
-│   ├── army_rules.tres           ✅ tier multipliers, merge count
-│   ├── battle_rules.tres         ✅ tick rate, geometry, Rally, timeout
-│   ├── units/                    ✅ warrior, archer, mage
-│   ├── enemies/                  ✅ goblin_grunt, goblin_archer, goblin_brute, goblin_chief
-│   └── stages/                   ✅ stage_1_1 … stage_1_3
-│
-├── shared/ui/                    ⬜ theme, fonts, reusable widgets
-│
-├── assets/                       ⬜ art and audio only (see CREDITS.md)
-│   ├── characters/  environments/  ui/  audio/  effects/
-│
-└── tests/
-    ├── run_tests.gd              ✅ headless runner
-    ├── test_case.gd              ✅ assertion base class
-    ├── puzzle/                   ✅ board model, recruitment
-    ├── army/                     ✅ army unit, formation, roster, merge
-    ├── combat/                   ✅ damage, targeting, rally, simulator
-    └── data/                     ✅ .tres files match GDD and invariants
+└── Tools/
+    └── LogicTests/               ✅ dotnet test project for Logic + EditMode tests
 ```
-
-Each folder also contains a short `README.md` describing what belongs in it.
 
 ## Where does new code go?
 
 | I am writing… | Put it in |
 |---|---|
-| A game rule (no visuals) | `features/<feature>/logic/` + a test in `tests/<feature>/` |
-| A screen, scene or node script | `features/<feature>/view/` |
-| Numbers a designer will tweak | a Resource in `data/` |
-| Something every screen needs | `core/` (ask first: is it really global?) |
-| A reusable button or panel | `shared/ui/` |
-| A model, texture or sound | `assets/` + a row in `CREDITS.md` |
+| A game rule (no visuals) | `Scripts/Logic/<Feature>/` + a test in `Tests/EditMode/<Feature>/` |
+| A MonoBehaviour, screen or UI | `Scripts/Views/<Feature>/` |
+| Numbers a designer will tweak | a field on a ScriptableObject in `Scripts/Data/` + an asset in `Data/` |
+| Something every screen needs | `Scripts/Flow/` (ask first: is it really global?) |
+| A model, texture or sound | `Art/` or `Audio/` + a row in `CREDITS.md` |
 | A design decision | `docs/DECISIONS.md` |
 
 ## Dependency direction
 
 ```
-view ──► logic ──► data
+Views ──► Logic ◄── Data
   │                  ▲
-  └──► core ─────────┘
+  └──► Flow ─────────┘
 ```
 
-- `logic` never references `view`, `core` or any Node.
-- Features do not reach into each other's `view/`. They share data via
+- `Logic` references nothing (enforced by its asmdef).
+- `Data` converts assets into logic objects; logic never sees ScriptableObjects.
+- Features do not reach into each other's views. They share data via
   `RunContext` and logic classes.
-- `tests/` test `logic/`, plus `tests/data/` which validates the shipped `.tres`.

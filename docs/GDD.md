@@ -140,7 +140,7 @@ Enemies use the same rules as player units and their own 3×3 formation.
   the puzzle.
 - Battle ends when one side is wiped out. A 60 s timeout counts as a defeat.
 - Controls: 1×/2× speed, pause.
-- Geometry (start values, `data/battle_rules.tres`): front rows start 6 cells
+- Geometry (start values, `Data/BattleRules.asset`): front rows start 6 cells
   apart, rows 1 cell apart, lanes 1.2 cells apart; allies keep 0.6 cells apart.
 - All hits of a tick land together: a unit killed this tick still strikes. If
   both armies die on the same tick, it is a defeat.

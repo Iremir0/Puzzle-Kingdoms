@@ -4,46 +4,57 @@
 
 | Tool | Version | Notes |
 |---|---|---|
-| Godot | 4.6 stable, **standard** (not .NET) | https://godotengine.org/download |
+| Unity Hub | latest | https://unity.com/download, sign in with a Unity account (free Personal license) |
+| Unity Editor | 6 LTS, exact version in `ProjectSettings/ProjectVersion.txt` | install via Hub with **Android Build Support** (incl. OpenJDK and Android SDK & NDK) |
+| .NET SDK | 8 | runs logic tests without Unity: `winget install Microsoft.DotNet.SDK.8` |
 | Git | any recent | |
+| IDE | Visual Studio Community or JetBrains Rider | set it in *Edit → Preferences → External Tools* |
 | Claude Code | latest | run `claude` inside the repo folder |
-| Android Studio or command-line tools | latest | only for Android export (step 4) |
-| JDK | 17 | required by Godot's Android export |
 
-Both developers must use the same Godot version. If one upgrades, both do,
-and `config/features` in `project.godot` is updated in the same commit.
+Both developers must use the same Unity version. If one upgrades, both do, in
+one commit that also contains the regenerated `ProjectSettings/`.
 
 ## 2. Clone and open
 
 ```bash
-git clone https://github.com/iremir0/puzzle-kingdoms.git
-cd puzzle-kingdoms
+git clone https://github.com/Iremir0/Puzzle-Kingdoms.git
 ```
 
-Open `project.godot` in the Godot editor once so the `.godot/` cache is built.
+Unity Hub → *Add → Add project from disk* → select the cloned folder. The
+first open imports everything (a few minutes) and creates `Library/`
+(ignored by git).
 
 ## 3. Run tests
 
+Without Unity (fast, logic only):
+
 ```bash
-godot --headless --path . --import              # first time / after adding classes
-godot --headless --path . -s tests/run_tests.gd
+dotnet test Tools/LogicTests
 ```
 
-Exit code 0 means all tests passed. On Windows use the console executable
-(`Godot_v4.6-stable_win64_console.exe`) so output is printed.
+In Unity: *Window → General → Test Runner → EditMode → Run All*. This also
+runs `PuzzleKingdoms.Data.Tests`, which checks the ScriptableObject assets.
 
-> Status: the full suite passes on Godot 4.6 stable (Windows console build).
+## 4. Android build (Milestone 0)
 
-## 4. Android export (Milestone 0)
+1. *File → Build Profiles → Android → Switch Platform*.
+2. *Player Settings*: Company/Product name, package name
+   `com.<company>.puzzlekingdoms`, Default Orientation **Portrait**, Scripting
+   Backend **IL2CPP**, Target Architectures **ARM64**.
+3. Enable *Developer options → USB debugging* on the phone and connect it.
+4. *Build Profiles → Build And Run*. Keep the debug keystore for now.
+5. Done when the empty project shows in portrait on a real phone.
 
-1. Install Android SDK (Platform-Tools, Build-Tools, a recent Platform) and JDK 17.
-2. Godot: *Editor → Editor Settings → Export → Android*: set Java SDK and
-   Android SDK paths.
-3. *Project → Install Android Build Template* is **not** needed yet.
-4. *Project → Export → Add… → Android*. Keep the debug keystore for now.
-5. Enable *USB debugging* on the phone, connect it, and use the Android
-   "Remote Debug" button in the editor toolbar to run on the device.
-6. Done when the placeholder main menu shows in portrait on a real phone.
+Do not commit release keystores or passwords.
 
-Do not commit release keystores or passwords. `export_presets.cfg` may be
-committed once it contains no secrets.
+## 5. Optional: smart merge for scenes and prefabs
+
+Unity ships `UnityYAMLMerge`. Add to your global git config (adjust the path
+to your Unity version):
+
+```
+[merge "unityyamlmerge"]
+    name = Unity SmartMerge
+    driver = "'C:/Program Files/Unity/Hub/Editor/<version>/Editor/Data/Tools/UnityYAMLMerge.exe' merge -p %O %B %A %A"
+    recursive = binary
+```

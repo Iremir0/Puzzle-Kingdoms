@@ -1,7 +1,7 @@
 # Puzzle Kingdoms
 
 Portrait mobile game: Match-3 recruitment + tactical formation + auto battle.
-Engine: Godot 4.6 (Mobile renderer), GDScript. Android first.
+Engine: Unity 6 LTS (URP), C#. Android first.
 
 ## Docs
 Start with the [documentation index](docs/README.md).
@@ -17,7 +17,11 @@ Start with the [documentation index](docs/README.md).
 
 ## Running tests
 
+Game logic is engine-free C#; its tests run without opening Unity:
+
 ```bash
-godot --headless --path . --import          # first time: builds class cache
-godot --headless --path . -s tests/run_tests.gd
+dotnet test Tools/LogicTests
 ```
+
+Inside Unity: *Window → General → Test Runner → EditMode → Run All*
+(includes the data-asset tests that need the editor).
