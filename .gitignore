@@ -1,0 +1,15 @@
+# Godot
+.godot/
+/android/
+*.translation
+export_presets.cfg.bak
+
+# Builds
+/build/
+*.apk
+*.aab
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
