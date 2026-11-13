@@ -126,3 +126,13 @@ Analytics, Collab, XR, Terrain, Vehicles…) were removed; add them back when a
 feature needs them. `ProjectSetup` creates one URP asset (`URP_Mobile`,
 Universal Renderer, HDR off, MSAA 2x) and assigns it to every quality level,
 so the 2D grey-box and the later 3D battle share one pipeline.
+
+## D-025 Grey-box: one generated scene, screens built from code, 2026-11-14
+For M1 the whole game runs in one scene (`Scenes/Main.unity`) that
+`SceneBuilder` generates; it holds a camera and `GameApp`. Screens are uGUI
+panels created in code (`Views/Common/Ui`), swapped by `GameApp`, with the
+built-in font. Reasons: no hand-edited scene/prefab YAML while the layout
+changes daily, screens are testable from PlayMode tests, and nobody on the
+team needs editor skills yet. Replaces the planned SceneRouter + one scene per
+screen; revisit at M2/M3 when real UI (prefabs, TextMeshPro, art) arrives.
+Views get callbacks and never reference Flow.

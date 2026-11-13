@@ -26,11 +26,12 @@ ported to C# with its tests.
 - [ ] M0: Android build verified on a device (see SETUP.md §4)
 - [x] M1: puzzle logic (`BoardModel`, `RecruitmentMeter`, `PuzzleSession`) + tests
 - [x] M1: unit/enemy/stage data assets (ScriptableObjects, verified by Data.Tests in Unity)
-- [ ] M1: puzzle grey-box view
+- [x] M1: puzzle grey-box view (tap/swipe, animated cascades, enemy preview, meters)
 - [x] M1: war camp logic (`ArmyUnit`, `Formation`, `Roster`, `MergeRules`) + tests
-- [ ] M1: war camp grey-box view
+- [x] M1: war camp grey-box view (deploy/move/bench, merge, auto, fight)
 - [x] M1: battle simulator + Rally + tests
-- [ ] M1: battle 2D debug view
+- [x] M1: battle 2D debug view (Rally, 1x/2x, pause, skip, damage numbers)
 - [ ] M1: balance pass: battles last 5–15 s with current numbers (target 20–40 s)
 - [x] M1: stage flow logic (`StageRun`, `AutoFormation`) + progression (`StageReward`, `PlayerProfile`) + tests
-- [ ] M1: stage flow scenes (SceneRouter, SaveService, results screen)
+- [x] M1: stage flow (GameApp, stage map, results, JSON save) + PlayMode smoke test
+- [ ] M1: playtest with 5+ people, go/pivot decision

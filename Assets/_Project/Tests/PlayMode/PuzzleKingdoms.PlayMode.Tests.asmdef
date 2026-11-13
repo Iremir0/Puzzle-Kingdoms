@@ -1,0 +1,25 @@
+{
+    "name": "PuzzleKingdoms.PlayMode.Tests",
+    "rootNamespace": "PuzzleKingdoms.Tests.PlayMode",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "PuzzleKingdoms.Logic",
+        "PuzzleKingdoms.Data",
+        "PuzzleKingdoms.Views",
+        "PuzzleKingdoms.Flow"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

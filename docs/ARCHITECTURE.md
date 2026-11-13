@@ -17,8 +17,9 @@ Data (ScriptableObject assets)  →  Logic (plain C#, no engine)  →  Views (Mo
   Fully unit-tested, also outside Unity.
 - **Views**: MonoBehaviours and scenes that read logic state and play back the
   *step lists* the logic returns. Views never change game rules.
-- **Flow**: `SceneRouter` switches screens and hands a `RunContext` (stage,
-  recruited army, formation, result) from screen to screen.
+- **Flow**: `GameApp` owns the `PlayerProfile` and the current `StageRun`,
+  swaps screens and saves through `ProfileStore`. Grey-box: one scene, screens
+  are code-built uGUI panels (D-025).
 
 ## Key patterns
 
@@ -32,8 +33,7 @@ Data (ScriptableObject assets)  →  Logic (plain C#, no engine)  →  Views (Mo
 - **Seeded randomness.** Every random decision uses an injected `IRandom`
   (`SeededRandom`, PCG32). Never `UnityEngine.Random` or `System.Random`.
 - **C# events for logic-to-view notifications**, direct calls from view to logic.
-- **Few singletons.** Only `SceneRouter`, `SaveService` and `Audio` may be
-  global (one bootstrap scene, `DontDestroyOnLoad`).
+- **Few singletons.** Only `GameApp` (and later `Audio`) may be global.
 
 ## Assemblies
 
@@ -41,9 +41,12 @@ Data (ScriptableObject assets)  →  Logic (plain C#, no engine)  →  Views (Mo
 |---|---|---|
 | `PuzzleKingdoms.Logic` | none | `noEngineReferences`, also compiled by `Tools/LogicTests` |
 | `PuzzleKingdoms.Data` | Logic, UnityEngine | ScriptableObjects |
-| `PuzzleKingdoms.Views` (planned) | Logic, Data, UnityEngine | scenes, UI |
+| `PuzzleKingdoms.Views` | Logic, Data, UnityEngine.UI | screens; get callbacks, never call Flow |
+| `PuzzleKingdoms.Flow` | Logic, Data, Views | `GameApp`, `ProfileStore` |
+| `PuzzleKingdoms.Editor` | Logic, Data, Flow, URP | `ProjectSetup`, `SceneBuilder` |
 | `PuzzleKingdoms.Tests` | Logic, NUnit | EditMode, also run by `dotnet test` |
 | `PuzzleKingdoms.Data.Tests` | Logic, Data, UnityEditor | EditMode, Unity only |
+| `PuzzleKingdoms.PlayMode.Tests` | Logic, Data, Views, Flow | full loop smoke test; screenshot capture (explicit) |
 
 Folder layout and "where does this go?": [STRUCTURE.md](STRUCTURE.md).
 

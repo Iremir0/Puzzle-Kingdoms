@@ -1,0 +1,19 @@
+{
+    "name": "PuzzleKingdoms.Flow",
+    "rootNamespace": "PuzzleKingdoms.Flow",
+    "references": [
+        "PuzzleKingdoms.Logic",
+        "PuzzleKingdoms.Data",
+        "PuzzleKingdoms.Views",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

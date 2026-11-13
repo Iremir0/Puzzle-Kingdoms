@@ -1,0 +1,308 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
+using PuzzleKingdoms.Logic;
+using PuzzleKingdoms.Logic.Army;
+using PuzzleKingdoms.Logic.Flow;
+using PuzzleKingdoms.Logic.Puzzle;
+using PuzzleKingdoms.Views.Common;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace PuzzleKingdoms.Views.Puzzle
+{
+    /// <summary>
+    /// Grey-box puzzle screen: the enemy formation on top, recruitment meters,
+    /// the 6×6 board. Plays the swap through <see cref="StageRun.Puzzle"/> and
+    /// animates the returned steps (compute, then animate).
+    /// </summary>
+    public sealed class PuzzleScreen : MonoBehaviour
+    {
+        private const float SwapSeconds = 0.12f;
+        private const float FlashSeconds = 0.14f;
+        private const float ClearSeconds = 0.08f;
+        private const float FillSeconds = 0.16f;
+        private const float RejectSeconds = 0.2f;
+
+        private StageRun _run;
+        private Action _onDone;
+        private Image[,] _cells;
+        private Text[,] _tags;
+        private Outline[,] _outlines;
+        private Text _moves;
+        private Text _status;
+        private Text _bonus;
+        private Button _continue;
+        private readonly List<(string key, RectTransform fill, Text label)> _meters =
+            new List<(string, RectTransform, Text)>();
+        private GridPos? _selected;
+
+        /// <summary>True while a move is being animated; input is ignored.</summary>
+        public bool IsBusy { get; private set; }
+
+        public static PuzzleScreen Create(Transform parent, StageRun run, Action onDone)
+        {
+            RectTransform root = Ui.Stretch(parent, "PuzzleScreen");
+            var screen = root.gameObject.AddComponent<PuzzleScreen>();
+            screen.Build(run, onDone);
+            return screen;
+        }
+
+        private void Build(StageRun run, Action onDone)
+        {
+            _run = run;
+            _onDone = onDone;
+            Transform root = transform;
+            Ui.Box(root, "Background", Palette.Background);
+
+            Ui.Label(root, _run.Stage.DisplayName, 52, TextAnchor.MiddleLeft, Palette.Text, 0.04f, 0.93f, 0.7f, 0.99f);
+            _moves = Ui.Label(root, "", 52, TextAnchor.MiddleRight, Palette.Gold, 0.6f, 0.93f, 0.96f, 0.99f);
+
+            Ui.Box(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);
+            Ui.Label(root, "Enemy army", 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);
+            new FormationGridView(root, "Enemy Formation", true, false, 0.35f, 0.755f, 0.65f, 0.92f)
+                .Show(Formation.FromEnemySlots(_run.Stage.Enemies));
+
+            BuildMeters(root);
+            BuildBoard(root);
+
+            _bonus = Ui.Label(root, "", 64, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.1f, 1f, 0.15f);
+            _status = Ui.Label(root, "Swap two neighbouring gems. Tap or swipe.", 36, TextAnchor.MiddleCenter,
+                Palette.Muted, 0.04f, 0.02f, 0.96f, 0.1f);
+            _continue = Ui.Button(root, "To the War Camp", Palette.Primary, () => _onDone?.Invoke(),
+                0.2f, 0.02f, 0.8f, 0.09f);
+            _continue.gameObject.SetActive(false);
+
+            Render(_run.Puzzle.Board.ToGrid());
+            RefreshHud();
+        }
+
+        private void BuildMeters(Transform root)
+        {
+            IReadOnlyList<string> keys = _run.Puzzle.GemRewardKeys;
+            float width = 0.94f / keys.Count;
+            for (int i = 0; i < keys.Count; i++)
+            {
+                string key = keys[i];
+                float left = 0.03f + i * width;
+                Image bar = Ui.Box(root, "Meter " + key, Palette.Panel, left + 0.01f, 0.68f, left + width - 0.01f, 0.735f);
+                Image fill = Ui.Box(bar.transform, "Fill", Palette.ForGem(key, StageRun.RallyKey), 0, 0, 0, 1);
+                Text label = Ui.Label(bar.transform, "", 36, TextAnchor.MiddleCenter, Palette.Text);
+                _meters.Add((key, fill.rectTransform, label));
+            }
+        }
+
+        private void BuildBoard(Transform root)
+        {
+            BoardModel board = _run.Puzzle.Board;
+            RectTransform area = Ui.Rect(root, "Board Area", 0.03f, 0.16f, 0.97f, 0.665f);
+            RectTransform square = Ui.Stretch(area, "Board");
+            var fitter = square.gameObject.AddComponent<AspectRatioFitter>();
+            fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+            fitter.aspectRatio = (float)board.Width / board.Height;
+            Ui.Box(square, "Board Background", Palette.Panel);
+
+            _cells = new Image[board.Width, board.Height];
+            _tags = new Text[board.Width, board.Height];
+            _outlines = new Outline[board.Width, board.Height];
+            float w = 1f / board.Width;
+            float h = 1f / board.Height;
+            for (int y = 0; y < board.Height; y++)
+            {
+                for (int x = 0; x < board.Width; x++)
+                {
+                    float top = 1f - y * h;
+                    Image cell = Ui.Box(square, $"Gem {x},{y}", Color.clear,
+                        x * w + 0.008f, top - h + 0.008f, (x + 1) * w - 0.008f, top - 0.008f);
+                    cell.gameObject.AddComponent<GemCell>().Init(this, new GridPos(x, y));
+                    _cells[x, y] = cell;
+                    _tags[x, y] = Ui.Label(cell.transform, "", 56, TextAnchor.MiddleCenter, new Color(0, 0, 0, 0.55f));
+                    Outline outline = cell.gameObject.AddComponent<Outline>();
+                    outline.effectDistance = new Vector2(7, 7);
+                    outline.enabled = false;
+                    _outlines[x, y] = outline;
+                }
+            }
+        }
+
+        // --- Input (called by GemCell) -------------------------------------
+
+        public void OnCellPressed(GridPos cell)
+        {
+            if (IsBusy || _run.Puzzle.IsFinished)
+            {
+                return;
+            }
+            if (_selected == null || _selected.Value == cell)
+            {
+                Select(_selected == null ? cell : (GridPos?)null);
+            }
+            else if (BoardModel.AreAdjacent(_selected.Value, cell))
+            {
+                GridPos from = _selected.Value;
+                Select(null);
+                PlaySwap(from, cell);
+            }
+            else
+            {
+                Select(cell);
+            }
+        }
+
+        public void OnCellSwiped(GridPos cell, GridPos direction)
+        {
+            if (IsBusy || _run.Puzzle.IsFinished)
+            {
+                return;
+            }
+            Select(null);
+            GridPos target = cell + direction;
+            if (_run.Puzzle.Board.IsInside(target))
+            {
+                PlaySwap(cell, target);
+            }
+        }
+
+        /// <summary>Plays a swap as if the player made it (also used by tests and the auto-play button).</summary>
+        public bool PlaySwap(GridPos a, GridPos b)
+        {
+            if (IsBusy)
+            {
+                return false;
+            }
+            int[,] before = _run.Puzzle.Board.ToGrid();
+            MoveResult result = _run.Puzzle.PlaySwap(a, b);
+            StartCoroutine(result.IsValid ? Animate(before, result) : Reject(a, b));
+            return result.IsValid;
+        }
+
+        private void Select(GridPos? cell)
+        {
+            if (_selected != null)
+            {
+                _outlines[_selected.Value.X, _selected.Value.Y].enabled = false;
+            }
+            _selected = cell;
+            if (cell != null)
+            {
+                Outline outline = _outlines[cell.Value.X, cell.Value.Y];
+                outline.effectColor = Palette.Highlight;
+                outline.enabled = true;
+            }
+        }
+
+        // --- Playback ------------------------------------------------------
+
+        private IEnumerator Animate(int[,] before, MoveResult result)
+        {
+            IsBusy = true;
+            foreach (MoveReplay.Frame frame in MoveReplay.Frames(before, result))
+            {
+                switch (frame.Kind)
+                {
+                    case MoveReplay.FrameKind.Swapped:
+                        Render(frame.Grid);
+                        yield return new WaitForSeconds(SwapSeconds);
+                        break;
+                    case MoveReplay.FrameKind.Cleared:
+                        SetMatchOutlines(frame.Step, true);
+                        if (frame.StepIndex > 0)
+                        {
+                            _bonus.text = frame.StepIndex > 1 ? $"Bonus! x{frame.StepIndex}" : "Bonus!";
+                        }
+                        yield return new WaitForSeconds(FlashSeconds);
+                        SetMatchOutlines(frame.Step, false);
+                        Render(frame.Grid);
+                        yield return new WaitForSeconds(ClearSeconds);
+                        break;
+                    case MoveReplay.FrameKind.Filled:
+                        Render(frame.Grid);
+                        yield return new WaitForSeconds(FillSeconds);
+                        break;
+                    case MoveReplay.FrameKind.Reshuffled:
+                        _status.text = "No moves left: the board was reshuffled.";
+                        yield return new WaitForSeconds(0.3f);
+                        Render(frame.Grid);
+                        break;
+                }
+            }
+            _bonus.text = "";
+            RefreshHud();
+            IsBusy = false;
+            if (_run.Puzzle.IsFinished)
+            {
+                ShowFinished();
+            }
+        }
+
+        private IEnumerator Reject(GridPos a, GridPos b)
+        {
+            IsBusy = true;
+            foreach (GridPos cell in new[] { a, b })
+            {
+                _outlines[cell.X, cell.Y].effectColor = Palette.Bad;
+                _outlines[cell.X, cell.Y].enabled = true;
+            }
+            yield return new WaitForSeconds(RejectSeconds);
+            foreach (GridPos cell in new[] { a, b })
+            {
+                _outlines[cell.X, cell.Y].enabled = false;
+                _outlines[cell.X, cell.Y].effectColor = Palette.Highlight;
+            }
+            IsBusy = false;
+        }
+
+        private void SetMatchOutlines(MoveResult.CascadeStep step, bool on)
+        {
+            foreach (MatchGroup group in step.Groups)
+            {
+                foreach (GridPos cell in group.Cells)
+                {
+                    _outlines[cell.X, cell.Y].effectColor = Palette.Highlight;
+                    _outlines[cell.X, cell.Y].enabled = on;
+                }
+            }
+        }
+
+        private void Render(int[,] grid)
+        {
+            IReadOnlyList<string> keys = _run.Puzzle.GemRewardKeys;
+            for (int x = 0; x < grid.GetLength(0); x++)
+            {
+                for (int y = 0; y < grid.GetLength(1); y++)
+                {
+                    int gem = grid[x, y];
+                    bool empty = gem == BoardModel.Empty;
+                    _cells[x, y].color = empty ? Color.clear : Palette.ForGem(keys[gem], StageRun.RallyKey);
+                    _tags[x, y].text = empty ? "" : Palette.GemTag(keys[gem], StageRun.RallyKey);
+                }
+            }
+        }
+
+        private void RefreshHud()
+        {
+            _moves.text = $"Moves: {_run.Puzzle.MovesLeft}";
+            foreach ((string key, RectTransform fill, Text label) in _meters)
+            {
+                RecruitmentMeter meter = _run.Puzzle.Meters[key];
+                fill.anchorMax = new Vector2(meter.IsFull ? 1f : meter.Progress, 1f);
+                string tag = Palette.GemTag(key, StageRun.RallyKey);
+                label.text = key == StageRun.RallyKey
+                    ? $"Rally {meter.Rewards}/{meter.MaxRewards}"
+                    : $"{tag} x{meter.Rewards}";
+            }
+        }
+
+        private void ShowFinished()
+        {
+            var summary = new StringBuilder("Army recruited: ");
+            summary.Append(_run.Roster.Bench.Count).Append(" units, ")
+                .Append(_run.RallyCharges).Append(" Rally");
+            _status.text = summary.ToString();
+            _status.rectTransform.anchorMin = new Vector2(0.04f, 0.095f);
+            _status.rectTransform.anchorMax = new Vector2(0.96f, 0.155f);
+            _continue.gameObject.SetActive(true);
+        }
+    }
+}

@@ -41,6 +41,16 @@ From the command line (Unity closed; it cannot open a project twice):
 "<Unity>/Editor/Unity.exe" -batchmode -projectPath . -runTests -testPlatform EditMode -testResults results.xml
 ```
 
+PlayMode (full grey-box loop): same command with `-testPlatform PlayMode`.
+Screenshots of every screen (1080×1920 PNGs in `Logs/Screenshots/`, not
+committed): add `-testFilter GreyboxScreenshots`.
+
+## 3b. Play the grey-box
+
+Open `Assets/_Project/Scenes/Main.unity` and press Play. In the Game view pick
+a portrait resolution (e.g. *1080x1920*). If the scene is missing or broken,
+regenerate it: *Puzzle Kingdoms → Build Main Scene*.
+
 After changing `ProjectSetup.cs`, re-run *Puzzle Kingdoms → Apply Project
 Settings* (or `-batchmode -quit -executeMethod PuzzleKingdoms.EditorTools.ProjectSetup.Apply`).
 

@@ -4,6 +4,7 @@
     "references": [
         "PuzzleKingdoms.Logic",
         "PuzzleKingdoms.Data",
+        "PuzzleKingdoms.Flow",
         "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.Universal.Runtime"
     ],
