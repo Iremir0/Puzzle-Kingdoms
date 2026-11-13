@@ -1,7 +1,7 @@
 # Claude Code guidelines for Puzzle Kingdoms
 
 - Talk to the team in Turkish. Code, comments, docs and identifiers in English.
-- Read docs/GDD.md, docs/ARCHITECTURE.md and docs/DECISIONS.md before changing
+- Start from docs/README.md. Read docs/GDD.md, docs/ARCHITECTURE.md and docs/DECISIONS.md before changing
   gameplay. Record new decisions in docs/DECISIONS.md.
 - Gameplay rules live in `features/*/logic/` as `RefCounted` classes: no Nodes,
   no timers, no global `randi()` (inject a `RandomNumberGenerator`).
@@ -11,3 +11,5 @@
   `godot --headless --path . -s tests/run_tests.gd` before committing.
 - Small, verifiable increments. Add third-party assets to CREDITS.md first.
 - Use static typing in GDScript; tabs for indentation.
+- Follow docs/CONVENTIONS.md; put files where docs/STRUCTURE.md says and keep
+  its status markers up to date.

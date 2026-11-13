@@ -32,6 +32,8 @@ Data (Resources, .tres)  →  Logic (RefCounted, no Nodes)  →  View (Scenes/No
 
 ## Folder layout
 
+Full annotated tree and "where does this go?" table: [STRUCTURE.md](STRUCTURE.md).
+
 ```
 core/                 autoloads and cross-cutting helpers
 features/<feature>/
