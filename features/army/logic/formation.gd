@@ -15,6 +15,14 @@ func _init() -> void:
 	_slots.resize(SIZE * SIZE)
 
 
+## Builds an enemy formation from a stage's slots.
+static func from_enemy_slots(slots: Array[EnemySlot]) -> Formation:
+	var result := Formation.new()
+	for slot in slots:
+		result.place(ArmyUnit.new(slot.unit, slot.tier), slot.cell)
+	return result
+
+
 func is_inside(cell: Vector2i) -> bool:
 	return cell.x >= 0 and cell.x < SIZE and cell.y >= 0 and cell.y < SIZE
 

@@ -70,3 +70,10 @@ Why: merging should not silently punch holes in a formation the player built.
 The unit the player merges into keeps its cell (or stays on the bench).
 Rejected: consuming deployed copies first; always returning the result to the
 bench.
+
+## D-017 Instant hits, simultaneous resolution, mutual wipe = defeat
+Why: instant hits keep the M1 simulator small (projectiles are a view effect);
+resolving all hits of a tick together removes any advantage from unit order.
+A defeat on mutual wipe keeps "win" unambiguous for stars.
+Rejected: simulated projectiles (more state, little gameplay value in M1);
+sequential damage in id order (player side would always strike first).

@@ -27,5 +27,7 @@ Work continues on the developers' local machines (see SETUP.md).
 - [ ] M1: puzzle grey-box view
 - [x] M1: war camp logic (`ArmyUnit`, `Formation`, `Roster`, `MergeRules`) + tests
 - [ ] M1: war camp grey-box view
-- [ ] M1: battle simulator + 2D debug view + Rally
+- [x] M1: battle simulator + Rally (`features/combat/logic/`) + tests
+- [ ] M1: battle 2D debug view
+- [ ] M1: balance pass: battles last 5–15 s with current numbers (target 20–40 s)
 - [ ] M1: stage flow (SceneRouter, RunContext, results)

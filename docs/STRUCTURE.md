@@ -42,7 +42,14 @@ puzzle-kingdoms/
 │   │   │   └── merge_rules.gd        ✅ which units a merge consumes
 │   │   └── view/                     ⬜ M1 grey-box, M3 drag & drop
 │   ├── combat/
-│   │   ├── logic/                    ⬜ M1: battle_simulator, combatant, targeting, damage, rally
+│   │   ├── logic/
+│   │   │   ├── battle_simulator.gd   ✅ fixed-tick battle, events, result
+│   │   │   ├── combatant.gd          ✅ runtime unit state
+│   │   │   ├── targeting.gd          ✅ nearest enemy, same-lane tie-break
+│   │   │   ├── damage.gd             ✅ armor / ward formula
+│   │   │   ├── rally.gd              ✅ charges and duration
+│   │   │   ├── battle_event.gd       ✅ playback events
+│   │   │   └── battle_result.gd      ✅ victory, survivors, stars
 │   │   └── view/                     ⬜ M1 2D debug view, M4 3D isometric view
 │   ├── progression/
 │   │   └── logic/                    ⬜ M5: player_profile, reward_rules
@@ -52,8 +59,9 @@ puzzle-kingdoms/
 │                                     ⬜ stage_select, results screens
 │
 ├── data/
-│   ├── schema/                   ✅ UnitDef, EnemySlot, StageDef, ArmyRules (Resource scripts)
+│   ├── schema/                   ✅ UnitDef, EnemySlot, StageDef, ArmyRules, BattleRules
 │   ├── army_rules.tres           ✅ tier multipliers, merge count
+│   ├── battle_rules.tres         ✅ tick rate, geometry, Rally, timeout
 │   ├── units/                    ✅ warrior, archer, mage
 │   ├── enemies/                  ✅ goblin_grunt, goblin_archer, goblin_brute, goblin_chief
 │   └── stages/                   ✅ stage_1_1 … stage_1_3
@@ -68,6 +76,7 @@ puzzle-kingdoms/
     ├── test_case.gd              ✅ assertion base class
     ├── puzzle/                   ✅ board model, recruitment
     ├── army/                     ✅ army unit, formation, roster, merge
+    ├── combat/                   ✅ damage, targeting, rally, simulator
     └── data/                     ✅ .tres files match GDD and invariants
 ```
 
