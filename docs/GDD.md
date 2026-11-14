@@ -137,6 +137,7 @@ more, merging is. Verified by headless simulation.
 
 HP of every unit and enemy was tripled in the first balance pass (D-026) and raised
 by 40% in D-033, so battles reach the 20–40 s target; damage is unchanged.
+
 Damage types: **Physical** is reduced by Armor (%), **Magic** by Ward (%).
 
 ## 8. Enemies (MVP)
