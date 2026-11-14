@@ -55,7 +55,7 @@ namespace PuzzleKingdoms.Views.WarCamp
             Ui.Box(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);
             Ui.Label(root, "Enemy army", 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);
             new FormationGridView(root, "Enemy Formation", true, false, 0.35f, 0.755f, 0.65f, 0.92f)
-                .Show(Formation.FromEnemySlots(_run.Stage.Enemies));
+                .Show(Formation.ForStage(_run.Stage));
 
             Ui.Label(root, "Front row faces the enemy", 34, TextAnchor.MiddleCenter, Palette.Muted,
                 0.04f, 0.705f, 0.96f, 0.74f);

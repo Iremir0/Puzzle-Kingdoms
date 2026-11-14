@@ -131,10 +131,12 @@ more, merging is. Verified by headless simulation.
 
 | Class | HP | Damage | Type | Interval (s) | Range (cells) | Move speed (cells/s) | Notes |
 |---|---|---|---|---|---|---|---|
-| Warrior | 360 | 12 | Physical | 1.0 | 1.0 (melee) | 1.2 | Frontline |
-| Archer | 180 | 10 | Physical | 0.8 | 4.0 | 1.0 | Back line DPS |
-| Mage | 165 | 22 | Magic | 1.6 | 3.5 | 0.9 | Ignores armor; AoE post-MVP |
+| Warrior | 504 | 12 | Physical | 1.0 | 1.0 (melee) | 1.2 | Frontline |
+| Archer | 252 | 10 | Physical | 0.8 | 4.0 | 1.0 | Back line DPS |
+| Mage | 231 | 22 | Magic | 1.6 | 3.5 | 0.9 | Ignores armor; AoE post-MVP |
 
+HP of every unit and enemy was tripled in the first balance pass (D-026) and raised
+by 40% in D-033, so battles reach the 20–40 s target; damage is unchanged.
 Damage types: **Physical** is reduced by Armor (%), **Magic** by Ward (%).
 
 ## 8. Enemies (MVP)
@@ -146,14 +148,14 @@ Damage types: **Physical** is reduced by Armor (%), **Magic** by Ward (%).
 | Goblin Brute | armored melee (50% armor) | bring Mages |
 | (Stage 3 boss) Goblin Chief | tanky melee, larger | merging / Rally timing |
 
-Values after the first headless balance pass (D-026, `Tools/Balance`):
+Values after the balance passes (D-026, D-033, `Tools/Balance`):
 
 | Enemy | HP | Damage | Interval (s) | Range | Speed | Armor |
 |---|---|---|---|---|---|---|
-| Goblin Grunt | 270 | 10 | 1.0 | 1.0 | 1.2 | 0% |
-| Goblin Archer | 150 | 9 | 0.9 | 4.0 | 1.0 | 0% |
-| Goblin Brute | 480 | 16 | 1.4 | 1.0 | 0.9 | 50% |
-| Goblin Chief | 1260 | 30 | 1.2 | 1.2 | 1.0 | 20% |
+| Goblin Grunt | 378 | 10 | 1.0 | 1.0 | 1.2 | 0% |
+| Goblin Archer | 210 | 9 | 0.9 | 4.0 | 1.0 | 0% |
+| Goblin Brute | 672 | 16 | 1.4 | 1.0 | 0.9 | 50% |
+| Goblin Chief | 1764 | 30 | 1.2 | 1.2 | 1.0 | 20% |
 
 All goblins deal Physical damage and have 0% Ward.
 
@@ -198,18 +200,29 @@ Enemies use the same rules as player units and their own 4×4 formation.
 
 | Stage | Name | Enemies | Lesson |
 |---|---|---|---|
-| 1-1 | Border Watch | 7 Grunts | match, recruit, place |
-| 1-2 | Arrow Rain | 6 Grunts, 3 Archers | protect your back line, merge |
-| 1-3 | The Chief's Guard | 2 Brutes, 1 Grunt, 2 Archers, Chief | Mages vs armor, Rally timing |
+| 1-1 | Border Watch | 6 Grunts | match, recruit, place |
+| 1-2 | Arrow Rain | 5 Grunts, 3 Archers | protect your back line, merge |
+| 1-3 | The Chief's Guard | 2 Brutes, 2 Archers, Chief | Mages vs armor, Rally timing |
 
-Formations (row 0 = front, four lanes): 1-1 a front row of 4 Grunts and 3 behind
-them; 1-2 a front row of 4 Grunts, 2 in the second row and 3 Archers in the back
-row; 1-3 has Brute–Chief–Brute (in lanes 0, 1, 2) in front, 1 Grunt behind and
-Archers in the back corners. Gold rewards: 30 / 40 / 60 (start
+Formations (row 0 = front, four lanes): 1-1 a front row of 4 Grunts and 2 behind
+them; 1-2 a front row of 4 Grunts, 1 in the second row and 3 Archers in the back
+row; 1-3 has Brute–Chief–Brute (in lanes 0, 1, 2) in front and Archers in the back
+corners. Gold rewards: 30 / 40 / 60 (start
 values).
 
-Stone gems per stage (D-032): 1-1 none, 1-2 three, 1-3 five.
+Each stage raises the difficulty through data (D-032, D-033):
 
-Measured difficulty (D-032, 4×4 formation and stone gems; random/greedy puzzle bot,
-auto formation, no merges): 1-1 won 90–100% in 9–19 s; 1-2 won 72–99% in 13–22 s;
-1-3 won 45% / 59% (random bot without / with Rally) and 83% / 88% (greedy bot), 19–28 s.
+| Stage | Stone gems | Enemy HP |
+|---|---|---|
+| 1-1 | none | ×1.0 |
+| 1-2 | 3 | ×1.1 |
+| 1-3 | 5 | ×1.2 |
+
+(`stoneGems`, `enemyHpMultiplier`, `enemyDamageMultiplier` on the stage asset; the
+HP multiplier applies to every enemy of the stage on top of the unit asset and
+the tier.)
+
+Measured difficulty (D-033, 400 runs; random/greedy puzzle bot, auto formation, no merges;
+without / with Rally): 1-1 won 94% / 96% (random) and 100% (greedy), battles 16–22 s
+without Rally; 1-2 won 74% / 81% and 96% / 98%, 23–28 s; 1-3 won 42% / 54% and 81% / 87%,
+38–41 s. With Rally battles are 6–10 s shorter.

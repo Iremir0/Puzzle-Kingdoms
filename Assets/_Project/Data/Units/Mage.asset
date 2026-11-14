@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: mage
   displayName: Mage
-  maxHp: 165
+  maxHp: 231
   damage: 22
   damageType: 1
   attackInterval: 1.6

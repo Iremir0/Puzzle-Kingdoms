@@ -26,5 +26,9 @@ namespace PuzzleKingdoms.Logic.Stages
         public int GoldReward;
         /// <summary>How many gems start the puzzle encased in stone (D-032); 0 = none.</summary>
         public int StoneGems;
+        /// <summary>Multiplies the HP of every enemy of the stage (D-033); 1 = as defined.</summary>
+        public float EnemyHpMultiplier = 1f;
+        /// <summary>Multiplies the damage of every enemy of the stage (D-033); 1 = as defined.</summary>
+        public float EnemyDamageMultiplier = 1f;
     }
 }

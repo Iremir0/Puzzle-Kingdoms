@@ -17,6 +17,8 @@ MonoBehaviour:
   moves: 12
   boardSeed: 0
   stoneGems: 0
+  enemyHpMultiplier: 1.0
+  enemyDamageMultiplier: 1
   enemies:
   - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
     tier: 1
@@ -30,9 +32,6 @@ MonoBehaviour:
   - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
     tier: 1
     cell: {x: 3, y: 0}
-  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
-    tier: 1
-    cell: {x: 0, y: 1}
   - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
     tier: 1
     cell: {x: 1, y: 1}

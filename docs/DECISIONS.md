@@ -255,3 +255,24 @@ low edge of the D-026 targets, on purpose, since the stage is meant to be the ha
 one. Not built: stones that appear during a stage, 2+ layer stones, other
 modifiers (fewer moves, no Rally); rising enemy strength beyond what the three
 stages already do.
+
+## D-033 Rising enemy strength per stage from data; unit HP ×1.4, 2026-11-14
+Board item M1-02. Each stage now has `enemyHpMultiplier` and `enemyDamageMultiplier`
+(default 1, on the stage asset): `Formation.ForStage` builds the enemy army with
+scaled copies of the unit definitions (`UnitDef.Scaled`), tier still multiplies on top.
+Nothing is hardcoded: 1-1 ×1.0, 1-2 ×1.1, 1-3 ×1.2 HP, damage ×1.0, together with
+the stone gems of D-032 (0 / 3 / 5).
+Battle length: raising only the enemies' HP lengthened battles but broke win rates
+(1-3 greedy bot with Rally 74%), because the player's army is limited. Scaling both
+sides keeps outcomes (Lanchester) and only stretches time, so the HP of all units and
+enemies went up by 40% (warrior 504, archer 252, mage 231, grunt 378, goblin archer
+210, brute 672, chief 1764) and the stage multipliers carry the progression.
+Enemy counts were trimmed to match: 1-1 6 Grunts, 1-2 5 Grunts + 3 Archers, 1-3 2
+Brutes + Chief + 2 Archers.
+Result (`Tools/Balance`, 400 runs, random bot / greedy bot): 1-1 wins 94-96% / 100%,
+16-22 s without Rally; 1-2 74-81% / 96-98%, 23-28 s; 1-3 42-54% / 81-87%, 38-41 s.
+Battles with Rally are 6-10 s shorter, so the early stages with Rally are under the
+20 s target. Still open: the random bot loses 1-3 more often than the D-026 target
+(60-80%); real players should do better (they merge and time Rally), to be checked in
+the playtests (M1-04). Not built: showing the multiplier on the stage select / enemy
+preview; per-stage damage multipliers are supported but all 1.0.

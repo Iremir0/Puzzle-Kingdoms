@@ -15,16 +15,31 @@ namespace PuzzleKingdoms.Logic.Army
 
         private readonly ArmyUnit[] _slots = new ArmyUnit[Size * Size];
 
-        /// <summary>Builds an enemy formation from a stage's slots.</summary>
-        public static Formation FromEnemySlots(IEnumerable<EnemySlot> slots)
+        /// <summary>Builds an enemy formation from a stage's slots, optionally with stronger or weaker units.</summary>
+        public static Formation FromEnemySlots(IEnumerable<EnemySlot> slots, float hpMultiplier = 1f, float damageMultiplier = 1f)
         {
             var result = new Formation();
+            var scaled = new Dictionary<UnitDef, UnitDef>();
             foreach (EnemySlot slot in slots)
             {
-                result.Place(new ArmyUnit(slot.Unit, slot.Tier), slot.Cell);
+                UnitDef def = slot.Unit;
+                if (hpMultiplier != 1f || damageMultiplier != 1f)
+                {
+                    if (!scaled.TryGetValue(def, out UnitDef copy))
+                    {
+                        copy = def.Scaled(hpMultiplier, damageMultiplier);
+                        scaled[def] = copy;
+                    }
+                    def = copy;
+                }
+                result.Place(new ArmyUnit(def, slot.Tier), slot.Cell);
             }
             return result;
         }
+
+        /// <summary>The enemy army of a stage, with the stage's enemy strength applied (D-033).</summary>
+        public static Formation ForStage(StageDef stage) =>
+            FromEnemySlots(stage.Enemies, stage.EnemyHpMultiplier, stage.EnemyDamageMultiplier);
 
         public static bool IsInside(GridPos cell) =>
             cell.X >= 0 && cell.X < Size && cell.Y >= 0 && cell.Y < Size;

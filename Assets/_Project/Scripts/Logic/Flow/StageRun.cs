@@ -108,7 +108,7 @@ namespace PuzzleKingdoms.Logic.Flow
                 _battleRules,
                 _armyRules,
                 Roster.Formation,
-                Formation.FromEnemySlots(Stage.Enemies),
+                Formation.ForStage(Stage),
                 RallyCharges);
             SetPhase(StagePhase.Battle);
             return true;

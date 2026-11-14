@@ -28,6 +28,10 @@ namespace PuzzleKingdoms.Data
         [SerializeField, Min(0)] private int goldReward;
         [Tooltip("Gems that start the puzzle encased in stone: the first match only breaks the stone.")]
         [SerializeField, Min(0)] private int stoneGems;
+        [Tooltip("Multiplies the HP of every enemy of this stage (1 = as defined on the unit).")]
+        [SerializeField, Min(0.1f)] private float enemyHpMultiplier = 1f;
+        [Tooltip("Multiplies the damage of every enemy of this stage (1 = as defined on the unit).")]
+        [SerializeField, Min(0.1f)] private float enemyDamageMultiplier = 1f;
 
         public string Id => id;
         public string DisplayName => displayName;
@@ -44,6 +48,8 @@ namespace PuzzleKingdoms.Data
                 BoardSeed = (ulong)boardSeed,
                 GoldReward = goldReward,
                 StoneGems = stoneGems,
+                EnemyHpMultiplier = enemyHpMultiplier,
+                EnemyDamageMultiplier = enemyDamageMultiplier,
             };
             foreach (EnemySlotData slot in enemies)
             {
