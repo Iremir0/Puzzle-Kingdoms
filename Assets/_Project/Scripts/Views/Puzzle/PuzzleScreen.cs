@@ -119,6 +119,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                     float top = 1f - y * h;
                     Image cell = Ui.Box(square, $"Gem {x},{y}", Color.clear,
                         x * w + 0.008f, top - h + 0.008f, (x + 1) * w - 0.008f, top - 0.008f);
+                    cell.preserveAspect = true;
                     cell.gameObject.AddComponent<GemCell>().Init(this, new GridPos(x, y));
                     _cells[x, y] = cell;
                     _tags[x, y] = Ui.Label(cell.transform, "", 56, TextAnchor.MiddleCenter, new Color(0, 0, 0, 0.55f));
@@ -325,7 +326,11 @@ namespace PuzzleKingdoms.Views.Puzzle
                     int gem = grid[x, y];
                     bool empty = gem == BoardModel.Empty;
                     _cells[x, y].color = empty ? Color.clear : Palette.ForGem(keys[gem], StageRun.RallyKey);
-                    _tags[x, y].text = empty ? "" : Palette.GemTag(keys[gem], StageRun.RallyKey);
+                    if (!empty)
+                    {
+                        _cells[x, y].sprite = GemShapes.Get(Palette.ShapeForGem(keys[gem], StageRun.RallyKey));
+                    }
+                    _tags[x, y].text = "";
                 }
             }
         }

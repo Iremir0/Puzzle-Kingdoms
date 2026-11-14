@@ -45,12 +45,15 @@ next stage.
 
 - Board 6×6. Gem types in MVP (4):
 
-| Gem | Color | Effect |
-|---|---|---|
-| Sword | Warrior Red `#E85B55` | Warrior recruitment meter |
-| Bow | Archer Green `#58C889` | Archer recruitment meter |
-| Staff | Mage Purple `#A77BE8` | Mage recruitment meter |
-| Banner | Kingdom Gold `#F4BE4F` | Rally meter |
+| Gem | Color | Shape | Effect |
+|---|---|---|---|
+| Sword | Warrior Red `#E85B55` | Square | Warrior recruitment meter |
+| Bow | Archer Green `#58C889` | Triangle | Archer recruitment meter |
+| Staff | Mage Purple `#A77BE8` | Diamond | Mage recruitment meter |
+| Banner | Kingdom Gold `#F4BE4F` | Star | Rally meter |
+
+Every gem type has its own shape as well as its own color, so the board stays
+readable for color-blind players (D-027).
 
 - Swap two orthogonally adjacent gems. A swap that creates no match is rejected
   and costs no move.

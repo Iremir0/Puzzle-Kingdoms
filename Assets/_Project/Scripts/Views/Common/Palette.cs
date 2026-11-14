@@ -26,6 +26,13 @@ namespace PuzzleKingdoms.Views.Common
 
         private static readonly Dictionary<string, Color> UnitColors = new Dictionary<string, Color>();
         private static readonly Dictionary<string, string> UnitTags = new Dictionary<string, string>();
+        private static readonly Dictionary<string, GemShape> UnitShapes = new Dictionary<string, GemShape>();
+
+        /// <summary>Shapes handed to unit gems in registration order (recruitable units register first).</summary>
+        private static readonly GemShape[] UnitShapeOrder =
+        {
+            GemShape.Square, GemShape.Triangle, GemShape.Diamond, GemShape.Circle,
+        };
 
         /// <summary>Remembers each unit's color by id so logic objects (UnitDef) can be drawn.</summary>
         public static void Register(UnitDefinition unit)
@@ -34,6 +41,10 @@ namespace PuzzleKingdoms.Views.Common
             {
                 UnitColors[unit.Def.Id] = unit.Color;
                 UnitTags[unit.Def.Id] = Initials(unit.Def);
+                if (!UnitShapes.ContainsKey(unit.Def.Id))
+                {
+                    UnitShapes[unit.Def.Id] = UnitShapeOrder[UnitShapes.Count % UnitShapeOrder.Length];
+                }
             }
         }
 
@@ -45,7 +56,15 @@ namespace PuzzleKingdoms.Views.Common
             rewardKey == rallyKey ? Rally
             : UnitColors.TryGetValue(rewardKey, out Color color) ? color : EnemyFallback;
 
-        /// <summary>Letter shown on a gem: the unit's initials, "R" for Rally.</summary>
+        /// <summary>
+        /// Shape of a gem: Rally is always a star, each unit class gets its own shape
+        /// (so gems differ by shape as well as by color).
+        /// </summary>
+        public static GemShape ShapeForGem(string rewardKey, string rallyKey) =>
+            rewardKey == rallyKey ? GemShape.Star
+            : UnitShapes.TryGetValue(rewardKey, out GemShape shape) ? shape : GemShape.Circle;
+
+        /// <summary>Letter for a meter label: the unit's initials, "R" for Rally.</summary>
         public static string GemTag(string rewardKey, string rallyKey) =>
             rewardKey == rallyKey ? "R"
             : UnitTags.TryGetValue(rewardKey, out string tag) ? tag : rewardKey.Substring(0, 1).ToUpperInvariant();

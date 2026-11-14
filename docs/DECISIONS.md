@@ -153,3 +153,11 @@ Targets (random bot with Rally / greedy bot with Rally): 1-1 ~100%,
 battles are 7–19 s (GDD wants 20–40 s; accepted for tutorial stages); bots do
 not merge or time Rally, so real players should do somewhat better. Re-run the
 tool after every data change.
+
+## D-027 Every gem type has its own shape, 2026-11-14
+Gems were colored squares with a letter. Each type now also has a shape:
+Warrior square, Archer triangle, Mage diamond, Rally star, so the board is
+readable without color (color-blind players) and without text. Sprites are
+generated in code (`GemShapes`, white, tinted by `Image.color`), so no art
+files or credits are needed. Unit classes get shapes in registration order
+(`Palette.Register`); a fifth class would reuse the circle.
