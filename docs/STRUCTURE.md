@@ -8,6 +8,7 @@ puzzle-kingdoms/
 ├── CLAUDE.md                     ✅ rules for Claude Code sessions
 ├── CREDITS.md                    ✅ third-party licenses (fill before adding assets)
 ├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, task board
+│   └── cards/                    ✅ one detail file per board card (PB-n.md) + img/ mockups (SVG)
 │
 ├── Assets/
 │   └── _Project/                 everything we make (third-party packs go in their own folders)
