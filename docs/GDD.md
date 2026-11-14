@@ -9,7 +9,7 @@ starting value to be validated by playtests and headless balance simulations.
 > And when it matters most, *you* sound the war horn.
 
 Puzzle Kingdoms is a portrait mobile game in which the player solves a short
-Match-3 puzzle to recruit an army, arranges and merges it on a 3×3 formation,
+Match-3 puzzle to recruit an army, arranges and merges it on a 4×4 formation,
 and watches it fight an auto battle — while holding a small number of
 **Rally** charges that they earned on the puzzle board and fire at the moment
 they choose.
@@ -73,6 +73,14 @@ readable for color-blind players (D-027).
   of the neighbour's type; cleared in a match it clears every gem of its own
   type. Special gems caught in an explosion go off too (chains). Every gem a
   special gem clears counts for the meters like a normal clear.
+- **Stone gems** (D-032): some gems start a stage half turned to stone (their color and
+  shape stay, half of the gem is drawn as cracked rock). A stone gem matches like
+  any gem of its color, but the first match it takes part in (or the first Blast
+  or Prism that reaches it) only breaks the stone: the gem stays where it is and
+  scores nothing. The next match clears it. Stones are placed at the start of the
+  puzzle, never next to each other, travel with their gem when it falls or is
+  swapped, and no new ones appear during the stage. How many a stage has is
+  stage data (`stoneGems`).
 - **Moves:** 12 per stage (stage data can override).
 - **Recruitment meter:** every cleared gem adds 1 point to its meter; every
   **8 points = 1 unit** (remainder carries over within the stage). A line of 4
@@ -94,12 +102,16 @@ Post-MVP: more special gems, stage objectives, boss board modifiers.
 
 ## 6. War Camp (army preparation)
 
-- 3×3 formation grid. **Rows** = front / middle / back. **Columns** = lanes
-  (left / center / right). The front row faces the enemy.
-- Unlimited **bench**; at most 9 units deployed.
-- **Merge (manual):** three units of the same class and tier → one unit of the
-  next tier. Triggered by dragging a unit onto an identical one when a third copy
-  exists, or by the highlighted Merge button. Max tier 3.
+- 4×4 formation grid (D-031). **Rows** = depth (row 0 faces the enemy, row 3 is the
+  back). **Columns** = four lanes, left to right.
+- Unlimited **bench**; at most 16 units deployed.
+- **Merge:** three units of the same class and tier → one unit of the next tier,
+  max tier 3. Select a unit and press **Merge** to merge that one, or press
+  **Merge all** to merge everything that can be merged in one go (merges chain:
+  nine tier 1 become one tier 3). The screen says what will happen: the selected
+  unit shows "3 x Warrior T1 -> T2 (HP, damage)", with nothing selected a
+  "Merge all" line lists every merge, and bench units that have enough copies
+  get a gold edge (D-030).
 - Units still on the bench when the battle starts are dismissed for 5 gold each.
 - Army is stage-local; nothing carries over in the campaign.
 
@@ -112,16 +124,19 @@ Post-MVP: more special gems, stage objectives, boss board modifiers.
 | 3 | ×3.2 | larger, glow |
 
 Intent: one merged unit is slightly stronger than three separate ones in raw
-numbers but occupies one slot. With ≤ 9 units, spreading is usually better; with
+numbers but occupies one slot. With ≤ 16 units, spreading is usually better; with
 more, merging is. Verified by headless simulation.
 
 ## 7. Units (Tier 1 start values)
 
 | Class | HP | Damage | Type | Interval (s) | Range (cells) | Move speed (cells/s) | Notes |
 |---|---|---|---|---|---|---|---|
-| Warrior | 360 | 12 | Physical | 1.0 | 1.0 (melee) | 1.2 | Frontline |
-| Archer | 180 | 10 | Physical | 0.8 | 4.0 | 1.0 | Back line DPS |
-| Mage | 165 | 22 | Magic | 1.6 | 3.5 | 0.9 | Ignores armor; AoE post-MVP |
+| Warrior | 504 | 12 | Physical | 1.0 | 1.0 (melee) | 1.2 | Frontline |
+| Archer | 252 | 10 | Physical | 0.8 | 4.0 | 1.0 | Back line DPS |
+| Mage | 231 | 22 | Magic | 1.6 | 3.5 | 0.9 | Ignores armor; AoE post-MVP |
+
+HP of every unit and enemy was tripled in the first balance pass (D-026) and raised
+by 40% in D-033, so battles reach the 20–40 s target; damage is unchanged.
 
 Damage types: **Physical** is reduced by Armor (%), **Magic** by Ward (%).
 
@@ -134,18 +149,18 @@ Damage types: **Physical** is reduced by Armor (%), **Magic** by Ward (%).
 | Goblin Brute | armored melee (50% armor) | bring Mages |
 | (Stage 3 boss) Goblin Chief | tanky melee, larger | merging / Rally timing |
 
-Values after the first headless balance pass (D-026, `Tools/Balance`):
+Values after the balance passes (D-026, D-033, `Tools/Balance`):
 
 | Enemy | HP | Damage | Interval (s) | Range | Speed | Armor |
 |---|---|---|---|---|---|---|
-| Goblin Grunt | 270 | 10 | 1.0 | 1.0 | 1.2 | 0% |
-| Goblin Archer | 150 | 9 | 0.9 | 4.0 | 1.0 | 0% |
-| Goblin Brute | 480 | 16 | 1.4 | 1.0 | 0.9 | 50% |
-| Goblin Chief | 1260 | 30 | 1.2 | 1.2 | 1.0 | 20% |
+| Goblin Grunt | 378 | 10 | 1.0 | 1.0 | 1.2 | 0% |
+| Goblin Archer | 210 | 9 | 0.9 | 4.0 | 1.0 | 0% |
+| Goblin Brute | 672 | 16 | 1.4 | 1.0 | 0.9 | 50% |
+| Goblin Chief | 1764 | 30 | 1.2 | 1.2 | 1.0 | 20% |
 
 All goblins deal Physical damage and have 0% Ward.
 
-Enemies use the same rules as player units and their own 3×3 formation.
+Enemies use the same rules as player units and their own 4×4 formation.
 
 ## 9. Battle
 
@@ -186,15 +201,29 @@ Enemies use the same rules as player units and their own 3×3 formation.
 
 | Stage | Name | Enemies | Lesson |
 |---|---|---|---|
-| 1-1 | Border Watch | 4 Grunts | match, recruit, place |
-| 1-2 | Arrow Rain | 4 Grunts, 3 Archers | protect your back line, merge |
+| 1-1 | Border Watch | 6 Grunts | match, recruit, place |
+| 1-2 | Arrow Rain | 5 Grunts, 3 Archers | protect your back line, merge |
 | 1-3 | The Chief's Guard | 2 Brutes, 2 Archers, Chief | Mages vs armor, Rally timing |
 
-Formations (row 0 = front): 1-1 Grunts across the front plus one in the middle
-center; 1-2 the same plus a full back row of Archers; 1-3 has Brute–Chief–Brute
-in front and Archers in the back corners. Gold rewards: 30 / 40 / 60 (start
+Formations (row 0 = front, four lanes): 1-1 a front row of 4 Grunts and 2 behind
+them; 1-2 a front row of 4 Grunts, 1 in the second row and 3 Archers in the back
+row; 1-3 has Brute–Chief–Brute (in lanes 0, 1, 2) in front and Archers in the back
+corners. Gold rewards: 30 / 40 / 60 (start
 values).
 
-Measured difficulty (D-026; random/greedy puzzle bot, auto formation, no merges):
-1-1 always won in 7–12 s; 1-2 won 96–100% in 12–19 s; 1-3 won 36–49% without
-Rally and 77–95% with it, in 25–39 s.
+Each stage raises the difficulty through data (D-032, D-033):
+
+| Stage | Stone gems | Enemy HP |
+|---|---|---|
+| 1-1 | none | ×1.0 |
+| 1-2 | 3 | ×1.1 |
+| 1-3 | 5 | ×1.2 |
+
+(`stoneGems`, `enemyHpMultiplier`, `enemyDamageMultiplier` on the stage asset; the
+HP multiplier applies to every enemy of the stage on top of the unit asset and
+the tier.)
+
+Measured difficulty (D-033, 400 runs; random/greedy puzzle bot, auto formation, no merges;
+without / with Rally): 1-1 won 94% / 96% (random) and 100% (greedy), battles 16–22 s
+without Rally; 1-2 won 74% / 81% and 96% / 98%, 23–28 s; 1-3 won 42% / 54% and 81% / 87%,
+38–41 s. With Rally battles are 6–10 s shorter.

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Combat;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Views.Common;
@@ -91,7 +92,7 @@ namespace PuzzleKingdoms.Views.Battle
             Ui.Box(_field, "Midline", new Color(1f, 1f, 1f, 0.08f), 0f, 0.498f, 1f, 0.502f);
 
             BattleRules rules = _sim.Rules;
-            _spanY = 2f * (rules.FrontGap / 2f + 2f * rules.RowSpacing + FieldMarginCells);
+            _spanY = 2f * (rules.FrontGap / 2f + (Formation.Size - 1) * rules.RowSpacing + FieldMarginCells);
             _spanX = _spanY * fitter.aspectRatio;
 
             foreach (Combatant combatant in _sim.Combatants)

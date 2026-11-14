@@ -200,6 +200,83 @@ no credits. Only the tier is written on a unit now ("T2"). This is a
 placeholder for real art, not the final look: realistic models or sprites
 (asset pack vs. freelancer) are still open (ROADMAP M3/M4).
 
+## D-030 "Merge all" button and merge preview, 2026-11-14
+Merging unit by unit (select, press Merge) was tedious once the puzzle gives
+~11-16 units. The War Camp now has a **Merge all** button next to the per-unit
+Merge: `Roster.MergeAll()` merges everything that can be merged, lowest tier
+first, so merges chain (9 tier 1 → 3 tier 2 → 1 tier 3). It keeps D-016: a
+deployed unit is the merge target when the class has one (the result keeps its
+cell) and bench copies are consumed before deployed ones. `Roster.PlanMergeAll()`
+computes the same result without doing it; the screen uses it to write what will
+happen and which bench units are mergeable (gold edge). Per-unit Merge stays, so
+the player can still keep three separate units instead of one strong one (D-006:
+wide vs. tall is still a choice, now with one tap for the common case).
+Rejected: automatic merging whenever three match (removes the choice).
+Requested next, not built yet: 4×4 formation, rising enemy strength per stage,
+and stage board modifiers (e.g. stone gems that vanish after two uses).
+
+## D-031 4×4 formation (16 slots), enemy armies rebuilt for it, 2026-11-14
+3×3 (9 units) was too small to make placement a real decision once the puzzle
+gives 11–16 units. The formation is now 4 lanes × 4 rows (`Formation.Size = 4`).
+Changes: lanes sit symmetrically around the middle (`(x - 1.5) * LaneSpacing`),
+the battle view sizes its field from `Formation.Size`, `AutoFormation` sends long
+range units to the back row (row 3) and fills lanes from the middle outwards.
+Balance (`Tools/Balance`, 300 runs): with unchanged enemies the player fielded
+10–14 units instead of 8–9 and 1-3 became easy (greedy bot without Rally 46% →
+95%, 1-1 9 s). Enemy armies were rebuilt for 4 lanes:
+- 1-1: 7 Grunts (front row of 4 + 3 behind).
+- 1-2: 6 Grunts (front row of 4, 2 behind) + 3 Archers in the back row.
+- 1-3: 2 Brutes + Chief in front, 2 Grunts behind, 2 Archers in the back corners.
+Result (random bot / greedy bot): 1-1 wins 90–93% / 100% in 13–19 s; 1-2 76–87% /
+97–99% in 12–21 s; 1-3 47–62% / 87–93% in 19–28 s: inside the D-026 targets except
+battle length, which is shorter than the GDD's 20–40 s. Open: with the stage
+modifiers and rising enemy strength asked for next, this is the baseline to
+scale from; battle length is better fixed there than by tuning these numbers.
+
+## D-032 Stone gems: the first match only breaks the stone, 2026-11-14
+Requested difficulty feature: a gem can start the stage turned to stone; "the first
+match it is in removes the stone, the second one clears it". It looks like its
+normal gem with half of it cracked rock, so color and shape stay readable.
+- A stone gem takes part in matches like any gem of its type (it counts for the
+  line/square, for the 4-line bonus and for creating a special gem) and can be
+  swapped. When it is part of a match, or reached by a Blast or a Prism, its stone
+  breaks (`CascadeStep.Cracked`) and the gem stays on the board, scoring nothing.
+  The next time it is cleared normally.
+- Stones are placed once by `BoardModel.PlaceStones(StageDef.StoneGems)` after the
+  board is generated: random cells, never two orthogonally adjacent (so a match can
+  not be left standing after its stones break), no new stones during play. They
+  fall, swap and shuffle together with their gem. A special gem is never created on
+  a stone cell.
+- Per stage (data, `stoneGems`): 1-1 none, 1-2 three, 1-3 five.
+Balance (`Tools/Balance`, 300 runs): stones cost 4-8% of the units recruited and
+1-3 got harder, so a Grunt left 1-3 (2 → 1). Result: 1-2 wins 72% / 85% (random bot
+without / with Rally) and 94% / 99% (greedy); 1-3 45% / 59% and 83% / 88%: at the
+low edge of the D-026 targets, on purpose, since the stage is meant to be the hard
+one. Not built: stones that appear during a stage, 2+ layer stones, other
+modifiers (fewer moves, no Rally); rising enemy strength beyond what the three
+stages already do.
+
+## D-033 Rising enemy strength per stage from data; unit HP ×1.4, 2026-11-14
+Board item M1-02. Each stage now has `enemyHpMultiplier` and `enemyDamageMultiplier`
+(default 1, on the stage asset): `Formation.ForStage` builds the enemy army with
+scaled copies of the unit definitions (`UnitDef.Scaled`), tier still multiplies on top.
+Nothing is hardcoded: 1-1 ×1.0, 1-2 ×1.1, 1-3 ×1.2 HP, damage ×1.0, together with
+the stone gems of D-032 (0 / 3 / 5).
+Battle length: raising only the enemies' HP lengthened battles but broke win rates
+(1-3 greedy bot with Rally 74%), because the player's army is limited. Scaling both
+sides keeps outcomes (Lanchester) and only stretches time, so the HP of all units and
+enemies went up by 40% (warrior 504, archer 252, mage 231, grunt 378, goblin archer
+210, brute 672, chief 1764) and the stage multipliers carry the progression.
+Enemy counts were trimmed to match: 1-1 6 Grunts, 1-2 5 Grunts + 3 Archers, 1-3 2
+Brutes + Chief + 2 Archers.
+Result (`Tools/Balance`, 400 runs, random bot / greedy bot): 1-1 wins 94-96% / 100%,
+16-22 s without Rally; 1-2 74-81% / 96-98%, 23-28 s; 1-3 42-54% / 81-87%, 38-41 s.
+Battles with Rally are 6-10 s shorter, so the early stages with Rally are under the
+20 s target. Still open: the random bot loses 1-3 more often than the D-026 target
+(60-80%); real players should do better (they merge and time Rally), to be checked in
+the playtests (M1-04). Not built: showing the multiplier on the stage select / enemy
+preview; per-stage damage multipliers are supported but all 1.0.
+
 ## D-034 Ticket branches off main, merged back when tests pass, 2026-11-14
 Work is tracked as cards on the team board, coded by milestone (`M1-01`). Each
 card gets its own branch from the latest `main` (`feature/M1-01-<short-name>`)

@@ -24,6 +24,8 @@ namespace PuzzleKingdoms.Logic.Puzzle
             public readonly List<SpecialCreated> Created = new List<SpecialCreated>();
             /// <summary>Special gems that went off this wave, in the order they fired.</summary>
             public readonly List<SpecialTrigger> Triggers = new List<SpecialTrigger>();
+            /// <summary>Stones that broke this wave; the gem under each one stays on the board.</summary>
+            public readonly List<GridPos> Cracked = new List<GridPos>();
             public readonly List<GemFall> Falls = new List<GemFall>();
             public readonly List<GemSpawn> Spawns = new List<GemSpawn>();
         }
@@ -95,6 +97,8 @@ namespace PuzzleKingdoms.Logic.Puzzle
         public int[,] BoardAfterReshuffle;
         /// <summary>Special gems after the reshuffle (only set when <see cref="Reshuffled"/>).</summary>
         public SpecialKind[,] SpecialsAfterReshuffle;
+        /// <summary>Stone layer after the reshuffle (only set when <see cref="Reshuffled"/>).</summary>
+        public bool[,] StonesAfterReshuffle;
 
         /// <summary>Cascade waves after the first clear (0 = no cascade).</summary>
         public int CascadeCount => Math.Max(Steps.Count - 1, 0);

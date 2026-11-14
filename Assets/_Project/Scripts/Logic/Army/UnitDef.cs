@@ -28,5 +28,23 @@ namespace PuzzleKingdoms.Logic.Army
         public float Armor;
         /// <summary>Fraction of Magic damage blocked, in [0, 1).</summary>
         public float Ward;
+
+        /// <summary>
+        /// A copy with HP and damage multiplied (rounded, damage at least 1); everything else
+        /// stays. Used to make a stage's enemies stronger or weaker through data (D-033).
+        /// </summary>
+        public UnitDef Scaled(float hpMultiplier, float damageMultiplier) => new UnitDef
+        {
+            Id = Id,
+            DisplayName = DisplayName,
+            MaxHp = System.Math.Max(1, (int)System.Math.Round(MaxHp * hpMultiplier, System.MidpointRounding.AwayFromZero)),
+            Damage = System.Math.Max(1, (int)System.Math.Round(Damage * damageMultiplier, System.MidpointRounding.AwayFromZero)),
+            DamageType = DamageType,
+            AttackInterval = AttackInterval,
+            AttackRange = AttackRange,
+            MoveSpeed = MoveSpeed,
+            Armor = Armor,
+            Ward = Ward,
+        };
     }
 }

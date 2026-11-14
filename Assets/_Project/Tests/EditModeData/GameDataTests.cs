@@ -49,10 +49,10 @@ namespace PuzzleKingdoms.Tests.Data
             UnitDef warrior = Load<UnitDefinition>("Units/Warrior.asset").Def;
             UnitDef archer = Load<UnitDefinition>("Units/Archer.asset").Def;
             UnitDef mage = Load<UnitDefinition>("Units/Mage.asset").Def;
-            Assert.AreEqual(new[] { 360, 12 }, new[] { warrior.MaxHp, warrior.Damage });
-            Assert.AreEqual(new[] { 180, 10 }, new[] { archer.MaxHp, archer.Damage });
+            Assert.AreEqual(new[] { 504, 12 }, new[] { warrior.MaxHp, warrior.Damage });
+            Assert.AreEqual(new[] { 252, 10 }, new[] { archer.MaxHp, archer.Damage });
             Assert.AreEqual(4f, archer.AttackRange);
-            Assert.AreEqual(new[] { 165, 22 }, new[] { mage.MaxHp, mage.Damage });
+            Assert.AreEqual(new[] { 231, 22 }, new[] { mage.MaxHp, mage.Damage });
             Assert.AreEqual(DamageType.Magic, mage.DamageType);
         }
 
@@ -66,8 +66,8 @@ namespace PuzzleKingdoms.Tests.Data
             Assert.AreEqual(3.2f, rules.TierMultiplier(3), 0.0001f);
         }
 
-        [TestCase("Stages/Stage_1_1.asset", "goblin_grunt:4")]
-        [TestCase("Stages/Stage_1_2.asset", "goblin_archer:3,goblin_grunt:4")]
+        [TestCase("Stages/Stage_1_1.asset", "goblin_grunt:6")]
+        [TestCase("Stages/Stage_1_2.asset", "goblin_archer:3,goblin_grunt:5")]
         [TestCase("Stages/Stage_1_3.asset", "goblin_archer:2,goblin_brute:2,goblin_chief:1")]
         public void StagesHaveValidFormationsMatchingGdd(string path, string expectedCounts)
         {
@@ -85,6 +85,22 @@ namespace PuzzleKingdoms.Tests.Data
                 .OrderBy(g => g.Key)
                 .Select(g => $"{g.Key}:{g.Count()}"));
             Assert.AreEqual(expectedCounts, counts);
+        }
+
+        [TestCase("Stages/Stage_1_1.asset", 0)]
+        [TestCase("Stages/Stage_1_2.asset", 3)]
+        [TestCase("Stages/Stage_1_3.asset", 5)]
+        public void StagesHaveTheStoneGemsOfTheGdd(string path, int expected)
+        {
+            Assert.AreEqual(expected, Load<StageDefinition>(path).ToStageDef().StoneGems);
+        }
+
+        [Test]
+        public void EnemyStrengthRisesFromStageToStage()
+        {
+            var multipliers = new[] { "Stages/Stage_1_1.asset", "Stages/Stage_1_2.asset", "Stages/Stage_1_3.asset" }
+                .Select(path => Load<StageDefinition>(path).ToStageDef().EnemyHpMultiplier).ToArray();
+            CollectionAssert.AreEqual(new[] { 1.0f, 1.1f, 1.2f }, multipliers);
         }
 
         [Test]

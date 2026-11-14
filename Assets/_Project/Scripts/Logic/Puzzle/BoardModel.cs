@@ -13,6 +13,9 @@ namespace PuzzleKingdoms.Logic.Puzzle
     /// Lines of 4 earn bonus points (counted by the caller), a square leaves a
     /// <see cref="SpecialKind.Blast"/> gem and a line of 5 or more leaves a
     /// <see cref="SpecialKind.Prism"/> gem; both stay on the board until used.
+    /// A gem can also be encased in stone (D-032): the first match it takes part in
+    /// (or the first special effect that reaches it) only breaks the stone, the gem
+    /// stays; the next one clears it.
     /// </summary>
     public sealed class BoardModel
     {
@@ -29,7 +32,10 @@ namespace PuzzleKingdoms.Logic.Puzzle
 
         private readonly int[] _cells;
         private readonly SpecialKind[] _specials;
+        private readonly bool[] _stones;
         private readonly IRandom _random;
+        private bool[] _cracked = new bool[0];
+        private readonly List<int> _crackedOrder = new List<int>();
 
         public BoardModel(int width, int height, int gemTypeCount, IRandom random)
         {
@@ -47,6 +53,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
             _random = random ?? throw new ArgumentNullException(nameof(random));
             _cells = new int[width * height];
             _specials = new SpecialKind[width * height];
+            _stones = new bool[width * height];
             for (int i = 0; i < _cells.Length; i++)
             {
                 _cells[i] = Empty;
@@ -61,6 +68,9 @@ namespace PuzzleKingdoms.Logic.Puzzle
         public int GetGem(GridPos cell) => _cells[Index(cell)];
 
         public SpecialKind GetSpecial(GridPos cell) => _specials[Index(cell)];
+
+        /// <summary>True if the gem on <paramref name="cell"/> is still encased in stone.</summary>
+        public bool IsStone(GridPos cell) => _stones[Index(cell)];
 
         public static bool AreAdjacent(GridPos a, GridPos b) => a.ManhattanDistance(b) == 1;
 
@@ -87,6 +97,20 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 for (int x = 0; x < Width; x++)
                 {
                     grid[x, y] = _specials[y * Width + x];
+                }
+            }
+            return grid;
+        }
+
+        /// <summary>Returns a copy of the stone layer: result[x, y] = true while the gem is encased.</summary>
+        public bool[,] ToStoneGrid()
+        {
+            var grid = new bool[Width, Height];
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    grid[x, y] = _stones[y * Width + x];
                 }
             }
             return grid;
@@ -213,6 +237,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 for (int i = 0; i < _specials.Length; i++)
                 {
                     _specials[i] = SpecialKind.None;
+                    _stones[i] = false;
                 }
                 for (int y = 0; y < Height; y++)
                 {
@@ -250,8 +275,54 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 {
                     _cells[y * Width + x] = rows[y][x];
                     _specials[y * Width + x] = SpecialKind.None;
+                    _stones[y * Width + x] = false;
                 }
             }
+        }
+
+        /// <summary>Encases the gem on <paramref name="cell"/> in stone (or frees it). For tests and handcrafted boards.</summary>
+        public void SetStone(GridPos cell, bool stone)
+        {
+            if (GetGem(cell) == Empty)
+            {
+                throw new ArgumentException($"No gem on {cell}");
+            }
+            _stones[Index(cell)] = stone;
+        }
+
+        /// <summary>
+        /// Encases up to <paramref name="count"/> random gems in stone, never two next to each
+        /// other (so a match can not be left standing after its stones break). Returns how
+        /// many were placed. Stones do not change gem types, so no match appears.
+        /// </summary>
+        public int PlaceStones(int count)
+        {
+            int placed = 0;
+            for (int attempt = 0; attempt < count * 20 && placed < count; attempt++)
+            {
+                int index = _random.Range(0, _cells.Length);
+                GridPos cell = CellAt(index);
+                if (_stones[index] || _cells[index] == Empty || HasStoneNeighbour(cell))
+                {
+                    continue;
+                }
+                _stones[index] = true;
+                placed++;
+            }
+            return placed;
+        }
+
+        private bool HasStoneNeighbour(GridPos cell)
+        {
+            foreach (GridPos direction in new[] { GridPos.Up, GridPos.Down, GridPos.Left, GridPos.Right })
+            {
+                GridPos neighbour = cell + direction;
+                if (IsInside(neighbour) && _stones[Index(neighbour)])
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>Makes the gem on <paramref name="cell"/> a special gem. For tests and handcrafted boards.</summary>
@@ -312,6 +383,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 result.Reshuffled = true;
                 result.BoardAfterReshuffle = ToGrid();
                 result.SpecialsAfterReshuffle = ToSpecialGrid();
+                result.StonesAfterReshuffle = ToStoneGrid();
             }
             return result;
         }
@@ -330,6 +402,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
                     int j = _random.Range(0, i + 1);
                     (_cells[i], _cells[j]) = (_cells[j], _cells[i]);
                     (_specials[i], _specials[j]) = (_specials[j], _specials[i]);
+                    (_stones[i], _stones[j]) = (_stones[j], _stones[i]);
                 }
                 if (FindMatchGroups().Count == 0 && HasValidMove())
                 {
@@ -356,6 +429,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
             int ib = Index(b);
             (_cells[ia], _cells[ib]) = (_cells[ib], _cells[ia]);
             (_specials[ia], _specials[ib]) = (_specials[ib], _specials[ia]);
+            (_stones[ia], _stones[ib]) = (_stones[ib], _stones[ia]);
         }
 
         /// <summary>
@@ -370,6 +444,8 @@ namespace PuzzleKingdoms.Logic.Puzzle
             MoveResult result)
         {
             var toClear = new bool[_cells.Length];
+            _cracked = new bool[_cells.Length];
+            _crackedOrder.Clear();
             var kept = new bool[_cells.Length];
             var fired = new bool[_cells.Length];
             var queue = new Queue<int>();
@@ -443,6 +519,14 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 }
             }
 
+            // Stones that were hit break: the gem stays and is no longer encased.
+            _crackedOrder.Sort();
+            foreach (int index in _crackedOrder)
+            {
+                _stones[index] = false;
+                step.Cracked.Add(CellAt(index));
+            }
+
             // Apply: clear, then place the new special gems.
             for (int index = 0; index < toClear.Length; index++)
             {
@@ -471,7 +555,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
         {
             foreach (GridPos cell in swapCells)
             {
-                if (group.Cells.Contains(cell) && _specials[Index(cell)] == SpecialKind.None)
+                if (group.Cells.Contains(cell) && _specials[Index(cell)] == SpecialKind.None && !_stones[Index(cell)])
                 {
                     return Index(cell);
                 }
@@ -480,7 +564,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
             for (int i = 0; i < group.Size; i++)
             {
                 GridPos cell = group.Cells[(middle + i) % group.Size];
-                if (_specials[Index(cell)] == SpecialKind.None)
+                if (_specials[Index(cell)] == SpecialKind.None && !_stones[Index(cell)])
                 {
                     return Index(cell);
                 }
@@ -488,10 +572,23 @@ namespace PuzzleKingdoms.Logic.Puzzle
             return -1;
         }
 
+        /// <summary>
+        /// Marks a cell for clearing. A gem still in stone is not cleared: its stone breaks
+        /// (once per wave) and the gem stays.
+        /// </summary>
         private void Mark(int index, bool[] toClear, bool[] kept, Queue<int> queue)
         {
             if (_cells[index] == Empty || toClear[index] || kept[index])
             {
+                return;
+            }
+            if (_stones[index])
+            {
+                if (!_cracked[index])
+                {
+                    _cracked[index] = true;
+                    _crackedOrder.Add(index);
+                }
                 return;
             }
             toClear[index] = true;
@@ -683,7 +780,9 @@ namespace PuzzleKingdoms.Logic.Puzzle
                     {
                         _cells[writeY * Width + x] = gemType;
                         _specials[writeY * Width + x] = _specials[y * Width + x];
+                        _stones[writeY * Width + x] = _stones[y * Width + x];
                         _cells[y * Width + x] = Empty;
+                        _stones[y * Width + x] = false;
                         _specials[y * Width + x] = SpecialKind.None;
                         falls.Add(new MoveResult.GemFall(new GridPos(x, y), new GridPos(x, writeY)));
                     }
@@ -706,6 +805,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 {
                     int gemType = _random.Range(0, GemTypeCount);
                     _cells[y * Width + x] = gemType;
+                    _stones[y * Width + x] = false;
                     _specials[y * Width + x] = SpecialKind.None;
                     spawns.Add(new MoveResult.GemSpawn(new GridPos(x, y), gemType, emptyCount));
                 }

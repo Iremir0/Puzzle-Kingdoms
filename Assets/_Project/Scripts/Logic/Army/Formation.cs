@@ -5,26 +5,41 @@ using PuzzleKingdoms.Logic.Stages;
 namespace PuzzleKingdoms.Logic.Army
 {
     /// <summary>
-    /// The 3×3 battle formation. Cells are (x, y): x = lane (0 left, 1 center,
-    /// 2 right), y = row (0 front, 1 middle, 2 back). The front row faces the enemy.
+    /// The 4×4 battle formation (D-031). Cells are (x, y): x = lane (0 left ... 3 right),
+    /// y = row (0 front ... 3 back). The front row faces the enemy.
     /// </summary>
     public sealed class Formation
     {
-        public const int Size = 3;
+        public const int Size = 4;
         public static readonly GridPos NoCell = new GridPos(-1, -1);
 
         private readonly ArmyUnit[] _slots = new ArmyUnit[Size * Size];
 
-        /// <summary>Builds an enemy formation from a stage's slots.</summary>
-        public static Formation FromEnemySlots(IEnumerable<EnemySlot> slots)
+        /// <summary>Builds an enemy formation from a stage's slots, optionally with stronger or weaker units.</summary>
+        public static Formation FromEnemySlots(IEnumerable<EnemySlot> slots, float hpMultiplier = 1f, float damageMultiplier = 1f)
         {
             var result = new Formation();
+            var scaled = new Dictionary<UnitDef, UnitDef>();
             foreach (EnemySlot slot in slots)
             {
-                result.Place(new ArmyUnit(slot.Unit, slot.Tier), slot.Cell);
+                UnitDef def = slot.Unit;
+                if (hpMultiplier != 1f || damageMultiplier != 1f)
+                {
+                    if (!scaled.TryGetValue(def, out UnitDef copy))
+                    {
+                        copy = def.Scaled(hpMultiplier, damageMultiplier);
+                        scaled[def] = copy;
+                    }
+                    def = copy;
+                }
+                result.Place(new ArmyUnit(def, slot.Tier), slot.Cell);
             }
             return result;
         }
+
+        /// <summary>The enemy army of a stage, with the stage's enemy strength applied (D-033).</summary>
+        public static Formation ForStage(StageDef stage) =>
+            FromEnemySlots(stage.Enemies, stage.EnemyHpMultiplier, stage.EnemyDamageMultiplier);
 
         public static bool IsInside(GridPos cell) =>
             cell.X >= 0 && cell.X < Size && cell.Y >= 0 && cell.Y < Size;

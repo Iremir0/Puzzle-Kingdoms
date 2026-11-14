@@ -51,7 +51,7 @@ namespace PuzzleKingdoms.Logic.Combat
         public Vector2 CellToPosition(Side side, GridPos cell)
         {
             float depth = Rules.FrontGap / 2f + cell.Y * Rules.RowSpacing;
-            float x = (cell.X - 1) * Rules.LaneSpacing;
+            float x = (cell.X - (Formation.Size - 1) / 2f) * Rules.LaneSpacing;
             return new Vector2(x, side == Side.Player ? -depth : depth);
         }
 

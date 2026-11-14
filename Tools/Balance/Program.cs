@@ -153,6 +153,7 @@ namespace PuzzleKingdoms.Balance
         {
             int[,] grid = board.ToGrid();
             SpecialKind[,] specials = board.ToSpecialGrid();
+            bool[,] stones = board.ToStoneGrid();
             int[][] rows = Enumerable.Range(0, board.Height)
                 .Select(y => Enumerable.Range(0, board.Width).Select(x => grid[x, y]).ToArray())
                 .ToArray();
@@ -169,6 +170,10 @@ namespace PuzzleKingdoms.Balance
                         if (specials[x, y] != SpecialKind.None)
                         {
                             probe.SetSpecial(new GridPos(x, y), specials[x, y]);
+                        }
+                        if (stones[x, y])
+                        {
+                            probe.SetStone(new GridPos(x, y), true);
                         }
                     }
                 }

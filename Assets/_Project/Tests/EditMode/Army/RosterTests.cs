@@ -67,7 +67,7 @@ namespace PuzzleKingdoms.Tests.Army
             Roster roster = MakeRoster();
             Assert.IsFalse(roster.Deploy(new ArmyUnit(_warrior), new GridPos(0, 0)), "unknown unit");
             ArmyUnit unit = roster.Recruit(_warrior)[0];
-            Assert.IsFalse(roster.Deploy(unit, new GridPos(3, 3)), "outside grid");
+            Assert.IsFalse(roster.Deploy(unit, new GridPos(Formation.Size, Formation.Size)), "outside grid");
             Assert.AreEqual(1, roster.Bench.Count);
         }
 

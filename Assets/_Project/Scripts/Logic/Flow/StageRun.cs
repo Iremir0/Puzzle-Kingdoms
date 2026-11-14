@@ -76,6 +76,7 @@ namespace PuzzleKingdoms.Logic.Flow
 
             var board = new BoardModel(puzzleRules.BoardWidth, puzzleRules.BoardHeight, keys.Count, random);
             board.Generate();
+            board.PlaceStones(stage.StoneGems);
             Puzzle = new PuzzleSession(board, stage.Moves, keys, meters, puzzleRules.FourMatchBonusPoints);
             Puzzle.RewardsEarned += OnRewardsEarned;
             Puzzle.Finished += () => SetPhase(StagePhase.WarCamp);
@@ -107,7 +108,7 @@ namespace PuzzleKingdoms.Logic.Flow
                 _battleRules,
                 _armyRules,
                 Roster.Formation,
-                Formation.FromEnemySlots(Stage.Enemies),
+                Formation.ForStage(Stage),
                 RallyCharges);
             SetPhase(StagePhase.Battle);
             return true;

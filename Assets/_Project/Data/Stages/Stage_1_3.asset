@@ -16,20 +16,23 @@ MonoBehaviour:
   displayName: The Chief's Guard
   moves: 12
   boardSeed: 0
+  stoneGems: 5
+  enemyHpMultiplier: 1.2
+  enemyDamageMultiplier: 1
   enemies:
   - unit: {fileID: 11400000, guid: d499d080c53e4ac0bd5edc04f00c98d7, type: 2}
     tier: 1
     cell: {x: 0, y: 0}
-  - unit: {fileID: 11400000, guid: 5b5796f9fbb9454d814b1aa6f57afd9d, type: 2}
-    tier: 1
-    cell: {x: 1, y: 0}
   - unit: {fileID: 11400000, guid: d499d080c53e4ac0bd5edc04f00c98d7, type: 2}
     tier: 1
     cell: {x: 2, y: 0}
+  - unit: {fileID: 11400000, guid: 5b5796f9fbb9454d814b1aa6f57afd9d, type: 2}
+    tier: 1
+    cell: {x: 1, y: 0}
   - unit: {fileID: 11400000, guid: 98f5e48e1c474660a13cfd557ca4f5dd, type: 2}
     tier: 1
-    cell: {x: 0, y: 2}
+    cell: {x: 0, y: 3}
   - unit: {fileID: 11400000, guid: 98f5e48e1c474660a13cfd557ca4f5dd, type: 2}
     tier: 1
-    cell: {x: 2, y: 2}
+    cell: {x: 3, y: 3}
   goldReward: 60

@@ -20,15 +20,15 @@ namespace PuzzleKingdoms.Tests.Army
             Assert.AreEqual(3, AutoFormation.Fill(roster));
             Assert.AreEqual("warrior", roster.Formation.GetUnit(new GridPos(1, 0)).Def.Id);
             Assert.AreEqual("mage", roster.Formation.GetUnit(new GridPos(1, 1)).Def.Id);
-            Assert.AreEqual("archer", roster.Formation.GetUnit(new GridPos(1, 2)).Def.Id);
+            Assert.AreEqual("archer", roster.Formation.GetUnit(new GridPos(1, Formation.Size - 1)).Def.Id, "long range goes to the back row");
         }
 
         [Test]
         public void OverflowGoesToNearestRowAndExtraStaysOnBench()
         {
             var roster = new Roster(ArmyFixtures.Rules());
-            roster.Recruit(_warrior, 11);
-            Assert.AreEqual(9, AutoFormation.Fill(roster));
+            roster.Recruit(_warrior, Formation.Size * Formation.Size + 2);
+            Assert.AreEqual(Formation.Size * Formation.Size, AutoFormation.Fill(roster));
             Assert.AreEqual(2, roster.Bench.Count);
             Assert.AreEqual(0, roster.Formation.EmptyCells().Count);
         }
