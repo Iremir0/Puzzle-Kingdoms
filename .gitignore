@@ -1,4 +1,4 @@
-# Unity generated
+﻿# Unity generated
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -33,6 +33,8 @@ Tools/**/obj/
 TestResults/
 
 # Builds and signing
+/Builds/
+/.utmp/
 *.apk
 *.aab
 *.keystore

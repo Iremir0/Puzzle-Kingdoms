@@ -25,7 +25,8 @@ puzzle-kingdoms/
 │       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, StageDefinition, GameContent,
 │       │   │                        Puzzle/Army/Battle/ProgressionRulesAsset (ScriptableObjects)
 │       │   ├── Editor/           ✅ PuzzleKingdoms.Editor: ProjectSetup (player settings + URP asset),
-│       │   │                        SceneBuilder (generates Scenes/Main.unity)
+│       │   │                        SceneBuilder (generates Scenes/Main.unity),
+│       │   │                        AndroidBuild (dev APK → Builds/Android/)
 │       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
 │       │                            FormationGridView), Puzzle, WarCamp, Battle, Menus

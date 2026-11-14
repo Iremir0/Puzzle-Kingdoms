@@ -66,13 +66,26 @@ Settings* (or `-batchmode -quit -executeMethod PuzzleKingdoms.EditorTools.Projec
 
 ## 4. Android build (Milestone 0)
 
-1. *File → Build Profiles → Android → Switch Platform*.
-2. *Player Settings*: Company/Product name, package name
-   `com.<company>.puzzlekingdoms`, Default Orientation **Portrait**, Scripting
-   Backend **IL2CPP**, Target Architectures **ARM64**.
-3. Enable *Developer options → USB debugging* on the phone and connect it.
-4. *Build Profiles → Build And Run*. Keep the debug keystore for now.
-5. Done when the empty project shows in portrait on a real phone.
+Player settings (package `com.puzzlekingdoms.game`, portrait, IL2CPP, ARM64,
+min API 26) come from `ProjectSetup`; do not set them by hand.
+
+1. Build a development APK: *Puzzle Kingdoms → Build Android APK (dev)*, or in
+   batch mode
+   `Unity.exe -batchmode -quit -projectPath . -executeMethod PuzzleKingdoms.EditorTools.AndroidBuild.BuildDevApk -logFile Logs/android-build.log`.
+   Output: `Builds/Android/PuzzleKingdoms.apk` (debug-signed, gitignored).
+   The first build takes several minutes (IL2CPP + Gradle).
+2. On the phone: *Settings → About phone*, tap *Build number* 7 times, then
+   *Developer options → USB debugging* on. Connect the cable and allow the PC.
+3. Install: `<AndroidPlayer>/SDK/platform-tools/adb install -r Builds/Android/PuzzleKingdoms.apk`
+   (`<AndroidPlayer>` = `D:/Unity/6000.3.28f1/Editor/Data/PlaybackEngines/AndroidPlayer`),
+   or copy the APK to the phone and open it (allow "install unknown apps").
+4. Done when the stage map shows in portrait on a real phone and stage 1-1
+   plays to the results screen.
+
+If Android Build Support was installed without Hub's JDK/SDK/NDK modules, the
+editor expects them under `<AndroidPlayer>/OpenJDK`, `SDK` (platform-tools,
+cmdline-tools/latest, build-tools/36.0.0, platforms/android-36, cmake/3.22.1)
+and `NDK` (r27c). Hub's download cache has the zips.
 
 Do not commit release keystores or passwords.
 
