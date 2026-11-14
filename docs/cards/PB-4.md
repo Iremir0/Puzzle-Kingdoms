@@ -1,6 +1,6 @@
 # PB-4 CI: tests run on GitHub for every push
 
-Owner: — (suggested Alican) · Milestone: M0 · Size: S · Branch: `feature/PB-4-ci` · Replaces: M0-02
+Owner: Alican · Milestone: M0 · Size: S · Branch: `feature/PB-4-ci` · Replaces: M0-02
 
 ## Why
 D-034 says a branch is merged into `main` only when the tests pass. Today that
