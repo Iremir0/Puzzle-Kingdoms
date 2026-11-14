@@ -5,7 +5,7 @@
   {"code": "PK-2", "ms": "M1", "size": "L", "status": "review", "owner": "Alican", "order": 2,
    "title": "Review and merge feature/enemy-scaling",
    "notes": "Merge all + merge preview (D-030), 4x4 formation (D-031), stone gems (D-032), enemy strength per stage, HP x1.4 (D-033). Run dotnet + Unity tests, then merge to main."},
-  {"code": "PK-3", "ms": "M0", "size": "S", "status": "ready", "owner": "Emir", "order": 3,
+  {"code": "PK-3", "ms": "M0", "size": "S", "status": "done", "owner": "Emir", "order": 3,
    "title": "Bring main up to date and start the ticket branch workflow",
    "notes": "main still has only the early docs. Fast-forward main to the current work, then every ticket branches off main as feature/PK-<id>-<name> and merges back after tests pass (CONVENTIONS.md, D-034)."},
   {"code": "PK-4", "ms": "M1", "size": "S", "status": "backlog", "owner": "", "order": 4,
