@@ -37,7 +37,6 @@ is a piece of the game you can play or show, not a single code change.
 | ID | Card | Owner | Milestone | Size | Branch | Notes |
 |---|---|---|---|---|---|---|
 | [PB-1](cards/PB-1.md) | Run the game on a real phone | Emir | M0 | M | — | Dev APK builds (38 MB, IL2CPP ARM64, 2026-11-14); still to do: install and play on a phone |
-| [PB-4](cards/PB-4.md) | CI: tests run on GitHub for every push | Alican | M0 | S | `feature/PB-4-ci` | GitHub Actions: logic tests + balance table on every push |
 
 ## Ready (next up, in priority order)
 
@@ -87,13 +86,14 @@ mode, Commander heroes (see GDD §10).
 | M1-D7 | Stars and gold on the results screen, star and save-version rules tested (`ProgressionTests`) |
 | M1-D8 | Enemy army preview in the War Camp and on the puzzle screen |
 | M1-D9 | Merge all and merge preview, 4×4 formation, stone gems, rising enemy strength (D-030 to D-033); waits for the Unity play-through in PB-2 |
+| [PB-4](cards/PB-4.md) | CI: GitHub runs the logic tests and a balance table on every push (2026-11-14) |
 
 ---
 
 ## Suggested split (so you rarely touch the same files)
 
 - **Alican — rules and data:** `Scripts/Logic/`, `Data/`, tests, `Tools/Balance`
-  (PB-4, PB-14, the undo logic in PB-9, balance in PB-16).
+  (PB-14, the undo logic in PB-9, balance in PB-16).
 - **Emir — Unity and presentation:** `Scripts/Views/`, scenes, prefabs, Android,
   animation and VFX (PB-1, PB-3, PB-7, PB-8, PB-9 view, PB-11, PB-12, PB-15).
 - Anything that crosses the line (a new rule that needs a new view) is agreed

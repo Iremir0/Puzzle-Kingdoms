@@ -57,9 +57,18 @@ Running Unity tests or building the APK on GitHub (needs a Unity license
 secret, GameCI; consider after M1).
 
 ## Done when
-- [ ] Workflow runs on every push and is green on `main`
-- [ ] A deliberately failing test turned it red once (then reverted)
-- [ ] CONVENTIONS.md and STRUCTURE.md mention it
+- [x] Workflow runs on every push and is green on `main`
+- [x] A deliberately failing test turned it red once (then reverted)
+- [x] CONVENTIONS.md and STRUCTURE.md mention it (SETUP.md §3 too)
 
 ## Notes
-_Findings, screenshots, numbers, decisions taken while working on this card._
+- 2026-11-14 (Alican): workflow `.github/workflows/logic-tests.yml`, two jobs:
+  `dotnet test Tools/LogicTests` (Release) and a `Tools/Balance` table with 50
+  runs per row, written to the run summary. The balance job fails only if the
+  tool does not build or crashes. A newer push to the same branch cancels the
+  older run. One run takes about a minute.
+- First run green (run 43601529022). Broke `SeededRandomTests` on purpose
+  (`e04ac6e`): red (run 43601702846). Reverted (`8f97cc9`): green again
+  (run 43601846508). Runs: https://github.com/Iremir0/Puzzle-Kingdoms/actions
+- Not done, on purpose: Unity tests and APK builds on GitHub need a Unity
+  license secret (GameCI); revisit after M1.
