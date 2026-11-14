@@ -44,7 +44,7 @@ namespace PuzzleKingdoms.Tests.Core
                 Assert.That(value, Is.InRange(-2, 2));
                 seen.Add(value);
             }
-            Assert.AreEqual(5, seen.Count);
+            Assert.AreEqual(6, seen.Count);
         }
 
         [Test]
