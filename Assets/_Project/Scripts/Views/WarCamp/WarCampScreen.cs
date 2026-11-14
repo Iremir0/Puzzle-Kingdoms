@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Flow;
@@ -26,6 +27,7 @@ namespace PuzzleKingdoms.Views.WarCamp
         private RectTransform _bench;
         private Text _info;
         private Button _merge;
+        private Button _mergeAll;
         private Button _fight;
         private ArmyUnit _selected;
 
@@ -60,14 +62,15 @@ namespace PuzzleKingdoms.Views.WarCamp
             _grid = new FormationGridView(root, "Player Formation", false, true, 0.15f, 0.41f, 0.85f, 0.70f);
             _grid.CellClicked += OnCellClicked;
 
-            _info = Ui.Label(root, "", 34, TextAnchor.MiddleCenter, Palette.Text, 0.04f, 0.345f, 0.96f, 0.405f);
-            Ui.Label(root, "Bench", 34, TextAnchor.MiddleLeft, Palette.Muted, 0.04f, 0.31f, 0.5f, 0.34f);
-            Image benchPanel = Ui.Box(root, "Bench", Palette.Panel, 0.03f, 0.165f, 0.97f, 0.31f);
+            _info = Ui.Label(root, "", 30, TextAnchor.MiddleCenter, Palette.Text, 0.04f, 0.33f, 0.96f, 0.41f);
+            Ui.Label(root, "Bench", 32, TextAnchor.MiddleLeft, Palette.Muted, 0.04f, 0.303f, 0.5f, 0.33f);
+            Image benchPanel = Ui.Box(root, "Bench", Palette.Panel, 0.03f, 0.165f, 0.97f, 0.303f);
             _bench = benchPanel.rectTransform;
 
-            Ui.Button(root, "Auto", Palette.Button, OnAuto, 0.03f, 0.09f, 0.33f, 0.15f);
-            _merge = Ui.Button(root, "Merge", Palette.Button, OnMerge, 0.35f, 0.09f, 0.65f, 0.15f);
-            Ui.Button(root, "Clear", Palette.Button, OnClear, 0.67f, 0.09f, 0.97f, 0.15f);
+            Ui.Button(root, "Auto", Palette.Button, OnAuto, 0.03f, 0.09f, 0.25f, 0.15f, 32);
+            _merge = Ui.Button(root, "Merge", Palette.Button, OnMerge, 0.27f, 0.09f, 0.49f, 0.15f, 32);
+            _mergeAll = Ui.Button(root, "Merge all", Palette.Primary, OnMergeAll, 0.51f, 0.09f, 0.73f, 0.15f, 32);
+            Ui.Button(root, "Clear", Palette.Button, OnClear, 0.75f, 0.09f, 0.97f, 0.15f, 32);
             _fight = Ui.Button(root, "Fight!", Palette.Bad, OnFight, 0.2f, 0.015f, 0.8f, 0.08f, 52);
 
             Roster.Changed += Refresh;
@@ -120,6 +123,13 @@ namespace PuzzleKingdoms.Views.WarCamp
             Select(Roster.Merge(target));
         }
 
+        /// <summary>Merges everything that can be merged in one go (see <see cref="Roster.MergeAll"/>).</summary>
+        private void OnMergeAll()
+        {
+            Select(null);
+            Roster.MergeAll();
+        }
+
         private void OnClear()
         {
             Select(null);
@@ -155,6 +165,7 @@ namespace PuzzleKingdoms.Views.WarCamp
             _grid.Show(Roster.Formation, _selected);
             RebuildBench();
             _merge.interactable = _selected != null && Roster.CanMerge(_selected);
+            _mergeAll.interactable = Roster.CanMergeAny;
             _fight.interactable = _run.CanStartBattle;
             _info.text = _selected != null ? Describe(_selected) : DefaultHint();
         }
@@ -185,6 +196,13 @@ namespace PuzzleKingdoms.Views.WarCamp
                     outline.effectColor = Palette.Highlight;
                     outline.effectDistance = new Vector2(5, 5);
                 }
+                else if (Roster.CanMerge(unit))
+                {
+                    // Gold edge: this unit has enough copies to merge.
+                    Outline outline = button.gameObject.AddComponent<Outline>();
+                    outline.effectColor = Palette.Gold;
+                    outline.effectDistance = new Vector2(4, 4);
+                }
             }
             if (bench.Count > shown)
             {
@@ -195,14 +213,44 @@ namespace PuzzleKingdoms.Views.WarCamp
         private string Describe(ArmyUnit unit)
         {
             UnitDef def = unit.Def;
-            string merge = Roster.CanMerge(unit) ? "  - can merge" : "";
-            return $"{def.DisplayName} T{unit.Tier}  HP {unit.MaxHp(Roster.Rules)}  DMG {unit.Damage(Roster.Rules)}  " +
-                   $"Range {def.AttackRange:0.#}{merge}";
+            ArmyRules rules = Roster.Rules;
+            int owned = Roster.AllUnits().Count(u => u.IsSameKind(unit));
+            string stats = $"{def.DisplayName} T{unit.Tier}  HP {unit.MaxHp(rules)}  DMG {unit.Damage(rules)}  " +
+                           $"Range {def.AttackRange:0.#}  (you have {owned})";
+            return stats + "\n" + MergeLine(unit);
         }
 
-        private string DefaultHint() =>
-            Roster.Bench.Count > 0
+        /// <summary>What merging this unit gives, or why it cannot be merged.</summary>
+        private string MergeLine(ArmyUnit unit)
+        {
+            ArmyRules rules = Roster.Rules;
+            if (unit.Tier >= rules.MaxTier)
+            {
+                return "Highest tier: cannot merge.";
+            }
+            if (!Roster.CanMerge(unit))
+            {
+                int owned = Roster.AllUnits().Count(u => u.IsSameKind(unit));
+                return $"Merge needs {rules.MergeCount} of the same class and tier (you have {owned}).";
+            }
+            var next = new ArmyUnit(unit.Def, unit.Tier + 1);
+            return $"Merge: {rules.MergeCount} x {unit.Def.DisplayName} T{unit.Tier} -> T{next.Tier}  " +
+                   $"(HP {unit.MaxHp(rules)} -> {next.MaxHp(rules)}, DMG {unit.Damage(rules)} -> {next.Damage(rules)})";
+        }
+
+        private string DefaultHint()
+        {
+            string hint = Roster.Bench.Count > 0
                 ? $"{Roster.Bench.Count} on the bench: they leave for gold when the battle starts."
                 : "Tap a unit, then a cell. Tap a unit twice to bench it.";
+            List<MergePlanEntry> plan = Roster.PlanMergeAll();
+            if (plan.Count == 0)
+            {
+                return hint;
+            }
+            IEnumerable<string> parts = plan.Select(p =>
+                $"{p.Merges} x {p.Def.DisplayName} T{p.FromTier}->T{p.ToTier}");
+            return hint + "\nMerge all: " + string.Join(", ", parts);
+        }
     }
 }

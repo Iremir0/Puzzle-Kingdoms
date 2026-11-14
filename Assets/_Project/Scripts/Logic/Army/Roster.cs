@@ -136,6 +136,115 @@ namespace PuzzleKingdoms.Logic.Army
             return merged;
         }
 
+        /// <summary>
+        /// What <see cref="MergeAll"/> would do, without doing it: per class and tier,
+        /// how many merges happen. Merges chain: three tier 1 merges make three tier 2
+        /// units, which merge again. Ordered by tier, then by first recruitment.
+        /// </summary>
+        public List<MergePlanEntry> PlanMergeAll()
+        {
+            var plan = new List<MergePlanEntry>();
+            List<ArmyUnit> units = AllUnits();
+            units.Sort((a, b) => a.Uid.CompareTo(b.Uid));
+            var defs = new List<UnitDef>();
+            foreach (ArmyUnit unit in units)
+            {
+                if (!defs.Contains(unit.Def))
+                {
+                    defs.Add(unit.Def);
+                }
+            }
+
+            for (int tier = 1; tier < Rules.MaxTier; tier++)
+            {
+                foreach (UnitDef def in defs)
+                {
+                    int count = 0;
+                    foreach (ArmyUnit unit in units)
+                    {
+                        count += unit.Def == def && unit.Tier == tier ? 1 : 0;
+                    }
+                    int merges = count / Rules.MergeCount;
+                    if (merges > 0)
+                    {
+                        plan.Add(new MergePlanEntry(def, tier, merges));
+                        // The new units count as recruits of the next tier for the next pass.
+                        for (int i = 0; i < merges; i++)
+                        {
+                            units.Add(new ArmyUnit(def, tier + 1, int.MaxValue));
+                        }
+                    }
+                }
+            }
+            return plan;
+        }
+
+        /// <summary>True if <see cref="MergeAll"/> would merge anything.</summary>
+        public bool CanMergeAny => PlanMergeAll().Count > 0;
+
+        /// <summary>
+        /// Merges everything that can be merged, lowest tier first, until nothing is left
+        /// to merge. A deployed unit is the merge target when the class has one, so the
+        /// result keeps its place (D-016 still applies: bench copies are consumed first).
+        /// Returns the new units in the order they were made.
+        /// </summary>
+        public List<ArmyUnit> MergeAll()
+        {
+            var created = new List<ArmyUnit>();
+            for (int tier = 1; tier < Rules.MaxTier; tier++)
+            {
+                foreach (UnitDef def in DefsAtTier(tier))
+                {
+                    while (true)
+                    {
+                        ArmyUnit target = PickMergeTarget(def, tier);
+                        ArmyUnit merged = target == null ? null : Merge(target);
+                        if (merged == null)
+                        {
+                            break;
+                        }
+                        created.Add(merged);
+                    }
+                }
+            }
+            return created;
+        }
+
+        private List<UnitDef> DefsAtTier(int tier)
+        {
+            var defs = new List<UnitDef>();
+            List<ArmyUnit> units = AllUnits();
+            units.Sort((a, b) => a.Uid.CompareTo(b.Uid));
+            foreach (ArmyUnit unit in units)
+            {
+                if (unit.Tier == tier && !defs.Contains(unit.Def))
+                {
+                    defs.Add(unit.Def);
+                }
+            }
+            return defs;
+        }
+
+        /// <summary>A deployed unit of the kind if there is one, otherwise the first bench copy.</summary>
+        private ArmyUnit PickMergeTarget(UnitDef def, int tier)
+        {
+            foreach (ArmyUnit unit in Formation.Units())
+            {
+                if (unit.Def == def && unit.Tier == tier)
+                {
+                    return unit;
+                }
+            }
+            foreach (ArmyUnit unit in _bench)
+            {
+                if (unit.Def == def && unit.Tier == tier)
+                {
+                    return unit;
+                }
+            }
+            return null;
+        }
+
         private List<ArmyUnit> MergeSet(ArmyUnit target)
         {
             var candidates = new List<ArmyUnit>(_bench);

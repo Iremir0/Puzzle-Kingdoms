@@ -199,3 +199,18 @@ rendered once into a sprite (`UnitSilhouettes`), so there are no art files and
 no credits. Only the tier is written on a unit now ("T2"). This is a
 placeholder for real art, not the final look: realistic models or sprites
 (asset pack vs. freelancer) are still open (ROADMAP M3/M4).
+
+## D-030 "Merge all" button and merge preview, 2026-11-14
+Merging unit by unit (select, press Merge) was tedious once the puzzle gives
+~11-16 units. The War Camp now has a **Merge all** button next to the per-unit
+Merge: `Roster.MergeAll()` merges everything that can be merged, lowest tier
+first, so merges chain (9 tier 1 → 3 tier 2 → 1 tier 3). It keeps D-016: a
+deployed unit is the merge target when the class has one (the result keeps its
+cell) and bench copies are consumed before deployed ones. `Roster.PlanMergeAll()`
+computes the same result without doing it; the screen uses it to write what will
+happen and which bench units are mergeable (gold edge). Per-unit Merge stays, so
+the player can still keep three separate units instead of one strong one (D-006:
+wide vs. tall is still a choice, now with one tap for the common case).
+Rejected: automatic merging whenever three match (removes the choice).
+Requested next, not built yet: 4×4 formation, rising enemy strength per stage,
+and stage board modifiers (e.g. stone gems that vanish after two uses).

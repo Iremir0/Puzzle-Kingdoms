@@ -97,9 +97,13 @@ Post-MVP: more special gems, stage objectives, boss board modifiers.
 - 3×3 formation grid. **Rows** = front / middle / back. **Columns** = lanes
   (left / center / right). The front row faces the enemy.
 - Unlimited **bench**; at most 9 units deployed.
-- **Merge (manual):** three units of the same class and tier → one unit of the
-  next tier. Triggered by dragging a unit onto an identical one when a third copy
-  exists, or by the highlighted Merge button. Max tier 3.
+- **Merge:** three units of the same class and tier → one unit of the next tier,
+  max tier 3. Select a unit and press **Merge** to merge that one, or press
+  **Merge all** to merge everything that can be merged in one go (merges chain:
+  nine tier 1 become one tier 3). The screen says what will happen: the selected
+  unit shows "3 x Warrior T1 -> T2 (HP, damage)", with nothing selected a
+  "Merge all" line lists every merge, and bench units that have enough copies
+  get a gold edge (D-030).
 - Units still on the bench when the battle starts are dismissed for 5 gold each.
 - Army is stage-local; nothing carries over in the campaign.
 
