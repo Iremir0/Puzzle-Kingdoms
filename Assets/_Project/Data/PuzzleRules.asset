@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boardWidth: 6
   boardHeight: 6
-  pointsPerUnit: 6
+  pointsPerUnit: 8
   pointsPerRallyCharge: 10
   maxRallyCharges: 3
   fourMatchBonusPoints: 2

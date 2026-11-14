@@ -184,3 +184,18 @@ Balance effect (`Tools/Balance`, 300 runs): units recruited per stage rose from
 10.4 / 14.0 (random / greedy bot) to 14.8 / 21.9 and Rally charges from 1.8 / 2.4
 to 2.4 / 2.8; 1-3 with Rally went from 77% / 96% to 90% / 100%. Open: raise
 `pointsPerUnit` from 6 to 8 to get back to 10.7 / 16.0 units. Not applied yet.
+Applied (D-028 follow-up): `pointsPerUnit` 6 → 8. Measured with `Tools/Balance`
+(300 runs): recruited units 10.7 / 16.0 (random / greedy bot), Rally charges
+2.4 / 2.8, 1-3 with Rally 76% / 98%: back to the D-026 targets.
+
+## D-029 Grey-box battle units are code-drawn silhouettes, 2026-11-14
+Battle units were colored squares with a letter. Each unit asset now has a
+`look` (`UnitLook`: Warrior, Archer, Mage, GoblinGrunt, GoblinArcher,
+GoblinBrute, GoblinChief, Generic) and the battle view draws a silhouette sprite
+for it, tinted with the unit color (details darker): shield and sword, hood and
+bow, pointed hat and staff, long-eared goblins, an armored brute with an axe, a
+crowned chief. The geometry is plain math (`SilhouetteMath`, no engine types),
+rendered once into a sprite (`UnitSilhouettes`), so there are no art files and
+no credits. Only the tier is written on a unit now ("T2"). This is a
+placeholder for real art, not the final look: realistic models or sprites
+(asset pack vs. freelancer) are still open (ROADMAP M3/M4).

@@ -22,13 +22,14 @@ puzzle-kingdoms/
 │       │   │   ├── Stages/       ✅ StageDef, EnemySlot
 │       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot)
 │       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward
-│       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, StageDefinition, GameContent,
+│       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, UnitLook, StageDefinition, GameContent,
 │       │   │                        Puzzle/Army/Battle/ProgressionRulesAsset (ScriptableObjects)
 │       │   ├── Editor/           ✅ PuzzleKingdoms.Editor: ProjectSetup (player settings + URP asset),
 │       │   │                        SceneBuilder (generates Scenes/Main.unity)
 │       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
-│       │                            FormationGridView), Puzzle, WarCamp, Battle, Menus
+│       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes),
+│       │                            Puzzle, WarCamp, Battle, Menus
 │       ├── Data/                 ✅ .asset files
 │       │   ├── Units/            Warrior, Archer, Mage
 │       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief

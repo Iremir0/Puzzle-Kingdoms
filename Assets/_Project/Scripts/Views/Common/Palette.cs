@@ -27,6 +27,7 @@ namespace PuzzleKingdoms.Views.Common
         private static readonly Dictionary<string, Color> UnitColors = new Dictionary<string, Color>();
         private static readonly Dictionary<string, string> UnitTags = new Dictionary<string, string>();
         private static readonly Dictionary<string, GemShape> UnitShapes = new Dictionary<string, GemShape>();
+        private static readonly Dictionary<string, UnitLook> UnitLooks = new Dictionary<string, UnitLook>();
 
         /// <summary>Shapes handed to unit gems in registration order (recruitable units register first).</summary>
         private static readonly GemShape[] UnitShapeOrder =
@@ -41,12 +42,17 @@ namespace PuzzleKingdoms.Views.Common
             {
                 UnitColors[unit.Def.Id] = unit.Color;
                 UnitTags[unit.Def.Id] = Initials(unit.Def);
+                UnitLooks[unit.Def.Id] = unit.Look;
                 if (!UnitShapes.ContainsKey(unit.Def.Id))
                 {
                     UnitShapes[unit.Def.Id] = UnitShapeOrder[UnitShapes.Count % UnitShapeOrder.Length];
                 }
             }
         }
+
+        /// <summary>Silhouette of a unit in the battle view (Generic for units that were never registered).</summary>
+        public static UnitLook LookFor(UnitDef def) =>
+            def != null && UnitLooks.TryGetValue(def.Id, out UnitLook look) ? look : UnitLook.Generic;
 
         public static Color For(UnitDef def) =>
             def != null && UnitColors.TryGetValue(def.Id, out Color color) ? color : EnemyFallback;

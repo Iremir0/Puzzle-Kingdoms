@@ -75,10 +75,10 @@ readable for color-blind players (D-027).
   special gem clears counts for the meters like a normal clear.
 - **Moves:** 12 per stage (stage data can override).
 - **Recruitment meter:** every cleared gem adds 1 point to its meter; every
-  **6 points = 1 unit** (remainder carries over within the stage). So two
-  match-3s give 1 unit and a match-4 gives ⅔. This rewards big matches
-  smoothly and makes cascades predictable in value. Measured (D-026): a random
-  player recruits ~10 units in 12 moves, a greedy one ~14, so filling the 9
+  **8 points = 1 unit** (remainder carries over within the stage). A line of 4
+  adds 2 bonus points. This rewards big matches smoothly and makes cascades
+  predictable in value. Measured (D-028, after special matches): a random
+  player recruits ~11 units in 12 moves, a greedy one ~16, so filling the 9
   slots and merging the surplus are real decisions.
 - **Cascades** count fully and are shown as "Bonus!". With 4 gem types on 6×6
   a move clears ~7 gems on average, cascades included.
@@ -86,7 +86,7 @@ readable for color-blind players (D-027).
   1–2 per stage). Banner points
   beyond the cap convert to gold (1 gold per point, start value).
 - If no valid move exists, the board reshuffles for free.
-- The initial board never contains a ready-made match and always has at least
+- The initial board never contains a ready-made match (lines or squares) and always has at least
   one valid move.
 - The top of the puzzle screen shows the enemy formation and their traits.
 
