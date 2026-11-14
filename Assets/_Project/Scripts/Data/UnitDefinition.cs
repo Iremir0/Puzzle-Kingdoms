@@ -28,10 +28,14 @@ namespace PuzzleKingdoms.Data
         [SerializeField, Range(0f, 0.95f)] private float ward;
         [Tooltip("Placeholder color for grey-box views.")]
         [SerializeField] private Color color = Color.white;
+        [Tooltip("Silhouette drawn in the grey-box battle view.")]
+        [SerializeField] private UnitLook look = UnitLook.Generic;
 
         [NonSerialized] private UnitDef _def;
 
         public Color Color => color;
+
+        public UnitLook Look => look;
 
         /// <summary>Logic definition. Cached so every user shares one instance (merge compares by reference).</summary>
         public UnitDef Def => _def ??= new UnitDef

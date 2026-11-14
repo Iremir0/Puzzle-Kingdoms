@@ -153,3 +153,49 @@ Targets (random bot with Rally / greedy bot with Rally): 1-1 ~100%,
 battles are 7–19 s (GDD wants 20–40 s; accepted for tutorial stages); bots do
 not merge or time Rally, so real players should do somewhat better. Re-run the
 tool after every data change.
+
+## D-027 Every gem type has its own shape, 2026-11-14
+Gems were colored squares with a letter. Each type now also has a shape:
+Warrior square, Archer triangle, Mage diamond, Rally star, so the board is
+readable without color (color-blind players) and without text. Sprites are
+generated in code (`GemShapes`, white, tinted by `Image.color`), so no art
+files or credits are needed. Unit classes get shapes in registration order
+(`Palette.Register`); a fifth class would reuse the circle.
+
+## D-028 Special matches: 4-line bonus, square → Blast gem, 5-line → Prism gem, 2026-11-14
+A 2×2 square now counts as a match (and a valid swap), so squares are possible
+at all; generated boards never start with one. Results:
+- Line of exactly 4: +2 bonus points on that gem's meter (`PuzzleRules.FourMatchBonusPoints`, data asset).
+- Square: clears 4 and leaves a **Blast** gem where the swapped gem was; when
+  that gem is cleared in a match it also clears the 3×3 around it.
+- Line of 5+: clears and leaves a **Prism** gem; swapped with any neighbour it
+  clears all gems of the neighbour's type, cleared in a match it clears all of
+  its own type. A Prism can always be swapped, so a board with a Prism is never stuck.
+- A special gem keeps its color/type and stays on the board until used. It is
+  chosen from a group in this order: line of 5+ beats square beats nothing; it
+  never replaces a gem that is already special; specials caught in an
+  explosion fire too (chain). Everything cleared counts for the meters.
+- The anchor is the swapped gem if it is in the match, otherwise the middle
+  cell; in cascades always the middle cell.
+Why a gem that stays instead of an instant effect: the player can plan around
+it (the user's call, option 2). Views show a Blast as a ring and a Prism as a
+sparkle over the gem.
+Balance effect (`Tools/Balance`, 300 runs): units recruited per stage rose from
+10.4 / 14.0 (random / greedy bot) to 14.8 / 21.9 and Rally charges from 1.8 / 2.4
+to 2.4 / 2.8; 1-3 with Rally went from 77% / 96% to 90% / 100%. Open: raise
+`pointsPerUnit` from 6 to 8 to get back to 10.7 / 16.0 units. Not applied yet.
+Applied (D-028 follow-up): `pointsPerUnit` 6 → 8. Measured with `Tools/Balance`
+(300 runs): recruited units 10.7 / 16.0 (random / greedy bot), Rally charges
+2.4 / 2.8, 1-3 with Rally 76% / 98%: back to the D-026 targets.
+
+## D-029 Grey-box battle units are code-drawn silhouettes, 2026-11-14
+Battle units were colored squares with a letter. Each unit asset now has a
+`look` (`UnitLook`: Warrior, Archer, Mage, GoblinGrunt, GoblinArcher,
+GoblinBrute, GoblinChief, Generic) and the battle view draws a silhouette sprite
+for it, tinted with the unit color (details darker): shield and sword, hood and
+bow, pointed hat and staff, long-eared goblins, an armored brute with an axe, a
+crowned chief. The geometry is plain math (`SilhouetteMath`, no engine types),
+rendered once into a sprite (`UnitSilhouettes`), so there are no art files and
+no credits. Only the tier is written on a unit now ("T2"). This is a
+placeholder for real art, not the final look: realistic models or sprites
+(asset pack vs. freelancer) are still open (ROADMAP M3/M4).

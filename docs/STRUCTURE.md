@@ -14,7 +14,7 @@ puzzle-kingdoms/
 │       ├── Scripts/
 │       │   ├── Logic/            ✅ PuzzleKingdoms.Logic (no engine references)
 │       │   │   ├── Core/         ✅ GridPos, IRandom, SeededRandom (PCG32)
-│       │   │   ├── Puzzle/       ✅ BoardModel, MatchGroup, MoveResult, MoveReplay, RecruitmentMeter,
+│       │   │   ├── Puzzle/       ✅ BoardModel, MatchGroup, SpecialKind, MoveResult, MoveReplay, RecruitmentMeter,
 │       │   │   │                    PuzzleSession, PuzzleRules
 │       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster, MergeRules, AutoFormation
 │       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,
@@ -22,14 +22,15 @@ puzzle-kingdoms/
 │       │   │   ├── Stages/       ✅ StageDef, EnemySlot
 │       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot)
 │       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward
-│       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, StageDefinition, GameContent,
+│       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, UnitLook, StageDefinition, GameContent,
 │       │   │                        Puzzle/Army/Battle/ProgressionRulesAsset (ScriptableObjects)
 │       │   ├── Editor/           ✅ PuzzleKingdoms.Editor: ProjectSetup (player settings + URP asset),
 │       │   │                        SceneBuilder (generates Scenes/Main.unity),
 │       │   │                        AndroidBuild (dev APK → Builds/Android/)
 │       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
-│       │                            FormationGridView), Puzzle, WarCamp, Battle, Menus
+│       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes),
+│       │                            Puzzle, WarCamp, Battle, Menus
 │       ├── Data/                 ✅ .asset files
 │       │   ├── Units/            Warrior, Archer, Mage
 │       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief

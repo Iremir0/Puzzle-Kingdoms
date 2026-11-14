@@ -17,7 +17,7 @@ namespace PuzzleKingdoms.Views.Battle
     {
         /// <summary>Battlefield height shown, in cells (front gap + 2 rows per side + margin).</summary>
         private const float FieldMarginCells = 1.5f;
-        private const float UnitSizeCells = 0.55f;
+        private const float UnitSizeCells = 0.75f;
         private const float FlashSeconds = 0.08f;
         private const float FloatSeconds = 0.6f;
         private const float EndDelaySeconds = 1.2f;
@@ -113,13 +113,19 @@ namespace PuzzleKingdoms.Views.Battle
         {
             var view = new UnitView { Combatant = combatant, BaseColor = Palette.For(combatant.Unit.Def) };
             Image body = Ui.Box(_field, $"Unit {combatant.Id}", view.BaseColor);
+            body.sprite = UnitSilhouettes.Get(Palette.LookFor(combatant.Unit.Def));
+            body.preserveAspect = true;
             body.raycastTarget = false;
             view.Body = body;
             view.Rect = body.rectTransform;
             var outline = body.gameObject.AddComponent<Outline>();
             outline.effectColor = combatant.Side == Side.Player ? Palette.Text : Palette.Bad;
             outline.effectDistance = new Vector2(4, 4);
-            Ui.Label(body.transform, Palette.Tag(combatant.Unit), 30, TextAnchor.MiddleCenter, new Color(0, 0, 0, 0.6f));
+            if (combatant.Unit.Tier > 1)
+            {
+                // The silhouette shows the class; only the tier is written on it.
+                Ui.Label(body.transform, "T" + combatant.Unit.Tier, 30, TextAnchor.LowerCenter, Color.white, 0f, -0.05f, 1f, 0.3f);
+            }
 
             Image bar = Ui.Box(body.transform, "HP", new Color(0, 0, 0, 0.6f), 0f, 1.08f, 1f, 1.22f);
             bar.raycastTarget = false;

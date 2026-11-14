@@ -23,3 +23,4 @@ MonoBehaviour:
   armor: 0
   ward: 0
   color: {r: 0.6039, g: 0.7216, b: 0.3137, a: 1}
+  look: 5

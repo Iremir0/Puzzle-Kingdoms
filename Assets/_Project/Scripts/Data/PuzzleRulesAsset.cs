@@ -13,6 +13,7 @@ namespace PuzzleKingdoms.Data
         [SerializeField, Min(1)] private int pointsPerUnit = 3;
         [SerializeField, Min(1)] private int pointsPerRallyCharge = 3;
         [SerializeField, Min(0)] private int maxRallyCharges = 3;
+        [SerializeField, Min(0)] private int fourMatchBonusPoints = 2;
 
         [NonSerialized] private PuzzleRules _rules;
 
@@ -23,6 +24,7 @@ namespace PuzzleKingdoms.Data
             PointsPerUnit = pointsPerUnit,
             PointsPerRallyCharge = pointsPerRallyCharge,
             MaxRallyCharges = maxRallyCharges,
+            FourMatchBonusPoints = fourMatchBonusPoints,
         };
 
         private void OnValidate() => _rules = null;
