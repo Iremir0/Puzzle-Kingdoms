@@ -294,3 +294,16 @@ the milestone is just a column. Each card has a detail file `docs/cards/PB-n.md`
 (why, current code, steps, mockup, prototype assets, Unity steps, checklist, notes)
 so either developer can pick it up cold. Old codes stay in the board's *Replaces* field and
 in older decisions (D-033 mentions M1-02, M1-04). Supersedes the code format of D-034.
+
+## D-036 Playtest log: one JSON line per finished stage attempt, 2026-11-14
+For the playtests (PB-5) the game appends a `StageAttempt` record to
+`playtest-log.jsonl` next to the save file whenever a battle ends: stage, outcome,
+stars, time on the puzzle and in the War Camp, battle length, units recruited per
+class, merges, units deployed/surviving/dismissed, Rally earned/used, the formation
+and gold. The record is built in Logic (`StageAttempt.From(StageRun)`, tested);
+Flow adds the clock fields and writes the file (`PlaytestLog`). Merges are derived,
+not counted: recruited − deployed − dismissed, divided by two. Why: observers miss
+things and testers misremember; the log answers "did they merge, use Rally, put
+archers in the back" for every attempt. Local only, no personal data, nothing is
+sent. Stays on during M1-M5; turn it off (or behind a debug flag) in the release
+build (PB-17). Summaries: `Tools/PlaytestSummary`.

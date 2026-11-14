@@ -20,9 +20,16 @@ namespace PuzzleKingdoms.Flow
         [SerializeField] private GameContent content;
 
         private ProfileStore _store;
+        private PlaytestLog _playtestLog;
         private Transform _screenRoot;
         private GameObject _screen;
         private int _stageIndex;
+
+        // Wall-clock marks of the current attempt for the playtest log.
+        private float _puzzleStarted;
+        private float _campStarted;
+        private float _battleStarted;
+        private bool _attemptLogged;
 
         public PlayerProfile Profile { get; private set; }
         public StageRun Run { get; private set; }
@@ -34,6 +41,9 @@ namespace PuzzleKingdoms.Flow
 
         /// <summary>Lets tests point the save file somewhere harmless before Start runs.</summary>
         public void UseStore(ProfileStore store) => _store = store;
+
+        /// <summary>Lets tests point the playtest log somewhere harmless before Start runs.</summary>
+        public void UsePlaytestLog(PlaytestLog log) => _playtestLog = log;
 
         public void SetContent(GameContent gameContent) => content = gameContent;
 
@@ -59,6 +69,7 @@ namespace PuzzleKingdoms.Flow
             }
 
             _store ??= new ProfileStore();
+            _playtestLog ??= new PlaytestLog();
             Profile = _store.Load();
             Ui.EnsureEventSystem();
             _screenRoot = Ui.CreateCanvas("Canvas").transform;
@@ -76,12 +87,22 @@ namespace PuzzleKingdoms.Flow
         {
             _stageIndex = index;
             Run = content.CreateRun(content.Campaign[index]);
+            _puzzleStarted = Time.realtimeSinceStartup;
+            _attemptLogged = false;
             Show(PuzzleScreen.Create(_screenRoot, Run, ShowWarCamp));
         }
 
-        public void ShowWarCamp() => Show(WarCampScreen.Create(_screenRoot, Run, ShowBattle));
+        public void ShowWarCamp()
+        {
+            _campStarted = Time.realtimeSinceStartup;
+            Show(WarCampScreen.Create(_screenRoot, Run, ShowBattle));
+        }
 
-        public void ShowBattle() => Show(BattleScreen.Create(_screenRoot, Run, ShowResults));
+        public void ShowBattle()
+        {
+            _battleStarted = Time.realtimeSinceStartup;
+            Show(BattleScreen.Create(_screenRoot, Run, ShowResults));
+        }
 
         public void ShowResults()
         {
@@ -92,6 +113,12 @@ namespace PuzzleKingdoms.Flow
             }
             Profile.Apply(Run.Stage.Id, reward);
             _store.Save(Profile);
+            if (!_attemptLogged)
+            {
+                _attemptLogged = true;
+                _playtestLog?.Write(StageAttempt.From(Run),
+                    _campStarted - _puzzleStarted, _battleStarted - _campStarted);
+            }
 
             bool hasNext = _stageIndex + 1 < content.Campaign.Count
                            && Profile.IsUnlocked(content.CampaignOrder(), _stageIndex + 1);

@@ -7,7 +7,7 @@ puzzle-kingdoms/
 ├── README.md                     ✅ entry point
 ├── CLAUDE.md                     ✅ rules for Claude Code sessions
 ├── CREDITS.md                    ✅ third-party licenses (fill before adding assets)
-├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, task board
+├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, task board, PLAYTESTS
 │   └── cards/                    ✅ one detail file per board card (PB-n.md) + img/ mockups (SVG)
 │
 ├── Assets/
@@ -22,13 +22,15 @@ puzzle-kingdoms/
 │       │   │   │                    Rally, BattleEvent, BattleResult
 │       │   │   ├── Stages/       ✅ StageDef, EnemySlot
 │       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot)
-│       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward
+│       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward; StageAttempt (playtest record)
 │       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, UnitLook, StageDefinition, GameContent,
 │       │   │                        Puzzle/Army/Battle/ProgressionRulesAsset (ScriptableObjects)
 │       │   ├── Editor/           ✅ PuzzleKingdoms.Editor: ProjectSetup (player settings + URP asset),
 │       │   │                        SceneBuilder (generates Scenes/Main.unity),
-│       │   │                        AndroidBuild (dev APK → Builds/Android/)
-│       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save)
+│       │   │                        AndroidBuild (dev APK → Builds/Android/),
+│       │   │                        PlaytestBuild (Windows playtest build → Builds/Windows/)
+│       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save),
+│       │   │                        PlaytestLog (playtest-log.jsonl, D-036)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
 │       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes),
 │       │                            Puzzle, WarCamp, Battle, Menus
@@ -56,7 +58,8 @@ puzzle-kingdoms/
 │
 └── Tools/
     ├── LogicTests/               ✅ dotnet test project for Logic + EditMode tests
-    └── Balance/                  ✅ headless balance runs over the data assets (D-026)
+    ├── Balance/                  ✅ headless balance runs over the data assets (D-026)
+    └── PlaytestSummary/          ✅ Markdown summary of playtest logs (PB-5)
 ```
 
 ## Where does new code go?

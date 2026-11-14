@@ -37,6 +37,7 @@ is a piece of the game you can play or show, not a single code change.
 | ID | Card | Owner | Milestone | Size | Branch | Notes |
 |---|---|---|---|---|---|---|
 | [PB-1](cards/PB-1.md) | Run the game on a real phone | Emir | M0 | M | — | Dev APK builds (38 MB, IL2CPP ARM64, 2026-11-14); still to do: install and play on a phone |
+| [PB-5](cards/PB-5.md) | Playtest round | Alican | M1 | M | `feature/PB-5-playtest` | Kit done (Windows build, script, form, playtest log, summary tool, PLAYTESTS.md, blue-screen fix); next: 5+ testers |
 
 ## Ready (next up, in priority order)
 
@@ -45,7 +46,6 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-2](cards/PB-2.md) | Play the new rules in Unity and close the review | Emir | M1 | S | Merge into `main` and the Test Runner (with Data tests) are done; left: the play checklist for 1-1 to 1-3 (4×4 grid, stone gems, Merge all, enemy strength) |
 | [PB-3](cards/PB-3.md) | War Camp and stage select show what the game knows | — (Emir?) | M1 | S | Difficulty badges (stones, enemy HP ×) on stage select and enemy panels; silhouettes instead of letters in the War Camp. Mockups inside |
 | [PB-4](cards/PB-4.md) | CI: tests run on GitHub for every push | — (Alican?) | M0 | S | GitHub Actions runs `dotnet test Tools/LogicTests`; workflow file is in the card |
-| [PB-5](cards/PB-5.md) | Playtest round | — | M1 | M | 5+ testers, session script, feedback form, `docs/PLAYTESTS.md`. Needs PB-1, PB-2 |
 | [PB-6](cards/PB-6.md) | Go / pivot decision | both | M1 | S | Score the GDD pillars against the playtest evidence, record in DECISIONS.md. After PB-5 |
 
 ## Backlog

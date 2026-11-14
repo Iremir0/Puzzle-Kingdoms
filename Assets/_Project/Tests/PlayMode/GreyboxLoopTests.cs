@@ -66,6 +66,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app = new GameObject("GameApp").AddComponent<GameApp>();
             _app.SetContent(LoadContent());
             _app.UseStore(new ProfileStore(_saveFolder));
+            _app.UsePlaytestLog(new PlaytestLog(_saveFolder));
             yield return null;
             Assert.IsInstanceOf<StageSelectScreen>(_app.CurrentScreen);
 
@@ -100,6 +101,14 @@ namespace PuzzleKingdoms.Tests.PlayMode
             Assert.IsNotNull(_app.Run.Reward);
             Assert.IsTrue(File.Exists(Path.Combine(_saveFolder, ProfileStore.FileName)), "profile saved");
             Assert.AreEqual(_app.Run.Reward.TotalGold, _app.Profile.Gold);
+
+            string[] log = File.ReadAllLines(Path.Combine(_saveFolder, PlaytestLog.FileName));
+            Assert.AreEqual(1, log.Length, "one playtest log line per finished attempt");
+            var attempt = JsonUtility.FromJson<PuzzleKingdoms.Logic.Flow.StageAttempt>(log[0]);
+            Assert.AreEqual(_app.Run.Stage.Id, attempt.stage);
+            Assert.AreEqual(_app.Run.Battle.Result.Victory, attempt.victory);
+            Assert.AreEqual(1, attempt.attempt);
+            Assert.GreaterOrEqual(attempt.puzzleSeconds, 0f);
         }
     }
 }
