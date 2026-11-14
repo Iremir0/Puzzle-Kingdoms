@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 360 640" width="360" height="640" font-family="Segoe UI, Arial, sans-serif">
+  <!-- PB-3 mockup: War Camp with silhouettes instead of letters. -->
+  <defs>
+    <!-- Simplified versions of UnitSilhouettes (the real ones are drawn in code). -->
+    <g id="warrior"><circle cx="0" cy="-9" r="5" fill="#fff"/><rect x="-6" y="-4" width="12" height="13" rx="2" fill="#fff"/><path d="M-12,-5 h7 v10 q-3.5,4 -7,0 z" fill="#fff" opacity="0.85"/><rect x="7" y="-14" width="2" height="16" fill="#fff"/></g>
+    <g id="archer"><circle cx="0" cy="-9" r="5" fill="#fff"/><path d="M-5,-3 h10 l2,12 h-14 z" fill="#fff"/><path d="M9,-14 q8,9 0,20" stroke="#fff" stroke-width="2" fill="none"/><line x1="9" y1="-14" x2="9" y2="6" stroke="#fff" stroke-width="1"/></g>
+    <g id="mage"><path d="M-6,-8 l6,-10 l6,10 z" fill="#fff"/><circle cx="0" cy="-6" r="4" fill="#fff"/><path d="M-7,-2 h14 l3,12 h-20 z" fill="#fff"/><rect x="9" y="-12" width="2" height="22" fill="#fff"/><circle cx="10" cy="-13" r="3" fill="#F4BE4F"/></g>
+    <g id="grunt"><ellipse cx="0" cy="-8" rx="6" ry="5" fill="#fff"/><path d="M-7,-10 l-4,-3 l3,5 z M7,-10 l4,-3 l-3,5 z" fill="#fff"/><rect x="-6" y="-3" width="12" height="12" rx="3" fill="#fff"/></g>
+  </defs>
+  <rect width="360" height="640" fill="#1E2230"/>
+  <text x="16" y="34" fill="#FFFFFF" font-size="20" font-weight="bold">War Camp</text>
+  <text x="344" y="34" fill="#F4BE4F" font-size="14" text-anchor="end">Rally charges: 1</text>
+
+  <!-- enemy panel -->
+  <rect x="10" y="48" width="340" height="104" rx="8" fill="#2A3042"/>
+  <text x="20" y="66" fill="#9AA3B5" font-size="12">Enemy army</text>
+  <text x="20" y="84" fill="#F4BE4F" font-size="11">HP ×1.1 · 3 stones</text>
+  <g transform="translate(126,56)">
+    <rect x="0" y="0" width="22" height="22" fill="#394159"/><rect x="24" y="0" width="22" height="22" fill="#394159"/><rect x="48" y="0" width="22" height="22" fill="#394159"/><rect x="72" y="0" width="22" height="22" fill="#394159"/>
+    <rect x="0" y="24" width="22" height="22" fill="#394159"/><rect x="24" y="24" width="22" height="22" fill="#8C7A5B"/><rect x="48" y="24" width="22" height="22" fill="#394159"/><rect x="72" y="24" width="22" height="22" fill="#394159"/>
+    <rect x="0" y="48" width="22" height="22" fill="#8C7A5B"/><rect x="24" y="48" width="22" height="22" fill="#8C7A5B"/><rect x="48" y="48" width="22" height="22" fill="#8C7A5B"/><rect x="72" y="48" width="22" height="22" fill="#8C7A5B"/>
+    <rect x="0" y="72" width="22" height="18" fill="#394159"/><rect x="24" y="72" width="22" height="18" fill="#394159"/><rect x="48" y="72" width="22" height="18" fill="#394159"/><rect x="72" y="72" width="22" height="18" fill="#394159"/>
+    <use xlink:href="#grunt" transform="translate(35,37) scale(0.7)"/>
+    <use xlink:href="#grunt" transform="translate(11,61) scale(0.7)"/><use xlink:href="#grunt" transform="translate(35,61) scale(0.7)"/><use xlink:href="#grunt" transform="translate(59,61) scale(0.7)"/><use xlink:href="#grunt" transform="translate(83,61) scale(0.7)"/>
+  </g>
+
+  <text x="180" y="172" fill="#9AA3B5" font-size="12" text-anchor="middle">Front row faces the enemy</text>
+
+  <!-- player 4x4 grid, front row at top -->
+  <g transform="translate(64,182)">
+    <g fill="#394159">
+      <rect x="0" y="0" width="54" height="54" rx="4"/><rect x="58" y="0" width="54" height="54" rx="4"/><rect x="116" y="0" width="54" height="54" rx="4"/><rect x="174" y="0" width="54" height="54" rx="4"/>
+      <rect x="0" y="58" width="54" height="54" rx="4"/><rect x="58" y="58" width="54" height="54" rx="4"/><rect x="116" y="58" width="54" height="54" rx="4"/><rect x="174" y="58" width="54" height="54" rx="4"/>
+      <rect x="0" y="116" width="54" height="54" rx="4"/><rect x="58" y="116" width="54" height="54" rx="4"/><rect x="116" y="116" width="54" height="54" rx="4"/><rect x="174" y="116" width="54" height="54" rx="4"/>
+      <rect x="0" y="174" width="54" height="54" rx="4"/><rect x="58" y="174" width="54" height="54" rx="4"/><rect x="116" y="174" width="54" height="54" rx="4"/><rect x="174" y="174" width="54" height="54" rx="4"/>
+    </g>
+    <!-- warriors front -->
+    <rect x="0" y="0" width="54" height="54" rx="4" fill="#E85B55"/><use xlink:href="#warrior" transform="translate(27,27) scale(1.3)"/><text x="50" y="50" fill="#fff" font-size="10" text-anchor="end">T1</text>
+    <rect x="58" y="0" width="54" height="54" rx="4" fill="#E85B55"/><use xlink:href="#warrior" transform="translate(85,27) scale(1.5)"/><text x="108" y="50" fill="#fff" font-size="10" text-anchor="end">T2</text>
+    <rect x="116" y="0" width="54" height="54" rx="4" fill="#E85B55" stroke="#FFFFFF" stroke-width="3"/><use xlink:href="#warrior" transform="translate(143,27) scale(1.3)"/><text x="166" y="50" fill="#fff" font-size="10" text-anchor="end">T1</text>
+    <rect x="174" y="0" width="54" height="54" rx="4" fill="#E85B55"/><use xlink:href="#warrior" transform="translate(201,27) scale(1.3)"/><text x="224" y="50" fill="#fff" font-size="10" text-anchor="end">T1</text>
+    <!-- mages middle -->
+    <rect x="58" y="116" width="54" height="54" rx="4" fill="#A77BE8"/><use xlink:href="#mage" transform="translate(85,145) scale(1.3)"/><text x="108" y="166" fill="#fff" font-size="10" text-anchor="end">T1</text>
+    <rect x="116" y="116" width="54" height="54" rx="4" fill="#A77BE8"/><use xlink:href="#mage" transform="translate(143,145) scale(1.3)"/><text x="166" y="166" fill="#fff" font-size="10" text-anchor="end">T1</text>
+    <!-- archers back -->
+    <rect x="0" y="174" width="54" height="54" rx="4" fill="#58C889"/><use xlink:href="#archer" transform="translate(27,203) scale(1.3)"/><text x="50" y="224" fill="#fff" font-size="10" text-anchor="end">T1</text>
+    <rect x="174" y="174" width="54" height="54" rx="4" fill="#58C889"/><use xlink:href="#archer" transform="translate(201,203) scale(1.3)"/><text x="224" y="224" fill="#fff" font-size="10" text-anchor="end">T1</text>
+  </g>
+
+  <text x="180" y="434" fill="#FFFFFF" font-size="11" text-anchor="middle">Warrior T1  HP 504  DMG 12  Range 1  (you have 4)</text>
+  <text x="180" y="450" fill="#FFFFFF" font-size="11" text-anchor="middle">Merge: 3 x Warrior T1 -&gt; T2  (HP 504 -&gt; 907, DMG 12 -&gt; 22)</text>
+
+  <!-- bench -->
+  <text x="16" y="474" fill="#9AA3B5" font-size="12">Bench</text>
+  <rect x="10" y="480" width="340" height="68" rx="8" fill="#2A3042"/>
+  <rect x="18" y="488" width="34" height="34" rx="4" fill="#58C889" stroke="#F4BE4F" stroke-width="2"/><use xlink:href="#archer" transform="translate(35,506) scale(0.95)"/>
+  <rect x="56" y="488" width="34" height="34" rx="4" fill="#58C889" stroke="#F4BE4F" stroke-width="2"/><use xlink:href="#archer" transform="translate(73,506) scale(0.95)"/>
+  <rect x="94" y="488" width="34" height="34" rx="4" fill="#58C889" stroke="#F4BE4F" stroke-width="2"/><use xlink:href="#archer" transform="translate(111,506) scale(0.95)"/>
+  <rect x="132" y="488" width="34" height="34" rx="4" fill="#A77BE8"/><use xlink:href="#mage" transform="translate(149,506) scale(0.95)"/>
+  <text x="18" y="540" fill="#9AA3B5" font-size="10">gold edge = can merge</text>
+
+  <!-- buttons -->
+  <rect x="10" y="562" width="78" height="30" rx="6" fill="#4A5675"/><text x="49" y="582" fill="#fff" font-size="12" text-anchor="middle">Auto</text>
+  <rect x="96" y="562" width="78" height="30" rx="6" fill="#4A5675"/><text x="135" y="582" fill="#fff" font-size="12" text-anchor="middle">Merge</text>
+  <rect x="182" y="562" width="78" height="30" rx="6" fill="#3D7BD9"/><text x="221" y="582" fill="#fff" font-size="12" text-anchor="middle">Merge all</text>
+  <rect x="268" y="562" width="82" height="30" rx="6" fill="#4A5675"/><text x="309" y="582" fill="#fff" font-size="12" text-anchor="middle">Clear</text>
+  <rect x="72" y="600" width="216" height="32" rx="6" fill="#E85B55"/><text x="180" y="622" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">Fight!</text>
+</svg>

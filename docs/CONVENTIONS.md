@@ -53,15 +53,15 @@
 ## Git
 
 - Default branch `main` stays playable.
-- Every piece of work is a task in [BOARD.md](BOARD.md); its ID is milestone
-  plus number, e.g. `M1-01`.
+- Every piece of work is a card in [BOARD.md](BOARD.md); its ID is `PB-` plus
+  a running number, e.g. `PB-3`.
 - Branch off the latest `main`, named after the card:
-  `feature/M1-01-<short-name>`, fixes `fix/M1-01-<short-name>`.
+  `feature/PB-3-<short-name>`, fixes `fix/PB-3-<short-name>`.
 - Merge back into `main` only when `dotnet test Tools/LogicTests` and the
-  Unity EditMode/PlayMode tests pass. Then move the card to *Bitti*.
+  Unity EditMode/PlayMode tests pass. Then move the card to *Done*.
 - Small commits, imperative subject line under 72 characters
   (`Add merge rules for army units`).
-- Pull request for every change; the other developer reviews.
+- No pull requests: the other developer reviews by reading the branch (D-034).
 - Never commit `Library/`, `Temp/`, `Logs/`, `UserSettings/`, builds
   (`*.apk`, `*.aab`) or keystores.
 

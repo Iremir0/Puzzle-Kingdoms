@@ -284,3 +284,13 @@ and is merged back into `main` once the logic and Unity tests pass. There is no
 separate `dev` branch (the team's call). Why: two developers worked on the same
 area in parallel on 2026-11-14; one card per branch makes ownership visible
 and keeps `main` playable.
+
+## D-035 Board cards are PB-n and bigger, 2026-11-14
+Cards on `docs/BOARD.md` are coded `PB-1`, `PB-2`, ... (a running number, never
+reused) instead of milestone codes (`M1-03`), and branches follow them
+(`feature/PB-3-<short-name>`). Why: the old cards were half-day pieces and too
+small to follow; a card is now a playable slice with a "Done when" checklist, and
+the milestone is just a column. Each card has a detail file `docs/cards/PB-n.md`
+(why, current code, steps, mockup, prototype assets, Unity steps, checklist, notes)
+so either developer can pick it up cold. Old codes stay in the board's *Replaces* field and
+in older decisions (D-033 mentions M1-02, M1-04). Supersedes the code format of D-034.
