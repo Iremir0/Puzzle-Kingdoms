@@ -44,16 +44,17 @@ namespace PuzzleKingdoms.Logic.Army
             {
                 return 0;
             }
-            return def.AttackRange >= BackRowRangeMin ? 2 : 1;
+            return def.AttackRange >= BackRowRangeMin ? Formation.Size - 1 : 1;
         }
 
-        /// <summary>Closest row to the preferred one; center lane first, then left, then right.</summary>
+        /// <summary>Closest row to the preferred one; lanes nearest the middle first, then left before right.</summary>
         private static GridPos PickCell(List<GridPos> empty, int preferredRow)
         {
             return empty
                 .OrderBy(c => System.Math.Abs(c.Y - preferredRow))
                 .ThenBy(c => c.Y)
-                .ThenBy(c => c.X == 1 ? 0 : c.X == 0 ? 1 : 2)
+                .ThenBy(c => System.Math.Abs(c.X - (Formation.Size - 1) / 2f))
+                .ThenBy(c => c.X)
                 .First();
         }
     }

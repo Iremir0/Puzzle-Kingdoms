@@ -66,9 +66,9 @@ namespace PuzzleKingdoms.Tests.Data
             Assert.AreEqual(3.2f, rules.TierMultiplier(3), 0.0001f);
         }
 
-        [TestCase("Stages/Stage_1_1.asset", "goblin_grunt:4")]
-        [TestCase("Stages/Stage_1_2.asset", "goblin_archer:3,goblin_grunt:4")]
-        [TestCase("Stages/Stage_1_3.asset", "goblin_archer:2,goblin_brute:2,goblin_chief:1")]
+        [TestCase("Stages/Stage_1_1.asset", "goblin_grunt:7")]
+        [TestCase("Stages/Stage_1_2.asset", "goblin_archer:3,goblin_grunt:6")]
+        [TestCase("Stages/Stage_1_3.asset", "goblin_archer:2,goblin_brute:2,goblin_chief:1,goblin_grunt:2")]
         public void StagesHaveValidFormationsMatchingGdd(string path, string expectedCounts)
         {
             StageDef stage = Load<StageDefinition>(path).ToStageDef();

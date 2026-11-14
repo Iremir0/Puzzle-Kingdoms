@@ -14,7 +14,7 @@ namespace PuzzleKingdoms.Tests.Army
         {
             var formation = new Formation();
             Assert.AreEqual(0, formation.Count);
-            Assert.AreEqual(9, formation.EmptyCells().Count);
+            Assert.AreEqual(Formation.Size * Formation.Size, formation.EmptyCells().Count);
             Assert.IsNull(formation.GetUnit(new GridPos(1, 1)));
         }
 
@@ -62,9 +62,9 @@ namespace PuzzleKingdoms.Tests.Army
         [Test]
         public void CellsOutsideGridAreRejected()
         {
-            Assert.IsFalse(Formation.IsInside(new GridPos(3, 0)));
+            Assert.IsFalse(Formation.IsInside(new GridPos(Formation.Size, 0)));
             Assert.IsFalse(Formation.IsInside(new GridPos(0, -1)));
-            Assert.IsTrue(Formation.IsInside(new GridPos(2, 2)));
+            Assert.IsTrue(Formation.IsInside(new GridPos(Formation.Size - 1, Formation.Size - 1)));
         }
 
         [Test]

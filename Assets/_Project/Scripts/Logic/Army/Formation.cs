@@ -5,12 +5,12 @@ using PuzzleKingdoms.Logic.Stages;
 namespace PuzzleKingdoms.Logic.Army
 {
     /// <summary>
-    /// The 3×3 battle formation. Cells are (x, y): x = lane (0 left, 1 center,
-    /// 2 right), y = row (0 front, 1 middle, 2 back). The front row faces the enemy.
+    /// The 4×4 battle formation (D-031). Cells are (x, y): x = lane (0 left ... 3 right),
+    /// y = row (0 front ... 3 back). The front row faces the enemy.
     /// </summary>
     public sealed class Formation
     {
-        public const int Size = 3;
+        public const int Size = 4;
         public static readonly GridPos NoCell = new GridPos(-1, -1);
 
         private readonly ArmyUnit[] _slots = new ArmyUnit[Size * Size];

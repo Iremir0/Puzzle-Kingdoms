@@ -9,7 +9,7 @@ starting value to be validated by playtests and headless balance simulations.
 > And when it matters most, *you* sound the war horn.
 
 Puzzle Kingdoms is a portrait mobile game in which the player solves a short
-Match-3 puzzle to recruit an army, arranges and merges it on a 3×3 formation,
+Match-3 puzzle to recruit an army, arranges and merges it on a 4×4 formation,
 and watches it fight an auto battle — while holding a small number of
 **Rally** charges that they earned on the puzzle board and fire at the moment
 they choose.
@@ -94,9 +94,9 @@ Post-MVP: more special gems, stage objectives, boss board modifiers.
 
 ## 6. War Camp (army preparation)
 
-- 3×3 formation grid. **Rows** = front / middle / back. **Columns** = lanes
-  (left / center / right). The front row faces the enemy.
-- Unlimited **bench**; at most 9 units deployed.
+- 4×4 formation grid (D-031). **Rows** = depth (row 0 faces the enemy, row 3 is the
+  back). **Columns** = four lanes, left to right.
+- Unlimited **bench**; at most 16 units deployed.
 - **Merge:** three units of the same class and tier → one unit of the next tier,
   max tier 3. Select a unit and press **Merge** to merge that one, or press
   **Merge all** to merge everything that can be merged in one go (merges chain:
@@ -116,7 +116,7 @@ Post-MVP: more special gems, stage objectives, boss board modifiers.
 | 3 | ×3.2 | larger, glow |
 
 Intent: one merged unit is slightly stronger than three separate ones in raw
-numbers but occupies one slot. With ≤ 9 units, spreading is usually better; with
+numbers but occupies one slot. With ≤ 16 units, spreading is usually better; with
 more, merging is. Verified by headless simulation.
 
 ## 7. Units (Tier 1 start values)
@@ -149,7 +149,7 @@ Values after the first headless balance pass (D-026, `Tools/Balance`):
 
 All goblins deal Physical damage and have 0% Ward.
 
-Enemies use the same rules as player units and their own 3×3 formation.
+Enemies use the same rules as player units and their own 4×4 formation.
 
 ## 9. Battle
 
@@ -190,15 +190,16 @@ Enemies use the same rules as player units and their own 3×3 formation.
 
 | Stage | Name | Enemies | Lesson |
 |---|---|---|---|
-| 1-1 | Border Watch | 4 Grunts | match, recruit, place |
-| 1-2 | Arrow Rain | 4 Grunts, 3 Archers | protect your back line, merge |
-| 1-3 | The Chief's Guard | 2 Brutes, 2 Archers, Chief | Mages vs armor, Rally timing |
+| 1-1 | Border Watch | 7 Grunts | match, recruit, place |
+| 1-2 | Arrow Rain | 6 Grunts, 3 Archers | protect your back line, merge |
+| 1-3 | The Chief's Guard | 2 Brutes, 2 Grunts, 2 Archers, Chief | Mages vs armor, Rally timing |
 
-Formations (row 0 = front): 1-1 Grunts across the front plus one in the middle
-center; 1-2 the same plus a full back row of Archers; 1-3 has Brute–Chief–Brute
-in front and Archers in the back corners. Gold rewards: 30 / 40 / 60 (start
+Formations (row 0 = front, four lanes): 1-1 a front row of 4 Grunts and 3 behind
+them; 1-2 a front row of 4 Grunts, 2 in the second row and 3 Archers in the back
+row; 1-3 has Brute–Chief–Brute (in lanes 0, 1, 2) in front, 2 Grunts behind and
+Archers in the back corners. Gold rewards: 30 / 40 / 60 (start
 values).
 
-Measured difficulty (D-026; random/greedy puzzle bot, auto formation, no merges):
-1-1 always won in 7–12 s; 1-2 won 96–100% in 12–19 s; 1-3 won 36–49% without
-Rally and 77–95% with it, in 25–39 s.
+Measured difficulty (D-031, 4×4 formation; random/greedy puzzle bot, auto formation,
+no merges): 1-1 won 90–100% in 9–19 s; 1-2 won 76–99% in 12–21 s; 1-3 won 47–62%
+(random bot) and 87–93% (greedy bot), 19–28 s.

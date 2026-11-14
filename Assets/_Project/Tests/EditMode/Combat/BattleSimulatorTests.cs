@@ -33,11 +33,14 @@ namespace PuzzleKingdoms.Tests.Combat
             BattleSimulator sim = Sim(CombatFixtures.Rules(),
                 CombatFixtures.Single(CombatFixtures.Dummy(), 1, 0),
                 CombatFixtures.Single(CombatFixtures.Dummy(), 0, 2));
+            // 4 lanes: lane x sits at (x - 1.5) * LaneSpacing; rows 1 apart behind half the front gap.
             Combatant player = sim.Combatants[0];
             Combatant enemy = sim.Combatants[1];
             Assert.AreEqual(Side.Player, player.Side);
-            Assert.AreEqual(new Vector2(0f, -3f), player.Position);
-            Assert.AreEqual(new Vector2(-1.2f, 5f), enemy.Position);
+            Assert.AreEqual(-0.6f, player.Position.X, 0.0001f);
+            Assert.AreEqual(-3f, player.Position.Y, 0.0001f);
+            Assert.AreEqual(-1.8f, enemy.Position.X, 0.0001f);
+            Assert.AreEqual(5f, enemy.Position.Y, 0.0001f);
             Assert.AreEqual(0, enemy.Lane);
         }
 

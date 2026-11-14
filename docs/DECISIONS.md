@@ -214,3 +214,21 @@ wide vs. tall is still a choice, now with one tap for the common case).
 Rejected: automatic merging whenever three match (removes the choice).
 Requested next, not built yet: 4×4 formation, rising enemy strength per stage,
 and stage board modifiers (e.g. stone gems that vanish after two uses).
+
+## D-031 4×4 formation (16 slots), enemy armies rebuilt for it, 2026-11-14
+3×3 (9 units) was too small to make placement a real decision once the puzzle
+gives 11–16 units. The formation is now 4 lanes × 4 rows (`Formation.Size = 4`).
+Changes: lanes sit symmetrically around the middle (`(x - 1.5) * LaneSpacing`),
+the battle view sizes its field from `Formation.Size`, `AutoFormation` sends long
+range units to the back row (row 3) and fills lanes from the middle outwards.
+Balance (`Tools/Balance`, 300 runs): with unchanged enemies the player fielded
+10–14 units instead of 8–9 and 1-3 became easy (greedy bot without Rally 46% →
+95%, 1-1 9 s). Enemy armies were rebuilt for 4 lanes:
+- 1-1: 7 Grunts (front row of 4 + 3 behind).
+- 1-2: 6 Grunts (front row of 4, 2 behind) + 3 Archers in the back row.
+- 1-3: 2 Brutes + Chief in front, 2 Grunts behind, 2 Archers in the back corners.
+Result (random bot / greedy bot): 1-1 wins 90–93% / 100% in 13–19 s; 1-2 76–87% /
+97–99% in 12–21 s; 1-3 47–62% / 87–93% in 19–28 s: inside the D-026 targets except
+battle length, which is shorter than the GDD's 20–40 s. Open: with the stage
+modifiers and rising enemy strength asked for next, this is the baseline to
+scale from; battle length is better fixed there than by tuning these numbers.
