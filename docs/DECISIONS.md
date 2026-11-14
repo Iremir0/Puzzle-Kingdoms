@@ -278,7 +278,7 @@ the playtests (M1-04). Not built: showing the multiplier on the stage select / e
 preview; per-stage damage multipliers are supported but all 1.0.
 
 ## D-034 Ticket branches off main, merged back when tests pass, 2026-11-14
-Work is tracked as cards on the team board, coded by milestone (`M1-01`). Each
+Work is tracked as tasks in `docs/BOARD.md`, coded by milestone (`M1-01`). Each
 card gets its own branch from the latest `main` (`feature/M1-01-<short-name>`)
 and is merged back into `main` once the logic and Unity tests pass. There is no
 separate `dev` branch (the team's call). Why: two developers worked on the same

@@ -53,8 +53,8 @@
 ## Git
 
 - Default branch `main` stays playable.
-- Every piece of work is a card on the team board ("Puzzle Kingdoms Board"
-  artifact); its code is milestone plus number, e.g. `M1-01`.
+- Every piece of work is a task in [BOARD.md](BOARD.md); its ID is milestone
+  plus number, e.g. `M1-01`.
 - Branch off the latest `main`, named after the card:
   `feature/M1-01-<short-name>`, fixes `fix/M1-01-<short-name>`.
 - Merge back into `main` only when `dotnet test Tools/LogicTests` and the

@@ -8,8 +8,10 @@ single task board; the long-term plan stays in [ROADMAP.md](ROADMAP.md).
 - One person owns a task at a time. To take a task, move it to *In Progress*,
   put your letter in the Owner column and push that change first.
 - Max **2 tasks In Progress per person**. Finish before starting.
-- One task = one feature branch (`feature/<name>`), commits only, no pull
-  requests; the other person reviews by reading the branch before it is merged.
+- One task = one branch off the latest `main`, named with the task ID
+  (`feature/M1-03-playtest-kit`), commits only, no pull requests; the other
+  person reviews by reading the branch, then it is merged back into `main`
+  once the tests pass (D-034).
 - A task is *Done* only when: logic has NUnit tests (`dotnet test Tools/LogicTests`
   green), docs/DECISIONS.md is updated if a rule changed, and the task was
   played once in Unity.
@@ -31,7 +33,8 @@ Task ID prefix = milestone (`M1-03`). Size: S ≤ ½ day, M ≈ 1–2 days, L �
 
 | ID | Task | Owner | Size | Notes |
 |---|---|---|---|---|
-| M1-08 | Verify the stack in Unity: run Test Runner (EditMode + Data tests), play 1-1 to 1-3, commit the new `.meta` files, then merge into `claude/cool-babbage-445udk` | both | S | Moves M1-06, M1-07, M1-01, M1-02 from In Review to Done |
+| M1-08 | Play 1-1 to 1-3 once in Unity on `main` and check the In Review notes below | Emir | S | Merging into `main` and the Test Runner are done (2026-11-14, see In Review). Moves M1-06, M1-07, M1-01, M1-02 to Done |
+| M0-02 | CI: run `dotnet test Tools/LogicTests` on GitHub for every push | — | S | Guards the "merge when tests pass" rule; Unity tests stay local (they need a license) |
 | M1-03 | Playtest kit: build, 5+ testers, one-page feedback form | — | S | Needs M0-01 for phone testing |
 | M1-09 | Show a stage's difficulty on the stage select and the enemy preview (stone gems, enemy HP ×) | — | S | View only; data is in `StageDef` (`StoneGems`, `EnemyHpMultiplier`). Suggested owner: Emir |
 | M1-10 | War Camp: draw unit silhouettes (`Palette.LookFor` + `UnitSilhouettes`) instead of letters in the formation grid and the bench | — | S | View only. Suggested owner: Emir |
@@ -45,9 +48,9 @@ Task ID prefix = milestone (`M1-03`). Size: S ≤ ½ day, M ≈ 1–2 days, L �
 |---|---|---|
 | M2-01 | Touch input feel: swipe threshold, drag-follow, invalid-swap bounce | M |
 | M2-02 | Gem animations: swap, clear, fall, spawn (tweens, no logic changes) | M |
-| M2-03 | Cascade feedback: "Bonus!" text, rising pitch SFX, screen shake on Prism | M |
+| M2-03 | Cascade feedback: rising pitch SFX, screen shake on Prism ("Bonus! xN" text already shows) | M |
 | M2-04 | Special and stone gem effects: Blast ring, Prism sparkle and half-stone gems are drawn (D-028, D-032); still to do: clear / explosion / stone-break effects and sound | M |
-| M2-05 | Reshuffle animation and hint polish | S |
+| M2-05 | Reshuffle animation (board snaps today) and hint polish (5 s idle hint exists) | S |
 | M2-06 | Placeholder SFX/music pass (log in CREDITS.md first) | S |
 
 ### M3 War Camp (2 wk)
@@ -55,8 +58,7 @@ Task ID prefix = milestone (`M1-03`). Size: S ≤ ½ day, M ≈ 1–2 days, L �
 |---|---|---|
 | M3-01 | Drag & drop onto the 4×4 formation (replaces tap-select) | L |
 | M3-02 | Bench UI: scroll, grouping by class/tier, mergeable highlight | M |
-| M3-03 | Merge UX: preview, merge animation, undo before fight | M |
-| M3-04 | Enemy preview panel (formation + traits) in the camp | S |
+| M3-03 | Merge UX: merge animation, undo before fight (preview done in M1-06) | M |
 | M3-05 | Art direction research (packs vs. freelancer), runs in parallel | M |
 
 ### M4 3D battle presentation (3 wk)
@@ -71,9 +73,8 @@ Task ID prefix = milestone (`M1-03`). Size: S ≤ ½ day, M ≈ 1–2 days, L �
 ### M5 Loop integration (2 wk)
 | ID | Task | Size |
 |---|---|---|
-| M5-01 | Three Chapter 1 stages polished end to end, stage map | M |
-| M5-02 | Stars and gold shown on results; star rules verified | S |
-| M5-03 | Local save hardened (versioning, corrupt-file recovery) + tests | M |
+| M5-01 | Stage map polish: a real map instead of the list (3 stages and the list exist) | M |
+| M5-03 | Tests for `ProfileStore`: corrupt file kept as `.bak`, newer save version, atomic write (the code exists, untested) | S |
 | M5-04 | Tutorial prompts for stages 1-1, 1-2, 1-3 | M |
 | M5-05 | Settings: sound, speed default, reset progress | S |
 
@@ -84,7 +85,7 @@ Task ID prefix = milestone (`M1-03`). Size: S ≤ ½ day, M ≈ 1–2 days, L �
 | M6-02 | Safe areas, aspect ratios, small-screen layout pass | M |
 | M6-03 | UI polish pass (fonts, spacing, colours from GDD) | M |
 | M6-04 | Final playtest round and balance pass with `Tools/Balance` | M |
-| M6-05 | App icon, splash, package name, signed release build | S |
+| M6-05 | App icon, splash, release keystore, signed AAB (package name is set) | S |
 
 ### Post-MVP ideas (do not start before M1 go decision)
 Class levels with gold, Defender/Support classes, Daily Challenge, Expedition
@@ -94,7 +95,7 @@ mode, Commander heroes (see GDD §10).
 
 ## In Review
 
-Code, tests and docs are done; each card still needs one play-through in Unity (Test Runner + the stage) before it moves to Done. The four branches are a stack: each contains the one before it, so merging `feature/enemy-scaling` brings all of them. They merge cleanly into `claude/cool-babbage-445udk` (checked 2026-11-14). Only `feature/enemy-scaling` is on GitHub.
+Merged into `main` on 2026-11-14 (Emir, via `feature/enemy-scaling`, which contains all four); `dotnet test` and the Unity Test Runner were run on the result. Each card still needs one play-through in Unity (M1-08) before it moves to Done.
 
 | ID | Task | Owner | Reviewer | Branch |
 |---|---|---|---|---|
@@ -118,8 +119,11 @@ Notes for the reviewer:
 | M1-D2 | War camp logic and view |
 | M1-D3 | Battle simulator, Rally, 2D debug view |
 | M1-D4 | Stage flow, progression, JSON save, PlayMode smoke test |
-| M1-D6 | Gem shapes, special matches (Blast, Prism), code-drawn unit silhouettes, pointsPerUnit 8 (D-027, D-028, D-029); merged into `claude/cool-babbage-445udk` by Emir |
 | M1-D5 | Balance pass with `Tools/Balance` (D-026) |
+| M1-D6 | Gem shapes, special matches (Blast, Prism), code-drawn unit silhouettes, pointsPerUnit 8 (D-027, D-028, D-029) |
+| M1-D7 | Stars and gold on the results screen, star and save-version rules tested (`ProgressionTests`) |
+| M1-D8 | Enemy army preview in the War Camp and on the puzzle screen |
+| M0-D2 | Dev APK build command and Android toolchain; `main` brought up to date, ticket branch workflow (D-034) |
 
 ---
 
