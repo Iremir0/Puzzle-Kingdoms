@@ -26,6 +26,8 @@ namespace PuzzleKingdoms.Data
         [SerializeField] private long boardSeed;
         [SerializeField] private List<EnemySlotData> enemies = new List<EnemySlotData>();
         [SerializeField, Min(0)] private int goldReward;
+        [Tooltip("Gems that start the puzzle encased in stone: the first match only breaks the stone.")]
+        [SerializeField, Min(0)] private int stoneGems;
 
         public string Id => id;
         public string DisplayName => displayName;
@@ -41,6 +43,7 @@ namespace PuzzleKingdoms.Data
                 Moves = moves,
                 BoardSeed = (ulong)boardSeed,
                 GoldReward = goldReward,
+                StoneGems = stoneGems,
             };
             foreach (EnemySlotData slot in enemies)
             {

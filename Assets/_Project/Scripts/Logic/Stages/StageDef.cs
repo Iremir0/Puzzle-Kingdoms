@@ -24,5 +24,7 @@ namespace PuzzleKingdoms.Logic.Stages
         public ulong BoardSeed = NoSeed;
         public readonly List<EnemySlot> Enemies = new List<EnemySlot>();
         public int GoldReward;
+        /// <summary>How many gems start the puzzle encased in stone (D-032); 0 = none.</summary>
+        public int StoneGems;
     }
 }

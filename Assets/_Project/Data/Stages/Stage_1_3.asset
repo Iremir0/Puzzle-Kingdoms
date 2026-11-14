@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: The Chief's Guard
   moves: 12
   boardSeed: 0
+  stoneGems: 5
   enemies:
   - unit: {fileID: 11400000, guid: d499d080c53e4ac0bd5edc04f00c98d7, type: 2}
     tier: 1
@@ -29,9 +30,6 @@ MonoBehaviour:
   - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
     tier: 1
     cell: {x: 1, y: 1}
-  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
-    tier: 1
-    cell: {x: 2, y: 1}
   - unit: {fileID: 11400000, guid: 98f5e48e1c474660a13cfd557ca4f5dd, type: 2}
     tier: 1
     cell: {x: 0, y: 3}

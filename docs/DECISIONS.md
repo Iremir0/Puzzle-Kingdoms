@@ -232,3 +232,26 @@ Result (random bot / greedy bot): 1-1 wins 90–93% / 100% in 13–19 s; 1-2 76�
 battle length, which is shorter than the GDD's 20–40 s. Open: with the stage
 modifiers and rising enemy strength asked for next, this is the baseline to
 scale from; battle length is better fixed there than by tuning these numbers.
+
+## D-032 Stone gems: the first match only breaks the stone, 2026-11-14
+Requested difficulty feature: a gem can start the stage turned to stone; "the first
+match it is in removes the stone, the second one clears it". It looks like its
+normal gem with half of it cracked rock, so color and shape stay readable.
+- A stone gem takes part in matches like any gem of its type (it counts for the
+  line/square, for the 4-line bonus and for creating a special gem) and can be
+  swapped. When it is part of a match, or reached by a Blast or a Prism, its stone
+  breaks (`CascadeStep.Cracked`) and the gem stays on the board, scoring nothing.
+  The next time it is cleared normally.
+- Stones are placed once by `BoardModel.PlaceStones(StageDef.StoneGems)` after the
+  board is generated: random cells, never two orthogonally adjacent (so a match can
+  not be left standing after its stones break), no new stones during play. They
+  fall, swap and shuffle together with their gem. A special gem is never created on
+  a stone cell.
+- Per stage (data, `stoneGems`): 1-1 none, 1-2 three, 1-3 five.
+Balance (`Tools/Balance`, 300 runs): stones cost 4-8% of the units recruited and
+1-3 got harder, so a Grunt left 1-3 (2 → 1). Result: 1-2 wins 72% / 85% (random bot
+without / with Rally) and 94% / 99% (greedy); 1-3 45% / 59% and 83% / 88%: at the
+low edge of the D-026 targets, on purpose, since the stage is meant to be the hard
+one. Not built: stones that appear during a stage, 2+ layer stones, other
+modifiers (fewer moves, no Rally); rising enemy strength beyond what the three
+stages already do.

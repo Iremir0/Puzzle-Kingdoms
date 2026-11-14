@@ -68,7 +68,7 @@ namespace PuzzleKingdoms.Tests.Data
 
         [TestCase("Stages/Stage_1_1.asset", "goblin_grunt:7")]
         [TestCase("Stages/Stage_1_2.asset", "goblin_archer:3,goblin_grunt:6")]
-        [TestCase("Stages/Stage_1_3.asset", "goblin_archer:2,goblin_brute:2,goblin_chief:1,goblin_grunt:2")]
+        [TestCase("Stages/Stage_1_3.asset", "goblin_archer:2,goblin_brute:2,goblin_chief:1,goblin_grunt:1")]
         public void StagesHaveValidFormationsMatchingGdd(string path, string expectedCounts)
         {
             StageDef stage = Load<StageDefinition>(path).ToStageDef();
@@ -85,6 +85,14 @@ namespace PuzzleKingdoms.Tests.Data
                 .OrderBy(g => g.Key)
                 .Select(g => $"{g.Key}:{g.Count()}"));
             Assert.AreEqual(expectedCounts, counts);
+        }
+
+        [TestCase("Stages/Stage_1_1.asset", 0)]
+        [TestCase("Stages/Stage_1_2.asset", 3)]
+        [TestCase("Stages/Stage_1_3.asset", 5)]
+        public void StagesHaveTheStoneGemsOfTheGdd(string path, int expected)
+        {
+            Assert.AreEqual(expected, Load<StageDefinition>(path).ToStageDef().StoneGems);
         }
 
         [Test]

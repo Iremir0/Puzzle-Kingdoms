@@ -26,12 +26,14 @@ namespace PuzzleKingdoms.Views.Puzzle
         private const float RejectSeconds = 0.2f;
         /// <summary>Idle time before a valid move is pointed out (GDD §5 hint).</summary>
         private const float HintDelaySeconds = 5f;
+        private static readonly Color StoneTint = new Color(0.68f, 0.68f, 0.72f, 1f);
 
         private StageRun _run;
         private Action _onDone;
         private Image[,] _cells;
         private Text[,] _tags;
         private Image[,] _marks;
+        private Image[,] _stoneMarks;
         private Outline[,] _outlines;
         private Text _moves;
         private Text _status;
@@ -79,7 +81,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                 0.2f, 0.02f, 0.8f, 0.09f);
             _continue.gameObject.SetActive(false);
 
-            Render(_run.Puzzle.Board.ToGrid(), _run.Puzzle.Board.ToSpecialGrid());
+            Render(_run.Puzzle.Board.ToGrid(), _run.Puzzle.Board.ToSpecialGrid(), _run.Puzzle.Board.ToStoneGrid());
             RefreshHud();
         }
 
@@ -111,6 +113,7 @@ namespace PuzzleKingdoms.Views.Puzzle
             _cells = new Image[board.Width, board.Height];
             _tags = new Text[board.Width, board.Height];
             _marks = new Image[board.Width, board.Height];
+            _stoneMarks = new Image[board.Width, board.Height];
             _outlines = new Outline[board.Width, board.Height];
             float w = 1f / board.Width;
             float h = 1f / board.Height;
@@ -125,6 +128,12 @@ namespace PuzzleKingdoms.Views.Puzzle
                     cell.gameObject.AddComponent<GemCell>().Init(this, new GridPos(x, y));
                     _cells[x, y] = cell;
                     _tags[x, y] = Ui.Label(cell.transform, "", 56, TextAnchor.MiddleCenter, new Color(0, 0, 0, 0.55f));
+                    // Half of a stone gem is rock (D-032): drawn over the gem, so the other half keeps its color.
+                    Image stone = Ui.Box(cell.transform, "Stone", StoneTint);
+                    stone.preserveAspect = true;
+                    stone.raycastTarget = false;
+                    stone.enabled = false;
+                    _stoneMarks[x, y] = stone;
                     Image mark = Ui.Box(cell.transform, "Special", Color.white);
                     mark.preserveAspect = true;
                     mark.raycastTarget = false;
@@ -231,8 +240,9 @@ namespace PuzzleKingdoms.Views.Puzzle
             ClearHint();
             int[,] before = _run.Puzzle.Board.ToGrid();
             SpecialKind[,] beforeSpecials = _run.Puzzle.Board.ToSpecialGrid();
+            bool[,] beforeStones = _run.Puzzle.Board.ToStoneGrid();
             MoveResult result = _run.Puzzle.PlaySwap(a, b);
-            StartCoroutine(result.IsValid ? Animate(before, beforeSpecials, result) : Reject(a, b));
+            StartCoroutine(result.IsValid ? Animate(before, beforeSpecials, beforeStones, result) : Reject(a, b));
             return result.IsValid;
         }
 
@@ -253,15 +263,15 @@ namespace PuzzleKingdoms.Views.Puzzle
 
         // --- Playback ------------------------------------------------------
 
-        private IEnumerator Animate(int[,] before, SpecialKind[,] beforeSpecials, MoveResult result)
+        private IEnumerator Animate(int[,] before, SpecialKind[,] beforeSpecials, bool[,] beforeStones, MoveResult result)
         {
             IsBusy = true;
-            foreach (MoveReplay.Frame frame in MoveReplay.Frames(before, result, beforeSpecials))
+            foreach (MoveReplay.Frame frame in MoveReplay.Frames(before, result, beforeSpecials, beforeStones))
             {
                 switch (frame.Kind)
                 {
                     case MoveReplay.FrameKind.Swapped:
-                        Render(frame.Grid, frame.Specials);
+                        Render(frame.Grid, frame.Specials, frame.Stones);
                         yield return new WaitForSeconds(SwapSeconds);
                         break;
                     case MoveReplay.FrameKind.Cleared:
@@ -277,17 +287,17 @@ namespace PuzzleKingdoms.Views.Puzzle
                         }
                         yield return new WaitForSeconds(FlashSeconds);
                         SetMatchOutlines(frame.Step, false);
-                        Render(frame.Grid, frame.Specials);
+                        Render(frame.Grid, frame.Specials, frame.Stones);
                         yield return new WaitForSeconds(ClearSeconds);
                         break;
                     case MoveReplay.FrameKind.Filled:
-                        Render(frame.Grid, frame.Specials);
+                        Render(frame.Grid, frame.Specials, frame.Stones);
                         yield return new WaitForSeconds(FillSeconds);
                         break;
                     case MoveReplay.FrameKind.Reshuffled:
                         _status.text = "No moves left: the board was reshuffled.";
                         yield return new WaitForSeconds(0.3f);
-                        Render(frame.Grid, frame.Specials);
+                        Render(frame.Grid, frame.Specials, frame.Stones);
                         break;
                 }
             }
@@ -344,10 +354,14 @@ namespace PuzzleKingdoms.Views.Puzzle
                     return "Prism!";
                 }
             }
-            return step.Triggers.Count > 0 ? "Blast!" : "";
+            if (step.Triggers.Count > 0)
+            {
+                return "Blast!";
+            }
+            return step.Cracked.Count > 0 ? "Stone cracked!" : "";
         }
 
-        private void Render(int[,] grid, SpecialKind[,] specials)
+        private void Render(int[,] grid, SpecialKind[,] specials, bool[,] stones)
         {
             IReadOnlyList<string> keys = _run.Puzzle.GemRewardKeys;
             for (int x = 0; x < grid.GetLength(0); x++)
@@ -363,6 +377,12 @@ namespace PuzzleKingdoms.Views.Puzzle
                     }
                     _tags[x, y].text = "";
                     SpecialKind kind = specials[x, y];
+                    bool stone = !empty && stones[x, y];
+                    _stoneMarks[x, y].enabled = stone;
+                    if (stone)
+                    {
+                        _stoneMarks[x, y].sprite = GemShapes.GetStoneHalf(Palette.ShapeForGem(keys[gem], StageRun.RallyKey));
+                    }
                     _marks[x, y].enabled = !empty && kind != SpecialKind.None;
                     if (_marks[x, y].enabled)
                     {

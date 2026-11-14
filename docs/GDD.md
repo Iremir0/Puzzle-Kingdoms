@@ -73,6 +73,14 @@ readable for color-blind players (D-027).
   of the neighbour's type; cleared in a match it clears every gem of its own
   type. Special gems caught in an explosion go off too (chains). Every gem a
   special gem clears counts for the meters like a normal clear.
+- **Stone gems** (D-032): some gems start a stage half turned to stone (their color and
+  shape stay, half of the gem is drawn as cracked rock). A stone gem matches like
+  any gem of its color, but the first match it takes part in (or the first Blast
+  or Prism that reaches it) only breaks the stone: the gem stays where it is and
+  scores nothing. The next match clears it. Stones are placed at the start of the
+  puzzle, never next to each other, travel with their gem when it falls or is
+  swapped, and no new ones appear during the stage. How many a stage has is
+  stage data (`stoneGems`).
 - **Moves:** 12 per stage (stage data can override).
 - **Recruitment meter:** every cleared gem adds 1 point to its meter; every
   **8 points = 1 unit** (remainder carries over within the stage). A line of 4
@@ -192,14 +200,16 @@ Enemies use the same rules as player units and their own 4×4 formation.
 |---|---|---|---|
 | 1-1 | Border Watch | 7 Grunts | match, recruit, place |
 | 1-2 | Arrow Rain | 6 Grunts, 3 Archers | protect your back line, merge |
-| 1-3 | The Chief's Guard | 2 Brutes, 2 Grunts, 2 Archers, Chief | Mages vs armor, Rally timing |
+| 1-3 | The Chief's Guard | 2 Brutes, 1 Grunt, 2 Archers, Chief | Mages vs armor, Rally timing |
 
 Formations (row 0 = front, four lanes): 1-1 a front row of 4 Grunts and 3 behind
 them; 1-2 a front row of 4 Grunts, 2 in the second row and 3 Archers in the back
-row; 1-3 has Brute–Chief–Brute (in lanes 0, 1, 2) in front, 2 Grunts behind and
+row; 1-3 has Brute–Chief–Brute (in lanes 0, 1, 2) in front, 1 Grunt behind and
 Archers in the back corners. Gold rewards: 30 / 40 / 60 (start
 values).
 
-Measured difficulty (D-031, 4×4 formation; random/greedy puzzle bot, auto formation,
-no merges): 1-1 won 90–100% in 9–19 s; 1-2 won 76–99% in 12–21 s; 1-3 won 47–62%
-(random bot) and 87–93% (greedy bot), 19–28 s.
+Stone gems per stage (D-032): 1-1 none, 1-2 three, 1-3 five.
+
+Measured difficulty (D-032, 4×4 formation and stone gems; random/greedy puzzle bot,
+auto formation, no merges): 1-1 won 90–100% in 9–19 s; 1-2 won 72–99% in 13–22 s;
+1-3 won 45% / 59% (random bot without / with Rally) and 83% / 88% (greedy bot), 19–28 s.

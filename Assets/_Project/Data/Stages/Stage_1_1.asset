@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: Border Watch
   moves: 12
   boardSeed: 0
+  stoneGems: 0
   enemies:
   - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
     tier: 1

@@ -132,6 +132,7 @@ namespace PuzzleKingdoms.Balance
                 Moves = I(v["moves"]),
                 BoardSeed = (ulong)long.Parse(v["boardSeed"], CultureInfo.InvariantCulture),
                 GoldReward = I(v["goldReward"]),
+                StoneGems = v.TryGetValue("stoneGems", out string stones) ? I(stones) : 0,
             };
             int start = Array.IndexOf(lines, "  enemies:");
             EnemySlot slot = null;
