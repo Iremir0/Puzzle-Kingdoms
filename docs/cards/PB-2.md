@@ -1,6 +1,6 @@
 # PB-2 Play the new rules in Unity and close the review
 
-Owner: — · Milestone: M1 · Size: S · Branch: `feature/PB-2-verify-new-rules` ·
+Owner: Emir (carried over from M1-08; swap in the check-in if Alican takes it) · Milestone: M1 · Size: S · Branch: `feature/PB-2-verify-new-rules` ·
 Replaces: M1-08, M1-06, M1-07, M1-01, M1-02
 
 ## Why
@@ -19,14 +19,18 @@ four features are "probably fine".
 | Enemy HP ×1.0 / ×1.1 / ×1.2 per stage, all HP ×1.4 | D-033 | no |
 
 - 130 EditMode tests pass with `dotnet test Tools/LogicTests`.
-- The Data tests ([GameDataTests.cs](../../Assets/_Project/Tests/EditModeData/GameDataTests.cs))
-  only run inside Unity. They were changed for the new HP values, stage
-  compositions, stone counts and multipliers, and have not been run yet.
+- Emir merged `feature/enemy-scaling` into `main` and ran the Unity Test Runner
+  on the result (2026-11-14), including the Data tests
+  ([GameDataTests.cs](../../Assets/_Project/Tests/EditModeData/GameDataTests.cs))
+  that were changed for the new HP values, stage compositions, stone counts and
+  multipliers.
+- The `.meta` files for the new test files are committed.
+- What is left is the play-through below.
 
 ## Build
 1. `git switch main`, `git pull`, open the project in Unity.
-2. Run all tests in the Unity Test Runner (EditMode, including the Data tests,
-   then PlayMode). Note the counts.
+2. Quick re-run of the Unity Test Runner (EditMode and PlayMode) on the latest
+   `main`, in case something landed since; note the counts.
 3. Play the checklist below in order. Write what you see in the Notes, also
    when it is fine.
 4. For every problem: if it is a one-line fix, fix it on this branch with a
@@ -85,7 +89,8 @@ New features or balance changes. If a stage feels too hard or too easy, write it
 down for the playtests (PB-5); balance is decided on tester data, not one run.
 
 ## Done when
-- [ ] Unity Test Runner: EditMode (with Data tests) and PlayMode green; counts in Notes
+- [x] Unity Test Runner (with Data tests) green on the merged `main` (Emir, 2026-11-14)
+- [ ] Quick re-run on the latest `main` before playing; counts in Notes
 - [ ] Every box of the play checklist ticked or turned into a card
 - [ ] Board: the In Review entries are removed and this card is Done
 
