@@ -7,7 +7,7 @@ puzzle-kingdoms/
 ├── README.md                     ✅ entry point
 ├── CLAUDE.md                     ✅ rules for Claude Code sessions
 ├── CREDITS.md                    ✅ third-party licenses (fill before adding assets)
-├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap
+├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, board-seed.json (initial tickets)
 │
 ├── Assets/
 │   └── _Project/                 everything we make (third-party packs go in their own folders)

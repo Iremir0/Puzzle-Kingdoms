@@ -53,7 +53,12 @@
 ## Git
 
 - Default branch `main` stays playable.
-- Feature branches: `feature/<short-name>`, fixes: `fix/<short-name>`.
+- Every piece of work is a ticket on the team board (`PK-<number>`;
+  `docs/board-seed.json` holds the initial list).
+- Branch off the latest `main`, named after the ticket:
+  `feature/PK-<id>-<short-name>`, fixes `fix/PK-<id>-<short-name>`.
+- Merge back into `main` only when `dotnet test Tools/LogicTests` and the
+  Unity EditMode/PlayMode tests pass. Then move the card to *Bitti*.
 - Small commits, imperative subject line under 72 characters
   (`Add merge rules for army units`).
 - Pull request for every change; the other developer reviews.

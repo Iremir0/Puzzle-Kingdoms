@@ -199,3 +199,11 @@ rendered once into a sprite (`UnitSilhouettes`), so there are no art files and
 no credits. Only the tier is written on a unit now ("T2"). This is a
 placeholder for real art, not the final look: realistic models or sprites
 (asset pack vs. freelancer) are still open (ROADMAP M3/M4).
+
+## D-034 Ticket branches off main, merged back when tests pass, 2026-11-14
+Work is tracked as tickets (`PK-<number>`) on the team board. Each ticket gets
+its own branch from the latest `main` (`feature/PK-<id>-<short-name>`) and is
+merged back into `main` once the logic and Unity tests pass. There is no
+separate `dev` branch (the team's call). Why: two developers worked on the same
+area in parallel on 2026-11-14; one ticket per branch makes ownership visible
+and keeps `main` playable. The initial ticket list is `docs/board-seed.json`.
