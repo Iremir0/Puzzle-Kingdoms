@@ -23,7 +23,8 @@ ported to C# with its tests.
 - [x] M0: design decisions, docs
 - [x] M0: logic test runner (`dotnet test Tools/LogicTests`)
 - [x] M0: Unity 6 LTS project created (6000.3.28f1, URP, portrait); 91 EditMode tests pass in Unity
-- [ ] M0: Android build verified on a device (see SETUP.md §4)
+- [ ] M0: Android build verified on a device (see SETUP.md §4). The dev APK
+      builds (2026-11-14, 38 MB, IL2CPP ARM64); still to do: install and play on a phone
 - [x] M1: puzzle logic (`BoardModel`, `RecruitmentMeter`, `PuzzleSession`) + tests
 - [x] M1: unit/enemy/stage data assets (ScriptableObjects, verified by Data.Tests in Unity)
 - [x] M1: puzzle grey-box view (tap/swipe, animated cascades, enemy preview, meters, idle hint)
