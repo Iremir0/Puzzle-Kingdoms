@@ -152,6 +152,7 @@ namespace PuzzleKingdoms.Balance
         private static (GridPos, GridPos) GreedyMove(BoardModel board)
         {
             int[,] grid = board.ToGrid();
+            SpecialKind[,] specials = board.ToSpecialGrid();
             int[][] rows = Enumerable.Range(0, board.Height)
                 .Select(y => Enumerable.Range(0, board.Width).Select(x => grid[x, y]).ToArray())
                 .ToArray();
@@ -161,8 +162,18 @@ namespace PuzzleKingdoms.Balance
             {
                 var probe = new BoardModel(board.Width, board.Height, board.GemTypeCount, new SeededRandom(1));
                 probe.LoadRows(rows);
+                for (int y = 0; y < board.Height; y++)
+                {
+                    for (int x = 0; x < board.Width; x++)
+                    {
+                        if (specials[x, y] != SpecialKind.None)
+                        {
+                            probe.SetSpecial(new GridPos(x, y), specials[x, y]);
+                        }
+                    }
+                }
                 MoveResult result = probe.TrySwap(a, b);
-                int cleared = result.Steps[0].Groups.Sum(g => g.Size);
+                int cleared = result.IsValid ? result.Steps[0].Cleared.Count : 0;
                 if (cleared > bestCleared)
                 {
                     bestCleared = cleared;

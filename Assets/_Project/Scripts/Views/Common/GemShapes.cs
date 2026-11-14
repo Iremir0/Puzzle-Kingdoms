@@ -11,6 +11,10 @@ namespace PuzzleKingdoms.Views.Common
         Diamond,
         Circle,
         Star,
+        /// <summary>Hollow ring: marks a Blast gem.</summary>
+        Ring,
+        /// <summary>Four-pointed sparkle: marks a Prism gem.</summary>
+        Sparkle,
     }
 
     /// <summary>
@@ -87,12 +91,33 @@ namespace PuzzleKingdoms.Views.Common
                     return y >= -0.78f && y <= 0.92f && Mathf.Abs(x) <= (0.92f - y) * 0.56f;
                 case GemShape.Star:
                     return InsidePolygon(StarPoints, x, y);
+                case GemShape.Ring:
+                {
+                    float radius = Mathf.Sqrt(x * x + y * y);
+                    return radius <= 0.92f && radius >= 0.62f;
+                }
+                case GemShape.Sparkle:
+                    return InsidePolygon(SparklePoints, x, y);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
             }
         }
 
         private static readonly Vector2[] StarPoints = MakeStar(5, 0.98f, 0.42f);
+        private static readonly Vector2[] SparklePoints = MakeSparkle();
+
+        /// <summary>Four-pointed star with a pinched waist, rotated so a point faces up.</summary>
+        private static Vector2[] MakeSparkle()
+        {
+            var result = new Vector2[8];
+            for (int i = 0; i < result.Length; i++)
+            {
+                float radius = i % 2 == 0 ? 0.95f : 0.2f;
+                float angle = Mathf.PI / 2f + i * Mathf.PI / 4f;
+                result[i] = new Vector2(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius);
+            }
+            return result;
+        }
 
         private static Vector2[] MakeStar(int points, float outer, float inner)
         {

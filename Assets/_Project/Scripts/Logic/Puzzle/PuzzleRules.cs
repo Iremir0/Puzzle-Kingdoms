@@ -10,5 +10,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
         /// <summary>Cleared Banner gems needed for one Rally charge.</summary>
         public int PointsPerRallyCharge = 3;
         public int MaxRallyCharges = 3;
+        /// <summary>Extra recruitment points for a plain line of exactly 4 gems (D-028).</summary>
+        public int FourMatchBonusPoints = 2;
     }
 }

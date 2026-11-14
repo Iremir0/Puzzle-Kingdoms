@@ -31,6 +31,7 @@ namespace PuzzleKingdoms.Views.Puzzle
         private Action _onDone;
         private Image[,] _cells;
         private Text[,] _tags;
+        private Image[,] _marks;
         private Outline[,] _outlines;
         private Text _moves;
         private Text _status;
@@ -78,7 +79,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                 0.2f, 0.02f, 0.8f, 0.09f);
             _continue.gameObject.SetActive(false);
 
-            Render(_run.Puzzle.Board.ToGrid());
+            Render(_run.Puzzle.Board.ToGrid(), _run.Puzzle.Board.ToSpecialGrid());
             RefreshHud();
         }
 
@@ -109,6 +110,7 @@ namespace PuzzleKingdoms.Views.Puzzle
 
             _cells = new Image[board.Width, board.Height];
             _tags = new Text[board.Width, board.Height];
+            _marks = new Image[board.Width, board.Height];
             _outlines = new Outline[board.Width, board.Height];
             float w = 1f / board.Width;
             float h = 1f / board.Height;
@@ -123,6 +125,11 @@ namespace PuzzleKingdoms.Views.Puzzle
                     cell.gameObject.AddComponent<GemCell>().Init(this, new GridPos(x, y));
                     _cells[x, y] = cell;
                     _tags[x, y] = Ui.Label(cell.transform, "", 56, TextAnchor.MiddleCenter, new Color(0, 0, 0, 0.55f));
+                    Image mark = Ui.Box(cell.transform, "Special", Color.white);
+                    mark.preserveAspect = true;
+                    mark.raycastTarget = false;
+                    mark.enabled = false;
+                    _marks[x, y] = mark;
                     Outline outline = cell.gameObject.AddComponent<Outline>();
                     outline.effectDistance = new Vector2(7, 7);
                     outline.enabled = false;
@@ -223,8 +230,9 @@ namespace PuzzleKingdoms.Views.Puzzle
             }
             ClearHint();
             int[,] before = _run.Puzzle.Board.ToGrid();
+            SpecialKind[,] beforeSpecials = _run.Puzzle.Board.ToSpecialGrid();
             MoveResult result = _run.Puzzle.PlaySwap(a, b);
-            StartCoroutine(result.IsValid ? Animate(before, result) : Reject(a, b));
+            StartCoroutine(result.IsValid ? Animate(before, beforeSpecials, result) : Reject(a, b));
             return result.IsValid;
         }
 
@@ -245,36 +253,41 @@ namespace PuzzleKingdoms.Views.Puzzle
 
         // --- Playback ------------------------------------------------------
 
-        private IEnumerator Animate(int[,] before, MoveResult result)
+        private IEnumerator Animate(int[,] before, SpecialKind[,] beforeSpecials, MoveResult result)
         {
             IsBusy = true;
-            foreach (MoveReplay.Frame frame in MoveReplay.Frames(before, result))
+            foreach (MoveReplay.Frame frame in MoveReplay.Frames(before, result, beforeSpecials))
             {
                 switch (frame.Kind)
                 {
                     case MoveReplay.FrameKind.Swapped:
-                        Render(frame.Grid);
+                        Render(frame.Grid, frame.Specials);
                         yield return new WaitForSeconds(SwapSeconds);
                         break;
                     case MoveReplay.FrameKind.Cleared:
                         SetMatchOutlines(frame.Step, true);
-                        if (frame.StepIndex > 0)
+                        string special = SpecialLabel(frame.Step);
+                        if (special.Length > 0)
+                        {
+                            _bonus.text = special;
+                        }
+                        else if (frame.StepIndex > 0)
                         {
                             _bonus.text = frame.StepIndex > 1 ? $"Bonus! x{frame.StepIndex}" : "Bonus!";
                         }
                         yield return new WaitForSeconds(FlashSeconds);
                         SetMatchOutlines(frame.Step, false);
-                        Render(frame.Grid);
+                        Render(frame.Grid, frame.Specials);
                         yield return new WaitForSeconds(ClearSeconds);
                         break;
                     case MoveReplay.FrameKind.Filled:
-                        Render(frame.Grid);
+                        Render(frame.Grid, frame.Specials);
                         yield return new WaitForSeconds(FillSeconds);
                         break;
                     case MoveReplay.FrameKind.Reshuffled:
                         _status.text = "No moves left: the board was reshuffled.";
                         yield return new WaitForSeconds(0.3f);
-                        Render(frame.Grid);
+                        Render(frame.Grid, frame.Specials);
                         break;
                 }
             }
@@ -304,8 +317,14 @@ namespace PuzzleKingdoms.Views.Puzzle
             IsBusy = false;
         }
 
+        /// <summary>Outlines the matched cells in white and whatever special gems destroyed in gold.</summary>
         private void SetMatchOutlines(MoveResult.CascadeStep step, bool on)
         {
+            foreach (GridPos cell in step.Cleared)
+            {
+                _outlines[cell.X, cell.Y].effectColor = Palette.Gold;
+                _outlines[cell.X, cell.Y].enabled = on;
+            }
             foreach (MatchGroup group in step.Groups)
             {
                 foreach (GridPos cell in group.Cells)
@@ -316,7 +335,19 @@ namespace PuzzleKingdoms.Views.Puzzle
             }
         }
 
-        private void Render(int[,] grid)
+        private static string SpecialLabel(MoveResult.CascadeStep step)
+        {
+            foreach (MoveResult.SpecialTrigger trigger in step.Triggers)
+            {
+                if (trigger.Kind == SpecialKind.Prism)
+                {
+                    return "Prism!";
+                }
+            }
+            return step.Triggers.Count > 0 ? "Blast!" : "";
+        }
+
+        private void Render(int[,] grid, SpecialKind[,] specials)
         {
             IReadOnlyList<string> keys = _run.Puzzle.GemRewardKeys;
             for (int x = 0; x < grid.GetLength(0); x++)
@@ -331,6 +362,12 @@ namespace PuzzleKingdoms.Views.Puzzle
                         _cells[x, y].sprite = GemShapes.Get(Palette.ShapeForGem(keys[gem], StageRun.RallyKey));
                     }
                     _tags[x, y].text = "";
+                    SpecialKind kind = specials[x, y];
+                    _marks[x, y].enabled = !empty && kind != SpecialKind.None;
+                    if (_marks[x, y].enabled)
+                    {
+                        _marks[x, y].sprite = GemShapes.Get(kind == SpecialKind.Blast ? GemShape.Ring : GemShape.Sparkle);
+                    }
                 }
             }
         }

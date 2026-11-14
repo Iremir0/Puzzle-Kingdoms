@@ -20,11 +20,15 @@ namespace PuzzleKingdoms.Logic.Puzzle
         public readonly IReadOnlyDictionary<string, RecruitmentMeter> Meters;
         public int MovesLeft { get; private set; }
 
+        private readonly int _fourMatchBonusPoints;
+
+        /// <param name="fourMatchBonusPoints">Extra points a plain line of 4 adds to its gem's meter (D-028).</param>
         public PuzzleSession(
             BoardModel board,
             int moves,
             IReadOnlyList<string> gemRewardKeys,
-            IReadOnlyDictionary<string, RecruitmentMeter> meters)
+            IReadOnlyDictionary<string, RecruitmentMeter> meters,
+            int fourMatchBonusPoints = 0)
         {
             if (gemRewardKeys.Count != board.GemTypeCount)
             {
@@ -38,6 +42,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 }
             }
             Board = board;
+            _fourMatchBonusPoints = fourMatchBonusPoints;
             MovesLeft = moves;
             GemRewardKeys = gemRewardKeys;
             Meters = meters;
@@ -59,7 +64,14 @@ namespace PuzzleKingdoms.Logic.Puzzle
             }
 
             MovesLeft--;
-            foreach (KeyValuePair<int, int> cleared in result.ClearedByType)
+            // Cleared gems score 1 point each; a plain line of 4 adds a bonus on top.
+            var points = new Dictionary<int, int>(result.ClearedByType);
+            foreach (KeyValuePair<int, int> four in result.FourMatchesByType)
+            {
+                points.TryGetValue(four.Key, out int current);
+                points[four.Key] = current + four.Value * _fourMatchBonusPoints;
+            }
+            foreach (KeyValuePair<int, int> cleared in points)
             {
                 string key = GemRewardKeys[cleared.Key];
                 int earned = Meters[key].AddPoints(cleared.Value);

@@ -166,6 +166,7 @@ namespace PuzzleKingdoms.Balance
                 PointsPerUnit = I(v["pointsPerUnit"]),
                 PointsPerRallyCharge = I(v["pointsPerRallyCharge"]),
                 MaxRallyCharges = I(v["maxRallyCharges"]),
+                FourMatchBonusPoints = v.TryGetValue("fourMatchBonusPoints", out string four) ? I(four) : 0,
             };
         }
 

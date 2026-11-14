@@ -14,7 +14,7 @@ puzzle-kingdoms/
 │       ├── Scripts/
 │       │   ├── Logic/            ✅ PuzzleKingdoms.Logic (no engine references)
 │       │   │   ├── Core/         ✅ GridPos, IRandom, SeededRandom (PCG32)
-│       │   │   ├── Puzzle/       ✅ BoardModel, MatchGroup, MoveResult, MoveReplay, RecruitmentMeter,
+│       │   │   ├── Puzzle/       ✅ BoardModel, MatchGroup, SpecialKind, MoveResult, MoveReplay, RecruitmentMeter,
 │       │   │   │                    PuzzleSession, PuzzleRules
 │       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster, MergeRules, AutoFormation
 │       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,

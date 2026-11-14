@@ -76,7 +76,7 @@ namespace PuzzleKingdoms.Logic.Flow
 
             var board = new BoardModel(puzzleRules.BoardWidth, puzzleRules.BoardHeight, keys.Count, random);
             board.Generate();
-            Puzzle = new PuzzleSession(board, stage.Moves, keys, meters);
+            Puzzle = new PuzzleSession(board, stage.Moves, keys, meters, puzzleRules.FourMatchBonusPoints);
             Puzzle.RewardsEarned += OnRewardsEarned;
             Puzzle.Finished += () => SetPhase(StagePhase.WarCamp);
             Roster = new Roster(armyRules);

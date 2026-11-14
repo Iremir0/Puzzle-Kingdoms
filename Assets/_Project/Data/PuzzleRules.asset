@@ -17,3 +17,4 @@ MonoBehaviour:
   pointsPerUnit: 6
   pointsPerRallyCharge: 10
   maxRallyCharges: 3
+  fourMatchBonusPoints: 2

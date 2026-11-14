@@ -5,7 +5,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
     /// <summary>
     /// Rebuilds the intermediate boards of a resolved <see cref="MoveResult"/>
     /// so a view can animate them ("compute, then animate"). Grids are
-    /// <c>int[x, y]</c> like <see cref="BoardModel.ToGrid"/>.
+    /// <c>[x, y]</c> like <see cref="BoardModel.ToGrid"/>.
     /// </summary>
     public static class MoveReplay
     {
@@ -14,7 +14,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
         {
             /// <summary>The two swapped gems traded places.</summary>
             Swapped,
-            /// <summary>The matched gems of <see cref="Frame.Step"/> were removed.</summary>
+            /// <summary>The cells of <see cref="Frame.Step"/> were removed and its special gems appeared.</summary>
             Cleared,
             /// <summary>Gems fell and new gems dropped in for <see cref="Frame.Step"/>.</summary>
             Filled,
@@ -27,15 +27,18 @@ namespace PuzzleKingdoms.Logic.Puzzle
         {
             public readonly FrameKind Kind;
             public readonly int[,] Grid;
+            /// <summary>Special gems on the board: Specials[x, y].</summary>
+            public readonly SpecialKind[,] Specials;
             /// <summary>The cascade step for Cleared/Filled frames, otherwise null.</summary>
             public readonly MoveResult.CascadeStep Step;
             /// <summary>0 for the player's match, 1+ for cascades.</summary>
             public readonly int StepIndex;
 
-            public Frame(FrameKind kind, int[,] grid, MoveResult.CascadeStep step, int stepIndex)
+            public Frame(FrameKind kind, int[,] grid, SpecialKind[,] specials, MoveResult.CascadeStep step, int stepIndex)
             {
                 Kind = kind;
                 Grid = grid;
+                Specials = specials;
                 Step = step;
                 StepIndex = stepIndex;
             }
@@ -43,9 +46,10 @@ namespace PuzzleKingdoms.Logic.Puzzle
 
         /// <summary>
         /// All frames of a move, starting from the board before the swap.
-        /// Empty for an invalid move.
+        /// <paramref name="beforeSpecials"/> is the special-gem grid before the swap
+        /// (null = none). Empty for an invalid move.
         /// </summary>
-        public static List<Frame> Frames(int[,] before, MoveResult result)
+        public static List<Frame> Frames(int[,] before, MoveResult result, SpecialKind[,] beforeSpecials = null)
         {
             var frames = new List<Frame>();
             if (result == null || !result.IsValid)
@@ -54,46 +58,63 @@ namespace PuzzleKingdoms.Logic.Puzzle
             }
 
             int[,] grid = (int[,])before.Clone();
-            (grid[result.SwapA.X, result.SwapA.Y], grid[result.SwapB.X, result.SwapB.Y]) =
-                (grid[result.SwapB.X, result.SwapB.Y], grid[result.SwapA.X, result.SwapA.Y]);
-            frames.Add(new Frame(FrameKind.Swapped, (int[,])grid.Clone(), null, -1));
+            SpecialKind[,] specials = beforeSpecials != null
+                ? (SpecialKind[,])beforeSpecials.Clone()
+                : new SpecialKind[before.GetLength(0), before.GetLength(1)];
+            GridPos a = result.SwapA;
+            GridPos b = result.SwapB;
+            (grid[a.X, a.Y], grid[b.X, b.Y]) = (grid[b.X, b.Y], grid[a.X, a.Y]);
+            (specials[a.X, a.Y], specials[b.X, b.Y]) = (specials[b.X, b.Y], specials[a.X, a.Y]);
+            frames.Add(new Frame(FrameKind.Swapped, (int[,])grid.Clone(), (SpecialKind[,])specials.Clone(), null, -1));
 
             for (int i = 0; i < result.Steps.Count; i++)
             {
                 MoveResult.CascadeStep step = result.Steps[i];
-                foreach (MatchGroup group in step.Groups)
+                foreach (GridPos cell in step.Cleared)
                 {
-                    foreach (GridPos cell in group.Cells)
-                    {
-                        grid[cell.X, cell.Y] = BoardModel.Empty;
-                    }
+                    grid[cell.X, cell.Y] = BoardModel.Empty;
+                    specials[cell.X, cell.Y] = SpecialKind.None;
                 }
-                frames.Add(new Frame(FrameKind.Cleared, (int[,])grid.Clone(), step, i));
+                foreach (MoveResult.SpecialCreated created in step.Created)
+                {
+                    specials[created.Cell.X, created.Cell.Y] = created.Kind;
+                }
+                frames.Add(new Frame(FrameKind.Cleared, (int[,])grid.Clone(), (SpecialKind[,])specials.Clone(), step, i));
 
                 // Read every falling gem first so the order of Falls does not matter.
-                var falling = new int[step.Falls.Count];
+                var fallingGems = new int[step.Falls.Count];
+                var fallingSpecials = new SpecialKind[step.Falls.Count];
                 for (int f = 0; f < step.Falls.Count; f++)
                 {
-                    falling[f] = grid[step.Falls[f].From.X, step.Falls[f].From.Y];
+                    GridPos from = step.Falls[f].From;
+                    fallingGems[f] = grid[from.X, from.Y];
+                    fallingSpecials[f] = specials[from.X, from.Y];
                 }
                 foreach (MoveResult.GemFall fall in step.Falls)
                 {
                     grid[fall.From.X, fall.From.Y] = BoardModel.Empty;
+                    specials[fall.From.X, fall.From.Y] = SpecialKind.None;
                 }
                 for (int f = 0; f < step.Falls.Count; f++)
                 {
-                    grid[step.Falls[f].To.X, step.Falls[f].To.Y] = falling[f];
+                    GridPos to = step.Falls[f].To;
+                    grid[to.X, to.Y] = fallingGems[f];
+                    specials[to.X, to.Y] = fallingSpecials[f];
                 }
                 foreach (MoveResult.GemSpawn spawn in step.Spawns)
                 {
                     grid[spawn.Cell.X, spawn.Cell.Y] = spawn.GemType;
+                    specials[spawn.Cell.X, spawn.Cell.Y] = SpecialKind.None;
                 }
-                frames.Add(new Frame(FrameKind.Filled, (int[,])grid.Clone(), step, i));
+                frames.Add(new Frame(FrameKind.Filled, (int[,])grid.Clone(), (SpecialKind[,])specials.Clone(), step, i));
             }
 
             if (result.Reshuffled && result.BoardAfterReshuffle != null)
             {
-                frames.Add(new Frame(FrameKind.Reshuffled, (int[,])result.BoardAfterReshuffle.Clone(), null, -1));
+                SpecialKind[,] reshuffled = result.SpecialsAfterReshuffle != null
+                    ? (SpecialKind[,])result.SpecialsAfterReshuffle.Clone()
+                    : new SpecialKind[before.GetLength(0), before.GetLength(1)];
+                frames.Add(new Frame(FrameKind.Reshuffled, (int[,])result.BoardAfterReshuffle.Clone(), reshuffled, null, -1));
             }
             return frames;
         }

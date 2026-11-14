@@ -8,11 +8,18 @@ namespace PuzzleKingdoms.Logic.Puzzle
     /// Coordinates are (x, y) with (0, 0) at the top-left; gems fall towards
     /// larger y. Gem types are ints in [0, GemTypeCount); their meaning is
     /// defined by the caller (see <see cref="PuzzleSession"/>).
+    ///
+    /// A match is a straight line of 3 or more, or a 2×2 square, of one type (D-028).
+    /// Lines of 4 earn bonus points (counted by the caller), a square leaves a
+    /// <see cref="SpecialKind.Blast"/> gem and a line of 5 or more leaves a
+    /// <see cref="SpecialKind.Prism"/> gem; both stay on the board until used.
     /// </summary>
     public sealed class BoardModel
     {
         public const int Empty = -1;
         public const int MinMatch = 3;
+        public const int FourRun = 4;
+        public const int PrismRun = 5;
         private const int MaxGenerationAttempts = 100;
         private const int MaxCascades = 100;
 
@@ -21,6 +28,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
         public readonly int GemTypeCount;
 
         private readonly int[] _cells;
+        private readonly SpecialKind[] _specials;
         private readonly IRandom _random;
 
         public BoardModel(int width, int height, int gemTypeCount, IRandom random)
@@ -38,6 +46,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
             GemTypeCount = gemTypeCount;
             _random = random ?? throw new ArgumentNullException(nameof(random));
             _cells = new int[width * height];
+            _specials = new SpecialKind[width * height];
             for (int i = 0; i < _cells.Length; i++)
             {
                 _cells[i] = Empty;
@@ -50,6 +59,8 @@ namespace PuzzleKingdoms.Logic.Puzzle
             cell.X >= 0 && cell.X < Width && cell.Y >= 0 && cell.Y < Height;
 
         public int GetGem(GridPos cell) => _cells[Index(cell)];
+
+        public SpecialKind GetSpecial(GridPos cell) => _specials[Index(cell)];
 
         public static bool AreAdjacent(GridPos a, GridPos b) => a.ManhattanDistance(b) == 1;
 
@@ -67,10 +78,39 @@ namespace PuzzleKingdoms.Logic.Puzzle
             return grid;
         }
 
-        /// <summary>True if swapping a and b would create at least one match.</summary>
+        /// <summary>Returns a copy of the special gems: result[x, y] = kind (None for plain gems).</summary>
+        public SpecialKind[,] ToSpecialGrid()
+        {
+            var grid = new SpecialKind[Width, Height];
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    grid[x, y] = _specials[y * Width + x];
+                }
+            }
+            return grid;
+        }
+
+        /// <summary>
+        /// True if swapping a and b would create at least one match, or if one of them
+        /// is a <see cref="SpecialKind.Prism"/> (a Prism can always be swapped).
+        /// </summary>
         public bool WouldSwapMatch(GridPos a, GridPos b)
         {
-            if (!IsInside(a) || !IsInside(b) || !AreAdjacent(a, b) || GetGem(a) == GetGem(b))
+            if (!IsInside(a) || !IsInside(b) || !AreAdjacent(a, b))
+            {
+                return false;
+            }
+            if (GetGem(a) == Empty || GetGem(b) == Empty)
+            {
+                return false;
+            }
+            if (GetSpecial(a) == SpecialKind.Prism || GetSpecial(b) == SpecialKind.Prism)
+            {
+                return true;
+            }
+            if (GetGem(a) == GetGem(b))
             {
                 return false;
             }
@@ -109,7 +149,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
 
         public bool HasValidMove() => TryFindValidMove(out _, out _);
 
-        /// <summary>Finds every match on the board, grouped by connected shape.</summary>
+        /// <summary>Finds every match on the board (lines and squares), grouped by connected shape.</summary>
         public List<MatchGroup> FindMatchGroups()
         {
             // Union-find over cell indices; -1 means "not part of any match".
@@ -118,14 +158,17 @@ namespace PuzzleKingdoms.Logic.Puzzle
             {
                 parent[i] = -1;
             }
+            var runs = new List<(int first, int length)>();
+            var squares = new List<int>();
             for (int y = 0; y < Height; y++)
             {
-                MarkRuns(parent, new GridPos(0, y), GridPos.Right, Width);
+                MarkRuns(parent, runs, new GridPos(0, y), GridPos.Right, Width);
             }
             for (int x = 0; x < Width; x++)
             {
-                MarkRuns(parent, new GridPos(x, 0), GridPos.Down, Height);
+                MarkRuns(parent, runs, new GridPos(x, 0), GridPos.Down, Height);
             }
+            MarkSquares(parent, squares);
 
             var groupsByRoot = new Dictionary<int, MatchGroup>();
             var groups = new List<MatchGroup>();
@@ -148,6 +191,15 @@ namespace PuzzleKingdoms.Logic.Puzzle
                     group.Cells.Add(new GridPos(x, y));
                 }
             }
+            foreach ((int first, int length) in runs)
+            {
+                MatchGroup group = groupsByRoot[FindRoot(parent, first)];
+                group.LongestRun = Math.Max(group.LongestRun, length);
+            }
+            foreach (int topLeft in squares)
+            {
+                groupsByRoot[FindRoot(parent, topLeft)].HasSquare = true;
+            }
             return groups;
         }
 
@@ -158,6 +210,10 @@ namespace PuzzleKingdoms.Logic.Puzzle
         {
             for (int attempt = 0; attempt < MaxGenerationAttempts; attempt++)
             {
+                for (int i = 0; i < _specials.Length; i++)
+                {
+                    _specials[i] = SpecialKind.None;
+                }
                 for (int y = 0; y < Height; y++)
                 {
                     for (int x = 0; x < Width; x++)
@@ -175,7 +231,8 @@ namespace PuzzleKingdoms.Logic.Puzzle
 
         /// <summary>
         /// Replaces the board content. rows[y][x] = gem type. For tests, tutorials
-        /// and handcrafted boards. Does not resolve existing matches.
+        /// and handcrafted boards. Does not resolve existing matches and removes
+        /// all special gems (add them back with <see cref="SetSpecial"/>).
         /// </summary>
         public void LoadRows(int[][] rows)
         {
@@ -192,8 +249,19 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 for (int x = 0; x < Width; x++)
                 {
                     _cells[y * Width + x] = rows[y][x];
+                    _specials[y * Width + x] = SpecialKind.None;
                 }
             }
+        }
+
+        /// <summary>Makes the gem on <paramref name="cell"/> a special gem. For tests and handcrafted boards.</summary>
+        public void SetSpecial(GridPos cell, SpecialKind kind)
+        {
+            if (GetGem(cell) == Empty)
+            {
+                throw new ArgumentException($"No gem on {cell}");
+            }
+            _specials[Index(cell)] = kind;
         }
 
         /// <summary>
@@ -211,23 +279,28 @@ namespace PuzzleKingdoms.Logic.Puzzle
             result.IsValid = true;
             Swap(a, b);
 
+            // A swapped Prism fires once, together with the first wave of matches.
+            var swapEffects = new List<(GridPos origin, int targetType)>();
+            if (GetSpecial(a) == SpecialKind.Prism)
+            {
+                swapEffects.Add((a, GetGem(b)));
+            }
+            if (GetSpecial(b) == SpecialKind.Prism)
+            {
+                swapEffects.Add((b, GetGem(a)));
+            }
+
             for (int cascade = 0; cascade < MaxCascades; cascade++)
             {
                 List<MatchGroup> groups = FindMatchGroups();
-                if (groups.Count == 0)
+                if (groups.Count == 0 && swapEffects.Count == 0)
                 {
                     break;
                 }
                 var step = new MoveResult.CascadeStep();
                 step.Groups.AddRange(groups);
-                foreach (MatchGroup group in groups)
-                {
-                    foreach (GridPos cell in group.Cells)
-                    {
-                        _cells[Index(cell)] = Empty;
-                    }
-                    result.ClearedByType[group.GemType] = result.ClearedCount(group.GemType) + group.Size;
-                }
+                ResolveStep(step, groups, swapEffects, cascade == 0 ? new[] { a, b } : Array.Empty<GridPos>(), result);
+                swapEffects.Clear();
                 ApplyGravity(step.Falls);
                 Refill(step.Spawns);
                 result.Steps.Add(step);
@@ -238,13 +311,15 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 Shuffle();
                 result.Reshuffled = true;
                 result.BoardAfterReshuffle = ToGrid();
+                result.SpecialsAfterReshuffle = ToSpecialGrid();
             }
             return result;
         }
 
         /// <summary>
-        /// Rearranges the existing gems so the board has no matches and a valid
-        /// move. Falls back to a fresh board if none is found quickly.
+        /// Rearranges the existing gems (special gems travel with them) so the board
+        /// has no matches and a valid move. Falls back to a fresh board if none is
+        /// found quickly.
         /// </summary>
         public void Shuffle()
         {
@@ -254,6 +329,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 {
                     int j = _random.Range(0, i + 1);
                     (_cells[i], _cells[j]) = (_cells[j], _cells[i]);
+                    (_specials[i], _specials[j]) = (_specials[j], _specials[i]);
                 }
                 if (FindMatchGroups().Count == 0 && HasValidMove())
                 {
@@ -279,7 +355,161 @@ namespace PuzzleKingdoms.Logic.Puzzle
             int ia = Index(a);
             int ib = Index(b);
             (_cells[ia], _cells[ib]) = (_cells[ib], _cells[ia]);
+            (_specials[ia], _specials[ib]) = (_specials[ib], _specials[ia]);
         }
+
+        /// <summary>
+        /// One wave of clearing: decides which cells empty (matches plus special
+        /// effects, chained), which match leaves a special gem behind, and records it.
+        /// </summary>
+        private void ResolveStep(
+            MoveResult.CascadeStep step,
+            List<MatchGroup> groups,
+            List<(GridPos origin, int targetType)> swapEffects,
+            GridPos[] swapCells,
+            MoveResult result)
+        {
+            var toClear = new bool[_cells.Length];
+            var kept = new bool[_cells.Length];
+            var fired = new bool[_cells.Length];
+            var queue = new Queue<int>();
+
+            // Which match leaves a special gem, and where.
+            foreach (MatchGroup group in groups)
+            {
+                if (group.IsFourMatch)
+                {
+                    result.FourMatchesByType[group.GemType] = result.FourMatchCount(group.GemType) + 1;
+                }
+                SpecialKind kind = group.Creates;
+                if (kind == SpecialKind.None)
+                {
+                    continue;
+                }
+                int anchor = ChooseAnchor(group, swapCells);
+                if (anchor >= 0)
+                {
+                    kept[anchor] = true;
+                    step.Created.Add(new MoveResult.SpecialCreated(CellAt(anchor), group.GemType, kind));
+                }
+            }
+
+            // Seeds: every matched cell and everything a swapped Prism removes.
+            foreach (MatchGroup group in groups)
+            {
+                foreach (GridPos cell in group.Cells)
+                {
+                    Mark(Index(cell), toClear, kept, queue);
+                }
+            }
+            foreach ((GridPos origin, int targetType) in swapEffects)
+            {
+                int originIndex = Index(origin);
+                fired[originIndex] = true;
+                step.Triggers.Add(new MoveResult.SpecialTrigger(SpecialKind.Prism, origin));
+                MarkType(targetType, toClear, kept, queue);
+                Mark(originIndex, toClear, kept, queue);
+            }
+
+            // Chain reaction: special gems that get cleared fire in turn.
+            while (queue.Count > 0)
+            {
+                int index = queue.Dequeue();
+                SpecialKind kind = _specials[index];
+                if (kind == SpecialKind.None || fired[index])
+                {
+                    continue;
+                }
+                fired[index] = true;
+                GridPos origin = CellAt(index);
+                step.Triggers.Add(new MoveResult.SpecialTrigger(kind, origin));
+                if (kind == SpecialKind.Blast)
+                {
+                    for (int dy = -1; dy <= 1; dy++)
+                    {
+                        for (int dx = -1; dx <= 1; dx++)
+                        {
+                            var neighbour = new GridPos(origin.X + dx, origin.Y + dy);
+                            if (IsInside(neighbour))
+                            {
+                                Mark(Index(neighbour), toClear, kept, queue);
+                            }
+                        }
+                    }
+                }
+                else if (kind == SpecialKind.Prism)
+                {
+                    MarkType(_cells[index], toClear, kept, queue);
+                }
+            }
+
+            // Apply: clear, then place the new special gems.
+            for (int index = 0; index < toClear.Length; index++)
+            {
+                if (!toClear[index])
+                {
+                    continue;
+                }
+                int type = _cells[index];
+                result.ClearedByType[type] = result.ClearedCount(type) + 1;
+                step.Cleared.Add(CellAt(index));
+                _cells[index] = Empty;
+                _specials[index] = SpecialKind.None;
+            }
+            foreach (MoveResult.SpecialCreated created in step.Created)
+            {
+                _specials[Index(created.Cell)] = created.Kind;
+            }
+        }
+
+        /// <summary>
+        /// The cell of a group that becomes the special gem: a swapped cell if the
+        /// group contains one, otherwise the middle cell; never a cell that already
+        /// holds a special gem. Returns -1 if every cell does.
+        /// </summary>
+        private int ChooseAnchor(MatchGroup group, GridPos[] swapCells)
+        {
+            foreach (GridPos cell in swapCells)
+            {
+                if (group.Cells.Contains(cell) && _specials[Index(cell)] == SpecialKind.None)
+                {
+                    return Index(cell);
+                }
+            }
+            int middle = group.Size / 2;
+            for (int i = 0; i < group.Size; i++)
+            {
+                GridPos cell = group.Cells[(middle + i) % group.Size];
+                if (_specials[Index(cell)] == SpecialKind.None)
+                {
+                    return Index(cell);
+                }
+            }
+            return -1;
+        }
+
+        private void Mark(int index, bool[] toClear, bool[] kept, Queue<int> queue)
+        {
+            if (_cells[index] == Empty || toClear[index] || kept[index])
+            {
+                return;
+            }
+            toClear[index] = true;
+            queue.Enqueue(index);
+        }
+
+        private void MarkType(int gemType, bool[] toClear, bool[] kept, Queue<int> queue)
+        {
+            for (int index = 0; index < _cells.Length; index++)
+            {
+                if (_cells[index] == gemType)
+                {
+                    Mark(index, toClear, kept, queue);
+                }
+            }
+        }
+
+        private GridPos CellAt(int index) => new GridPos(index % Width, index / Width);
 
         private int PickTypeWithoutMatch(int x, int y)
         {
@@ -290,7 +520,10 @@ namespace PuzzleKingdoms.Logic.Puzzle
                     && _cells[y * Width + x - 2] == gemType;
                 bool columnMatch = y >= 2 && _cells[(y - 1) * Width + x] == gemType
                     && _cells[(y - 2) * Width + x] == gemType;
-                if (!rowMatch && !columnMatch)
+                bool squareMatch = x >= 1 && y >= 1 && _cells[y * Width + x - 1] == gemType
+                    && _cells[(y - 1) * Width + x] == gemType
+                    && _cells[(y - 1) * Width + x - 1] == gemType;
+                if (!rowMatch && !columnMatch && !squareMatch)
                 {
                     options.Add(gemType);
                 }
@@ -311,7 +544,32 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 return true;
             }
             int vertical = 1 + CountSame(cell, GridPos.Up, gemType) + CountSame(cell, GridPos.Down, gemType);
-            return vertical >= MinMatch;
+            if (vertical >= MinMatch)
+            {
+                return true;
+            }
+            // Any of the four 2×2 blocks that contain the cell.
+            for (int dy = -1; dy <= 0; dy++)
+            {
+                for (int dx = -1; dx <= 0; dx++)
+                {
+                    if (IsSquareOf(cell.X + dx, cell.Y + dy, gemType))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>True if the 2×2 block with top-left (x, y) is on the board and all of gemType.</summary>
+        private bool IsSquareOf(int x, int y, int gemType)
+        {
+            return x >= 0 && y >= 0 && x + 1 < Width && y + 1 < Height
+                && _cells[y * Width + x] == gemType
+                && _cells[y * Width + x + 1] == gemType
+                && _cells[(y + 1) * Width + x] == gemType
+                && _cells[(y + 1) * Width + x + 1] == gemType;
         }
 
         private int CountSame(GridPos start, GridPos direction, int gemType)
@@ -327,7 +585,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
         }
 
         /// <summary>Scans one line and unions the cells of every run of MinMatch or more.</summary>
-        private void MarkRuns(int[] parent, GridPos start, GridPos direction, int length)
+        private void MarkRuns(int[] parent, List<(int first, int length)> runs, GridPos start, GridPos direction, int length)
         {
             int runStart = 0;
             for (int i = 1; i <= length; i++)
@@ -356,8 +614,35 @@ namespace PuzzleKingdoms.Logic.Puzzle
                         }
                         Union(parent, first, index);
                     }
+                    runs.Add((first, runLength));
                 }
                 runStart = i;
+            }
+        }
+
+        /// <summary>Unions the four cells of every 2×2 block of one type; records its top-left cell.</summary>
+        private void MarkSquares(int[] parent, List<int> squares)
+        {
+            for (int y = 0; y + 1 < Height; y++)
+            {
+                for (int x = 0; x + 1 < Width; x++)
+                {
+                    int gemType = _cells[y * Width + x];
+                    if (gemType == Empty || !IsSquareOf(x, y, gemType))
+                    {
+                        continue;
+                    }
+                    int topLeft = y * Width + x;
+                    foreach (int index in new[] { topLeft, topLeft + 1, topLeft + Width, topLeft + Width + 1 })
+                    {
+                        if (parent[index] == -1)
+                        {
+                            parent[index] = index;
+                        }
+                        Union(parent, topLeft, index);
+                    }
+                    squares.Add(topLeft);
+                }
             }
         }
 
@@ -381,7 +666,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
             }
         }
 
-        /// <summary>Moves gems down into empty cells, recording the moves in column order.</summary>
+        /// <summary>Moves gems (and their special marks) down into empty cells, recording the moves in column order.</summary>
         private void ApplyGravity(List<MoveResult.GemFall> falls)
         {
             for (int x = 0; x < Width; x++)
@@ -397,7 +682,9 @@ namespace PuzzleKingdoms.Logic.Puzzle
                     if (y != writeY)
                     {
                         _cells[writeY * Width + x] = gemType;
+                        _specials[writeY * Width + x] = _specials[y * Width + x];
                         _cells[y * Width + x] = Empty;
+                        _specials[y * Width + x] = SpecialKind.None;
                         falls.Add(new MoveResult.GemFall(new GridPos(x, y), new GridPos(x, writeY)));
                     }
                     writeY--;
@@ -405,7 +692,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
             }
         }
 
-        /// <summary>Fills empty cells (all at the top after gravity) with random gems.</summary>
+        /// <summary>Fills empty cells (all at the top after gravity) with random plain gems.</summary>
         private void Refill(List<MoveResult.GemSpawn> spawns)
         {
             for (int x = 0; x < Width; x++)
@@ -419,6 +706,7 @@ namespace PuzzleKingdoms.Logic.Puzzle
                 {
                     int gemType = _random.Range(0, GemTypeCount);
                     _cells[y * Width + x] = gemType;
+                    _specials[y * Width + x] = SpecialKind.None;
                     spawns.Add(new MoveResult.GemSpawn(new GridPos(x, y), gemType, emptyCount));
                 }
             }

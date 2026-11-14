@@ -56,7 +56,23 @@ Every gem type has its own shape as well as its own color, so the board stays
 readable for color-blind players (D-027).
 
 - Swap two orthogonally adjacent gems. A swap that creates no match is rejected
-  and costs no move.
+  and costs no move. A match is a straight line of 3 or more gems, or a 2×2
+  square, of one type.
+- **Special matches** (D-028):
+
+| Match | Result |
+|---|---|
+| Line of 3 | normal clear |
+| Line of exactly 4 | normal clear, plus 2 bonus points for that gem's meter |
+| 2×2 square | clears, and the swapped gem stays behind as a **Blast** gem (ring) |
+| Line of 5 or more | clears, and the swapped gem stays behind as a **Prism** gem (sparkle) |
+
+  A special gem keeps its color and its shape, and matches like a normal gem.
+  **Blast**: when it is cleared in any match, it also clears the 3×3 area around
+  it. **Prism**: swapped with any neighbour (always allowed) it clears every gem
+  of the neighbour's type; cleared in a match it clears every gem of its own
+  type. Special gems caught in an explosion go off too (chains). Every gem a
+  special gem clears counts for the meters like a normal clear.
 - **Moves:** 12 per stage (stage data can override).
 - **Recruitment meter:** every cleared gem adds 1 point to its meter; every
   **6 points = 1 unit** (remainder carries over within the stage). So two
@@ -74,7 +90,7 @@ readable for color-blind players (D-027).
   one valid move.
 - The top of the puzzle screen shows the enemy formation and their traits.
 
-Post-MVP: special gems from match-4/5, stage objectives, boss board modifiers.
+Post-MVP: more special gems, stage objectives, boss board modifiers.
 
 ## 6. War Camp (army preparation)
 
