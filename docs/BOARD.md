@@ -37,13 +37,13 @@ is a piece of the game you can play or show, not a single code change.
 | ID | Card | Owner | Milestone | Size | Branch | Notes |
 |---|---|---|---|---|---|---|
 | [PB-1](cards/PB-1.md) | Run the game on a real phone | Emir | M0 | M | — | Dev APK builds (38 MB, IL2CPP ARM64, 2026-11-14); still to do: install and play on a phone |
-| [PB-7](cards/PB-7.md) | Puzzle feel: input and animations | Emir | M2 | L | `feature/PB-7-puzzle-feel` | Animations, drag-follow swipe and hint pulse built and tested in PlayMode; left: feel check on a phone (PB-1 build) |
+| [PB-7](cards/PB-7.md) | Puzzle feel: input and animations | Emir | M2 | L | `feature/PB-7-puzzle-feel` | Animations, drag-follow swipe and hint pulse built, tested and in `main`; left: feel check on a phone (PB-1 build) |
 
 ## Ready (next up, in priority order)
 
 | ID | Card | Owner | Milestone | Size | In short |
 |---|---|---|---|---|---|
-| [PB-2](cards/PB-2.md) | Play the new rules in Unity and close the review | Emir | M1 | S | Merge into `main` and the Test Runner (with Data tests) are done; left: the play checklist for 1-1 to 1-3 (4×4 grid, stone gems, Merge all, enemy strength) |
+| [PB-2](cards/PB-2.md) | Play the new rules in Unity and close the review | Emir | M1 | S | Merge into `main` and the Test Runner (with Data tests) are done; left: the play checklist for 1-1 to 1-3 (4×4 grid, stone gems, Merge all, enemy strength, PB-7 feel, PB-8 sound) |
 | [PB-5](cards/PB-5.md) | Playtest round | — | M1 | M | 5+ testers, session script, feedback form, `docs/PLAYTESTS.md`. Needs PB-1, PB-2 |
 | [PB-6](cards/PB-6.md) | Go / pivot decision | both | M1 | S | Score the GDD pillars against the playtest evidence, record in DECISIONS.md. After PB-5 |
 
@@ -53,7 +53,6 @@ Not started. Each card is a milestone slice that ends in something playable.
 
 | ID | Card | Milestone | Size | In short |
 |---|---|---|---|---|
-| [PB-8](cards/PB-8.md) | Puzzle feedback: effects and sound | M2 | M | Cascade pitch, Blast/Prism/stone effects, screen shake, placeholder SFX and music (Kenney CC0) |
 | [PB-9](cards/PB-9.md) | War Camp interaction: drag and drop, bench, merge | M3 | L | Drag and drop on the 4×4 grid, grouped bench with counts, merge animation, Undo (logic + tests). Mockup inside |
 | [PB-10](cards/PB-10.md) | Art direction decision | M3 | M | Constraints, 3 options (CC0 / store packs / freelancer), phone spike, `docs/ART.md` |
 | [PB-11](cards/PB-11.md) | 3D battle scene | M4 | L | Isometric orthographic view on the same simulator, placeholder models, HP bars, projectiles, HUD. Mockup inside |
@@ -85,6 +84,7 @@ mode, Commander heroes (see GDD §10).
 | M1-D7 | Stars and gold on the results screen, star and save-version rules tested (`ProgressionTests`) |
 | M1-D8 | Enemy army preview in the War Camp and on the puzzle screen |
 | [PB-3](cards/PB-3.md) | Difficulty badges on stage select and enemy panels; silhouettes in the War Camp grid, bench and enemy preview (2026-11-16) |
+| [PB-8](cards/PB-8.md) | Match pop rising with cascades, Blast/Prism/stone/invalid/ding/horn sounds and a music loop (generated, D-036); Blast ring, Prism beams, stone chips, special flash, board shake; mute button (2026-11-16) |
 | M1-D9 | Merge all and merge preview, 4×4 formation, stone gems, rising enemy strength (D-030 to D-033); waits for the Unity play-through in PB-2 |
 | [PB-4](cards/PB-4.md) | CI: GitHub runs the logic tests and a balance table on every push (2026-11-14) |
 

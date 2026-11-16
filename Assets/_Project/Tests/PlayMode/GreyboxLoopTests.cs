@@ -6,6 +6,7 @@ using PuzzleKingdoms.Flow;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Views.Battle;
+using PuzzleKingdoms.Views.Common;
 using PuzzleKingdoms.Views.Menus;
 using PuzzleKingdoms.Views.Puzzle;
 using PuzzleKingdoms.Views.WarCamp;
@@ -121,11 +122,29 @@ namespace PuzzleKingdoms.Tests.PlayMode
 
             Assert.IsTrue(TryFindInvalidSwap(board, out GridPos badA, out GridPos badB), "board has a non-matching swap");
             int moves = _app.Run.Puzzle.MovesLeft;
+            int sounds = Sfx.PlayedCount;
             Assert.IsFalse(puzzle.PlaySwap(badA, badB));
             Assert.IsTrue(puzzle.IsBusy, "the invalid swap is animated");
+            Assert.AreEqual(sounds + 1, Sfx.PlayedCount, "the invalid swap makes a sound (PB-8)");
             yield return new WaitUntil(() => !puzzle.IsBusy);
             Assert.AreEqual(moves, _app.Run.Puzzle.MovesLeft, "an invalid swap uses no move");
             AssertScreenMatchesLogic(puzzle, board, "after the invalid swap");
+
+            Sfx.Muted = true;
+            try
+            {
+                sounds = Sfx.PlayedCount;
+                Assert.IsFalse(puzzle.PlaySwap(badA, badB));
+                Assert.AreEqual(sounds, Sfx.PlayedCount, "muted: no sound");
+                yield return new WaitUntil(() => !puzzle.IsBusy);
+            }
+            finally
+            {
+                Sfx.Muted = false;
+            }
+
+            sounds = Sfx.PlayedCount;
+            int movesBefore = _app.Run.Puzzle.MovesLeft;
 
             for (int move = 1; move <= 20 && !_app.Run.Puzzle.IsFinished; move++)
             {
@@ -135,6 +154,10 @@ namespace PuzzleKingdoms.Tests.PlayMode
                 yield return new WaitUntil(() => !puzzle.IsBusy);
                 AssertScreenMatchesLogic(puzzle, board, $"after move {move}");
             }
+            Assert.GreaterOrEqual(Sfx.PlayedCount - sounds, movesBefore - _app.Run.Puzzle.MovesLeft, "every move at least pops");
+            float deadline = Time.time + 1f;
+            yield return new WaitUntil(() => puzzle.Effects.Running == 0 || Time.time > deadline);
+            Assert.AreEqual(0, puzzle.Effects.Running, "effects remove themselves");
         }
 
         private static bool TryFindInvalidSwap(Logic.Puzzle.BoardModel board, out GridPos a, out GridPos b)

@@ -1,6 +1,6 @@
 # PB-8 Puzzle feedback: effects and sound
 
-Owner: — · Milestone: M2 · Size: M · Branch: `feature/PB-8-puzzle-feedback` ·
+Owner: Emir · Milestone: M2 · Size: M · Branch: `feature/PB-8-puzzle-feedback` ·
 Replaces: M2-03, M2-04, M2-06 · Best after PB-7
 
 ## Why
@@ -65,10 +65,41 @@ New `Views/Common/Sfx.cs`, `Data/SoundBank.cs` (ScriptableObject) + asset,
 Battle sounds (PB-12). Final audio (post-M6).
 
 ## Done when
-- [ ] Every event in Build step 2 makes a sound; cascade pitch rises
-- [ ] Blast, Prism and stone crack have visible effects; shake on Blast/Prism
-- [ ] Mute works
-- [ ] All assets in CREDITS.md with license; recording in Notes
+- [x] Every event in Build step 2 makes a sound; cascade pitch rises
+- [x] Blast, Prism and stone crack have visible effects; shake on Blast/Prism
+- [x] Mute works
+- [x] All assets in CREDITS.md with license; recording in Notes
 
 ## Notes
-_Findings, screenshots, numbers, decisions taken while working on this card._
+2026-11-16 (Emir, with Claude):
+- **Sounds are generated, not downloaded (D-036).** `Puzzle Kingdoms → Generate
+  Placeholder Sounds` (`Scripts/Editor/PlaceholderSounds.cs`) synthesizes ten
+  .wav files into `Audio/Placeholder/`, fills `Data/SoundBank.asset` and links it
+  from `GameContent`. Same files on every run. Nothing third-party, so CREDITS.md
+  only notes that. To use real sounds: import them and drag them into the
+  SoundBank fields; no code change.
+- Clips: match pop 0.11 s (falling sine), Blast created whoosh 0.35 s, Blast fired
+  thump 0.32 s, Prism created chime 0.6 s, Prism fired sweep 0.38 s, stone crack
+  0.22 s, invalid swap "uh-uh" 0.24 s, unit ding 0.4 s, Rally horn 0.7 s, music
+  8 s loop (Am-F-C-G arpeggio, 120 bpm) at volume 0.25.
+- `Views/Common/Sfx.cs`: 8 voices (each keeps its own pitch), a looping music
+  source, adds an AudioListener if the scene has none. `GameApp` sets it up.
+- Cascade pitch: 1.0 + 0.08 per wave, capped at 1.4 (`SoundBank` fields).
+- `Views/Puzzle/BoardEffects.cs` on a layer over the board: Blast ring grows from
+  one cell to the 3×3 area (0.28 s) + 10 px shake 0.15 s; Prism beams to every
+  gem it clears (0.3 s) + 16 px shake 0.2 s; 5 grey chips per cracked stone
+  (0.3 s); new special gem flashes white (0.25 s). Effects run on the layer's own
+  coroutines and remove themselves.
+- Ding when a meter gave a unit this move, horn when it gave a Rally charge
+  (played when the move ends, together with the meter update).
+- Mute: "Sound"/"Muted" button bottom right of the puzzle screen; a static flag
+  for the session (saved in Settings, PB-14).
+- Tests: `GameDataTests.SoundBankHasEveryClip`; the PlayMode board test now also
+  checks that an invalid swap makes a sound, that nothing plays while muted, that
+  every move at least pops and that all effects clean up.
+- Recording (no sound in a GIF): moves with a stone crack, then a showcase of the
+  Blast ring, Prism beams, chips and the special flash:
+
+  ![Effects](img/pb-08-result.gif)
+- **Not done: nobody has listened yet.** The waveforms were checked as pictures
+  only; the listening check is in the PB-2 play checklist.

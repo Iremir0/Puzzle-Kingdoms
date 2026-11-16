@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22a8b93dc381c894db51b70252589b8e, type: 3}
+  m_Name: SoundBank
+  m_EditorClassIdentifier: PuzzleKingdoms.Data::PuzzleKingdoms.Data.SoundBank
+  match: {fileID: 8300000, guid: 6ab570289ae39444ba9fede0ddba6990, type: 3}
+  blastCreated: {fileID: 8300000, guid: 2d642822f752cd544a45d2836607f7a7, type: 3}
+  blastFired: {fileID: 8300000, guid: e5b4173984bbe044e9fe3fe12cfa087a, type: 3}
+  prismCreated: {fileID: 8300000, guid: ca31100e6bbbd6d4687e1a5f88dcfffd, type: 3}
+  prismFired: {fileID: 8300000, guid: 6f2623a57977ebe4981a51dbb4432f68, type: 3}
+  stoneCrack: {fileID: 8300000, guid: ad17c4fd3d6751e49987757b5887b07e, type: 3}
+  invalidSwap: {fileID: 8300000, guid: 0bf1df24032b5cd448dd5e5f10eb7c3e, type: 3}
+  unitRecruited: {fileID: 8300000, guid: 261a3772093243f43a6825b6fee5c4f0, type: 3}
+  rallyCharge: {fileID: 8300000, guid: 5b65287a90b8bab4992fc172f5568a1d, type: 3}
+  music: {fileID: 8300000, guid: 0302fbea22f626c4a8fbe2c7c7a3692c, type: 3}
+  cascadePitchStep: 0.08
+  maxCascadePitch: 1.4
+  effectsVolume: 0.8
+  musicVolume: 0.25

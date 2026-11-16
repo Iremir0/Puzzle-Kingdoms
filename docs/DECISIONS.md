@@ -294,3 +294,14 @@ the milestone is just a column. Each card has a detail file `docs/cards/PB-n.md`
 (why, current code, steps, mockup, prototype assets, Unity steps, checklist, notes)
 so either developer can pick it up cold. Old codes stay in the board's *Replaces* field and
 in older decisions (D-033 mentions M1-02, M1-04). Supersedes the code format of D-034.
+
+## D-036 Placeholder sounds are generated in code, 2026-11-16
+The PB-8 sounds (match pop, Blast, Prism, stone crack, invalid swap, unit ding,
+Rally horn, music loop) are synthesized by an editor tool
+(`Puzzle Kingdoms → Generate Placeholder Sounds`, `Scripts/Editor/PlaceholderSounds.cs`)
+into `Audio/Placeholder/*.wav` instead of downloading CC0 packs. The clips are
+referenced only through `Data/SoundBank.asset`, which `GameContent` links. Why: no
+downloads or licences to track for throw-away sounds, the same files come out on
+every machine, and the timing and pitch rules (cascade pitch +0.08 per wave, capped
+at 1.4) can be tested now. Real sounds later replace the clips in the SoundBank
+(add them to CREDITS.md first); no code change needed.

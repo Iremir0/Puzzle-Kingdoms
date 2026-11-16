@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Flow;
@@ -48,10 +49,18 @@ namespace PuzzleKingdoms.Views.Puzzle
         /// <summary>The hinted gems pulse between 100% and 100% + this.</summary>
         private const float HintPulse = 0.08f;
         private static readonly Color StoneTint = new Color(0.68f, 0.68f, 0.72f, 1f);
+        /// <summary>Board shake in reference pixels (PB-8): Blast small, Prism bigger.</summary>
+        private const float BlastShake = 10f;
+        private const float PrismShake = 16f;
+        private const float BlastShakeSeconds = 0.15f;
+        private const float PrismShakeSeconds = 0.2f;
 
         private StageRun _run;
         private Action _onDone;
         private RectTransform _board;
+        private BoardEffects _effects;
+        private Button _sound;
+        private readonly Dictionary<string, int> _rewardsHeard = new Dictionary<string, int>();
         private Image[,] _gems;
         private CanvasGroup[,] _gemAlpha;
         private Image[,] _marks;
@@ -80,6 +89,9 @@ namespace PuzzleKingdoms.Views.Puzzle
         public int[,] ShownGrid => (int[,])_shownGrid.Clone();
         public SpecialKind[,] ShownSpecials => (SpecialKind[,])_shownSpecials.Clone();
         public bool[,] ShownStones => (bool[,])_shownStones.Clone();
+
+        /// <summary>The effect layer over the board (tests check that effects clean up).</summary>
+        public BoardEffects Effects => _effects;
 
         /// <summary>True when every gem image sits in its own cell at full size and alpha.</summary>
         public bool GemsAtRest
@@ -131,7 +143,9 @@ namespace PuzzleKingdoms.Views.Puzzle
 
             _bonus = Ui.Label(root, "", 64, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.1f, 1f, 0.15f);
             _status = Ui.Label(root, "Swap two neighbouring gems. Tap or swipe.", 36, TextAnchor.MiddleCenter,
-                Palette.Muted, 0.04f, 0.02f, 0.96f, 0.1f);
+                Palette.Muted, 0.04f, 0.02f, 0.82f, 0.1f);
+            _sound = Ui.Button(root, "", Palette.Button, ToggleSound, 0.84f, 0.03f, 0.97f, 0.09f, 28);
+            RefreshSoundButton();
             _continue = Ui.Button(root, "To the War Camp", Palette.Primary, () => _onDone?.Invoke(),
                 0.2f, 0.02f, 0.8f, 0.09f);
             _continue.gameObject.SetActive(false);
@@ -152,6 +166,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                 Image fill = Ui.Box(bar.transform, "Fill", Palette.ForGem(key, StageRun.RallyKey), 0, 0, 0, 1);
                 Text label = Ui.Label(bar.transform, "", 36, TextAnchor.MiddleCenter, Palette.Text);
                 _meters.Add((key, fill.rectTransform, label));
+                _rewardsHeard[key] = _run.Puzzle.Meters[key].Rewards;
             }
         }
 
@@ -159,7 +174,9 @@ namespace PuzzleKingdoms.Views.Puzzle
         {
             BoardModel board = _run.Puzzle.Board;
             RectTransform area = Ui.Rect(root, "Board Area", 0.03f, 0.16f, 0.97f, 0.665f);
-            _board = Ui.Stretch(area, "Board");
+            // The board shakes inside this rect; the area itself never moves.
+            RectTransform shaker = Ui.Stretch(area, "Board Shake");
+            _board = Ui.Stretch(shaker, "Board");
             var fitter = _board.gameObject.AddComponent<AspectRatioFitter>();
             fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
             fitter.aspectRatio = (float)board.Width / board.Height;
@@ -205,6 +222,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                     _outlines[x, y] = outline;
                 }
             }
+            _effects = BoardEffects.Create(_board, shaker, board.Width, board.Height);
         }
 
         private void Update()
@@ -369,6 +387,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                         {
                             _bonus.text = frame.StepIndex > 1 ? $"Bonus! x{frame.StepIndex}" : "Bonus!";
                         }
+                        PlayStepFeedback(frame.Step, frame.StepIndex);
                         yield return Pop(frame.Step.Cleared);
                         SetMatchOutlines(frame.Step, false);
                         Render(frame.Grid, frame.Specials, frame.Stones);
@@ -376,6 +395,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                         {
                             Park(cell);
                         }
+                        PlayCreated(frame.Step);
                         break;
                     case MoveReplay.FrameKind.Filled:
                         Render(frame.Grid, frame.Specials, frame.Stones);
@@ -391,6 +411,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                 }
             }
             _bonus.text = "";
+            PlayRecruitSounds();
             RefreshHud();
             IsBusy = false;
             if (_run.Puzzle.IsFinished)
@@ -403,6 +424,7 @@ namespace PuzzleKingdoms.Views.Puzzle
         private IEnumerator Reject(GridPos a, GridPos b)
         {
             IsBusy = true;
+            PlaySound(bank => bank.InvalidSwap);
             foreach (GridPos cell in new[] { a, b })
             {
                 _outlines[cell.X, cell.Y].effectColor = Palette.Bad;
@@ -429,6 +451,157 @@ namespace PuzzleKingdoms.Views.Puzzle
             }
             IsBusy = false;
         }
+
+        // --- Sound and effects (PB-8) -------------------------------------
+
+        private static void PlaySound(Func<SoundBank, AudioClip> pick, float pitch = 1f)
+        {
+            SoundBank bank = Sfx.Bank;
+            if (bank != null)
+            {
+                Sfx.Play(pick(bank), pitch);
+            }
+        }
+
+        /// <summary>
+        /// What a cascade wave sounds and looks like as it clears: the match pop
+        /// (higher with every wave), Blast rings, Prism beams, stone chips and a shake.
+        /// </summary>
+        private void PlayStepFeedback(MoveResult.CascadeStep step, int stepIndex)
+        {
+            if (step.Cleared.Count > 0)
+            {
+                SoundBank bank = Sfx.Bank;
+                PlaySound(b => b.Match, bank != null ? bank.CascadePitch(stepIndex) : 1f);
+            }
+            bool blast = false;
+            bool prism = false;
+            foreach (MoveResult.SpecialTrigger trigger in step.Triggers)
+            {
+                if (trigger.Kind == SpecialKind.Prism)
+                {
+                    prism = true;
+                    _effects.Beams(trigger.Origin, PrismTargets(step, trigger.Origin));
+                }
+                else
+                {
+                    blast = true;
+                    _effects.Ring(trigger.Origin, Palette.Gold);
+                }
+            }
+            if (blast)
+            {
+                PlaySound(b => b.BlastFired);
+            }
+            if (prism)
+            {
+                PlaySound(b => b.PrismFired);
+                _effects.Shake(PrismShake, PrismShakeSeconds);
+            }
+            else if (blast)
+            {
+                _effects.Shake(BlastShake, BlastShakeSeconds);
+            }
+            foreach (GridPos cell in step.Cracked)
+            {
+                _effects.Chips(cell);
+            }
+            if (step.Cracked.Count > 0)
+            {
+                PlaySound(b => b.StoneCrack);
+            }
+        }
+
+        /// <summary>
+        /// The gems a Prism took: cleared this wave, not part of a normal match,
+        /// and not inside a Blast's 3×3 area.
+        /// </summary>
+        private static List<GridPos> PrismTargets(MoveResult.CascadeStep step, GridPos origin)
+        {
+            var matched = new HashSet<GridPos>();
+            foreach (MatchGroup group in step.Groups)
+            {
+                matched.UnionWith(group.Cells);
+            }
+            var targets = new List<GridPos>();
+            foreach (GridPos cell in step.Cleared)
+            {
+                if (cell == origin || matched.Contains(cell))
+                {
+                    continue;
+                }
+                bool inBlast = false;
+                foreach (MoveResult.SpecialTrigger trigger in step.Triggers)
+                {
+                    if (trigger.Kind == SpecialKind.Blast && Mathf.Abs(trigger.Origin.X - cell.X) <= 1
+                        && Mathf.Abs(trigger.Origin.Y - cell.Y) <= 1)
+                    {
+                        inBlast = true;
+                    }
+                }
+                if (!inBlast)
+                {
+                    targets.Add(cell);
+                }
+            }
+            return targets;
+        }
+
+        /// <summary>A special gem made this wave flashes and makes its own sound.</summary>
+        private void PlayCreated(MoveResult.CascadeStep step)
+        {
+            foreach (MoveResult.SpecialCreated created in step.Created)
+            {
+                _effects.Flash(created.Cell, _gems[created.Cell.X, created.Cell.Y].sprite);
+                if (created.Kind == SpecialKind.Prism)
+                {
+                    PlaySound(b => b.PrismCreated);
+                }
+                else
+                {
+                    PlaySound(b => b.BlastCreated);
+                }
+            }
+        }
+
+        /// <summary>A ding when a meter gave a unit this move, a horn when it gave a Rally charge.</summary>
+        private void PlayRecruitSounds()
+        {
+            bool unit = false;
+            bool rally = false;
+            foreach ((string key, RectTransform _, Text _) in _meters)
+            {
+                int rewards = _run.Puzzle.Meters[key].Rewards;
+                if (rewards > _rewardsHeard[key])
+                {
+                    if (key == StageRun.RallyKey)
+                    {
+                        rally = true;
+                    }
+                    else
+                    {
+                        unit = true;
+                    }
+                }
+                _rewardsHeard[key] = rewards;
+            }
+            if (unit)
+            {
+                PlaySound(b => b.UnitRecruited);
+            }
+            if (rally)
+            {
+                PlaySound(b => b.RallyCharge);
+            }
+        }
+
+        private void ToggleSound()
+        {
+            Sfx.Muted = !Sfx.Muted;
+            RefreshSoundButton();
+        }
+
+        private void RefreshSoundButton() => Ui.SetCaption(_sound, Sfx.Muted ? "Muted" : "Sound");
 
         /// <summary>Gems start at the given offsets and glide back into their cells together.</summary>
         private IEnumerator SlideHome(List<(GridPos cell, Vector2 start)> moves, float seconds)
