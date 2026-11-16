@@ -22,6 +22,7 @@ namespace PuzzleKingdoms.Data
         [SerializeField] private ArmyRulesAsset armyRules;
         [SerializeField] private BattleRulesAsset battleRules;
         [SerializeField] private ProgressionRulesAsset progressionRules;
+        [SerializeField] private SoundBank sounds;
 
         public IReadOnlyList<UnitDefinition> RecruitableUnits => recruitableUnits;
         public IReadOnlyList<StageDefinition> Campaign => campaign;
@@ -29,6 +30,8 @@ namespace PuzzleKingdoms.Data
         public ArmyRulesAsset ArmyRules => armyRules;
         public BattleRulesAsset BattleRules => battleRules;
         public ProgressionRulesAsset ProgressionRules => progressionRules;
+        /// <summary>Sound effects and music; may be null (the game then stays silent).</summary>
+        public SoundBank Sounds => sounds;
 
         public List<string> CampaignOrder() => campaign.Select(s => s.Id).ToList();
 

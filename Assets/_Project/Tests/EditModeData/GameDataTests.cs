@@ -117,6 +117,35 @@ namespace PuzzleKingdoms.Tests.Data
         }
 
         [Test]
+        public void SoundBankHasEveryClip()
+        {
+            SoundBank sounds = Load<GameContent>("GameContent.asset").Sounds;
+            Assert.IsNotNull(sounds, "GameContent links the SoundBank");
+            var clips = new Dictionary<string, UnityEngine.AudioClip>
+            {
+                ["match"] = sounds.Match,
+                ["blastCreated"] = sounds.BlastCreated,
+                ["blastFired"] = sounds.BlastFired,
+                ["prismCreated"] = sounds.PrismCreated,
+                ["prismFired"] = sounds.PrismFired,
+                ["stoneCrack"] = sounds.StoneCrack,
+                ["invalidSwap"] = sounds.InvalidSwap,
+                ["unitRecruited"] = sounds.UnitRecruited,
+                ["rallyCharge"] = sounds.RallyCharge,
+                ["music"] = sounds.Music,
+            };
+            foreach (KeyValuePair<string, UnityEngine.AudioClip> clip in clips)
+            {
+                Assert.IsNotNull(clip.Value, clip.Key);
+                Assert.Greater(clip.Value.length, 0.05f, clip.Key);
+            }
+            Assert.Less(sounds.Match.length, 0.35f, "effects stay short (PB-8: ≤ 0.3 s feel)");
+            Assert.AreEqual(1f, sounds.CascadePitch(0));
+            Assert.Greater(sounds.CascadePitch(1), sounds.CascadePitch(0), "pitch rises with cascades");
+            Assert.LessOrEqual(sounds.CascadePitch(50), 2f, "pitch is capped");
+        }
+
+        [Test]
         public void Stage11CanBePlayedHeadlessFromGameContent()
         {
             GameContent content = Load<GameContent>("GameContent.asset");

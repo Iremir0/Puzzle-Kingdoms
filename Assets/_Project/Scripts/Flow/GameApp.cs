@@ -58,6 +58,7 @@ namespace PuzzleKingdoms.Flow
                 }
             }
 
+            Sfx.Setup(gameObject, content.Sounds);
             _store ??= new ProfileStore();
             Profile = _store.Load();
             Ui.EnsureEventSystem();

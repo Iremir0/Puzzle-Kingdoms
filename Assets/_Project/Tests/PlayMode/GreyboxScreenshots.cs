@@ -147,7 +147,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
 
         /// <summary>
         /// PB-7: records the puzzle board at 30 fps (fixed time steps) through an
-        /// invalid swap, three moves and the idle hint into
+        /// invalid swap, eight moves, the idle hint and the PB-8 effects into
         /// <c>Logs/Screenshots/anim/frame-NNNN.png</c>, to turn into a GIF or video
         /// with any tool (the PB-7 card has the one used for its notes).
         /// </summary>
@@ -231,7 +231,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
                     yield return Hold(1);
                 }
                 yield return Hold(8);
-                for (int move = 0; move < 3 && !_app.Run.Puzzle.IsFinished; move++)
+                for (int move = 0; move < 8 && !_app.Run.Puzzle.IsFinished; move++)
                 {
                     board.TryFindValidMove(out GridPos a, out GridPos b);
                     puzzle.PlaySwap(a, b);
@@ -249,6 +249,19 @@ namespace PuzzleKingdoms.Tests.PlayMode
                 }
                 Time.captureDeltaTime = 1f / 30f;
                 yield return Hold(45);
+
+                // PB-8 showcase: the special-gem effects, which a few random moves rarely make.
+                BoardEffects effects = puzzle.Effects;
+                effects.Ring(new GridPos(2, 2), Views.Common.Palette.Gold);
+                effects.Shake(10f, 0.15f);
+                yield return Hold(12);
+                effects.Beams(new GridPos(3, 3), new[] { new GridPos(0, 0), new GridPos(5, 1), new GridPos(1, 5), new GridPos(5, 5) });
+                effects.Shake(16f, 0.2f);
+                yield return Hold(12);
+                effects.Chips(new GridPos(1, 1));
+                effects.Chips(new GridPos(4, 4));
+                effects.Flash(new GridPos(2, 4), Views.Common.GemShapes.Get(Views.Common.GemShape.Diamond));
+                yield return Hold(15);
             }
             finally
             {
