@@ -101,5 +101,66 @@ namespace PuzzleKingdoms.Tests.PlayMode
             Assert.IsTrue(File.Exists(Path.Combine(_saveFolder, ProfileStore.FileName)), "profile saved");
             Assert.AreEqual(_app.Run.Reward.TotalGold, _app.Profile.Gold);
         }
+
+        /// <summary>
+        /// PB-7: after every animated move (and an invalid one) the board on screen
+        /// equals the logic board and every gem image is back in its cell.
+        /// Stage 1-3 has stone gems, so stones are checked too.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator PuzzleBoardMatchesLogicAfterEveryAnimation()
+        {
+            _app = new GameObject("GameApp").AddComponent<GameApp>();
+            _app.SetContent(LoadContent());
+            _app.UseStore(new ProfileStore(_saveFolder));
+            yield return null;
+            _app.StartStage(2);
+            yield return null;
+            var puzzle = (PuzzleScreen)_app.CurrentScreen;
+            var board = _app.Run.Puzzle.Board;
+
+            Assert.IsTrue(TryFindInvalidSwap(board, out GridPos badA, out GridPos badB), "board has a non-matching swap");
+            int moves = _app.Run.Puzzle.MovesLeft;
+            Assert.IsFalse(puzzle.PlaySwap(badA, badB));
+            Assert.IsTrue(puzzle.IsBusy, "the invalid swap is animated");
+            yield return new WaitUntil(() => !puzzle.IsBusy);
+            Assert.AreEqual(moves, _app.Run.Puzzle.MovesLeft, "an invalid swap uses no move");
+            AssertScreenMatchesLogic(puzzle, board, "after the invalid swap");
+
+            for (int move = 1; move <= 20 && !_app.Run.Puzzle.IsFinished; move++)
+            {
+                Assert.IsTrue(board.TryFindValidMove(out GridPos a, out GridPos b));
+                Assert.IsTrue(puzzle.PlaySwap(a, b));
+                Assert.IsFalse(puzzle.PlaySwap(a, b), "input is blocked while animating");
+                yield return new WaitUntil(() => !puzzle.IsBusy);
+                AssertScreenMatchesLogic(puzzle, board, $"after move {move}");
+            }
+        }
+
+        private static bool TryFindInvalidSwap(Logic.Puzzle.BoardModel board, out GridPos a, out GridPos b)
+        {
+            for (int y = 0; y < board.Height; y++)
+            {
+                for (int x = 0; x + 1 < board.Width; x++)
+                {
+                    a = new GridPos(x, y);
+                    b = new GridPos(x + 1, y);
+                    if (!board.WouldSwapMatch(a, b))
+                    {
+                        return true;
+                    }
+                }
+            }
+            a = b = default;
+            return false;
+        }
+
+        private static void AssertScreenMatchesLogic(PuzzleScreen puzzle, Logic.Puzzle.BoardModel board, string when)
+        {
+            CollectionAssert.AreEqual(board.ToGrid(), puzzle.ShownGrid, "gems " + when);
+            CollectionAssert.AreEqual(board.ToSpecialGrid(), puzzle.ShownSpecials, "special gems " + when);
+            CollectionAssert.AreEqual(board.ToStoneGrid(), puzzle.ShownStones, "stones " + when);
+            Assert.IsTrue(puzzle.GemsAtRest, "every gem back in its cell " + when);
+        }
     }
 }

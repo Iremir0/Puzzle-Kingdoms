@@ -17,24 +17,49 @@ namespace PuzzleKingdoms.Views.Puzzle
     /// the 6×6 board. Plays the swap through <see cref="StageRun.Puzzle"/> and
     /// animates the returned steps (compute, then animate).
     /// </summary>
+    /// <remarks>
+    /// Every board cell is a fixed slot (input, never moves) with a child gem
+    /// image. Animations render the next frame first and then slide, pop or drop
+    /// the gem images from where they were back to their slots (PB-7).
+    /// </remarks>
     public sealed class PuzzleScreen : MonoBehaviour
     {
-        private const float SwapSeconds = 0.12f;
-        private const float FlashSeconds = 0.14f;
-        private const float ClearSeconds = 0.08f;
-        private const float FillSeconds = 0.16f;
-        private const float RejectSeconds = 0.2f;
+        /// <summary>Multiplies every animation time below: 1 = as designed, 0.5 = twice as fast.</summary>
+        private const float DurationScale = 1f;
+        private const float SwapSeconds = 0.15f * DurationScale;
+        /// <summary>Cleared gems grow to <see cref="PopScale"/> in the first part, then shrink and fade.</summary>
+        private const float ClearSeconds = 0.2f * DurationScale;
+        private const float PopShare = 0.3f;
+        private const float PopScale = 1.1f;
+        private const float FallSecondsPerCell = 0.06f * DurationScale;
+        private const float LandingSeconds = 0.08f * DurationScale;
+        /// <summary>Landing bounce height, in cells.</summary>
+        private const float LandingBounce = 0.08f;
+        private const float ReshuffleSeconds = 0.4f * DurationScale;
+        private const float ReshuffleNoticeSeconds = 0.25f * DurationScale;
+        private const float RejectSeconds = 0.25f * DurationScale;
+        /// <summary>How far the two gems of an invalid swap lean towards each other, in cells.</summary>
+        private const float RejectReach = 0.4f;
+        /// <summary>Sideways shake of an invalid swap, in cells.</summary>
+        private const float RejectShake = 0.06f;
+        private const float SnapBackSeconds = 0.1f * DurationScale;
         /// <summary>Idle time before a valid move is pointed out (GDD §5 hint).</summary>
         private const float HintDelaySeconds = 5f;
+        /// <summary>The hinted gems pulse between 100% and 100% + this.</summary>
+        private const float HintPulse = 0.08f;
         private static readonly Color StoneTint = new Color(0.68f, 0.68f, 0.72f, 1f);
 
         private StageRun _run;
         private Action _onDone;
-        private Image[,] _cells;
-        private Text[,] _tags;
+        private RectTransform _board;
+        private Image[,] _gems;
+        private CanvasGroup[,] _gemAlpha;
         private Image[,] _marks;
         private Image[,] _stoneMarks;
         private Outline[,] _outlines;
+        private int[,] _shownGrid;
+        private SpecialKind[,] _shownSpecials;
+        private bool[,] _shownStones;
         private Text _moves;
         private Text _status;
         private Text _bonus;
@@ -47,6 +72,35 @@ namespace PuzzleKingdoms.Views.Puzzle
 
         /// <summary>True while a move is being animated; input is ignored.</summary>
         public bool IsBusy { get; private set; }
+
+        /// <summary>True when a touch may start a swap or drag a gem.</summary>
+        public bool AcceptsInput => !IsBusy && !_run.Puzzle.IsFinished;
+
+        /// <summary>Copies of what the board shows now (for tests: must equal the logic board once idle).</summary>
+        public int[,] ShownGrid => (int[,])_shownGrid.Clone();
+        public SpecialKind[,] ShownSpecials => (SpecialKind[,])_shownSpecials.Clone();
+        public bool[,] ShownStones => (bool[,])_shownStones.Clone();
+
+        /// <summary>True when every gem image sits in its own cell at full size and alpha.</summary>
+        public bool GemsAtRest
+        {
+            get
+            {
+                for (int x = 0; x < _gems.GetLength(0); x++)
+                {
+                    for (int y = 0; y < _gems.GetLength(1); y++)
+                    {
+                        RectTransform gem = _gems[x, y].rectTransform;
+                        if (gem.anchoredPosition.sqrMagnitude > 0.01f || Mathf.Abs(gem.localScale.x - 1f) > 0.001f
+                            || Mathf.Abs(_gemAlpha[x, y].alpha - 1f) > 0.001f)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
 
         public static PuzzleScreen Create(Transform parent, StageRun run, Action onDone)
         {
@@ -105,14 +159,16 @@ namespace PuzzleKingdoms.Views.Puzzle
         {
             BoardModel board = _run.Puzzle.Board;
             RectTransform area = Ui.Rect(root, "Board Area", 0.03f, 0.16f, 0.97f, 0.665f);
-            RectTransform square = Ui.Stretch(area, "Board");
-            var fitter = square.gameObject.AddComponent<AspectRatioFitter>();
+            _board = Ui.Stretch(area, "Board");
+            var fitter = _board.gameObject.AddComponent<AspectRatioFitter>();
             fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
             fitter.aspectRatio = (float)board.Width / board.Height;
-            Ui.Box(square, "Board Background", Palette.Panel);
+            // New gems start above the board and fall in: hide them until they enter.
+            _board.gameObject.AddComponent<RectMask2D>();
+            Ui.Box(_board, "Board Background", Palette.Panel);
 
-            _cells = new Image[board.Width, board.Height];
-            _tags = new Text[board.Width, board.Height];
+            _gems = new Image[board.Width, board.Height];
+            _gemAlpha = new CanvasGroup[board.Width, board.Height];
             _marks = new Image[board.Width, board.Height];
             _stoneMarks = new Image[board.Width, board.Height];
             _outlines = new Outline[board.Width, board.Height];
@@ -123,24 +179,27 @@ namespace PuzzleKingdoms.Views.Puzzle
                 for (int x = 0; x < board.Width; x++)
                 {
                     float top = 1f - y * h;
-                    Image cell = Ui.Box(square, $"Gem {x},{y}", Color.clear,
+                    // The slot takes the touches and never moves; its gem child is what animates.
+                    Image slot = Ui.Box(_board, $"Cell {x},{y}", Color.clear,
                         x * w + 0.008f, top - h + 0.008f, (x + 1) * w - 0.008f, top - 0.008f);
-                    cell.preserveAspect = true;
-                    cell.gameObject.AddComponent<GemCell>().Init(this, new GridPos(x, y));
-                    _cells[x, y] = cell;
-                    _tags[x, y] = Ui.Label(cell.transform, "", 56, TextAnchor.MiddleCenter, new Color(0, 0, 0, 0.55f));
+                    Image gem = Ui.Box(slot.transform, "Gem", Color.clear);
+                    gem.preserveAspect = true;
+                    gem.raycastTarget = false;
+                    _gems[x, y] = gem;
+                    _gemAlpha[x, y] = gem.gameObject.AddComponent<CanvasGroup>();
+                    slot.gameObject.AddComponent<GemCell>().Init(this, new GridPos(x, y), gem.rectTransform);
                     // Half of a stone gem is rock (D-032): drawn over the gem, so the other half keeps its color.
-                    Image stone = Ui.Box(cell.transform, "Stone", StoneTint);
+                    Image stone = Ui.Box(gem.transform, "Stone", StoneTint);
                     stone.preserveAspect = true;
                     stone.raycastTarget = false;
                     stone.enabled = false;
                     _stoneMarks[x, y] = stone;
-                    Image mark = Ui.Box(cell.transform, "Special", Color.white);
+                    Image mark = Ui.Box(gem.transform, "Special", Color.white);
                     mark.preserveAspect = true;
                     mark.raycastTarget = false;
                     mark.enabled = false;
                     _marks[x, y] = mark;
-                    Outline outline = cell.gameObject.AddComponent<Outline>();
+                    Outline outline = gem.gameObject.AddComponent<Outline>();
                     outline.effectDistance = new Vector2(7, 7);
                     outline.enabled = false;
                     _outlines[x, y] = outline;
@@ -150,7 +209,7 @@ namespace PuzzleKingdoms.Views.Puzzle
 
         private void Update()
         {
-            if (IsBusy || _run.Puzzle.IsFinished)
+            if (!AcceptsInput)
             {
                 return;
             }
@@ -162,18 +221,10 @@ namespace PuzzleKingdoms.Views.Puzzle
             }
             if (_hint != null)
             {
-                // Pulse the two hinted gems' outlines.
-                float alpha = 0.35f + 0.65f * Mathf.PingPong(Time.time * 2f, 1f);
-                foreach (GridPos cell in new[] { _hint.Value.a, _hint.Value.b })
-                {
-                    if (_selected == cell)
-                    {
-                        continue;
-                    }
-                    Outline outline = _outlines[cell.X, cell.Y];
-                    outline.effectColor = new Color(Palette.Gold.r, Palette.Gold.g, Palette.Gold.b, alpha);
-                    outline.enabled = true;
-                }
+                // The two hinted gems breathe gently.
+                float scale = 1f + HintPulse * Mathf.SmoothStep(0f, 1f, Mathf.PingPong(Time.time * 1.6f, 1f));
+                Gem(_hint.Value.a).localScale = Vector3.one * scale;
+                Gem(_hint.Value.b).localScale = Vector3.one * scale;
             }
         }
 
@@ -184,11 +235,8 @@ namespace PuzzleKingdoms.Views.Puzzle
             {
                 return;
             }
-            foreach (GridPos cell in new[] { _hint.Value.a, _hint.Value.b })
-            {
-                _outlines[cell.X, cell.Y].enabled = _selected == cell;
-                _outlines[cell.X, cell.Y].effectColor = Palette.Highlight;
-            }
+            Gem(_hint.Value.a).localScale = Vector3.one;
+            Gem(_hint.Value.b).localScale = Vector3.one;
             _hint = null;
         }
 
@@ -196,7 +244,7 @@ namespace PuzzleKingdoms.Views.Puzzle
 
         public void OnCellPressed(GridPos cell)
         {
-            if (IsBusy || _run.Puzzle.IsFinished)
+            if (!AcceptsInput)
             {
                 return;
             }
@@ -219,7 +267,7 @@ namespace PuzzleKingdoms.Views.Puzzle
 
         public void OnCellSwiped(GridPos cell, GridPos direction)
         {
-            if (IsBusy || _run.Puzzle.IsFinished)
+            if (!AcceptsInput)
             {
                 return;
             }
@@ -228,6 +276,29 @@ namespace PuzzleKingdoms.Views.Puzzle
             if (_run.Puzzle.Board.IsInside(target))
             {
                 PlaySwap(cell, target);
+            }
+            else
+            {
+                StartCoroutine(Tween.Move(Gem(cell), Vector2.zero, SnapBackSeconds));
+            }
+        }
+
+        /// <summary>Holds a gem away from its cell while the finger drags it (before the swipe counts).</summary>
+        public void DragGem(GridPos cell, Vector2 offset)
+        {
+            if (AcceptsInput)
+            {
+                ClearHint();
+                Gem(cell).anchoredPosition = offset;
+            }
+        }
+
+        /// <summary>The finger let go before the swipe counted: the gem slides back.</summary>
+        public void ReleaseGem(GridPos cell)
+        {
+            if (AcceptsInput && Gem(cell).anchoredPosition != Vector2.zero)
+            {
+                StartCoroutine(Tween.Move(Gem(cell), Vector2.zero, SnapBackSeconds));
             }
         }
 
@@ -239,10 +310,14 @@ namespace PuzzleKingdoms.Views.Puzzle
                 return false;
             }
             ClearHint();
+            // Only snap-backs can be running here; the swap takes over every gem.
+            StopAllCoroutines();
+            ParkAllExcept(a, b);
             int[,] before = _run.Puzzle.Board.ToGrid();
             SpecialKind[,] beforeSpecials = _run.Puzzle.Board.ToSpecialGrid();
             bool[,] beforeStones = _run.Puzzle.Board.ToStoneGrid();
             MoveResult result = _run.Puzzle.PlaySwap(a, b);
+            IsBusy = true;
             StartCoroutine(result.IsValid ? Animate(before, beforeSpecials, beforeStones, result) : Reject(a, b));
             return result.IsValid;
         }
@@ -272,9 +347,17 @@ namespace PuzzleKingdoms.Views.Puzzle
                 switch (frame.Kind)
                 {
                     case MoveReplay.FrameKind.Swapped:
+                    {
+                        GridPos a = result.SwapA;
+                        GridPos b = result.SwapB;
+                        // Start from wherever the finger left the gems.
+                        Vector2 heldA = Gem(a).anchoredPosition;
+                        Vector2 heldB = Gem(b).anchoredPosition;
                         Render(frame.Grid, frame.Specials, frame.Stones);
-                        yield return new WaitForSeconds(SwapSeconds);
+                        var moves = new List<(GridPos, Vector2)> { (a, Offset(b, a) + heldB), (b, Offset(a, b) + heldA) };
+                        yield return SlideHome(moves, SwapSeconds);
                         break;
+                    }
                     case MoveReplay.FrameKind.Cleared:
                         SetMatchOutlines(frame.Step, true);
                         string special = SpecialLabel(frame.Step);
@@ -286,19 +369,24 @@ namespace PuzzleKingdoms.Views.Puzzle
                         {
                             _bonus.text = frame.StepIndex > 1 ? $"Bonus! x{frame.StepIndex}" : "Bonus!";
                         }
-                        yield return new WaitForSeconds(FlashSeconds);
+                        yield return Pop(frame.Step.Cleared);
                         SetMatchOutlines(frame.Step, false);
                         Render(frame.Grid, frame.Specials, frame.Stones);
-                        yield return new WaitForSeconds(ClearSeconds);
+                        foreach (GridPos cell in frame.Step.Cleared)
+                        {
+                            Park(cell);
+                        }
                         break;
                     case MoveReplay.FrameKind.Filled:
                         Render(frame.Grid, frame.Specials, frame.Stones);
-                        yield return new WaitForSeconds(FillSeconds);
+                        yield return Drop(frame.Step);
                         break;
                     case MoveReplay.FrameKind.Reshuffled:
                         _status.text = "No moves left: the board was reshuffled.";
-                        yield return new WaitForSeconds(0.3f);
+                        yield return new WaitForSeconds(ReshuffleNoticeSeconds);
+                        List<(GridPos, Vector2)> flights = ReshuffleFlights(frame.Grid);
                         Render(frame.Grid, frame.Specials, frame.Stones);
+                        yield return SlideHome(flights, ReshuffleSeconds);
                         break;
                 }
             }
@@ -311,6 +399,7 @@ namespace PuzzleKingdoms.Views.Puzzle
             }
         }
 
+        /// <summary>Invalid swap: both gems lean towards each other and come back with a short shake.</summary>
         private IEnumerator Reject(GridPos a, GridPos b)
         {
             IsBusy = true;
@@ -319,13 +408,182 @@ namespace PuzzleKingdoms.Views.Puzzle
                 _outlines[cell.X, cell.Y].effectColor = Palette.Bad;
                 _outlines[cell.X, cell.Y].enabled = true;
             }
-            yield return new WaitForSeconds(RejectSeconds);
+            Vector2 heldA = Gem(a).anchoredPosition;
+            Vector2 heldB = Gem(b).anchoredPosition;
+            Vector2 towardsB = Offset(b, a) * RejectReach;
+            float shake = Mathf.Abs(CellStep.x) * RejectShake;
+            yield return Tween.Run(RejectSeconds, elapsed =>
+            {
+                float t = Tween.Progress(elapsed, RejectSeconds);
+                float settle = 1f - Tween.EaseOut(t);
+                float lean = Tween.Hump(t);
+                var wobble = new Vector2(Mathf.Sin(t * Mathf.PI * 6f) * (1f - t) * shake, 0f);
+                Gem(a).anchoredPosition = heldA * settle + towardsB * lean + wobble;
+                Gem(b).anchoredPosition = heldB * settle - towardsB * lean + wobble;
+            });
             foreach (GridPos cell in new[] { a, b })
             {
+                Park(cell);
                 _outlines[cell.X, cell.Y].enabled = false;
                 _outlines[cell.X, cell.Y].effectColor = Palette.Highlight;
             }
             IsBusy = false;
+        }
+
+        /// <summary>Gems start at the given offsets and glide back into their cells together.</summary>
+        private IEnumerator SlideHome(List<(GridPos cell, Vector2 start)> moves, float seconds)
+        {
+            yield return Tween.Run(seconds, elapsed =>
+            {
+                float left = 1f - Tween.EaseInOut(Tween.Progress(elapsed, seconds));
+                foreach ((GridPos cell, Vector2 start) in moves)
+                {
+                    Gem(cell).anchoredPosition = start * left;
+                }
+            });
+        }
+
+        /// <summary>Cleared gems swell a little, then shrink away and fade.</summary>
+        private IEnumerator Pop(List<GridPos> cleared)
+        {
+            yield return Tween.Run(ClearSeconds, elapsed =>
+            {
+                float t = Tween.Progress(elapsed, ClearSeconds);
+                float scale;
+                float alpha = 1f;
+                if (t < PopShare)
+                {
+                    scale = Mathf.Lerp(1f, PopScale, Tween.EaseOut(t / PopShare));
+                }
+                else
+                {
+                    float shrink = Tween.EaseIn((t - PopShare) / (1f - PopShare));
+                    scale = Mathf.Lerp(PopScale, 0f, shrink);
+                    alpha = 1f - shrink;
+                }
+                foreach (GridPos cell in cleared)
+                {
+                    Gem(cell).localScale = Vector3.one * scale;
+                    _gemAlpha[cell.X, cell.Y].alpha = alpha;
+                }
+            });
+        }
+
+        /// <summary>
+        /// Gems fall from their old cells (or from above the board for new ones),
+        /// faster the further they fall, and bounce a little on landing.
+        /// </summary>
+        private IEnumerator Drop(MoveResult.CascadeStep step)
+        {
+            var falls = new List<(GridPos cell, Vector2 start, float seconds)>();
+            foreach (MoveResult.GemFall fall in step.Falls)
+            {
+                falls.Add((fall.To, Offset(fall.From, fall.To), (fall.To.Y - fall.From.Y) * FallSecondsPerCell));
+            }
+            foreach (MoveResult.GemSpawn spawn in step.Spawns)
+            {
+                var above = new GridPos(spawn.Cell.X, spawn.Cell.Y - spawn.DropDistance);
+                falls.Add((spawn.Cell, Offset(above, spawn.Cell), spawn.DropDistance * FallSecondsPerCell));
+            }
+            float total = 0f;
+            foreach ((GridPos _, Vector2 _, float seconds) in falls)
+            {
+                total = Mathf.Max(total, seconds + LandingSeconds);
+            }
+            float bounce = Mathf.Abs(CellStep.y) * LandingBounce;
+            yield return Tween.Run(total, elapsed =>
+            {
+                foreach ((GridPos cell, Vector2 start, float seconds) in falls)
+                {
+                    RectTransform gem = Gem(cell);
+                    if (elapsed < seconds)
+                    {
+                        gem.anchoredPosition = start * (1f - Tween.EaseIn(elapsed / seconds));
+                    }
+                    else
+                    {
+                        float landed = Tween.Progress(elapsed - seconds, LandingSeconds);
+                        gem.anchoredPosition = landed < 1f ? new Vector2(0f, bounce * Tween.Hump(landed)) : Vector2.zero;
+                    }
+                }
+            });
+        }
+
+        /// <summary>
+        /// The logic only reports the new board, so each gem flies from some old
+        /// cell of the same colour (first come, first served).
+        /// </summary>
+        private List<(GridPos, Vector2)> ReshuffleFlights(int[,] after)
+        {
+            var oldCells = new Dictionary<int, Queue<GridPos>>();
+            for (int y = 0; y < _shownGrid.GetLength(1); y++)
+            {
+                for (int x = 0; x < _shownGrid.GetLength(0); x++)
+                {
+                    int gem = _shownGrid[x, y];
+                    if (!oldCells.TryGetValue(gem, out Queue<GridPos> queue))
+                    {
+                        oldCells[gem] = queue = new Queue<GridPos>();
+                    }
+                    queue.Enqueue(new GridPos(x, y));
+                }
+            }
+            var flights = new List<(GridPos, Vector2)>();
+            for (int y = 0; y < after.GetLength(1); y++)
+            {
+                for (int x = 0; x < after.GetLength(0); x++)
+                {
+                    var cell = new GridPos(x, y);
+                    if (oldCells.TryGetValue(after[x, y], out Queue<GridPos> queue) && queue.Count > 0)
+                    {
+                        flights.Add((cell, Offset(queue.Dequeue(), cell)));
+                    }
+                }
+            }
+            return flights;
+        }
+
+        /// <summary>Distance between two cells in the board's local units, per cell (board y grows downwards).</summary>
+        private Vector2 CellStep
+        {
+            get
+            {
+                Rect rect = _board.rect;
+                return new Vector2(rect.width / _gems.GetLength(0), -rect.height / _gems.GetLength(1));
+            }
+        }
+
+        /// <summary>Offset that draws the gem of cell <paramref name="to"/> on top of cell <paramref name="from"/>.</summary>
+        private Vector2 Offset(GridPos from, GridPos to)
+        {
+            Vector2 step = CellStep;
+            return new Vector2((from.X - to.X) * step.x, (from.Y - to.Y) * step.y);
+        }
+
+        private RectTransform Gem(GridPos cell) => _gems[cell.X, cell.Y].rectTransform;
+
+        /// <summary>Puts a gem image back in its cell at full size.</summary>
+        private void Park(GridPos cell)
+        {
+            RectTransform gem = Gem(cell);
+            gem.anchoredPosition = Vector2.zero;
+            gem.localScale = Vector3.one;
+            _gemAlpha[cell.X, cell.Y].alpha = 1f;
+        }
+
+        private void ParkAllExcept(GridPos a, GridPos b)
+        {
+            for (int x = 0; x < _gems.GetLength(0); x++)
+            {
+                for (int y = 0; y < _gems.GetLength(1); y++)
+                {
+                    var cell = new GridPos(x, y);
+                    if (cell != a && cell != b)
+                    {
+                        Park(cell);
+                    }
+                }
+            }
         }
 
         /// <summary>Outlines the matched cells in white and whatever special gems destroyed in gold.</summary>
@@ -364,6 +622,9 @@ namespace PuzzleKingdoms.Views.Puzzle
 
         private void Render(int[,] grid, SpecialKind[,] specials, bool[,] stones)
         {
+            _shownGrid = (int[,])grid.Clone();
+            _shownSpecials = (SpecialKind[,])specials.Clone();
+            _shownStones = (bool[,])stones.Clone();
             IReadOnlyList<string> keys = _run.Puzzle.GemRewardKeys;
             for (int x = 0; x < grid.GetLength(0); x++)
             {
@@ -371,12 +632,11 @@ namespace PuzzleKingdoms.Views.Puzzle
                 {
                     int gem = grid[x, y];
                     bool empty = gem == BoardModel.Empty;
-                    _cells[x, y].color = empty ? Color.clear : Palette.ForGem(keys[gem], StageRun.RallyKey);
+                    _gems[x, y].color = empty ? Color.clear : Palette.ForGem(keys[gem], StageRun.RallyKey);
                     if (!empty)
                     {
-                        _cells[x, y].sprite = GemShapes.Get(Palette.ShapeForGem(keys[gem], StageRun.RallyKey));
+                        _gems[x, y].sprite = GemShapes.Get(Palette.ShapeForGem(keys[gem], StageRun.RallyKey));
                     }
-                    _tags[x, y].text = "";
                     SpecialKind kind = specials[x, y];
                     bool stone = !empty && stones[x, y];
                     _stoneMarks[x, y].enabled = stone;

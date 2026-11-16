@@ -145,6 +145,125 @@ namespace PuzzleKingdoms.Tests.PlayMode
             yield return Capture(Path.Combine(output, "short-3-war-camp.png"), Width, shortHeight);
         }
 
+        /// <summary>
+        /// PB-7: records the puzzle board at 30 fps (fixed time steps) through an
+        /// invalid swap, three moves and the idle hint into
+        /// <c>Logs/Screenshots/anim/frame-NNNN.png</c>, to turn into a GIF or video
+        /// with any tool (the PB-7 card has the one used for its notes).
+        /// </summary>
+        [UnityTest]
+        public IEnumerator RecordMoveAnimation()
+        {
+#if UNITY_EDITOR
+            var content = UnityEditor.AssetDatabase.LoadAssetAtPath<GameContent>("Assets/_Project/Data/GameContent.asset");
+#else
+            GameContent content = null;
+            Assert.Ignore("editor only");
+#endif
+            const int width = 540;
+            const int height = 960;
+            string output = Path.GetFullPath("Logs/Screenshots/anim");
+            if (Directory.Exists(output))
+            {
+                Directory.Delete(output, true);
+            }
+            Directory.CreateDirectory(output);
+            _saveFolder = Path.Combine(Path.GetTempPath(), "pk-shots-" + System.Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(_saveFolder);
+
+            _app = new GameObject("GameApp").AddComponent<GameApp>();
+            _app.SetContent(content);
+            _app.UseStore(new ProfileStore(_saveFolder));
+            yield return null;
+            _app.StartStage(2);
+            yield return null;
+            var puzzle = (PuzzleScreen)_app.CurrentScreen;
+            var board = _app.Run.Puzzle.Board;
+
+            Canvas canvas = Object.FindAnyObjectByType<Canvas>();
+            var target = new RenderTexture(width, height, 24);
+            var camera = new GameObject("Record Camera").AddComponent<Camera>();
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = Color.black;
+            camera.orthographic = true;
+            camera.targetTexture = target;
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = camera;
+            canvas.planeDistance = 1f;
+            var texture = new Texture2D(width, height, TextureFormat.RGB24, false);
+            int frame = 0;
+            Time.captureDeltaTime = 1f / 30f;
+            try
+            {
+                void Shoot()
+                {
+                    Canvas.ForceUpdateCanvases();
+                    camera.Render();
+                    RenderTexture.active = target;
+                    texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+                    texture.Apply();
+                    RenderTexture.active = null;
+                    File.WriteAllBytes(Path.Combine(output, $"frame-{frame++:0000}.png"), texture.EncodeToPNG());
+                }
+
+                IEnumerator Hold(int frames)
+                {
+                    for (int i = 0; i < frames; i++)
+                    {
+                        yield return null;
+                        Shoot();
+                    }
+                }
+
+                yield return Hold(10);
+                for (int y = 0; y < board.Height; y++)
+                {
+                    var a = new GridPos(0, y);
+                    var b = new GridPos(1, y);
+                    if (!board.WouldSwapMatch(a, b))
+                    {
+                        puzzle.PlaySwap(a, b);
+                        break;
+                    }
+                }
+                while (puzzle.IsBusy)
+                {
+                    yield return Hold(1);
+                }
+                yield return Hold(8);
+                for (int move = 0; move < 3 && !_app.Run.Puzzle.IsFinished; move++)
+                {
+                    board.TryFindValidMove(out GridPos a, out GridPos b);
+                    puzzle.PlaySwap(a, b);
+                    while (puzzle.IsBusy)
+                    {
+                        yield return Hold(1);
+                    }
+                    yield return Hold(12);
+                }
+                // Skip most of the idle wait without recording, then show the hint pulse.
+                Time.captureDeltaTime = 0.25f;
+                for (int i = 0; i < 20; i++)
+                {
+                    yield return null;
+                }
+                Time.captureDeltaTime = 1f / 30f;
+                yield return Hold(45);
+            }
+            finally
+            {
+                Time.captureDeltaTime = 0f;
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.worldCamera = null;
+                camera.targetTexture = null;
+                Object.Destroy(camera.gameObject);
+                Object.Destroy(texture);
+                target.Release();
+                Object.Destroy(target);
+            }
+            Debug.Log($"[GreyboxScreenshots] {frame} animation frames saved to {output}");
+        }
+
         /// <summary>Renders the overlay canvas through a temporary camera into a PNG.</summary>
         private static IEnumerator Capture(string path, int width = Width, int height = Height)
         {
