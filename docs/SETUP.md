@@ -32,6 +32,9 @@ Without Unity (fast, logic only):
 dotnet test Tools/LogicTests
 ```
 
+GitHub runs the same command on every push (*Actions* tab on GitHub,
+`.github/workflows/logic-tests.yml`), so a forgotten local run is caught there.
+
 In Unity: *Window → General → Test Runner → EditMode → Run All*. This also
 runs `PuzzleKingdoms.Data.Tests`, which checks the ScriptableObject assets.
 

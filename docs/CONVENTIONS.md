@@ -59,6 +59,9 @@
   `feature/PB-3-<short-name>`, fixes `fix/PB-3-<short-name>`.
 - Merge back into `main` only when `dotnet test Tools/LogicTests` and the
   Unity EditMode/PlayMode tests pass. Then move the card to *Done*.
+- GitHub runs the logic tests on every push (`.github/workflows/logic-tests.yml`):
+  a ✓ or ✗ appears next to each commit and branch. Never merge a branch whose
+  last run is red. The run summary also shows a `Tools/Balance` table.
 - Small commits, imperative subject line under 72 characters
   (`Add merge rules for army units`).
 - No pull requests: the other developer reviews by reading the branch (D-034).
