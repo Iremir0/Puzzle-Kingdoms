@@ -30,7 +30,7 @@ puzzle-kingdoms/
 │       │   │                        AndroidBuild (dev APK → Builds/Android/)
 │       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
-│       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes),
+│       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes, StageBadges),
 │       │                            Puzzle, WarCamp, Battle, Menus
 │       ├── Data/                 ✅ .asset files
 │       │   ├── Units/            Warrior, Archer, Mage
