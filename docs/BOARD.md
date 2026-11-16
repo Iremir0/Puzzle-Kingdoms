@@ -37,6 +37,7 @@ is a piece of the game you can play or show, not a single code change.
 | ID | Card | Owner | Milestone | Size | Branch | Notes |
 |---|---|---|---|---|---|---|
 | [PB-1](cards/PB-1.md) | Run the game on a real phone | Emir | M0 | M | — | Dev APK builds (38 MB, IL2CPP ARM64, 2026-11-14); still to do: install and play on a phone |
+| [PB-7](cards/PB-7.md) | Puzzle feel: input and animations | Emir | M2 | L | `feature/PB-7-puzzle-feel` | Animations, drag-follow swipe and hint pulse built and tested in PlayMode; left: feel check on a phone (PB-1 build) |
 
 ## Ready (next up, in priority order)
 
@@ -52,7 +53,6 @@ Not started. Each card is a milestone slice that ends in something playable.
 
 | ID | Card | Milestone | Size | In short |
 |---|---|---|---|---|
-| [PB-7](cards/PB-7.md) | Puzzle feel: input and animations | M2 | L | Swap, clear, fall, spawn, reshuffle tweens from `MoveReplay` frames; invalid-swap bounce; swipe threshold, drag-follow; hint pulse. Storyboard inside |
 | [PB-8](cards/PB-8.md) | Puzzle feedback: effects and sound | M2 | M | Cascade pitch, Blast/Prism/stone effects, screen shake, placeholder SFX and music (Kenney CC0) |
 | [PB-9](cards/PB-9.md) | War Camp interaction: drag and drop, bench, merge | M3 | L | Drag and drop on the 4×4 grid, grouped bench with counts, merge animation, Undo (logic + tests). Mockup inside |
 | [PB-10](cards/PB-10.md) | Art direction decision | M3 | M | Constraints, 3 options (CC0 / store packs / freelancer), phone spike, `docs/ART.md` |
