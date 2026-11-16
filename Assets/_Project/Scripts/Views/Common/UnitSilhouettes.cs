@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using PuzzleKingdoms.Data;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PuzzleKingdoms.Views.Common
 {
@@ -24,6 +25,44 @@ namespace PuzzleKingdoms.Views.Common
                 Cache[look] = sprite;
             }
             return sprite;
+        }
+
+        /// <summary>
+        /// Margin of a unit icon inside its cell: tier 2 and 3 are drawn about 10% and
+        /// 20% larger than tier 1, like in the battle (PB-3).
+        /// </summary>
+        public static float Inset(int tier) => tier >= 3 ? 0.04f : tier == 2 ? 0.08f : 0.12f;
+
+        /// <summary>Places <paramref name="icon"/> inside its parent with the margin for <paramref name="tier"/>.</summary>
+        public static void FitIcon(RectTransform icon, int tier)
+        {
+            float inset = Inset(tier);
+            Ui.SetAnchors(icon, inset, inset, 1f - inset, 1f - inset);
+        }
+
+        /// <summary>A white silhouette of <paramref name="look"/> filling <paramref name="parent"/>; it never blocks clicks.</summary>
+        public static Image AddIcon(Transform parent, UnitLook look, int tier)
+        {
+            Image icon = Ui.Box(parent, "Silhouette", Color.white);
+            icon.sprite = Get(look);
+            icon.preserveAspect = true;
+            icon.raycastTarget = false;
+            FitIcon(icon.rectTransform, tier);
+            return icon;
+        }
+
+        /// <summary>"T1" in the lower-right corner of a unit cell or bench button.</summary>
+        public static Text AddTierLabel(Transform parent, int tier, int fontSize)
+        {
+            Text label = Ui.Label(parent, "T" + tier, fontSize, TextAnchor.LowerRight, Color.white, 0.4f, 0.02f, 0.96f, 0.4f);
+            label.gameObject.AddComponent<Shadow>().effectColor = new Color(0f, 0f, 0f, 0.8f);
+            // Small grids (the enemy preview) shrink the text instead of wrapping "T1".
+            label.horizontalOverflow = HorizontalWrapMode.Overflow;
+            label.verticalOverflow = VerticalWrapMode.Truncate;
+            label.resizeTextForBestFit = true;
+            label.resizeTextMinSize = 10;
+            label.resizeTextMaxSize = fontSize;
+            return label;
         }
 
         private static Sprite Build(UnitLook look)

@@ -30,17 +30,23 @@ namespace PuzzleKingdoms.Views.Menus
 
             List<string> order = content.CampaignOrder();
             IReadOnlyList<StageDefinition> stages = content.Campaign;
-            float y = 0.6f;
+            float top = 0.69f;
             for (int i = 0; i < stages.Count; i++)
             {
                 int index = i;
                 bool unlocked = profile.IsUnlocked(order, i);
-                string caption = $"{i + 1}. {stages[i].DisplayName}   " +
-                                 (unlocked ? ResultsScreen.Stars(profile.BestStars(stages[i].Id)) : "(locked)");
-                Button button = Ui.Button(root, caption, unlocked ? Palette.Primary : Palette.Panel,
-                    () => onPlay(index), 0.1f, y, 0.9f, y + 0.08f, 46);
+                // Two rows per stage: name and stars, then the difficulty badges (PB-3).
+                Button button = Ui.Button(root, "", unlocked ? Palette.Primary : Palette.Panel,
+                    () => onPlay(index), 0.08f, top - 0.12f, 0.92f, top, 46);
                 button.interactable = unlocked;
-                y -= 0.1f;
+                Color text = unlocked ? Palette.Text : Palette.Muted;
+                Ui.Label(button.transform, $"{i + 1}. {stages[i].DisplayName}", 46, TextAnchor.MiddleLeft, text,
+                    0.04f, 0.5f, 0.7f, 0.95f);
+                Ui.Label(button.transform,
+                    unlocked ? ResultsScreen.Stars(profile.BestStars(stages[i].Id)) : "locked", 40,
+                    TextAnchor.MiddleRight, unlocked ? Palette.Gold : Palette.Muted, 0.6f, 0.5f, 0.96f, 0.95f);
+                StageBadges.AddRow(button.transform, stages[i].ToStageDef(), !unlocked, 0.03f, 0.08f, 0.97f, 0.45f);
+                top -= 0.14f;
             }
             Ui.Label(root, "Puzzle > War Camp > Battle. Watch the enemy while you recruit.", 34,
                 TextAnchor.MiddleCenter, Palette.Muted, 0.06f, 0.05f, 0.94f, 0.12f);

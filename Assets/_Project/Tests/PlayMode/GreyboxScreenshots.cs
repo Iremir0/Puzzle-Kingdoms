@@ -105,11 +105,51 @@ namespace PuzzleKingdoms.Tests.PlayMode
             Debug.Log($"[GreyboxScreenshots] saved to {output}");
         }
 
+        /// <summary>The two screens with the most rows, on a shorter phone (1080×1800).</summary>
+        [UnityTest]
+        public IEnumerator CaptureShortScreen()
+        {
+#if UNITY_EDITOR
+            var content = UnityEditor.AssetDatabase.LoadAssetAtPath<GameContent>("Assets/_Project/Data/GameContent.asset");
+#else
+            GameContent content = null;
+            Assert.Ignore("editor only");
+#endif
+            const int shortHeight = 1800;
+            string output = Path.GetFullPath("Logs/Screenshots");
+            Directory.CreateDirectory(output);
+            _saveFolder = Path.Combine(Path.GetTempPath(), "pk-shots-" + System.Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(_saveFolder);
+
+            _app = new GameObject("GameApp").AddComponent<GameApp>();
+            _app.SetContent(content);
+            _app.UseStore(new ProfileStore(_saveFolder));
+            yield return null;
+            yield return Capture(Path.Combine(output, "short-1-stage-select.png"), Width, shortHeight);
+
+            _app.StartStage(1);
+            yield return null;
+            yield return Capture(Path.Combine(output, "short-2-puzzle.png"), Width, shortHeight);
+            var puzzle = (PuzzleScreen)_app.CurrentScreen;
+            Time.timeScale = 8f;
+            while (!_app.Run.Puzzle.IsFinished)
+            {
+                _app.Run.Puzzle.Board.TryFindValidMove(out GridPos a, out GridPos b);
+                puzzle.PlaySwap(a, b);
+                yield return new WaitUntil(() => !puzzle.IsBusy);
+            }
+            Time.timeScale = 1f;
+            // No Auto here: every unit stays on the bench, so the bench is in the picture.
+            _app.ShowWarCamp();
+            yield return null;
+            yield return Capture(Path.Combine(output, "short-3-war-camp.png"), Width, shortHeight);
+        }
+
         /// <summary>Renders the overlay canvas through a temporary camera into a PNG.</summary>
-        private static IEnumerator Capture(string path)
+        private static IEnumerator Capture(string path, int width = Width, int height = Height)
         {
             Canvas canvas = Object.FindAnyObjectByType<Canvas>();
-            var target = new RenderTexture(Width, Height, 24);
+            var target = new RenderTexture(width, height, 24);
             var cameraObject = new GameObject("Capture Camera");
             var camera = cameraObject.AddComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor;
@@ -128,8 +168,8 @@ namespace PuzzleKingdoms.Tests.PlayMode
 
             RenderTexture previous = RenderTexture.active;
             RenderTexture.active = target;
-            var texture = new Texture2D(Width, Height, TextureFormat.RGB24, false);
-            texture.ReadPixels(new Rect(0, 0, Width, Height), 0, 0);
+            var texture = new Texture2D(width, height, TextureFormat.RGB24, false);
+            texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
             texture.Apply();
             RenderTexture.active = previous;
             File.WriteAllBytes(path, texture.EncodeToPNG());

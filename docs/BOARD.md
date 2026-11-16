@@ -37,7 +37,6 @@ is a piece of the game you can play or show, not a single code change.
 | ID | Card | Owner | Milestone | Size | Branch | Notes |
 |---|---|---|---|---|---|---|
 | [PB-1](cards/PB-1.md) | Run the game on a real phone | Emir | M0 | M | — | Dev APK builds (38 MB, IL2CPP ARM64, 2026-11-14); still to do: install and play on a phone |
-| [PB-3](cards/PB-3.md) | War Camp and stage select show what the game knows | Emir | M1 | S | `feature/PB-3-war-camp-visuals` | Started 2026-11-16 |
 
 ## Ready (next up, in priority order)
 
@@ -86,6 +85,7 @@ mode, Commander heroes (see GDD §10).
 | M1-D6 | Gem shapes, special matches (Blast, Prism), code-drawn unit silhouettes, pointsPerUnit 8 (D-027, D-028, D-029) |
 | M1-D7 | Stars and gold on the results screen, star and save-version rules tested (`ProgressionTests`) |
 | M1-D8 | Enemy army preview in the War Camp and on the puzzle screen |
+| [PB-3](cards/PB-3.md) | Difficulty badges on stage select and enemy panels; silhouettes in the War Camp grid, bench and enemy preview (2026-11-16) |
 | M1-D9 | Merge all and merge preview, 4×4 formation, stone gems, rising enemy strength (D-030 to D-033); waits for the Unity play-through in PB-2 |
 
 ---

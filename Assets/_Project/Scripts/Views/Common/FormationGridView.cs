@@ -1,4 +1,5 @@
 using System;
+using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
 using UnityEngine;
@@ -7,7 +8,8 @@ using UnityEngine.UI;
 namespace PuzzleKingdoms.Views.Common
 {
     /// <summary>
-    /// A 3×3 formation drawn as squares. Lanes run left to right. The front row
+    /// A formation drawn as squares in the unit's class colour with its
+    /// silhouette and tier (PB-3). Lanes run left to right. The front row
     /// (y = 0) faces the other army: drawn at the top for the player, at the
     /// bottom for the enemy shown above it.
     /// </summary>
@@ -17,6 +19,7 @@ namespace PuzzleKingdoms.Views.Common
         public event Action<GridPos> CellClicked;
 
         private readonly Image[] _cells = new Image[Formation.Size * Formation.Size];
+        private readonly Image[] _icons = new Image[Formation.Size * Formation.Size];
         private readonly Text[] _labels = new Text[Formation.Size * Formation.Size];
         private readonly Outline[] _outlines = new Outline[Formation.Size * Formation.Size];
 
@@ -42,7 +45,10 @@ namespace PuzzleKingdoms.Views.Common
                         left + 0.01f, top - step + 0.01f, left + step - 0.01f, top - 0.01f);
                     int index = Index(cell);
                     _cells[index] = image;
-                    _labels[index] = Ui.Label(image.transform, "", 40, TextAnchor.MiddleCenter, Palette.Text);
+                    _icons[index] = UnitSilhouettes.AddIcon(image.transform, UnitLook.Generic, 1);
+                    _icons[index].enabled = false;
+                    _labels[index] = UnitSilhouettes.AddTierLabel(image.transform, 1, 30);
+                    _labels[index].text = "";
                     _outlines[index] = image.gameObject.AddComponent<Outline>();
                     _outlines[index].effectColor = Palette.Highlight;
                     _outlines[index].effectDistance = new Vector2(6, 6);
@@ -75,7 +81,13 @@ namespace PuzzleKingdoms.Views.Common
         {
             int index = Index(cell);
             _cells[index].color = unit == null ? Palette.Panel : Palette.For(unit.Def);
-            _labels[index].text = Palette.Tag(unit);
+            _icons[index].enabled = unit != null;
+            _labels[index].text = unit == null ? "" : "T" + unit.Tier;
+            if (unit != null)
+            {
+                _icons[index].sprite = UnitSilhouettes.Get(Palette.LookFor(unit.Def));
+                UnitSilhouettes.FitIcon(_icons[index].rectTransform, unit.Tier);
+            }
             _outlines[index].enabled = highlighted;
         }
 
