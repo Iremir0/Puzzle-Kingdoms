@@ -67,7 +67,7 @@ Fixing what testers find (new cards), balance changes (decided after, with numbe
 
 ## Notes
 - 2026-11-14 (Alican, kit):
-  - **Playtest log** (D-036): every finished stage attempt appends one JSON
+  - **Playtest log** (D-037): every finished stage attempt appends one JSON
     line to `playtest-log.jsonl` next to the save (stage, win, stars, time per
     screen, recruits per class, merges, Rally earned/used, formation, gold).
     Logic `StageAttempt` + 7 tests; Flow `PlaytestLog`; the PlayMode loop test

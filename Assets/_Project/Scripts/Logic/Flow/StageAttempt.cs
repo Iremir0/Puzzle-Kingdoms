@@ -9,7 +9,7 @@ namespace PuzzleKingdoms.Logic.Flow
 {
     /// <summary>
     /// What a player did in one finished stage attempt, for playtests (PB-5,
-    /// D-036). Built from a finished <see cref="StageRun"/>; the Flow layer adds
+    /// D-037). Built from a finished <see cref="StageRun"/>; the Flow layer adds
     /// the wall-clock fields and writes one JSON line per attempt. Public fields
     /// so a JSON serializer can write it as is.
     /// </summary>

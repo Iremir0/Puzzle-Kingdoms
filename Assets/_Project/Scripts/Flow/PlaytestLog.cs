@@ -8,7 +8,7 @@ namespace PuzzleKingdoms.Flow
 {
     /// <summary>
     /// Appends one JSON line per finished stage attempt to
-    /// <c>playtest-log.jsonl</c> next to the save file (PB-5, D-036), so a
+    /// <c>playtest-log.jsonl</c> next to the save file (PB-5, D-037), so a
     /// playtest can be read afterwards: wins per stage, merges, Rally use,
     /// formations, time spent per screen. Local only, nothing is sent anywhere.
     /// Turn off for release (PB-17).

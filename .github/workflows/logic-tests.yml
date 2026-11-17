@@ -1,0 +1,48 @@
+# Runs the engine-free game logic tests on every push (PB-4, D-034: merge into
+# main only when the tests pass). Unity tests (Data, PlayMode) stay local because
+# they need a Unity license.
+name: Logic tests
+
+on:
+  push:
+  workflow_dispatch:
+
+# A newer push to the same branch cancels the older run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: dotnet test Tools/LogicTests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Run logic tests
+        run: dotnet test Tools/LogicTests --configuration Release --logger "console;verbosity=normal"
+
+  balance:
+    # Prints the balance table so a change in stage or unit numbers is visible
+    # in the run summary. Fails only if the tool does not build or crashes,
+    # never because of the numbers themselves.
+    name: Balance table (50 runs per row)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Run Tools/Balance
+        run: |
+          dotnet run -c Release --project Tools/Balance 50 | tee balance.txt
+          {
+            echo "### Balance (50 runs per row)"
+            echo '```'
+            cat balance.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

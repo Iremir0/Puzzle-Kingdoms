@@ -84,7 +84,7 @@ Copy into Google Forms or print. Answers go to the tester's section below.
 ## The playtest log
 
 The game writes one JSON line per finished stage attempt to
-`playtest-log.jsonl`, next to the save file (D-036). Nothing leaves the device.
+`playtest-log.jsonl`, next to the save file (D-037). Nothing leaves the device.
 Collect the file after each session and keep it with the tester's notes
 (`docs/playtests/round1/T1.jsonl`, … ; contains no personal data).
 

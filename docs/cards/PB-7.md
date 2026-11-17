@@ -1,6 +1,6 @@
 # PB-7 Puzzle feel: input and animations
 
-Owner: — (suggested Emir) · Milestone: M2 · Size: L · Branch: `feature/PB-7-puzzle-feel` ·
+Owner: Emir · Milestone: M2 · Size: L · Branch: `feature/PB-7-puzzle-feel` ·
 Replaces: M2-01, M2-02, M2-05
 
 ## Why
@@ -77,11 +77,40 @@ talk first (it would need tests).
 Sounds, screen shake, special-gem explosions (PB-8). Any rule change.
 
 ## Done when
-- [ ] Swap, invalid swap, clear, fall, spawn and reshuffle are animated
-- [ ] Input is blocked while animating; no gem ends on a wrong cell (play 20 moves, compare with the logic: the board after the animation equals `BoardModel.ToGrid`)
+- [x] Swap, invalid swap, clear, fall, spawn and reshuffle are animated
+- [x] Input is blocked while animating; no gem ends on a wrong cell (play 20 moves, compare with the logic: the board after the animation equals `BoardModel.ToGrid`)
 - [ ] Swipe threshold and drag-follow feel right on a phone (PB-1 build)
-- [ ] Idle hint pulses
-- [ ] Short screen recording (GIF/MP4) linked in Notes
+- [x] Idle hint pulses
+- [x] Short screen recording (GIF/MP4) linked in Notes
 
 ## Notes
-_Findings, screenshots, numbers, decisions taken while working on this card._
+2026-11-16 (Emir, with Claude):
+- Every board cell is now a fixed slot (takes the touches, never moves) with a
+  child gem image. An animation renders the next `MoveReplay` frame first and then
+  moves the gem images from where they were back into their slots, so the board
+  can never end on a wrong cell: the last tween step always lands on zero.
+- `Views/Common/Tween.cs`: `Run(seconds, step)`, `Move`, and ease curves. Own code,
+  no package. Uses scaled time, so `Time.timeScale` speeds tests up.
+- Timings are constants at the top of `PuzzleScreen` (`DurationScale` changes them
+  all): swap 0.15 s, clear 0.2 s (grow to 110 %, then shrink and fade), fall
+  0.06 s per cell plus a 0.08 s landing bounce, reshuffle 0.4 s (each gem flies in
+  from an old cell of the same colour; the logic only reports the new board),
+  invalid swap 0.25 s (lean 40 % towards each other, small sideways shake, red
+  outline). A move with one cascade takes about 1 s.
+- Spawned gems start `DropDistance` cells above the board; a `RectMask2D` on the
+  board hides them until they enter.
+- Swipe: counts after 30 % of a cell (`GemCell.SwipeShare`); before that the gem
+  follows the finger on one axis; letting go snaps it back in 0.1 s.
+- Hint: after 5 s idle the two hint gems breathe between 100 % and 108 %; any
+  touch or drag stops it.
+- Test: `GreyboxLoopTests.PuzzleBoardMatchesLogicAfterEveryAnimation` plays an
+  invalid swap and 20 moves on 1-3 (stones) and checks after each that the shown
+  gems, special gems and stones equal `BoardModel` and every gem image is back in
+  its cell at full size; it also checks that a second swap during an animation is
+  refused and that an invalid swap uses no move.
+- Recording: `GreyboxScreenshots.RecordMoveAnimation` (explicit) writes 30 fps
+  frames to `Logs/Screenshots/anim/`; turned into a GIF with Pillow:
+
+  ![Invalid swap, three moves, idle hint](img/pb-07-result.gif)
+- Still open: the swipe threshold and drag-follow have not been tried on a phone
+  (needs the PB-1 install).

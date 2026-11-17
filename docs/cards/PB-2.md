@@ -62,6 +62,11 @@ four features are "probably fine".
 **All stages**
 - [ ] The results screen shows stars and gold; the stage map unlocks the next stage.
 - [ ] Close and reopen Play mode: stars and gold are still there.
+- [ ] Puzzle feel (PB-7, added 2026-11-16): gems slide, pop and fall; an invalid
+      swap leans and shakes; a short drag moves the gem and snaps it back.
+- [ ] Sound (PB-8, added 2026-11-16; nobody has listened yet): music loops, the
+      pop rises with cascades, stone crack, "nope", ding and horn are audible and
+      not too loud; the Sound/Muted button bottom right silences everything.
 
 ## Look
 What it should look like now: half-stone gem = the gem's colour and shape with

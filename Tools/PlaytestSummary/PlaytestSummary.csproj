@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <!--
-    Summarises playtest logs (playtest-log.jsonl, one JSON line per stage attempt, D-036):
+    Summarises playtest logs (playtest-log.jsonl, one JSON line per stage attempt, D-037):
       dotnet run (project Tools/PlaytestSummary), then the log files, e.g.
       docs/playtests/round1/*.jsonl; the exact command is in docs/PLAYTESTS.md.
     Prints Markdown tables to paste into docs/PLAYTESTS.md. No Unity needed.

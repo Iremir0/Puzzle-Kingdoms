@@ -84,11 +84,25 @@ compiles it; commit both.
 New art, animations (PB-9), drag and drop (PB-9), changing difficulty values.
 
 ## Done when
-- [ ] Stage select shows stones, enemy HP × and enemy count/boss for all 3 stages
-- [ ] Puzzle and War Camp enemy panels show the same line
-- [ ] War Camp grid, bench and enemy preview show silhouettes, no letters except the tier
-- [ ] Looks right at 1080×1920 and one shorter screen; screenshot in Notes
-- [ ] No logic file changed; `dotnet test Tools/LogicTests` still green
+- [x] Stage select shows stones, enemy HP × and enemy count/boss for all 3 stages
+- [x] Puzzle and War Camp enemy panels show the same line
+- [x] War Camp grid, bench and enemy preview show silhouettes, no letters except the tier
+- [x] Looks right at 1080×1920 and one shorter screen; screenshot in Notes
+- [x] No logic file changed; `dotnet test Tools/LogicTests` still green
 
 ## Notes
-_Findings, screenshots, numbers, decisions taken while working on this card._
+2026-11-16 (Emir, with Claude):
+- `StageBadges` builds the badges (stones with a half-stone gem icon, "Enemy ×1.1"
+  grey/gold/red, damage multiplier only when not 1.0, "N enemies" or "Boss" when a
+  Chief-look enemy is in the army) and the enemy panel line ("HP ×1.2 · 5 stones").
+- `UnitSilhouettes.AddIcon` / `AddTierLabel` / `FitIcon` are shared by the
+  formation grid and the bench; tier 2/3 icons are about 10%/20% larger. The tier
+  label shrinks to fit the small enemy preview cells.
+- Stage buttons are two rows: name and stars, then the badges; locked stages are dimmed.
+- Checked with the `GreyboxScreenshots` PlayMode test, which now also renders
+  1080×1800 (`CaptureShortScreen`, units left on the bench so the bench shows):
+
+  ![Stage select, 1080×1800](img/pb-03-result-stage-select.png)
+  ![War Camp, bench, 1080×1800](img/pb-03-result-war-camp.png)
+  ![War Camp, grid, 1080×1920](img/pb-03-result-war-camp-grid.png)
+- Not played by hand in the editor; the screenshots come from the same code path.
