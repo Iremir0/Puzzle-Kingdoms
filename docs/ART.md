@@ -158,3 +158,22 @@ away from the body. Real game names are kept out of all prompts.
 Fixes for the per-character images: goblin skin olive / yellow-green and the hero
 archer's cloak bright mint `#58C889`, so they do not share one green; no red on the
 goblin chief (gold gems, brown loincloth).
+
+### Correction and cast plan (2026-11-17)
+
+The chosen style frame "#1" is the one with the bare-headed knight, the white-haired
+mage and the bone crown (the image above, full resolution). The red-plume knight
+mentioned before belonged to another frame; the plume is added in the knight's own
+prompt instead.
+
+Method that works (Goblin_Grunt try 2): crop the character out of the style frame,
+use **only that crop** as the reference image, describe the style in our own words
+(no real game names), A-pose option on, 2 images, pick, then image → 3D (textured,
+multi-view, remesh ~5,000 polygons), FBX.
+
+Cast: 7 models. Heroes: Knight (red plume helmet, red cape), Archer (mint `#58C889`
+hooded cloak), Mage (purple). Goblins: Grunt (done), Archer, Brute (6,000 polygons),
+Chief (8,000, no red). **Tiers are not separate models:** T2 = same model at 110 %
+with a Meshy retexture (silver and gold trim), T3 = 120 % with a gold / royal
+retexture plus a glow effect in Unity. One mesh per class keeps the rig and the
+animations shared and the upgrade obvious after a merge.
