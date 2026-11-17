@@ -18,7 +18,7 @@ puzzle-kingdoms/
 │       │   │   ├── Core/         ✅ GridPos, IRandom, SeededRandom (PCG32)
 │       │   │   ├── Puzzle/       ✅ BoardModel, MatchGroup, SpecialKind, MoveResult, MoveReplay, RecruitmentMeter,
 │       │   │   │                    PuzzleSession, PuzzleRules
-│       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster, MergeRules, AutoFormation
+│       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster (+ Undo), MergeRules, AutoFormation, BenchGroup
 │       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,
 │       │   │   │                    Rally, BattleEvent, BattleResult
 │       │   │   ├── Stages/       ✅ StageDef, EnemySlot
@@ -35,7 +35,7 @@ puzzle-kingdoms/
 │       │   │                        PlaytestLog (playtest-log.jsonl, D-037)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
 │       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes, StageBadges, Tween, Sfx),
-│       │                            Puzzle (+ BoardEffects), WarCamp, Battle, Menus
+│       │                            Puzzle (+ BoardEffects), WarCamp (+ BenchView, DraggableUnit), Battle, Menus
 │       ├── Data/                 ✅ .asset files
 │       │   ├── Units/            Warrior, Archer, Mage
 │       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief
@@ -54,7 +54,7 @@ puzzle-kingdoms/
 │       └── Tests/
 │           ├── EditMode/         ✅ PuzzleKingdoms.Tests: logic tests (also run by dotnet)
 │           ├── EditModeData/     ✅ PuzzleKingdoms.Data.Tests: assets match GDD (Unity only)
-│           └── PlayMode/         ✅ PuzzleKingdoms.PlayMode.Tests: full loop smoke test, screenshots
+│           └── PlayMode/         ✅ PuzzleKingdoms.PlayMode.Tests: full loop smoke test, War Camp drag and drop, screenshots
 │
 ├── Packages/                     ✅ manifest.json (URP, uGUI, Test Framework; see D-024)
 ├── ProjectSettings/              ✅ Unity 6000.3.28f1; applied by ProjectSetup

@@ -84,6 +84,8 @@ namespace PuzzleKingdoms.Tests.PlayMode
             yield return Capture(Path.Combine(output, "3-puzzle-finished.png"));
 
             _app.ShowWarCamp();
+            yield return null;
+            yield return Capture(Path.Combine(output, "4-war-camp-bench.png")); // PB-9: grouped bench
             AutoFormation.Fill(_app.Run.Roster);
             yield return null;
             yield return Capture(Path.Combine(output, "4-war-camp.png"));

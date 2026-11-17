@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using PuzzleKingdoms.Logic;
@@ -6,32 +7,61 @@ using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Views.Common;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace PuzzleKingdoms.Views.WarCamp
 {
     /// <summary>
-    /// Grey-box War Camp: tap a bench unit, then a cell, to deploy it; tap a
-    /// deployed unit, then another cell, to move or swap it; tap it twice to send
-    /// it back. Merge, Auto and Fight buttons call <see cref="Roster"/> and
-    /// <see cref="StageRun.StartBattle"/>.
+    /// Grey-box War Camp (PB-9). Drag a unit from the bench onto a cell, from a
+    /// cell to another (swap) or back onto the bench; dropping anywhere else snaps
+    /// it back. Tapping still works: tap a unit, then a cell; tap a deployed unit
+    /// twice to bench it. Merge / Merge all animate; Undo takes the last merge
+    /// back until Fight! (D-038).
     /// </summary>
-    public sealed class WarCampScreen : MonoBehaviour
+    public sealed class WarCampScreen : MonoBehaviour, IUnitDragHandler
     {
-        private const int BenchColumns = 9;
-        private const int BenchRows = 3;
+        // Timings (seconds), see the PB-9 card.
+        public const float SnapBackSeconds = 0.15f;
+        public const float MergeFlySeconds = 0.25f;
+        public const float MergePopSeconds = 0.25f;
+        public const float MergeAllStagger = 0.15f;
+        private const float GhostTilt = 8f;
+
+        private static readonly Color HoverEmpty = Palette.Primary;
+        private static readonly Color HoverTaken = Palette.Bad;
 
         private StageRun _run;
         private Action _onFight;
         private FormationGridView _grid;
-        private RectTransform _bench;
+        private BenchView _bench;
         private Text _info;
         private Button _merge;
         private Button _mergeAll;
+        private Button _undo;
         private Button _fight;
         private ArmyUnit _selected;
+        private List<string> _classOrder;
+        private int _animations;
+        private Drag _drag;
 
         private Roster Roster => _run.Roster;
+
+        /// <summary>True while a merge animation plays; input waits.</summary>
+        public bool IsBusy => _animations > 0;
+
+        public bool IsDragging => _drag != null;
+        public FormationGridView Grid => _grid;
+        public BenchView Bench => _bench;
+
+        /// <summary>The unit being dragged and where it came from.</summary>
+        private sealed class Drag
+        {
+            public ArmyUnit Unit;
+            public GridPos FromCell;
+            public RectTransform Source;
+            public RectTransform Ghost;
+        }
 
         public static WarCampScreen Create(Transform parent, StageRun run, Action onFight)
         {
@@ -45,6 +75,7 @@ namespace PuzzleKingdoms.Views.WarCamp
         {
             _run = run;
             _onFight = onFight;
+            _classOrder = run.Puzzle.GemRewardKeys.Where(k => k != StageRun.RallyKey).ToList();
             Transform root = transform;
             Ui.Box(root, "Background", Palette.Background);
 
@@ -62,16 +93,31 @@ namespace PuzzleKingdoms.Views.WarCamp
                 0.04f, 0.705f, 0.96f, 0.74f);
             _grid = new FormationGridView(root, "Player Formation", false, true, 0.15f, 0.41f, 0.85f, 0.70f);
             _grid.CellClicked += OnCellClicked;
+            for (int y = 0; y < Formation.Size; y++)
+            {
+                for (int x = 0; x < Formation.Size; x++)
+                {
+                    var cell = new GridPos(x, y);
+                    DraggableUnit.Add(_grid.CellRect(cell).gameObject, () => Roster.Formation.GetUnit(cell), this);
+                }
+            }
 
             _info = Ui.Label(root, "", 30, TextAnchor.MiddleCenter, Palette.Text, 0.04f, 0.33f, 0.96f, 0.41f);
             Ui.Label(root, "Bench", 32, TextAnchor.MiddleLeft, Palette.Muted, 0.04f, 0.303f, 0.5f, 0.33f);
-            Image benchPanel = Ui.Box(root, "Bench", Palette.Panel, 0.03f, 0.165f, 0.97f, 0.303f);
-            _bench = benchPanel.rectTransform;
+            _bench = new BenchView(Ui.Box(root, "Bench", Palette.Panel, 0.03f, 0.165f, 0.97f, 0.303f));
 
-            Ui.Button(root, "Auto", Palette.Button, OnAuto, 0.03f, 0.09f, 0.25f, 0.15f, 32);
-            _merge = Ui.Button(root, "Merge", Palette.Button, OnMerge, 0.27f, 0.09f, 0.49f, 0.15f, 32);
-            _mergeAll = Ui.Button(root, "Merge all", Palette.Primary, OnMergeAll, 0.51f, 0.09f, 0.73f, 0.15f, 32);
-            Ui.Button(root, "Clear", Palette.Button, OnClear, 0.75f, 0.09f, 0.97f, 0.15f, 32);
+            const float w = 0.176f;
+            const float gap = 0.012f;
+            float left = 0.03f;
+            Ui.Button(root, "Auto", Palette.Button, OnAuto, left, 0.09f, left + w, 0.15f, 30);
+            left += w + gap;
+            _merge = Ui.Button(root, "Merge", Palette.Button, OnMerge, left, 0.09f, left + w, 0.15f, 30);
+            left += w + gap;
+            _mergeAll = Ui.Button(root, "Merge all", Palette.Primary, OnMergeAll, left, 0.09f, left + w, 0.15f, 30);
+            left += w + gap;
+            _undo = Ui.Button(root, "Undo", Palette.Button, OnUndo, left, 0.09f, left + w, 0.15f, 30);
+            left += w + gap;
+            Ui.Button(root, "Clear", Palette.Button, OnClear, left, 0.09f, left + w, 0.15f, 30);
             _fight = Ui.Button(root, "Fight!", Palette.Bad, OnFight, 0.2f, 0.015f, 0.8f, 0.08f, 52);
 
             Roster.Changed += Refresh;
@@ -86,8 +132,16 @@ namespace PuzzleKingdoms.Views.WarCamp
             }
         }
 
+        private bool Blocked => IsBusy || IsDragging;
+
+        // ---- Tap fallback -------------------------------------------------
+
         private void OnCellClicked(GridPos cell)
         {
+            if (Blocked)
+            {
+                return;
+            }
             ArmyUnit occupant = Roster.Formation.GetUnit(cell);
             if (_selected == null)
             {
@@ -105,34 +159,176 @@ namespace PuzzleKingdoms.Views.WarCamp
             Roster.Deploy(moving, cell);
         }
 
-        private void OnBenchClicked(ArmyUnit unit) => Select(_selected == unit ? null : unit);
+        private void OnBenchTapped(BenchGroup group)
+        {
+            if (Blocked)
+            {
+                return;
+            }
+            Select(_selected != null && group.Units.Contains(_selected) ? null : group.First);
+        }
+
+        // ---- Drag and drop ------------------------------------------------
+
+        public bool BeginUnitDrag(ArmyUnit unit, RectTransform source, PointerEventData eventData)
+        {
+            if (Blocked || !Roster.Owns(unit))
+            {
+                return false;
+            }
+            // Clear the selection without rebuilding the bench: the tile being dragged
+            // receives the drag events and must stay alive until the drop.
+            _selected = null;
+            Refresh(rebuildBench: false);
+            _drag = new Drag
+            {
+                Unit = unit,
+                FromCell = Roster.Formation.FindCell(unit),
+                Source = source,
+                Ghost = MakeGhost(unit, source.rect.size, GhostTilt),
+            };
+            _drag.Ghost.GetComponent<CanvasGroup>().alpha = 0.8f;
+            if (_drag.FromCell != Formation.NoCell)
+            {
+                _grid.Dim(_drag.FromCell);
+            }
+            UnitDrag(eventData);
+            return true;
+        }
+
+        public void UnitDrag(PointerEventData eventData)
+        {
+            if (_drag == null)
+            {
+                return;
+            }
+            _drag.Ghost.anchoredPosition = ToLocal(eventData.position, eventData.pressEventCamera);
+            bool overCell = _grid.TryGetCellAt(eventData.position, eventData.pressEventCamera, out GridPos cell);
+            if (overCell)
+            {
+                ArmyUnit there = Roster.Formation.GetUnit(cell);
+                _grid.SetHover(cell, there == null || there == _drag.Unit ? HoverEmpty : HoverTaken);
+            }
+            else
+            {
+                _grid.SetHover(Formation.NoCell, HoverEmpty);
+            }
+            _bench.SetDropHover(!overCell && IsDeployed(_drag) && _bench.Contains(eventData.position, eventData.pressEventCamera));
+        }
+
+        public void EndUnitDrag(PointerEventData eventData)
+        {
+            Drag drag = _drag;
+            if (drag == null)
+            {
+                return;
+            }
+            _drag = null;
+            _grid.SetHover(Formation.NoCell, HoverEmpty);
+            _bench.SetDropHover(false);
+
+            Camera eventCamera = eventData.pressEventCamera;
+            bool done = false;
+            if (_grid.TryGetCellAt(eventData.position, eventCamera, out GridPos cell))
+            {
+                done = cell != drag.FromCell && Roster.Deploy(drag.Unit, cell);
+            }
+            else if (IsDeployed(drag) && _bench.Contains(eventData.position, eventCamera))
+            {
+                done = Roster.Undeploy(drag.FromCell);
+            }
+
+            if (done)
+            {
+                Destroy(drag.Ghost.gameObject);
+            }
+            else
+            {
+                Vector2 home = drag.Source != null ? CenterOf(drag.Source) : drag.Ghost.anchoredPosition;
+                Refresh(); // undo the dimmed source cell
+                StartCoroutine(SnapBack(drag.Ghost, home));
+            }
+        }
+
+        private static bool IsDeployed(Drag drag) => drag.FromCell != Formation.NoCell;
+
+        private IEnumerator SnapBack(RectTransform ghost, Vector2 home)
+        {
+            _animations++;
+            try
+            {
+                yield return Tween.Move(ghost, home, SnapBackSeconds);
+            }
+            finally
+            {
+                _animations--;
+                if (ghost != null)
+                {
+                    Destroy(ghost.gameObject);
+                }
+            }
+        }
+
+        // ---- Buttons ------------------------------------------------------
 
         private void OnAuto()
         {
+            if (Blocked)
+            {
+                return;
+            }
             Select(null);
             AutoFormation.Fill(Roster);
         }
 
         private void OnMerge()
         {
-            if (_selected == null)
+            if (Blocked || _selected == null)
             {
                 return;
             }
             ArmyUnit target = _selected;
             _selected = null;
-            Select(Roster.Merge(target));
+            Dictionary<ArmyUnit, Vector2> before = UnitPositions();
+            ArmyUnit merged = Roster.Merge(target);
+            if (merged == null)
+            {
+                Refresh();
+                return;
+            }
+            Select(merged);
+            PlayMerges(before, new List<ArmyUnit> { merged });
         }
 
         /// <summary>Merges everything that can be merged in one go (see <see cref="Roster.MergeAll"/>).</summary>
         private void OnMergeAll()
         {
+            if (Blocked)
+            {
+                return;
+            }
             Select(null);
-            Roster.MergeAll();
+            Dictionary<ArmyUnit, Vector2> before = UnitPositions();
+            List<ArmyUnit> created = Roster.MergeAll();
+            PlayMerges(before, created);
+        }
+
+        private void OnUndo()
+        {
+            if (Blocked)
+            {
+                return;
+            }
+            Select(null);
+            Roster.Undo();
         }
 
         private void OnClear()
         {
+            if (Blocked)
+            {
+                return;
+            }
             Select(null);
             for (int y = 0; y < Formation.Size; y++)
             {
@@ -145,10 +341,177 @@ namespace PuzzleKingdoms.Views.WarCamp
 
         private void OnFight()
         {
-            if (_run.StartBattle())
+            if (!Blocked && _run.StartBattle())
             {
                 _onFight?.Invoke();
             }
+        }
+
+        // ---- Merge animation ----------------------------------------------
+
+        /// <summary>
+        /// The units that vanished fly into the new units of their class, then each new
+        /// unit flashes and pops 120% → 100%. Merge all plays them one after another.
+        /// Chained merges (T1 → T2 → T3) show as one: the T1s fly straight into the T3.
+        /// </summary>
+        private void PlayMerges(Dictionary<ArmyUnit, Vector2> before, List<ArmyUnit> created)
+        {
+            List<ArmyUnit> results = created.Where(Roster.Owns).ToList();
+            List<ArmyUnit> gone = before.Keys.Where(u => !Roster.Owns(u)).OrderBy(u => u.Uid).ToList();
+            // New bench units of the same class and tier share one tile: animate that tile once.
+            var targets = new List<ArmyUnit>();
+            foreach (ArmyUnit result in results)
+            {
+                if (!targets.Any(t => RectOf(t) == RectOf(result)))
+                {
+                    targets.Add(result);
+                }
+            }
+            for (int i = 0; i < targets.Count; i++)
+            {
+                ArmyUnit target = targets[i];
+                List<ArmyUnit> sameClass = targets.Where(r => r.Def == target.Def).ToList();
+                int share = sameClass.IndexOf(target);
+                List<(ArmyUnit, Vector2)> from = gone.Where(u => u.Def == target.Def)
+                    .Where((u, index) => index % sameClass.Count == share)
+                    .Select(u => (u, before[u]))
+                    .ToList();
+                StartCoroutine(PlayMerge(target, from, i * MergeAllStagger));
+            }
+            if (results.Count > 0)
+            {
+                Sfx.Play(Sfx.Bank != null ? Sfx.Bank.UnitRecruited : null, 1.2f);
+            }
+        }
+
+        private IEnumerator PlayMerge(ArmyUnit result, List<(ArmyUnit unit, Vector2 at)> from, float delay)
+        {
+            _animations++;
+            try
+            {
+                RectTransform target = RectOf(result);
+                if (target == null)
+                {
+                    yield break;
+                }
+                target.localScale = Vector3.zero;
+                if (delay > 0f)
+                {
+                    yield return new WaitForSeconds(delay);
+                }
+
+                Vector2 goal = CenterOf(target);
+                var ghosts = new List<RectTransform>();
+                foreach ((ArmyUnit unit, Vector2 at) in from)
+                {
+                    RectTransform ghost = MakeGhost(unit, target.rect.size * 0.7f, 0f);
+                    ghost.anchoredPosition = at;
+                    ghosts.Add(ghost);
+                }
+                var starts = ghosts.Select(g => g.anchoredPosition).ToList();
+                yield return Tween.Run(MergeFlySeconds, elapsed =>
+                {
+                    float t = Tween.EaseIn(Tween.Progress(elapsed, MergeFlySeconds));
+                    for (int g = 0; g < ghosts.Count; g++)
+                    {
+                        ghosts[g].anchoredPosition = Vector2.LerpUnclamped(starts[g], goal, t);
+                        ghosts[g].localScale = Vector3.one * Mathf.Lerp(1f, 0.6f, t);
+                    }
+                });
+                foreach (RectTransform ghost in ghosts)
+                {
+                    Destroy(ghost.gameObject);
+                }
+
+                target = RectOf(result) ?? target; // the bench may have been rebuilt meanwhile
+                Image flash = Ui.Box(target, "Merge Flash", Color.white);
+                flash.raycastTarget = false;
+                yield return Tween.Run(MergePopSeconds, elapsed =>
+                {
+                    float t = Tween.Progress(elapsed, MergePopSeconds);
+                    if (target != null)
+                    {
+                        // 0 → 120% in the first 60%, then settle to 100%.
+                        float scale = t < 0.6f ? Mathf.Lerp(0f, 1.2f, Tween.EaseOut(t / 0.6f))
+                            : Mathf.Lerp(1.2f, 1f, (t - 0.6f) / 0.4f);
+                        target.localScale = Vector3.one * scale;
+                    }
+                    if (flash != null)
+                    {
+                        flash.color = new Color(1f, 1f, 1f, 0.8f * (1f - t));
+                    }
+                });
+                if (flash != null)
+                {
+                    Destroy(flash.gameObject);
+                }
+            }
+            finally
+            {
+                _animations--;
+                RectTransform target = RectOf(result);
+                if (target != null)
+                {
+                    target.localScale = Vector3.one;
+                }
+            }
+        }
+
+        /// <summary>Where every unit is drawn now: its cell, or its bench tile.</summary>
+        private Dictionary<ArmyUnit, Vector2> UnitPositions()
+        {
+            var positions = new Dictionary<ArmyUnit, Vector2>();
+            foreach (ArmyUnit unit in Roster.AllUnits())
+            {
+                RectTransform rect = RectOf(unit);
+                if (rect != null)
+                {
+                    positions[unit] = CenterOf(rect);
+                }
+            }
+            return positions;
+        }
+
+        private RectTransform RectOf(ArmyUnit unit)
+        {
+            GridPos cell = Roster.Formation.FindCell(unit);
+            if (cell != Formation.NoCell)
+            {
+                return _grid.CellRect(cell);
+            }
+            return Roster.Bench.Contains(unit) ? _bench.TileFor(unit.Def, unit.Tier) : null;
+        }
+
+        // ---- Helpers ------------------------------------------------------
+
+        /// <summary>A see-through copy of a unit tile that never blocks touches.</summary>
+        private RectTransform MakeGhost(ArmyUnit unit, Vector2 size, float tilt)
+        {
+            Image box = Ui.Box(transform, "Ghost " + unit.Def.Id, Palette.For(unit.Def), 0.5f, 0.5f, 0.5f, 0.5f);
+            RectTransform ghost = box.rectTransform;
+            ghost.sizeDelta = size;
+            ghost.localRotation = Quaternion.Euler(0f, 0f, tilt);
+            UnitSilhouettes.AddIcon(ghost, Palette.LookFor(unit.Def), unit.Tier);
+            UnitSilhouettes.AddTierLabel(ghost, unit.Tier, 28);
+            var group = ghost.gameObject.AddComponent<CanvasGroup>();
+            group.blocksRaycasts = false;
+            group.interactable = false;
+            ghost.SetAsLastSibling();
+            return ghost;
+        }
+
+        private Vector2 ToLocal(Vector2 screenPoint, Camera eventCamera)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, screenPoint, eventCamera,
+                out Vector2 local);
+            return local;
+        }
+
+        /// <summary>Centre of <paramref name="rect"/> in this screen's coordinates (where ghosts live).</summary>
+        private Vector2 CenterOf(RectTransform rect)
+        {
+            Vector3 world = rect.TransformPoint(rect.rect.center);
+            return ((RectTransform)transform).InverseTransformPoint(world);
         }
 
         private void Select(ArmyUnit unit)
@@ -157,60 +520,24 @@ namespace PuzzleKingdoms.Views.WarCamp
             Refresh();
         }
 
-        private void Refresh()
+        private void Refresh() => Refresh(rebuildBench: true);
+
+        private void Refresh(bool rebuildBench)
         {
             if (_selected != null && !Roster.Owns(_selected))
             {
                 _selected = null;
             }
             _grid.Show(Roster.Formation, _selected);
-            RebuildBench();
+            if (rebuildBench)
+            {
+                _bench.Show(BenchGroup.FromBench(Roster.Bench, _classOrder), _selected, Roster.CanMerge, OnBenchTapped, this);
+            }
             _merge.interactable = _selected != null && Roster.CanMerge(_selected);
             _mergeAll.interactable = Roster.CanMergeAny;
+            _undo.interactable = Roster.CanUndo;
             _fight.interactable = _run.CanStartBattle;
             _info.text = _selected != null ? Describe(_selected) : DefaultHint();
-        }
-
-        private void RebuildBench()
-        {
-            Ui.Clear(_bench);
-            IReadOnlyList<ArmyUnit> bench = Roster.Bench;
-            if (bench.Count == 0)
-            {
-                Ui.Label(_bench, "Empty", 34, TextAnchor.MiddleCenter, Palette.Muted);
-                return;
-            }
-            float w = 1f / BenchColumns;
-            float h = 1f / BenchRows;
-            int shown = Mathf.Min(bench.Count, BenchColumns * BenchRows);
-            for (int i = 0; i < shown; i++)
-            {
-                ArmyUnit unit = bench[i];
-                int col = i % BenchColumns;
-                int row = i / BenchColumns;
-                float top = 1f - row * h;
-                Button button = Ui.Button(_bench, "", Palette.For(unit.Def), () => OnBenchClicked(unit),
-                    col * w + 0.005f, top - h + 0.03f, (col + 1) * w - 0.005f, top - 0.03f, 36);
-                UnitSilhouettes.AddIcon(button.transform, Palette.LookFor(unit.Def), unit.Tier);
-                UnitSilhouettes.AddTierLabel(button.transform, unit.Tier, 24);
-                if (unit == _selected)
-                {
-                    Outline outline = button.gameObject.AddComponent<Outline>();
-                    outline.effectColor = Palette.Highlight;
-                    outline.effectDistance = new Vector2(5, 5);
-                }
-                else if (Roster.CanMerge(unit))
-                {
-                    // Gold edge: this unit has enough copies to merge.
-                    Outline outline = button.gameObject.AddComponent<Outline>();
-                    outline.effectColor = Palette.Gold;
-                    outline.effectDistance = new Vector2(4, 4);
-                }
-            }
-            if (bench.Count > shown)
-            {
-                Ui.Label(_bench, $"+{bench.Count - shown} more", 30, TextAnchor.LowerRight, Palette.Muted);
-            }
         }
 
         private string Describe(ArmyUnit unit)
@@ -244,8 +571,8 @@ namespace PuzzleKingdoms.Views.WarCamp
         private string DefaultHint()
         {
             string hint = Roster.Bench.Count > 0
-                ? $"{Roster.Bench.Count} on the bench: they leave for gold when the battle starts."
-                : "Tap a unit, then a cell. Tap a unit twice to bench it.";
+                ? $"Drag units onto the grid. {Roster.Bench.Count} on the bench leave for gold when the battle starts."
+                : "Drag a unit to move it, or onto the bench to take it off.";
             List<MergePlanEntry> plan = Roster.PlanMergeAll();
             if (plan.Count == 0)
             {

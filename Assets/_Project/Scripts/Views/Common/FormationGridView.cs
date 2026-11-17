@@ -22,6 +22,7 @@ namespace PuzzleKingdoms.Views.Common
         private readonly Image[] _icons = new Image[Formation.Size * Formation.Size];
         private readonly Text[] _labels = new Text[Formation.Size * Formation.Size];
         private readonly Outline[] _outlines = new Outline[Formation.Size * Formation.Size];
+        private readonly bool[] _highlighted = new bool[Formation.Size * Formation.Size];
 
         public FormationGridView(Transform parent, string name, bool frontAtBottom, bool interactive,
             float xMin, float yMin, float xMax, float yMax)
@@ -77,9 +78,58 @@ namespace PuzzleKingdoms.Views.Common
             }
         }
 
+        /// <summary>The square of <paramref name="cell"/> (it takes the touches).</summary>
+        public RectTransform CellRect(GridPos cell) => _cells[Index(cell)].rectTransform;
+
+        /// <summary>The cell under a screen point, if any (PB-9 drag and drop).</summary>
+        public bool TryGetCellAt(Vector2 screenPoint, Camera eventCamera, out GridPos cell)
+        {
+            for (int y = 0; y < Formation.Size; y++)
+            {
+                for (int x = 0; x < Formation.Size; x++)
+                {
+                    cell = new GridPos(x, y);
+                    if (RectTransformUtility.RectangleContainsScreenPoint(CellRect(cell), screenPoint, eventCamera))
+                    {
+                        return true;
+                    }
+                }
+            }
+            cell = Formation.NoCell;
+            return false;
+        }
+
+        /// <summary>Outlines one cell in <paramref name="color"/> while a unit is dragged over it; NoCell clears it.</summary>
+        public void SetHover(GridPos cell, Color color)
+        {
+            for (int index = 0; index < _outlines.Length; index++)
+            {
+                _outlines[index].enabled = _highlighted[index];
+                _outlines[index].effectColor = Palette.Highlight;
+            }
+            if (Formation.IsInside(cell))
+            {
+                Outline outline = _outlines[Index(cell)];
+                outline.enabled = true;
+                outline.effectColor = color;
+            }
+        }
+
+        /// <summary>Fades the unit on <paramref name="cell"/> while it is being dragged away; Show resets it.</summary>
+        public void Dim(GridPos cell)
+        {
+            int index = Index(cell);
+            Color color = _cells[index].color;
+            color.a = 0.35f;
+            _cells[index].color = color;
+            _icons[index].color = new Color(1f, 1f, 1f, 0.35f);
+        }
+
         public void SetCell(GridPos cell, ArmyUnit unit, bool highlighted)
         {
             int index = Index(cell);
+            _highlighted[index] = highlighted;
+            _icons[index].color = Color.white;
             _cells[index].color = unit == null ? Palette.Panel : Palette.For(unit.Def);
             _icons[index].enabled = unit != null;
             _labels[index].text = unit == null ? "" : "T" + unit.Tier;
@@ -89,6 +139,7 @@ namespace PuzzleKingdoms.Views.Common
                 UnitSilhouettes.FitIcon(_icons[index].rectTransform, unit.Tier);
             }
             _outlines[index].enabled = highlighted;
+            _outlines[index].effectColor = Palette.Highlight;
         }
 
         private static int Index(GridPos cell) => cell.Y * Formation.Size + cell.X;

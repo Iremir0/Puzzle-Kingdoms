@@ -39,6 +39,7 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-1](cards/PB-1.md) | Run the game on a real phone | Emir | M0 | M | — | Dev APK builds (38 MB, IL2CPP ARM64, 2026-11-14); still to do: install and play on a phone |
 | [PB-5](cards/PB-5.md) | Playtest round | Alican | M1 | M | `feature/PB-5-playtest` | Kit done (Windows build, script, form, playtest log, summary tool, PLAYTESTS.md, blue-screen fix); next: 5+ testers |
 | [PB-7](cards/PB-7.md) | Puzzle feel: input and animations | Emir | M2 | L | `feature/PB-7-puzzle-feel` | Animations, drag-follow swipe and hint pulse built, tested and in `main`; left: feel check on a phone (PB-1 build) |
+| [PB-9](cards/PB-9.md) | War Camp interaction: drag and drop, bench, merge | Alican | M3 | L | `feature/PB-9-war-camp-interaction` | Drag and drop, tap fallback, grouped scrolling bench, merge animation, Undo (D-038) built and tested; left: try it on a phone (PB-1 build) |
 
 ## Ready (next up, in priority order)
 
@@ -53,7 +54,6 @@ Not started. Each card is a milestone slice that ends in something playable.
 
 | ID | Card | Milestone | Size | In short |
 |---|---|---|---|---|
-| [PB-9](cards/PB-9.md) | War Camp interaction: drag and drop, bench, merge | M3 | L | Drag and drop on the 4×4 grid, grouped bench with counts, merge animation, Undo (logic + tests). Mockup inside |
 | [PB-10](cards/PB-10.md) | Art direction decision | M3 | M | Constraints, 3 options (CC0 / store packs / freelancer), phone spike, `docs/ART.md` |
 | [PB-11](cards/PB-11.md) | 3D battle scene | M4 | L | Isometric orthographic view on the same simulator, placeholder models, HP bars, projectiles, HUD. Mockup inside |
 | [PB-12](cards/PB-12.md) | Battle life: animations and effects | M4 | L | Mixamo idle/walk/attack/hit/death, Rally ring and aura, hit flash, battle sounds |
