@@ -144,3 +144,17 @@ spike render.
 So the zero-budget route needs either the one free download (enough to judge the
 Grunt in the game) or one paid month. Until then: KayKit Skeletons stand in for the
 goblins (CC0), and no more credits are spent on goblins we cannot download.
+
+### Style frame (Meshy Pro, 2026-11-17)
+
+Alican bought Meshy Pro, so downloads work and models made on it are ours (private
+licence, no attribution). First a style frame with the whole cast, picked from 4
+(Nano Banana Pro, 36 credits): **#1**, for its size steps (grunt → brute → chief),
+the knight's red plume (reads as "Warrior red" from above) and arms and weapons
+away from the body. Real game names are kept out of all prompts.
+
+![Style frame #1](cards/img/pb-10-style-frame.png)
+
+Fixes for the per-character images: goblin skin olive / yellow-green and the hero
+archer's cloak bright mint `#58C889`, so they do not share one green; no red on the
+goblin chief (gold gems, brown loincloth).
