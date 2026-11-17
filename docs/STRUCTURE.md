@@ -8,7 +8,7 @@ puzzle-kingdoms/
 ├── CLAUDE.md                     ✅ rules for Claude Code sessions
 ├── .github/workflows/            ✅ logic-tests.yml: GitHub runs the logic tests and a balance table on every push (PB-4)
 ├── CREDITS.md                    ✅ third-party licenses (fill before adding assets)
-├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, task board, PLAYTESTS
+├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, task board, PLAYTESTS, ART (draft)
 │   └── cards/                    ✅ one detail file per board card (PB-n.md) + img/ mockups (SVG)
 │
 ├── Assets/
@@ -31,7 +31,8 @@ puzzle-kingdoms/
 │       │   │                        SceneBuilder (generates Scenes/Main.unity),
 │       │   │                        AndroidBuild (dev APK → Builds/Android/),
 │       │   │                        PlaceholderSounds (generates Audio/Placeholder + SoundBank),
-│       │   │                        PlaytestBuild (Windows playtest build → Builds/Windows/)
+│       │   │                        PlaytestBuild (Windows playtest build → Builds/Windows/),
+│       │   │                        ArtSpike (PB-10: renders models from the git-ignored Sandbox/)
 │       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save),
 │       │   │                        SettingsStore (settings.json, D-039), SafeFile (crash-safe writes),
 │       │   │                        PlaytestLog (playtest-log.jsonl, D-037)
