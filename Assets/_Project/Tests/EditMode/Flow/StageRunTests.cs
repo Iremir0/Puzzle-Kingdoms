@@ -88,6 +88,21 @@ namespace PuzzleKingdoms.Tests.Flow
         }
 
         [Test]
+        public void StartingTheBattleClearsUndo()
+        {
+            StageRun run = Run(Stage());
+            PlayPuzzle(run);
+            run.Roster.Recruit(Warrior, 3);
+            Assert.IsNotEmpty(run.Roster.MergeAll());
+            Assert.IsTrue(run.Roster.CanUndo);
+
+            AutoFormation.Fill(run.Roster);
+            Assert.IsTrue(run.StartBattle());
+
+            Assert.IsFalse(run.Roster.CanUndo, "D-038");
+        }
+
+        [Test]
         public void BattleGetsTheRallyChargesEarnedOnTheBoard()
         {
             StageRun run = Run(Stage());

@@ -14,6 +14,7 @@ namespace PuzzleKingdoms.Logic.Army
         public readonly ArmyRules Rules;
         public readonly Formation Formation = new Formation();
         private readonly List<ArmyUnit> _bench = new List<ArmyUnit>();
+        private readonly List<Snapshot> _undo = new List<Snapshot>();
         private int _nextUid;
 
         public Roster(ArmyRules rules)
@@ -100,10 +101,62 @@ namespace PuzzleKingdoms.Logic.Army
         /// </summary>
         public ArmyUnit Merge(ArmyUnit target)
         {
-            if (!Owns(target))
+            if (!CanMerge(target))
             {
                 return null;
             }
+            PushUndo();
+            return MergeCore(target);
+        }
+
+        /// <summary>True when there is a Merge or Merge all to take back (D-038).</summary>
+        public bool CanUndo => _undo.Count > 0;
+
+        /// <summary>
+        /// Puts bench and formation back exactly as they were before the last Merge or
+        /// Merge all, including deploy moves made since then (D-038). False if there is
+        /// nothing to undo.
+        /// </summary>
+        public bool Undo()
+        {
+            if (_undo.Count == 0)
+            {
+                return false;
+            }
+            Snapshot last = _undo[_undo.Count - 1];
+            _undo.RemoveAt(_undo.Count - 1);
+            _bench.Clear();
+            _bench.AddRange(last.Bench);
+            for (int y = 0; y < Formation.Size; y++)
+            {
+                for (int x = 0; x < Formation.Size; x++)
+                {
+                    var cell = new GridPos(x, y);
+                    Formation.Place(last.Slots[y * Formation.Size + x], cell);
+                }
+            }
+            Changed?.Invoke();
+            return true;
+        }
+
+        /// <summary>Forgets every undo step; called when the battle starts.</summary>
+        public void ClearUndo() => _undo.Clear();
+
+        private void PushUndo()
+        {
+            var slots = new ArmyUnit[Formation.Size * Formation.Size];
+            for (int y = 0; y < Formation.Size; y++)
+            {
+                for (int x = 0; x < Formation.Size; x++)
+                {
+                    slots[y * Formation.Size + x] = Formation.GetUnit(new GridPos(x, y));
+                }
+            }
+            _undo.Add(new Snapshot(new List<ArmyUnit>(_bench), slots));
+        }
+
+        private ArmyUnit MergeCore(ArmyUnit target)
+        {
             List<ArmyUnit> consumed = MergeSet(target);
             if (consumed.Count == 0)
             {
@@ -191,6 +244,11 @@ namespace PuzzleKingdoms.Logic.Army
         public List<ArmyUnit> MergeAll()
         {
             var created = new List<ArmyUnit>();
+            if (!CanMergeAny)
+            {
+                return created;
+            }
+            PushUndo(); // one step for the whole Merge all
             for (int tier = 1; tier < Rules.MaxTier; tier++)
             {
                 foreach (UnitDef def in DefsAtTier(tier))
@@ -198,7 +256,7 @@ namespace PuzzleKingdoms.Logic.Army
                     while (true)
                     {
                         ArmyUnit target = PickMergeTarget(def, tier);
-                        ArmyUnit merged = target == null ? null : Merge(target);
+                        ArmyUnit merged = target == null ? null : MergeCore(target);
                         if (merged == null)
                         {
                             break;
@@ -253,5 +311,18 @@ namespace PuzzleKingdoms.Logic.Army
         }
 
         private ArmyUnit NewUnit(UnitDef def, int tier) => new ArmyUnit(def, tier, _nextUid++);
+
+        /// <summary>Bench and formation as they were before one Merge or Merge all.</summary>
+        private sealed class Snapshot
+        {
+            public readonly List<ArmyUnit> Bench;
+            public readonly ArmyUnit[] Slots;
+
+            public Snapshot(List<ArmyUnit> bench, ArmyUnit[] slots)
+            {
+                Bench = bench;
+                Slots = slots;
+            }
+        }
     }
 }
