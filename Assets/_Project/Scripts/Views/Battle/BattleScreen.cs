@@ -62,13 +62,18 @@ namespace PuzzleKingdoms.Views.Battle
 
         public BattleSimulator Simulator => _sim;
 
-        public static BattleScreen Create(Transform parent, StageRun run, Action onFinished)
+        /// <param name="startSpeed">1 or 2: the battle speed from the settings (PB-14); the 1x/2x button still toggles it.</param>
+        public static BattleScreen Create(Transform parent, StageRun run, Action onFinished, int startSpeed = 1)
         {
             RectTransform root = Ui.Stretch(parent, "BattleScreen");
             var screen = root.gameObject.AddComponent<BattleScreen>();
+            screen._speedFactor = startSpeed == 2 ? 2 : 1;
             screen.Build(run, onFinished);
             return screen;
         }
+
+        /// <summary>Current speed multiplier (1 or 2).</summary>
+        public int SpeedFactor => _speedFactor;
 
         private void Build(StageRun run, Action onFinished)
         {
@@ -104,7 +109,7 @@ namespace PuzzleKingdoms.Views.Battle
 
             _rally = Ui.Button(root, "", Palette.Gold, OnRally, 0.03f, 0.02f, 0.5f, 0.12f, 48);
             _rally.GetComponentInChildren<Text>().color = Palette.Background;
-            _speed = Ui.Button(root, "1x", Palette.Button, OnSpeed, 0.52f, 0.02f, 0.67f, 0.12f);
+            _speed = Ui.Button(root, $"{_speedFactor}x", Palette.Button, OnSpeed, 0.52f, 0.02f, 0.67f, 0.12f);
             _pause = Ui.Button(root, "Pause", Palette.Button, OnPause, 0.69f, 0.02f, 0.84f, 0.12f, 38);
             Ui.Button(root, "Skip", Palette.Button, OnSkip, 0.86f, 0.02f, 0.97f, 0.12f, 38);
             RefreshHud();

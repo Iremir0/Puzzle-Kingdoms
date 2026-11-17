@@ -12,18 +12,22 @@ namespace PuzzleKingdoms.Views.Menus
     public sealed class StageSelectScreen : MonoBehaviour
     {
         public static StageSelectScreen Create(Transform parent, GameContent content, PlayerProfile profile,
-            Action<int> onPlay)
+            Action<int> onPlay, Action onSettings = null)
         {
             RectTransform root = Ui.Stretch(parent, "StageSelectScreen");
             var screen = root.gameObject.AddComponent<StageSelectScreen>();
-            screen.Build(content, profile, onPlay);
+            screen.Build(content, profile, onPlay, onSettings);
             return screen;
         }
 
-        private void Build(GameContent content, PlayerProfile profile, Action<int> onPlay)
+        private void Build(GameContent content, PlayerProfile profile, Action<int> onPlay, Action onSettings)
         {
             Transform root = transform;
             Ui.Box(root, "Background", Palette.Background);
+            if (onSettings != null)
+            {
+                Ui.Button(root, "Settings", Palette.Button, onSettings, 0.7f, 0.935f, 0.97f, 0.985f, 36);
+            }
             Ui.Label(root, "Puzzle Kingdoms", 88, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.83f, 1f, 0.93f);
             Ui.Label(root, "Chapter 1 - grey-box prototype", 40, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.78f, 1f, 0.83f);
             Ui.Label(root, $"Gold: {profile.Gold}", 48, TextAnchor.MiddleCenter, Palette.Text, 0f, 0.71f, 1f, 0.77f);

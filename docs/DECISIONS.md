@@ -332,3 +332,20 @@ stack. Why: merging is the one War Camp action the player cannot reverse by hand
 and testers merge by accident while learning; after the battle starts the army is
 committed. Unit uids are never reused after an undo, so views can still tell units
 apart.
+
+## D-039 Settings in their own file; how saves survive crashes and bad files, 2026-11-17
+- **Where settings live:** `settings.json` next to `profile.json` (`SettingsStore`,
+  model `GameSettings` in Logic): sound effects, music, the speed battles start at.
+  A separate file because "Reset progress" must delete stars and gold but keep the
+  settings, and a broken settings file must never cost progress (it just gives the
+  defaults). The puzzle screen's sound button changes the same settings.
+- **Crash safety:** both files are written through `SafeFile`: the new text goes to
+  `.tmp`, then `File.Replace` swaps it in, so a crash leaves the old or the new file,
+  never none (the old code deleted and then moved). If only a `.tmp` is found (left
+  by the old code), it is read.
+- **Bad or newer files:** a profile that cannot be read, or one with a newer save
+  version (after installing an older build), is copied to `profile.json.bak` and a
+  fresh profile starts. The game never refuses to start over a save file; the
+  `.bak` lets us recover progress by hand.
+- **Reset progress** asks twice and saves an empty profile right away.
+Why: losing progress loses players (PB-14), and testers share PCs (PB-5).

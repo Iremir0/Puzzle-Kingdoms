@@ -20,6 +20,7 @@ namespace PuzzleKingdoms.Flow
         [SerializeField] private GameContent content;
 
         private ProfileStore _store;
+        private SettingsStore _settingsStore;
         private PlaytestLog _playtestLog;
         private Transform _screenRoot;
         private GameObject _screen;
@@ -32,6 +33,7 @@ namespace PuzzleKingdoms.Flow
         private bool _attemptLogged;
 
         public PlayerProfile Profile { get; private set; }
+        public GameSettings Settings { get; private set; }
         public StageRun Run { get; private set; }
 
         /// <summary>The screen component currently shown (PuzzleScreen, BattleScreen, ...).</summary>
@@ -70,17 +72,57 @@ namespace PuzzleKingdoms.Flow
 
             Sfx.Setup(gameObject, content.Sounds);
             _store ??= new ProfileStore();
+            _settingsStore = new SettingsStore(_store.Folder); // settings live next to the profile (D-039)
             _playtestLog ??= new PlaytestLog();
             Profile = _store.Load();
+            Settings = _settingsStore.Load();
+            Sfx.EffectsOn = Settings.sound;
+            Sfx.MusicOn = Settings.music;
+            Sfx.Changed += OnSoundSwitched;
             Ui.EnsureEventSystem();
             _screenRoot = Ui.CreateCanvas("Canvas").transform;
             ShowStageSelect();
         }
 
+        private void OnDestroy() => Sfx.Changed -= OnSoundSwitched;
+
         public void ShowStageSelect()
         {
             Run = null;
-            Show(StageSelectScreen.Create(_screenRoot, content, Profile, StartStage));
+            Show(StageSelectScreen.Create(_screenRoot, content, Profile, StartStage, () => OpenSettings()));
+        }
+
+        /// <summary>Opens the settings over the stage map (PB-14).</summary>
+        public SettingsPanel OpenSettings()
+        {
+            string version = Application.version + (Debug.isDebugBuild ? " (dev)" : "");
+            return SettingsPanel.Create(_screen.transform, Settings, version, ApplySettings, ResetProgress);
+        }
+
+        private void ApplySettings(GameSettings settings)
+        {
+            Settings = settings.Copy().Normalize();
+            _settingsStore.Save(Settings);
+            Sfx.Changed -= OnSoundSwitched; // already saved; do not save twice
+            Sfx.EffectsOn = Settings.sound;
+            Sfx.MusicOn = Settings.music;
+            Sfx.Changed += OnSoundSwitched;
+        }
+
+        /// <summary>The puzzle screen's sound button changed the sound: remember it.</summary>
+        private void OnSoundSwitched()
+        {
+            Settings.sound = Sfx.EffectsOn;
+            Settings.music = Sfx.MusicOn;
+            _settingsStore.Save(Settings);
+        }
+
+        /// <summary>Deletes stars and gold (settings stay) and redraws the stage map.</summary>
+        public void ResetProgress()
+        {
+            Profile = new PlayerProfile();
+            _store.Save(Profile);
+            ShowStageSelect();
         }
 
         /// <summary>Starts a fresh attempt at campaign stage <paramref name="index"/>.</summary>
@@ -102,7 +144,7 @@ namespace PuzzleKingdoms.Flow
         public void ShowBattle()
         {
             _battleStarted = Time.realtimeSinceStartup;
-            Show(BattleScreen.Create(_screenRoot, Run, ShowResults));
+            Show(BattleScreen.Create(_screenRoot, Run, ShowResults, Settings.BattleSpeed));
         }
 
         public void ShowResults()

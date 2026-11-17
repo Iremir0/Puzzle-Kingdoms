@@ -1,3 +1,4 @@
+using System;
 using PuzzleKingdoms.Data;
 using UnityEngine;
 
@@ -14,7 +15,8 @@ namespace PuzzleKingdoms.Views.Common
         private const int Voices = 8;
 
         private static Sfx _instance;
-        private static bool _muted;
+        private static bool _effectsOn = true;
+        private static bool _musicOn = true;
 
         private SoundBank _bank;
         private AudioSource[] _voices;
@@ -27,17 +29,42 @@ namespace PuzzleKingdoms.Views.Common
         /// <summary>How many effects actually started playing (tests use it to check mute).</summary>
         public static int PlayedCount { get; private set; }
 
-        /// <summary>Silences effects and music. Kept for the session; saved with the settings later (PB-14).</summary>
+        /// <summary>Raised when effects or music are switched on or off, so the settings can be saved (PB-14).</summary>
+        public static event Action Changed;
+
+        /// <summary>Sound effects on or off (settings: "Sound effects").</summary>
+        public static bool EffectsOn
+        {
+            get => _effectsOn;
+            set => Set(value, _musicOn);
+        }
+
+        /// <summary>The music loop on or off (settings: "Music").</summary>
+        public static bool MusicOn
+        {
+            get => _musicOn;
+            set => Set(_effectsOn, value);
+        }
+
+        /// <summary>Everything silent (the puzzle screen's sound button switches both).</summary>
         public static bool Muted
         {
-            get => _muted;
-            set
+            get => !_effectsOn && !_musicOn;
+            set => Set(!value, !value);
+        }
+
+        private static void Set(bool effectsOn, bool musicOn)
+        {
+            bool changed = effectsOn != _effectsOn || musicOn != _musicOn;
+            _effectsOn = effectsOn;
+            _musicOn = musicOn;
+            if (_instance != null && _instance._music != null)
             {
-                _muted = value;
-                if (_instance != null && _instance._music != null)
-                {
-                    _instance._music.mute = value;
-                }
+                _instance._music.mute = !musicOn;
+            }
+            if (changed)
+            {
+                Changed?.Invoke();
             }
         }
 
@@ -56,7 +83,7 @@ namespace PuzzleKingdoms.Views.Common
         /// <summary>Plays <paramref name="clip"/> once; returns false when muted, without a bank or without a clip.</summary>
         public static bool Play(AudioClip clip, float pitch = 1f)
         {
-            if (_muted || _instance == null || _instance._bank == null || clip == null)
+            if (!_effectsOn || _instance == null || _instance._bank == null || clip == null)
             {
                 return false;
             }
@@ -89,7 +116,7 @@ namespace PuzzleKingdoms.Views.Common
             {
                 gameObject.AddComponent<AudioListener>();
             }
-            _music.mute = _muted;
+            _music.mute = !_musicOn;
             if (bank != null && bank.Music != null)
             {
                 _music.clip = bank.Music;
