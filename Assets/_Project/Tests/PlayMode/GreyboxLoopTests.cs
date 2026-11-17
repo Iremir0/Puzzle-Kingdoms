@@ -66,10 +66,11 @@ namespace PuzzleKingdoms.Tests.PlayMode
         {
             _app = new GameObject("GameApp").AddComponent<GameApp>();
             _app.SetContent(LoadContent());
+            _app.TutorialEnabled = false; // PB-13 prompts are tested in TutorialFlowTests
             _app.UseStore(new ProfileStore(_saveFolder));
             _app.UsePlaytestLog(new PlaytestLog(_saveFolder));
             yield return null;
-            Assert.IsInstanceOf<StageSelectScreen>(_app.CurrentScreen);
+            Assert.IsInstanceOf<StageMapScreen>(_app.CurrentScreen);
 
             _app.StartStage(0);
             yield return null;
@@ -122,6 +123,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
         {
             _app = new GameObject("GameApp").AddComponent<GameApp>();
             _app.SetContent(LoadContent());
+            _app.TutorialEnabled = false; // PB-13 prompts are tested in TutorialFlowTests
             _app.UseStore(new ProfileStore(_saveFolder));
             yield return null;
             _app.StartStage(2);

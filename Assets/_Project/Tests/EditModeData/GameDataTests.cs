@@ -103,6 +103,34 @@ namespace PuzzleKingdoms.Tests.Data
             CollectionAssert.AreEqual(new[] { 1.0f, 1.1f, 1.2f }, multipliers);
         }
 
+        /// <summary>PB-13, D-040: every stage sits on the map and has tutorial prompts that can be shown.</summary>
+        [Test]
+        public void StagesHaveMapPositionsAndValidTutorialPrompts()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            var ids = new HashSet<string>();
+            var positions = new List<UnityEngine.Vector2>();
+            foreach (StageDefinition stage in content.Campaign)
+            {
+                UnityEngine.Vector2 at = stage.MapPosition;
+                Assert.That(at.x, Is.InRange(0.1f, 0.9f), stage.Id + " map x");
+                Assert.That(at.y, Is.InRange(0.1f, 0.85f), stage.Id + " map y (room for the chapter title)");
+                Assert.IsFalse(positions.Any(p => UnityEngine.Vector2.Distance(p, at) < 0.15f), stage.Id + " overlaps a node");
+                positions.Add(at);
+
+                List<Logic.Progression.TutorialStep> steps = stage.TutorialSteps();
+                Assert.IsNotEmpty(steps, stage.Id + " teaches its lesson (GDD §11)");
+                foreach (Logic.Progression.TutorialStep step in steps)
+                {
+                    Assert.IsNotEmpty(step.Id, stage.Id);
+                    Assert.IsTrue(ids.Add(step.Id), "duplicate tutorial id " + step.Id);
+                    Assert.IsNotEmpty(step.Text, step.Id);
+                    Assert.LessOrEqual(step.Text.Length, 120, step.Id + " is short");
+                }
+            }
+            Assert.IsTrue(ids.Contains("1-3.rally"), "Rally timing is taught in 1-3");
+        }
+
         [Test]
         public void GameContentIsComplete()
         {

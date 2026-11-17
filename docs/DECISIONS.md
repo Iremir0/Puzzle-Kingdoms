@@ -349,3 +349,17 @@ apart.
   `.bak` lets us recover progress by hand.
 - **Reset progress** asks twice and saves an empty profile right away.
 Why: losing progress loses players (PB-14), and testers share PCs (PB-5).
+
+## D-040 Tutorial prompts live on the stage assets; seen prompts in the profile, 2026-11-17
+Each `StageDefinition` has a `tutorial` list (id, trigger, text, target UI name)
+and a `mapPosition` for the chapter map (PB-13). The card suggested a separate
+`TutorialSteps` asset; keeping the prompts on the stage puts a stage's lesson next
+to its enemies and difficulty, and needs no extra asset to link. Triggers:
+puzzle started, unit recruited, War Camp opened, battle started, battle lost.
+The profile (save version 2) stores the ids of prompts already shown and whether
+the tutorial was skipped; a prompt counts as seen as soon as it is shown, so a
+crash never shows it twice. Version 1 saves load with nothing seen. "Skip
+tutorial" turns all prompts off; Settings → Reset tutorial brings them back
+without touching stars or gold; Reset progress resets both. While a prompt is up
+the screen below takes no touches and the battle clock stops. Prompt ids must be
+unique across the game (checked by `GameDataTests`).

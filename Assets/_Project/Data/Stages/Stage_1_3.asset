@@ -36,3 +36,13 @@ MonoBehaviour:
     tier: 1
     cell: {x: 3, y: 3}
   goldReward: 60
+  mapPosition: {x: 0.36, y: 0.78}
+  tutorial:
+  - id: 1-3.puzzle
+    trigger: 0
+    text: 'Brutes wear armour that halves normal damage. Mages (purple) ignore armour: recruit plenty.'
+    target: Enemy Panel
+  - id: 1-3.rally
+    trigger: 3
+    text: 'Tap Rally when the armies meet: for 5 seconds your units hit harder and faster.'
+    target: Rally Button

@@ -29,10 +29,11 @@ namespace PuzzleKingdoms.Tests.PlayMode
             Directory.CreateDirectory(_folder);
             _app = new GameObject("GameApp").AddComponent<GameApp>();
             _app.SetContent(LoadContent());
+            _app.TutorialEnabled = false; // PB-13 prompts are tested in TutorialFlowTests
             _app.UseStore(new ProfileStore(_folder));
             _app.UsePlaytestLog(new PlaytestLog(_folder));
             yield return null;
-            Assert.IsInstanceOf<StageSelectScreen>(_app.CurrentScreen);
+            Assert.IsInstanceOf<StageMapScreen>(_app.CurrentScreen);
         }
 
         [TearDown]
@@ -168,7 +169,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             Assert.AreEqual(0, new ProfileStore(_folder).Load().Gold, "the reset is saved");
             Assert.AreEqual(0, new ProfileStore(_folder).Load().BestStars("stage_1_1"));
             Assert.IsFalse(SavedSettings().music, "settings stay");
-            Assert.IsInstanceOf<StageSelectScreen>(_app.CurrentScreen);
+            Assert.IsInstanceOf<StageMapScreen>(_app.CurrentScreen);
             Assert.IsNull(_app.CurrentScreen.GetComponentInChildren<SettingsPanel>(), "panel closed");
         }
     }
