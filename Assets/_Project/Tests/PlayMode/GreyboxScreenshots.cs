@@ -67,6 +67,10 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app.UsePlaytestLog(new PlaytestLog(_saveFolder));
             yield return null;
             yield return Capture(Path.Combine(output, "1-stage-select.png"));
+            var settings = _app.OpenSettings(); // PB-14
+            yield return null;
+            yield return Capture(Path.Combine(output, "1-settings.png"));
+            Object.Destroy(settings.gameObject);
 
             _app.StartStage(2);
             yield return null;

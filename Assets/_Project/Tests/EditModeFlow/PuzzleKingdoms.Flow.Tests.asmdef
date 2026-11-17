@@ -1,0 +1,25 @@
+{
+    "name": "PuzzleKingdoms.Flow.Tests",
+    "rootNamespace": "PuzzleKingdoms.Tests.Flow",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "PuzzleKingdoms.Logic",
+        "PuzzleKingdoms.Flow"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

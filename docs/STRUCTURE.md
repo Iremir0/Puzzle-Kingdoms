@@ -22,7 +22,7 @@ puzzle-kingdoms/
 │       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,
 │       │   │   │                    Rally, BattleEvent, BattleResult
 │       │   │   ├── Stages/       ✅ StageDef, EnemySlot
-│       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot)
+│       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot), GameSettings
 │       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward; StageAttempt (playtest record)
 │       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, UnitLook, StageDefinition, GameContent, SoundBank,
 │       │   │                        Puzzle/Army/Battle/ProgressionRulesAsset (ScriptableObjects)
@@ -32,6 +32,7 @@ puzzle-kingdoms/
 │       │   │                        PlaceholderSounds (generates Audio/Placeholder + SoundBank),
 │       │   │                        PlaytestBuild (Windows playtest build → Builds/Windows/)
 │       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save),
+│       │   │                        SettingsStore (settings.json, D-039), SafeFile (crash-safe writes),
 │       │   │                        PlaytestLog (playtest-log.jsonl, D-037)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
 │       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes, StageBadges, Tween, Sfx),
@@ -54,7 +55,9 @@ puzzle-kingdoms/
 │       └── Tests/
 │           ├── EditMode/         ✅ PuzzleKingdoms.Tests: logic tests (also run by dotnet)
 │           ├── EditModeData/     ✅ PuzzleKingdoms.Data.Tests: assets match GDD (Unity only)
-│           └── PlayMode/         ✅ PuzzleKingdoms.PlayMode.Tests: full loop smoke test, War Camp drag and drop, screenshots
+│           ├── EditModeFlow/     ✅ PuzzleKingdoms.Flow.Tests: save and settings files (Unity only)
+│           └── PlayMode/         ✅ PuzzleKingdoms.PlayMode.Tests: full loop smoke test, War Camp drag and drop,
+│                                    settings, screenshots
 │
 ├── Packages/                     ✅ manifest.json (URP, uGUI, Test Framework; see D-024)
 ├── ProjectSettings/              ✅ Unity 6000.3.28f1; applied by ProjectSetup

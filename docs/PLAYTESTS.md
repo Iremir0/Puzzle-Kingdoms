@@ -32,8 +32,9 @@ Targets from D-026 to compare against: 1-1 won almost always, 1-2 mostly,
 - [ ] 5+ testers booked, 20 minutes each; at least 3 who have not seen the game,
       at least 2 who play mobile puzzle games.
 - [ ] One person runs the session (facilitator), ideally a second takes notes.
-- [ ] **Fresh start on every machine you reuse:** delete the save and move the
-      old log away (paths below), or the tester starts with unlocked stages.
+- [ ] **Fresh start on every machine you reuse:** *Settings → Reset progress* on
+      the stage map (or delete `profile.json`), set sound and music back on, and
+      move the old log away (paths below), or the tester starts with unlocked stages.
 
 ## Session script (facilitator)
 
