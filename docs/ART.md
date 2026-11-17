@@ -177,3 +177,17 @@ Chief (8,000, no red). **Tiers are not separate models:** T2 = same model at 110
 with a Meshy retexture (silver and gold trim), T3 = 120 % with a gold / royal
 retexture plus a glow effect in Unity. One mesh per class keeps the rig and the
 animations shared and the upgrade obvious after a merge.
+
+### Goblin_Grunt in the game camera (2026-11-17)
+
+Meshy 7.1 high detail + texture, remeshed to **5,222 triangles**, private licence
+(70 credits with one failed try: the Pose tool dropped the sword, so convert an
+A-pose image with Pose = none). Meshy FBX files arrive Z-up, facing backwards and in
+centimetres (root scale ×100); `ArtSpike` now stands such models up, turns them
+round, multiplies instead of replacing the scale and puts every model on the ground.
+
+![Grunt vs KayKit](cards/img/pb-10-grunt-vs-kaykit.png)
+
+Reads well at phone size and the yellow-olive skin is clearly not the archers'
+green. Next to the flat KayKit heroes the painted goblin looks like another game,
+which is why the heroes are being made in Meshy from the same style frame.

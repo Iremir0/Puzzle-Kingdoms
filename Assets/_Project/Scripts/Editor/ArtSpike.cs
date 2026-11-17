@@ -76,6 +76,9 @@ namespace PuzzleKingdoms.EditorTools
                 Textures = new Dictionary<string, string>
                 {
                     { "Knight", "knight_texture" }, { "Rogue", "rogue_texture" }, { "Mage", "mage_texture" },
+                    // Meshy exports: the base colour PNG is saved next to the FBX under the same name.
+                    { "Goblin_Grunt", "Goblin_Grunt" }, { "Goblin_Archer", "Goblin_Archer" },
+                    { "Goblin_Brute", "Goblin_Brute" }, { "Goblin_Chief", "Goblin_Chief" },
                 },
                 Hide = new Dictionary<string, string[]>
                 {
@@ -90,6 +93,7 @@ namespace PuzzleKingdoms.EditorTools
         public static void Capture()
         {
             AssetDatabase.Refresh();
+            StandUpMeshyModels();
             Directory.CreateDirectory(OutputFolder);
             var report = new StringBuilder();
             foreach (Pack pack in Packs)
@@ -104,6 +108,23 @@ namespace PuzzleKingdoms.EditorTools
             }
             File.WriteAllText(Path.Combine(OutputFolder, "report.txt"), report.ToString());
             Debug.Log("[ArtSpike]\n" + report);
+        }
+
+        /// <summary>
+        /// Meshy exports FBX with Z up, so the models arrive lying on their back. Baking the
+        /// axis conversion on import makes them stand like every other model.
+        /// </summary>
+        private static void StandUpMeshyModels()
+        {
+            foreach (string guid in AssetDatabase.FindAssets("t:Model", new[] { SandboxRoot + "Goblins" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (AssetImporter.GetAtPath(path) is ModelImporter importer && !importer.bakeAxisConversion)
+                {
+                    importer.bakeAxisConversion = true;
+                    importer.SaveAndReimport();
+                }
+            }
         }
 
         private static void CapturePack(Pack pack, string folder, StringBuilder report)
@@ -180,9 +201,12 @@ namespace PuzzleKingdoms.EditorTools
                             }
                         }
                     }
+                    StandUp(unit);
                     float height = BodyHeight(unit, Path.GetFileName(rows[row]));
                     float tierScale = tier == 1 ? 1f : tier == 2 ? 1.1f : 1.2f;
-                    unit.transform.localScale = Vector3.one * (UnitHeight / height) * tierScale;
+                    // Multiply, not replace: some imports carry a root scale (Meshy: ×100 for centimetres).
+                    unit.transform.localScale *= UnitHeight / height * tierScale;
+                    Ground(unit);
                     int count = 0;
                     foreach (Renderer renderer in unit.GetComponentsInChildren<Renderer>())
                     {
@@ -211,6 +235,44 @@ namespace PuzzleKingdoms.EditorTools
             }
         }
 
+        private static Bounds VisibleBounds(GameObject unit)
+        {
+            Renderer[] renderers = unit.GetComponentsInChildren<Renderer>();
+            Bounds bounds = renderers.Length > 0 ? renderers[0].bounds : new Bounds(unit.transform.position, Vector3.zero);
+            foreach (Renderer renderer in renderers)
+            {
+                bounds.Encapsulate(renderer.bounds);
+            }
+            return bounds;
+        }
+
+        /// <summary>
+        /// A model lying on its back (Z-up export, e.g. Meshy) is much deeper than tall:
+        /// turn its children 90° about X so it stands. The head side ends up on top
+        /// because Z-up exporters put the head at +Z.
+        /// </summary>
+        private static void StandUp(GameObject unit)
+        {
+            Bounds bounds = VisibleBounds(unit);
+            if (bounds.size.z <= bounds.size.y * 1.3f)
+            {
+                return;
+            }
+            // The mesh may sit on the root itself (Meshy: one MeshRenderer, no children),
+            // so turn the root: first the X turn in model space, then the facing.
+            unit.transform.rotation *= Quaternion.Euler(90f, 0f, 0f);
+            // Z-up exports also face the other way once standing.
+            unit.transform.rotation = Quaternion.Euler(0f, 180f, 0f) * unit.transform.rotation;
+            Debug.Log($"[ArtSpike] {unit.name} was lying down; stood it up");
+        }
+
+        /// <summary>Moves the unit up or down so its lowest point touches the ground.</summary>
+        private static void Ground(GameObject unit)
+        {
+            Bounds bounds = VisibleBounds(unit);
+            unit.transform.position += Vector3.up * (unit.transform.position.y - bounds.min.y);
+        }
+
         /// <summary>Height of the visible body (all active renderers) at scale 1.</summary>
         private static float BodyHeight(GameObject unit, string name)
         {
@@ -224,7 +286,7 @@ namespace PuzzleKingdoms.EditorTools
             {
                 bounds.Encapsulate(renderer.bounds);
             }
-            Debug.Log($"[ArtSpike] {name} height {bounds.size.y:0.00} m, width {bounds.size.x:0.00} m");
+            Debug.Log($"[ArtSpike] {name} height {bounds.size.y:0.00} m, width {bounds.size.x:0.00} m, depth {bounds.size.z:0.00} m, centre {bounds.center}, root rot {unit.transform.rotation.eulerAngles}, renderers {renderers.Length}, types {string.Join("/", renderers.Select(r => r.GetType().Name + " lossy " + r.transform.lossyScale + " mesh " + ((r as SkinnedMeshRenderer)?.sharedMesh ?? r.GetComponent<MeshFilter>()?.sharedMesh)?.bounds.size))}");
             return Mathf.Max(0.1f, bounds.size.y);
         }
 
