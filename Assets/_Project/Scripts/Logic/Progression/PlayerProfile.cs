@@ -18,15 +18,55 @@ namespace PuzzleKingdoms.Logic.Progression
             public int gold;
             public List<string> stageIds = new List<string>();
             public List<int> stageStars = new List<int>();
+            /// <summary>Version 2 (D-040): tutorial prompts already shown.</summary>
+            public List<string> seenTutorialSteps = new List<string>();
+            public bool tutorialSkipped;
         }
 
-        public const int CurrentVersion = 1;
+        /// <summary>2 = tutorial progress added (D-040); version 1 files load with none seen.</summary>
+        public const int CurrentVersion = 2;
 
         public event Action Changed;
 
         private readonly Dictionary<string, int> _bestStars = new Dictionary<string, int>();
+        private readonly List<string> _seenSteps = new List<string>();
 
         public int Gold { get; private set; }
+
+        /// <summary>True after "Skip tutorial": no more prompts until the tutorial is reset.</summary>
+        public bool TutorialSkipped { get; private set; }
+
+        public IReadOnlyList<string> SeenTutorialSteps => _seenSteps;
+
+        public bool HasSeenStep(string stepId) => _seenSteps.Contains(stepId);
+
+        /// <summary>Remembers that a prompt was shown, so it never shows again.</summary>
+        public void MarkStepSeen(string stepId)
+        {
+            if (string.IsNullOrEmpty(stepId) || _seenSteps.Contains(stepId))
+            {
+                return;
+            }
+            _seenSteps.Add(stepId);
+            Changed?.Invoke();
+        }
+
+        public void SkipTutorial()
+        {
+            if (!TutorialSkipped)
+            {
+                TutorialSkipped = true;
+                Changed?.Invoke();
+            }
+        }
+
+        /// <summary>Shows every prompt again (Settings → Reset tutorial); stars and gold stay.</summary>
+        public void ResetTutorial()
+        {
+            _seenSteps.Clear();
+            TutorialSkipped = false;
+            Changed?.Invoke();
+        }
 
         public int BestStars(string stageId) => _bestStars.TryGetValue(stageId, out int stars) ? stars : 0;
 
@@ -53,7 +93,12 @@ namespace PuzzleKingdoms.Logic.Progression
 
         public Snapshot ToSnapshot()
         {
-            var snapshot = new Snapshot { gold = Gold };
+            var snapshot = new Snapshot
+            {
+                gold = Gold,
+                seenTutorialSteps = new List<string>(_seenSteps),
+                tutorialSkipped = TutorialSkipped,
+            };
             foreach (KeyValuePair<string, int> pair in _bestStars)
             {
                 snapshot.stageIds.Add(pair.Key);
@@ -79,6 +124,17 @@ namespace PuzzleKingdoms.Logic.Progression
             {
                 profile._bestStars[snapshot.stageIds[i]] = Math.Max(0, Math.Min(3, snapshot.stageStars[i]));
             }
+            if (snapshot.seenTutorialSteps != null)
+            {
+                foreach (string step in snapshot.seenTutorialSteps)
+                {
+                    if (!string.IsNullOrEmpty(step) && !profile._seenSteps.Contains(step))
+                    {
+                        profile._seenSteps.Add(step);
+                    }
+                }
+            }
+            profile.TutorialSkipped = snapshot.tutorialSkipped;
             return profile;
         }
     }

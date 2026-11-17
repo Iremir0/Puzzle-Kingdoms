@@ -37,10 +37,8 @@ is a piece of the game you can play or show, not a single code change.
 | ID | Card | Owner | Milestone | Size | Branch | Notes |
 |---|---|---|---|---|---|---|
 | [PB-1](cards/PB-1.md) | Run the game on a real phone | Emir | M0 | M | — | Dev APK builds (38 MB, IL2CPP ARM64, 2026-11-14); still to do: install and play on a phone |
-| [PB-5](cards/PB-5.md) | Playtest round | Alican | M1 | M | `feature/PB-5-playtest` | Kit done (Windows build, script, form, playtest log, summary tool, PLAYTESTS.md, blue-screen fix); next: 5+ testers |
 | [PB-7](cards/PB-7.md) | Puzzle feel: input and animations | Emir | M2 | L | `feature/PB-7-puzzle-feel` | Animations, drag-follow swipe and hint pulse built, tested and in `main`; left: feel check on a phone (PB-1 build) |
-| [PB-9](cards/PB-9.md) | War Camp interaction: drag and drop, bench, merge | Alican | M3 | L | `feature/PB-9-war-camp-interaction` | Drag and drop, tap fallback, grouped scrolling bench, merge animation, Undo (D-038) built and tested; left: try it on a phone (PB-1 build) |
-| [PB-14](cards/PB-14.md) | Settings and save safety | Alican | M5 | M | `feature/PB-14-settings-save` | Crash-safe saves, settings.json (D-039), settings panel with sound, music, battle speed, reset progress (asks twice); all tests green, ready to merge |
+| [PB-13](cards/PB-13.md) | Stage map and tutorial | Alican | M5 | M | `feature/PB-13-map-tutorial` | Map with nodes, stars, arrow and stage card; tutorial prompts for 1-1 to 1-3 from the stage assets, skip + reset (D-040); left: a new person plays 1-1 without help |
 
 ## Ready (next up, in priority order)
 
@@ -58,7 +56,6 @@ Not started. Each card is a milestone slice that ends in something playable.
 | [PB-10](cards/PB-10.md) | Art direction decision | M3 | M | Constraints, 3 options (CC0 / store packs / freelancer), phone spike, `docs/ART.md` |
 | [PB-11](cards/PB-11.md) | 3D battle scene | M4 | L | Isometric orthographic view on the same simulator, placeholder models, HP bars, projectiles, HUD. Mockup inside |
 | [PB-12](cards/PB-12.md) | Battle life: animations and effects | M4 | L | Mixamo idle/walk/attack/hit/death, Rally ring and aura, hit flash, battle sounds |
-| [PB-13](cards/PB-13.md) | Stage map and tutorial | M5 | M | Map with path and nodes, data-driven tutorial prompts for 1-1 to 1-3. Mockup inside |
 | [PB-15](cards/PB-15.md) | Phone performance and layout | M6 | L | Profile on 2 phones, fix top 3 hotspots, safe area, 4 aspect ratios |
 | [PB-16](cards/PB-16.md) | Final polish and balance | M6 | M | Font, type and spacing scale, second playtest round, balance pass |
 | [PB-17](cards/PB-17.md) | Release build | M6 | S | Icon, splash, release keystore kept outside the repo, signed AAB command |
@@ -87,6 +84,9 @@ mode, Commander heroes (see GDD §10).
 | [PB-8](cards/PB-8.md) | Match pop rising with cascades, Blast/Prism/stone/invalid/ding/horn sounds and a music loop (generated, D-036); Blast ring, Prism beams, stone chips, special flash, board shake; mute button (2026-11-16) |
 | M1-D9 | Merge all and merge preview, 4×4 formation, stone gems, rising enemy strength (D-030 to D-033); waits for the Unity play-through in PB-2 |
 | [PB-4](cards/PB-4.md) | CI: GitHub runs the logic tests and a balance table on every push (2026-11-14) |
+| [PB-5](cards/PB-5.md) | Playtest kit: Windows build, session script, form, playtest log (D-037), summary tool (2026-11-17) |
+| [PB-9](cards/PB-9.md) | War Camp drag and drop, grouped scrolling bench, merge animation, Undo (D-038) (2026-11-17) |
+| [PB-14](cards/PB-14.md) | Crash-safe saves, settings.json (D-039), settings panel with reset progress (2026-11-17) |
 
 ---
 

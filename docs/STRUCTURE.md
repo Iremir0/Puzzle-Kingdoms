@@ -22,7 +22,8 @@ puzzle-kingdoms/
 │       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,
 │       │   │   │                    Rally, BattleEvent, BattleResult
 │       │   │   ├── Stages/       ✅ StageDef, EnemySlot
-│       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot), GameSettings
+│       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot, seen tutorial),
+│       │   │   │                   GameSettings, TutorialStep + TutorialGuide (D-040)
 │       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward; StageAttempt (playtest record)
 │       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, UnitLook, StageDefinition, GameContent, SoundBank,
 │       │   │                        Puzzle/Army/Battle/ProgressionRulesAsset (ScriptableObjects)
@@ -35,12 +36,13 @@ puzzle-kingdoms/
 │       │   │                        SettingsStore (settings.json, D-039), SafeFile (crash-safe writes),
 │       │   │                        PlaytestLog (playtest-log.jsonl, D-037)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
-│       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes, StageBadges, Tween, Sfx),
-│       │                            Puzzle (+ BoardEffects), WarCamp (+ BenchView, DraggableUnit), Battle, Menus
+│       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes, StageBadges, Tween, Sfx, TutorialOverlay),
+│       │                            Puzzle (+ BoardEffects), WarCamp (+ BenchView, DraggableUnit), Battle,
+│       │                            Menus (StageMapScreen, SettingsPanel, ResultsScreen)
 │       ├── Data/                 ✅ .asset files
 │       │   ├── Units/            Warrior, Archer, Mage
 │       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief
-│       │   ├── Stages/           Stage_1_1 … Stage_1_3
+│       │   ├── Stages/           Stage_1_1 … Stage_1_3 (+ map position, tutorial prompts)
 │       │   ├── GameContent.asset   root: units in gem order, campaign, rules
 │       │   ├── PuzzleRules.asset
 │       │   ├── ArmyRules.asset
@@ -56,7 +58,7 @@ puzzle-kingdoms/
 │           ├── EditMode/         ✅ PuzzleKingdoms.Tests: logic tests (also run by dotnet)
 │           ├── EditModeData/     ✅ PuzzleKingdoms.Data.Tests: assets match GDD (Unity only)
 │           ├── EditModeFlow/     ✅ PuzzleKingdoms.Flow.Tests: save and settings files (Unity only)
-│           └── PlayMode/         ✅ PuzzleKingdoms.PlayMode.Tests: full loop smoke test, War Camp drag and drop,
+│           └── PlayMode/         ✅ PuzzleKingdoms.PlayMode.Tests: full loop smoke test, War Camp drag and drop, map + tutorial,
 │                                    settings, screenshots
 │
 ├── Packages/                     ✅ manifest.json (URP, uGUI, Test Framework; see D-024)

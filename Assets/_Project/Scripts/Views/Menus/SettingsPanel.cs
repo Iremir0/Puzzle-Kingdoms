@@ -23,16 +23,17 @@ namespace PuzzleKingdoms.Views.Menus
         private GameObject _confirm;
 
         public static SettingsPanel Create(Transform parent, GameSettings settings, string version,
-            Action<GameSettings> onChanged, Action onResetProgress)
+            Action<GameSettings> onChanged, Action onResetProgress, Action onResetTutorial = null)
         {
             // A dimmed full-screen layer that swallows taps meant for the screen below.
             Image shade = Ui.Box(parent, "SettingsPanel", new Color(0f, 0f, 0f, 0.6f));
             var panel = shade.gameObject.AddComponent<SettingsPanel>();
-            panel.Build(settings.Copy(), version, onChanged, onResetProgress);
+            panel.Build(settings.Copy(), version, onChanged, onResetProgress, onResetTutorial);
             return panel;
         }
 
-        private void Build(GameSettings settings, string version, Action<GameSettings> onChanged, Action onResetProgress)
+        private void Build(GameSettings settings, string version, Action<GameSettings> onChanged, Action onResetProgress,
+            Action onResetTutorial)
         {
             _settings = settings;
             _onChanged = onChanged;
@@ -50,7 +51,17 @@ namespace PuzzleKingdoms.Views.Menus
             _speed1 = Name(Ui.Button(box, "1x", Palette.Button, () => SetSpeed(1), 0.66f, 0.45f, 0.79f, 0.55f, 40), "Speed 1x");
             _speed2 = Name(Ui.Button(box, "2x", Palette.Button, () => SetSpeed(2), 0.81f, 0.45f, 0.94f, 0.55f, 40), "Speed 2x");
 
-            Name(Ui.Button(box, "Reset progress", Palette.Bad, AskReset, 0.06f, 0.22f, 0.94f, 0.33f, 40), "Reset Progress");
+            if (onResetTutorial != null)
+            {
+                Button resetTutorial = null;
+                resetTutorial = Name(Ui.Button(box, "Reset tutorial", Palette.Button, () =>
+                {
+                    onResetTutorial();
+                    Ui.SetCaption(resetTutorial, "Tips will show again");
+                    resetTutorial.interactable = false;
+                }, 0.06f, 0.29f, 0.94f, 0.39f, 40), "Reset Tutorial");
+            }
+            Name(Ui.Button(box, "Reset progress", Palette.Bad, AskReset, 0.06f, 0.15f, 0.94f, 0.26f, 40), "Reset Progress");
             Ui.Label(box, "Version " + version, 30, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.02f, 1f, 0.09f);
 
             // Second step of the reset: a box over the settings with Yes / Cancel.

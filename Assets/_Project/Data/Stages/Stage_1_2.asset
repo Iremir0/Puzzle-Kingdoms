@@ -45,3 +45,17 @@ MonoBehaviour:
     tier: 1
     cell: {x: 3, y: 3}
   goldReward: 40
+  mapPosition: {x: 0.7, y: 0.47}
+  tutorial:
+  - id: 1-2.puzzle
+    trigger: 0
+    text: 'Grey half gems are stone: the first match only breaks the stone, the next one counts.'
+    target: Board Area
+  - id: 1-2.archers
+    trigger: 2
+    text: 'Enemy Archers shoot from afar. Keep your own Archers safe in the back row.'
+    target: Player Formation
+  - id: 1-2.merge
+    trigger: 2
+    text: 'Three of the same unit merge into a stronger one. Try Merge all.'
+    target: Button Merge all

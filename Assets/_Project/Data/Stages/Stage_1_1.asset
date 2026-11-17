@@ -39,3 +39,25 @@ MonoBehaviour:
     tier: 1
     cell: {x: 2, y: 1}
   goldReward: 30
+  mapPosition: {x: 0.3, y: 0.18}
+  tutorial:
+  - id: 1-1.puzzle
+    trigger: 0
+    text: 'Swap two neighbouring gems to match 3 of a colour. Red gems recruit Warriors, green Archers, purple Mages.'
+    target: Board Area
+  - id: 1-1.unit
+    trigger: 1
+    text: 'A unit joined your army! Keep an eye on the enemy above: 6 Grunts are waiting.'
+    target: Enemy Panel
+  - id: 1-1.camp
+    trigger: 2
+    text: 'Drag your units onto the grid. The top row faces the enemy: put Warriors in front.'
+    target: Player Formation
+  - id: 1-1.battle
+    trigger: 3
+    text: 'The battle plays by itself. Watch how your formation holds.'
+    target: 
+  - id: 1-1.lost
+    trigger: 4
+    text: 'Lost this time. Recruit more units and keep Warriors in the front row, then try again.'
+    target: 

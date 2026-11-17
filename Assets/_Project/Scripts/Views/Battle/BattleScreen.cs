@@ -108,6 +108,7 @@ namespace PuzzleKingdoms.Views.Battle
             _banner = Ui.Label(root, "", 80, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.84f, 1f, 0.92f);
 
             _rally = Ui.Button(root, "", Palette.Gold, OnRally, 0.03f, 0.02f, 0.5f, 0.12f, 48);
+            _rally.gameObject.name = "Rally Button"; // the tutorial points at it (PB-13)
             _rally.GetComponentInChildren<Text>().color = Palette.Background;
             _speed = Ui.Button(root, $"{_speedFactor}x", Palette.Button, OnSpeed, 0.52f, 0.02f, 0.67f, 0.12f);
             _pause = Ui.Button(root, "Pause", Palette.Button, OnPause, 0.69f, 0.02f, 0.84f, 0.12f, 38);
@@ -272,10 +273,17 @@ namespace PuzzleKingdoms.Views.Battle
             Ui.SetCaption(_speed, $"{_speedFactor}x");
         }
 
-        private void OnPause()
+        private void OnPause() => Paused = !_paused;
+
+        /// <summary>Stops the clock (the Pause button, or a tutorial prompt in PB-13).</summary>
+        public bool Paused
         {
-            _paused = !_paused;
-            Ui.SetCaption(_pause, _paused ? "Play" : "Pause");
+            get => _paused;
+            set
+            {
+                _paused = value;
+                Ui.SetCaption(_pause, _paused ? "Play" : "Pause");
+            }
         }
 
         /// <summary>Resolves the rest of the battle instantly (no further Rally).</summary>

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using PuzzleKingdoms.Data;
+using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Logic.Progression;
 using PuzzleKingdoms.Views.Battle;
@@ -89,15 +91,95 @@ namespace PuzzleKingdoms.Flow
         public void ShowStageSelect()
         {
             Run = null;
-            Show(StageSelectScreen.Create(_screenRoot, content, Profile, StartStage, () => OpenSettings()));
+            Show(StageMapScreen.Create(_screenRoot, content, Profile, StartStage, () => OpenSettings()));
         }
 
         /// <summary>Opens the settings over the stage map (PB-14).</summary>
         public SettingsPanel OpenSettings()
         {
             string version = Application.version + (Debug.isDebugBuild ? " (dev)" : "");
-            return SettingsPanel.Create(_screen.transform, Settings, version, ApplySettings, ResetProgress);
+            return SettingsPanel.Create(_screen.transform, Settings, version, ApplySettings, ResetProgress, ResetTutorial);
         }
+
+        /// <summary>Shows every tutorial prompt again; stars and gold stay (PB-13).</summary>
+        public void ResetTutorial()
+        {
+            Profile.ResetTutorial();
+            _store.Save(Profile);
+        }
+
+        // ---- Tutorial (PB-13, D-040) ----
+
+        /// <summary>False turns the tutorial prompts off (the play-through tests do).</summary>
+        public bool TutorialEnabled { get; set; } = true;
+
+        /// <summary>The prompt on screen, or null.</summary>
+        public TutorialOverlay Tutorial { get; private set; }
+
+        private List<TutorialStep> _stageSteps = new List<TutorialStep>();
+
+        private void OnTrigger(TutorialTrigger trigger)
+        {
+            if (!TutorialEnabled || Run == null)
+            {
+                return;
+            }
+            List<TutorialStep> steps = TutorialGuide.StepsFor(_stageSteps, trigger, Profile);
+            if (steps.Count == 0)
+            {
+                return;
+            }
+            if (Tutorial != null)
+            {
+                Tutorial.Enqueue(steps);
+                return;
+            }
+            if (CurrentScreen is BattleScreen battle)
+            {
+                battle.Paused = true;
+            }
+            Tutorial = TutorialOverlay.Show(_screenRoot, steps, FindOnScreen, OnStepShown, OnTutorialSkipped,
+                OnTutorialClosed);
+        }
+
+        private RectTransform FindOnScreen(string name)
+        {
+            if (_screen == null)
+            {
+                return null;
+            }
+            foreach (RectTransform rect in _screen.GetComponentsInChildren<RectTransform>())
+            {
+                if (rect.name == name)
+                {
+                    return rect;
+                }
+            }
+            return null;
+        }
+
+        private void OnStepShown(TutorialStep step)
+        {
+            Profile.MarkStepSeen(step.Id);
+            _store.Save(Profile);
+        }
+
+        private void OnTutorialSkipped()
+        {
+            Profile.SkipTutorial();
+            _store.Save(Profile);
+        }
+
+        private void OnTutorialClosed()
+        {
+            Tutorial = null;
+            if (CurrentScreen is BattleScreen battle)
+            {
+                battle.Paused = false;
+            }
+        }
+
+        private void OnUnitRecruited(ArmyUnit unit) => OnTrigger(TutorialTrigger.UnitRecruited);
 
         private void ApplySettings(GameSettings settings)
         {
@@ -129,22 +211,31 @@ namespace PuzzleKingdoms.Flow
         public void StartStage(int index)
         {
             _stageIndex = index;
+            if (Run != null)
+            {
+                Run.UnitRecruited -= OnUnitRecruited;
+            }
             Run = content.CreateRun(content.Campaign[index]);
+            Run.UnitRecruited += OnUnitRecruited;
+            _stageSteps = content.Campaign[index].TutorialSteps();
             _puzzleStarted = Time.realtimeSinceStartup;
             _attemptLogged = false;
             Show(PuzzleScreen.Create(_screenRoot, Run, ShowWarCamp));
+            OnTrigger(TutorialTrigger.PuzzleStarted);
         }
 
         public void ShowWarCamp()
         {
             _campStarted = Time.realtimeSinceStartup;
             Show(WarCampScreen.Create(_screenRoot, Run, ShowBattle));
+            OnTrigger(TutorialTrigger.WarCampOpened);
         }
 
         public void ShowBattle()
         {
             _battleStarted = Time.realtimeSinceStartup;
             Show(BattleScreen.Create(_screenRoot, Run, ShowResults, Settings.BattleSpeed));
+            OnTrigger(TutorialTrigger.BattleStarted);
         }
 
         public void ShowResults()
@@ -175,10 +266,20 @@ namespace PuzzleKingdoms.Flow
             float seconds = (float)Run.Battle.Result.Ticks / Run.Battle.Rules.TicksPerSecond;
             Show(ResultsScreen.Create(_screenRoot, Run.Stage.DisplayName, Run.Battle.Result, seconds, reward,
                 Profile.Gold, actions));
+            if (!Run.Battle.Result.Victory)
+            {
+                OnTrigger(TutorialTrigger.BattleLost);
+            }
         }
 
         private void Show(Component screen)
         {
+            if (Tutorial != null)
+            {
+                // A new screen: prompts for the old one no longer make sense (unseen ones come back later).
+                Destroy(Tutorial.gameObject);
+                Tutorial = null;
+            }
             if (_screen != null)
             {
                 Destroy(_screen);
