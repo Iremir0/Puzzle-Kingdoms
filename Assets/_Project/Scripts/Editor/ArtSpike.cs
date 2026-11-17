@@ -48,8 +48,8 @@ namespace PuzzleKingdoms.EditorTools
             {
                 Name = "KayKit",
                 // Warrior, Archer (Rogue with crossbow stands in for the Ranger), Mage; enemies: skeletons for goblins.
-                PlayerRows = new[] { "Knight", "Knight", "Rogue", "Mage" },
-                EnemyRows = new[] { "Skeleton_Warrior", "Skeleton_Minion", "Skeleton_Rogue", "Skeleton_Mage" },
+                PlayerRows = new[] { "KayKit/Knight", "KayKit/Knight", "KayKit/Rogue", "KayKit/Mage" },
+                EnemyRows = new[] { "KayKit/Skeleton_Warrior", "KayKit/Skeleton_Minion", "KayKit/Skeleton_Rogue", "KayKit/Skeleton_Mage" },
                 Textures = new Dictionary<string, string>
                 {
                     { "Knight", "knight_texture" }, { "Rogue", "rogue_texture" }, { "Mage", "mage_texture" },
@@ -66,6 +66,24 @@ namespace PuzzleKingdoms.EditorTools
                     { "Mage", new[] { "Spellbook", "Spellbook_open", "1H_Wand" } },
                 },
             },
+            new Pack
+            {
+                // D-041: KayKit players against AI-made goblins (Meshy free plan, CC BY 4.0).
+                // Put the downloaded FBX files in Sandbox/Goblins/ with these names; missing ones are skipped.
+                Name = "Goblins",
+                PlayerRows = new[] { "KayKit/Knight", "KayKit/Knight", "KayKit/Rogue", "KayKit/Mage" },
+                EnemyRows = new[] { "Goblins/Goblin_Brute", "Goblins/Goblin_Grunt", "Goblins/Goblin_Chief", "Goblins/Goblin_Archer" },
+                Textures = new Dictionary<string, string>
+                {
+                    { "Knight", "knight_texture" }, { "Rogue", "rogue_texture" }, { "Mage", "mage_texture" },
+                },
+                Hide = new Dictionary<string, string[]>
+                {
+                    { "Knight", new[] { "1H_Sword_Offhand", "Badge_Shield", "Rectangle_Shield", "Spike_Shield", "2H_Sword" } },
+                    { "Rogue", new[] { "Knife_Offhand", "1H_Crossbow", "Knife", "Throwable" } },
+                    { "Mage", new[] { "Spellbook", "Spellbook_open", "1H_Wand" } },
+                },
+            },
         };
 
         [MenuItem("Puzzle Kingdoms/Art Spike Screenshots")]
@@ -76,13 +94,13 @@ namespace PuzzleKingdoms.EditorTools
             var report = new StringBuilder();
             foreach (Pack pack in Packs)
             {
-                string folder = SandboxRoot + pack.Name + "/";
-                if (!AssetDatabase.IsValidFolder(folder.TrimEnd('/')))
+                string folder = SandboxRoot + pack.Name;
+                if (!AssetDatabase.IsValidFolder(folder))
                 {
-                    report.AppendLine($"{pack.Name}: missing {folder}, skipped");
+                    report.AppendLine($"{pack.Name}: missing {folder}/, skipped");
                     continue;
                 }
-                CapturePack(pack, folder, report);
+                CapturePack(pack, SandboxRoot, report);
             }
             File.WriteAllText(Path.Combine(OutputFolder, "report.txt"), report.ToString());
             Debug.Log("[ArtSpike]\n" + report);
@@ -152,7 +170,7 @@ namespace PuzzleKingdoms.EditorTools
                     unit.transform.position = new Vector3(x, 0f, z);
                     unit.transform.rotation = Quaternion.Euler(0f, enemy ? 180f : 0f, 0f);
                     Pose(unit, model);
-                    if (pack.Hide.TryGetValue(rows[row], out string[] hidden))
+                    if (pack.Hide.TryGetValue(Path.GetFileName(rows[row]), out string[] hidden))
                     {
                         foreach (Renderer part in unit.GetComponentsInChildren<Renderer>(true))
                         {
@@ -162,13 +180,16 @@ namespace PuzzleKingdoms.EditorTools
                             }
                         }
                     }
-                    float height = BodyHeight(unit, rows[row]);
+                    float height = BodyHeight(unit, Path.GetFileName(rows[row]));
                     float tierScale = tier == 1 ? 1f : tier == 2 ? 1.1f : 1.2f;
                     unit.transform.localScale = Vector3.one * (UnitHeight / height) * tierScale;
                     int count = 0;
                     foreach (Renderer renderer in unit.GetComponentsInChildren<Renderer>())
                     {
-                        renderer.sharedMaterial = material;
+                        if (material != null)
+                        {
+                            renderer.sharedMaterial = material;
+                        }
                         Mesh mesh = renderer is SkinnedMeshRenderer skinned ? skinned.sharedMesh
                             : renderer.GetComponent<MeshFilter>()?.sharedMesh;
                         for (int sub = 0; mesh != null && sub < mesh.subMeshCount; sub++)
@@ -176,7 +197,7 @@ namespace PuzzleKingdoms.EditorTools
                             count += (int)(mesh.GetIndexCount(sub) / 3);
                         }
                     }
-                    triangles[rows[row]] = count;
+                    triangles[Path.GetFileName(rows[row])] = count;
                     if (lane == 0)
                     {
                         Debug.Log($"[ArtSpike] {rows[row]} parts: " + string.Join(", ", unit.GetComponentsInChildren<Renderer>(true)
@@ -220,13 +241,19 @@ namespace PuzzleKingdoms.EditorTools
             }
         }
 
-        private static Material MaterialFor(Pack pack, string folder, string model, Shader lit)
+        /// <summary>
+        /// A URP material with the pack's atlas texture, or null to keep the materials the model
+        /// was imported with (AI-made models bring their own textures).
+        /// </summary>
+        private static Material MaterialFor(Pack pack, string folder, string row, Shader lit)
         {
-            var material = new Material(lit);
-            if (pack.Textures.TryGetValue(model, out string texture))
+            if (!pack.Textures.TryGetValue(Path.GetFileName(row), out string texture))
             {
-                material.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(folder + texture + ".png"));
+                return null;
             }
+            var material = new Material(lit);
+            string directory = Path.GetDirectoryName(row)?.Replace('\\', '/');
+            material.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>($"{folder}{directory}/{texture}.png"));
             material.SetFloat("_Smoothness", 0.15f);
             return material;
         }

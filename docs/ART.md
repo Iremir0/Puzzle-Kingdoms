@@ -1,6 +1,6 @@
-# Art direction (draft, PB-10)
+# Art direction (PB-10)
 
-Status: **draft, not decided.** This page collects the constraints, the options
+Status: **direction chosen (D-041): KayKit units + AI-made goblins; goblins still to be made.** This page collects the constraints, the options
 and the first spike so Alican and Emir can decide. When they do, the decision goes
 into DECISIONS.md, the chosen packs into CREDITS.md, and this page becomes the
 style guide.
@@ -75,3 +75,55 @@ Findings:
 2. Goblins or skeletons? Option A almost forces skeletons (or a mixed style);
    that changes the GDD enemy names and the tutorial texts.
 3. Who leads the decision, and by when (M4 needs models)?
+
+## 6. Option D: we make the goblins with AI (chosen to try, D-041)
+
+Budget is zero, so: **player units from KayKit (CC0), the four goblins made
+with Meshy's free plan.** Other free AI routes do not fit: Tripo's free plan is
+non-commercial; TRELLIS needs 16 GB+ of GPU memory (our laptop has 8 GB);
+Hunyuan3D's licence excludes the EU, UK and South Korea.
+
+**Licence of Meshy free models: CC BY 4.0.** Commercial use is allowed, but the
+game must credit Meshy (a Credits screen; PB-16/PB-17), and the models are not
+exclusively ours. Each goblin we keep goes into CREDITS.md before it is
+committed. If we later pay for one month, models made then are fully ours.
+
+Free plan: ~100 credits a month, enough for about 3–5 models; plan the tries.
+
+### Steps (the person with the Meshy account)
+
+1. Sign up at meshy.ai (free plan). Use **Text to 3D**.
+2. Settings, when offered: art style **low poly / stylised**, **symmetry on**,
+   pose **T-pose or A-pose** (needed for rigging), target polycount as low as
+   allowed (we aim for ~3,000 triangles).
+3. Prompt: the common style line plus one goblin line (below). Generate, pick
+   the best preview, refine/texture it.
+4. Download **FBX** (Unity reads FBX; GLB needs an extra package). Rename and put
+   it in `Assets/_Project/Sandbox/Goblins/` (git-ignored) as
+   `Goblin_Grunt.fbx`, `Goblin_Archer.fbx`, `Goblin_Brute.fbx`, `Goblin_Chief.fbx`
+   (textures next to them).
+5. Run *Puzzle Kingdoms → Art Spike Screenshots* (Unity closed: batch command in
+   the class comment). `Logs/ArtSpike/Goblins-*.png` shows them against the
+   KayKit army, and `report.txt` lists their triangles.
+6. Keep or retry. Rigging and animations come later (Meshy rigging or Mixamo, PB-12).
+
+### Prompts
+
+Style line (use for every goblin, so the four match KayKit):
+
+> Stylised low poly game character, chibi proportions with a big head and short
+> body, simple flat colours with soft gradient shading, clean readable silhouette,
+> no small details, T-pose, full body, front facing, game asset for a mobile
+> strategy game, in the style of KayKit characters.
+
+| File | Goblin line | Why (GDD §8) |
+|---|---|---|
+| `Goblin_Grunt` | A small green goblin foot soldier with pointy ears, ragged brown leather tunic and a crude short sword. | baseline melee |
+| `Goblin_Archer` | A thin green goblin archer with a hood, a short wooden bow and a quiver on the back. | ranged, back row |
+| `Goblin_Brute` | A big, bulky green goblin brute in heavy dented iron armour plates with a helmet and a large club. | armoured (50 %): must look armoured |
+| `Goblin_Chief` | A large goblin chieftain with a bone crown, a red fur cape, gold trim and a big axe. | boss: larger, stands out |
+
+Colours: goblin skin is green, like our Archers' capes. Keep goblin clothes and
+armour brown, grey, iron and bone, and avoid red and purple on them, so the two
+armies never mix up at a glance. Check the Archer row against the goblins in the
+spike render.
