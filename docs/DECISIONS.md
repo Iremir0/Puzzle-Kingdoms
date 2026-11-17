@@ -320,3 +320,15 @@ things and testers misremember; the log answers "did they merge, use Rally, put
 archers in the back" for every attempt. Local only, no personal data, nothing is
 sent. Stays on during M1-M5; turn it off (or behind a debug flag) in the release
 build (PB-17). Summaries: `Tools/PlaytestSummary`.
+
+## D-038 Undo in the War Camp takes back merges, until the battle starts, 2026-11-17
+`Roster` saves the bench and the formation before every Merge and every Merge all
+(one step for the whole Merge all) and `Roster.Undo()` puts them back exactly,
+the same unit objects on the same cells (PB-9). Steps stack, so several merges can
+be undone in reverse order. Deploy moves are not undo steps: they are already
+reversible by dragging, but an undo also takes back the moves made after that
+merge, because it restores the saved picture. `StageRun.StartBattle` clears the
+stack. Why: merging is the one War Camp action the player cannot reverse by hand,
+and testers merge by accident while learning; after the battle starts the army is
+committed. Unit uids are never reused after an undo, so views can still tell units
+apart.

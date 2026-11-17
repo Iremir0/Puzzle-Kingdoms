@@ -1,6 +1,6 @@
 # PB-9 War Camp interaction: drag and drop, bench, merge
 
-Owner: — (suggested Emir; Alican for the undo logic) · Milestone: M3 · Size: L ·
+Owner: Alican · Milestone: M3 · Size: L ·
 Branch: `feature/PB-9-war-camp-interaction` · Replaces: M3-01, M3-02, M3-03 ·
 Best after PB-3
 
@@ -64,11 +64,46 @@ sprites; add to CREDITS.md first.
 3D battle, unit stats rework, new classes.
 
 ## Done when
-- [ ] Bench → cell, cell → cell (swap), cell → bench all work by dragging; tap still works
-- [ ] Bench is grouped with counts and scrolls
-- [ ] Merge and Merge all animate
-- [ ] Undo works, has tests, `dotnet test Tools/LogicTests` green; DECISIONS.md updated
+- [x] Bench → cell, cell → cell (swap), cell → bench all work by dragging; tap still works
+- [x] Bench is grouped with counts and scrolls
+- [x] Merge and Merge all animate
+- [x] Undo works, has tests, `dotnet test Tools/LogicTests` green; DECISIONS.md updated
 - [ ] Played on the phone; recording in Notes
 
 ## Notes
-_Findings, screenshots, numbers, decisions taken while working on this card._
+2026-11-17 (Alican, with Claude):
+- **Undo (D-038):** `Roster` saves bench + formation before every Merge and every
+  Merge all (one step for the whole Merge all); `Undo()` puts the same unit
+  objects back on the same cells, also taking back moves made after that merge.
+  Deploy moves are not undo steps (dragging already reverses them).
+  `StageRun.StartBattle` clears it. Tests: `RosterUndoTests` (9),
+  `StageRunTests.StartingTheBattleClearsUndo`.
+- **Grouped bench:** the grouping rule is logic (`BenchGroup.FromBench`, tests in
+  `BenchGroupTests`): classes in gem order (Warrior, Archer, Mage), then tier high
+  to low. `Views/WarCamp/BenchView.cs` draws one 190-unit tile per group with "×N"
+  in a sideways `ScrollRect`; gold edge = can merge, white edge = selected. Five
+  tiles fit on a 9:16 phone.
+- **Drag and drop:** `Views/WarCamp/DraggableUnit.cs` on every bench tile and grid
+  cell. The ghost is a tilted, 80 % copy under a `CanvasGroup` with
+  *blocksRaycasts* off. Hover: blue outline = empty cell, red = taken (drop swaps,
+  or sends the occupant to the bench when the unit comes from the bench); blue
+  edge round the bench when a deployed unit can be dropped there. Anywhere else
+  it snaps back in 0.15 s. A drag on a bench tile scrolls the bench instead only
+  when the bench overflows and the finger moves at least twice as much sideways as
+  up (`DraggableUnit.SidewaysRatio`); otherwise diagonal drags towards the grid
+  were taken as scrolls. A drag never counts as a tap.
+- **Merge animation:** the vanished units fly into the new unit (0.25 s), a white
+  flash, the new unit pops 0 → 120 % → 100 % (0.25 s); Merge all plays the new
+  units 0.15 s apart. Chained merges (T1 → T2 → T3) show as one: the T1s fly
+  straight into the T3. Input waits while it plays. Constants at the top of
+  `WarCampScreen`.
+- **Test:** `WarCampInteractionTests` (PlayMode) plays real uGUI drag events:
+  bench → cell, bench → cell, cell → occupied cell (swap), cell → bench, drop
+  elsewhere (snaps back, no ghost left); tap then cell; Merge all with 13 of each
+  class (animation, Undo blocked meanwhile, every tile back to full size, bench
+  scrolls when it overflows, Undo restores exact units and cells).
+- Bench before deploying (screenshot test, 1080×1920):
+
+  ![Grouped bench](img/pb-09-bench.png)
+- Still open: try the drag feel and the scroll-vs-drag rule on a phone (PB-1
+  build) and add a recording.

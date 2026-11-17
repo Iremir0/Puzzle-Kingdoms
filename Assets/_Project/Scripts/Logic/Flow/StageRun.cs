@@ -104,6 +104,7 @@ namespace PuzzleKingdoms.Logic.Flow
                 return false;
             }
             DismissedUnits = Roster.Bench.Count;
+            Roster.ClearUndo(); // D-038: no taking a merge back once the battle has started
             Battle = new BattleSimulator(
                 _battleRules,
                 _armyRules,
