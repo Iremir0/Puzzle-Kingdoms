@@ -8,7 +8,7 @@ puzzle-kingdoms/
 ├── CLAUDE.md                     ✅ rules for Claude Code sessions
 ├── .github/workflows/            ✅ logic-tests.yml: GitHub runs the logic tests and a balance table on every push (PB-4)
 ├── CREDITS.md                    ✅ third-party licenses (fill before adding assets)
-├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, task board
+├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, task board, PLAYTESTS
 │   └── cards/                    ✅ one detail file per board card (PB-n.md) + img/ mockups (SVG)
 │
 ├── Assets/
@@ -23,14 +23,16 @@ puzzle-kingdoms/
 │       │   │   │                    Rally, BattleEvent, BattleResult
 │       │   │   ├── Stages/       ✅ StageDef, EnemySlot
 │       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot)
-│       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward
+│       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward; StageAttempt (playtest record)
 │       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, UnitLook, StageDefinition, GameContent, SoundBank,
 │       │   │                        Puzzle/Army/Battle/ProgressionRulesAsset (ScriptableObjects)
 │       │   ├── Editor/           ✅ PuzzleKingdoms.Editor: ProjectSetup (player settings + URP asset),
 │       │   │                        SceneBuilder (generates Scenes/Main.unity),
 │       │   │                        AndroidBuild (dev APK → Builds/Android/),
-│       │   │                        PlaceholderSounds (generates Audio/Placeholder + SoundBank)
-│       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save)
+│       │   │                        PlaceholderSounds (generates Audio/Placeholder + SoundBank),
+│       │   │                        PlaytestBuild (Windows playtest build → Builds/Windows/)
+│       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save),
+│       │   │                        PlaytestLog (playtest-log.jsonl, D-037)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
 │       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes, StageBadges, Tween, Sfx),
 │       │                            Puzzle (+ BoardEffects), WarCamp, Battle, Menus
@@ -59,7 +61,8 @@ puzzle-kingdoms/
 │
 └── Tools/
     ├── LogicTests/               ✅ dotnet test project for Logic + EditMode tests
-    └── Balance/                  ✅ headless balance runs over the data assets (D-026)
+    ├── Balance/                  ✅ headless balance runs over the data assets (D-026)
+    └── PlaytestSummary/          ✅ Markdown summary of playtest logs (PB-5)
 ```
 
 ## Where does new code go?

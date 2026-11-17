@@ -1,6 +1,6 @@
 # PB-5 Playtest round
 
-Owner: — · Milestone: M1 · Size: M · Branch: `feature/PB-5-playtest` · Replaces: M1-03, M1-04 ·
+Owner: Alican · Milestone: M1 · Size: M · Branch: `feature/PB-5-playtest` · Replaces: M1-03, M1-04 ·
 Needs: PB-1 (phone build), PB-2 (rules verified)
 
 ## Why
@@ -58,9 +58,31 @@ a while), then *Build*. Switch back to Android afterwards.
 Fixing what testers find (new cards), balance changes (decided after, with numbers).
 
 ## Done when
+- [x] Kit ready: Windows build, session script, observer sheet, form, playtest
+      log and summary tool, `docs/PLAYTESTS.md` (2026-11-14)
+- [ ] Android build checked on a phone (PB-1) if phone testers take part
 - [ ] 5+ testers played all three stages; notes written during the session
-- [ ] Forms collected; `docs/PLAYTESTS.md` has per-tester notes and the summary table
+- [ ] Forms and log files collected; `docs/PLAYTESTS.md` has per-tester notes and the summary table
 - [ ] Top problems are cards on the board
 
 ## Notes
-_Findings, screenshots, numbers, decisions taken while working on this card._
+- 2026-11-14 (Alican, kit):
+  - **Playtest log** (D-037): every finished stage attempt appends one JSON
+    line to `playtest-log.jsonl` next to the save (stage, win, stars, time per
+    screen, recruits per class, merges, Rally earned/used, formation, gold).
+    Logic `StageAttempt` + 7 tests; Flow `PlaytestLog`; the PlayMode loop test
+    checks one line is written. Summary: `Tools/PlaytestSummary`.
+  - **Windows build:** *Puzzle Kingdoms → Build Windows Playtest*
+    (`PlaytestBuild.BuildWindows`), 91 MB, zipped 34 MB without the Burst debug
+    folder. Started it once: the stage map shows.
+  - **Blue-screen bug fixed:** `SceneBuilder` loaded GameContent *before*
+    `NewScene`, which unloads unused assets, so the saved scene had an empty
+    `content` (every fresh clone and build started on a blue screen). It now
+    loads after `NewScene`, and both build commands call
+    `SceneBuilder.EnsureReady()` first. `Main.unity` regenerated and committed
+    (tool-generated, no hand edits).
+  - Unity batch run on this branch: EditMode 150/150, PlayMode 1/1 (+1 skipped:
+    screenshots).
+  - The build and the editor share the save folder on the same PC: delete
+    `profile.json` before a tester sits down (PLAYTESTS.md, "Before the round").
+  - Left for people: book 5+ testers, run the sessions, collect forms and logs.

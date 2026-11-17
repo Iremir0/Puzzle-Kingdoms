@@ -21,17 +21,21 @@ namespace PuzzleKingdoms.EditorTools
         [MenuItem("Puzzle Kingdoms/Build Main Scene")]
         public static void Build()
         {
-            var content = AssetDatabase.LoadAssetAtPath<GameContent>(ContentPath);
-            if (content == null)
-            {
-                throw new System.InvalidOperationException($"Missing {ContentPath}");
-            }
             if (!AssetDatabase.IsValidFolder("Assets/_Project/Scenes"))
             {
                 AssetDatabase.CreateFolder("Assets/_Project", "Scenes");
             }
 
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            // Load after NewScene: opening a scene in Single mode unloads unused assets,
+            // so a GameContent loaded before it is destroyed and saves as an empty
+            // reference (the scene then starts on a blank blue screen).
+            var content = AssetDatabase.LoadAssetAtPath<GameContent>(ContentPath);
+            if (content == null)
+            {
+                throw new System.InvalidOperationException($"Missing {ContentPath}");
+            }
 
             var cameraObject = new GameObject("Main Camera");
             cameraObject.tag = "MainCamera";
@@ -50,6 +54,24 @@ namespace PuzzleKingdoms.EditorTools
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
             AssetDatabase.SaveAssets();
             Debug.Log($"[SceneBuilder] wrote {ScenePath}");
+        }
+
+        /// <summary>
+        /// Called before every build: rebuilds the scene if it is missing or its
+        /// GameApp has no GameContent (a build would start on a blank blue screen).
+        /// </summary>
+        public static void EnsureReady()
+        {
+            Scene scene = System.IO.File.Exists(ScenePath)
+                ? EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single)
+                : default;
+            GameApp app = scene.IsValid() ? Object.FindAnyObjectByType<GameApp>() : null;
+            if (app != null && app.Content != null)
+            {
+                return;
+            }
+            Debug.LogWarning("[SceneBuilder] Main scene has no GameContent; rebuilding it before the build.");
+            Build();
         }
     }
 }

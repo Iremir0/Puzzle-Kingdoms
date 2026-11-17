@@ -64,6 +64,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app = new GameObject("GameApp").AddComponent<GameApp>();
             _app.SetContent(content);
             _app.UseStore(new ProfileStore(_saveFolder));
+            _app.UsePlaytestLog(new PlaytestLog(_saveFolder));
             yield return null;
             yield return Capture(Path.Combine(output, "1-stage-select.png"));
 

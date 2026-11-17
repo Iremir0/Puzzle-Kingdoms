@@ -305,3 +305,18 @@ downloads or licences to track for throw-away sounds, the same files come out on
 every machine, and the timing and pitch rules (cascade pitch +0.08 per wave, capped
 at 1.4) can be tested now. Real sounds later replace the clips in the SoundBank
 (add them to CREDITS.md first); no code change needed.
+
+## D-037 Playtest log: one JSON line per finished stage attempt, 2026-11-14
+Written on the PB-5 branch as D-036 and renumbered when merging, because PB-8 took
+D-036 first.
+For the playtests (PB-5) the game appends a `StageAttempt` record to
+`playtest-log.jsonl` next to the save file whenever a battle ends: stage, outcome,
+stars, time on the puzzle and in the War Camp, battle length, units recruited per
+class, merges, units deployed/surviving/dismissed, Rally earned/used, the formation
+and gold. The record is built in Logic (`StageAttempt.From(StageRun)`, tested);
+Flow adds the clock fields and writes the file (`PlaytestLog`). Merges are derived,
+not counted: recruited − deployed − dismissed, divided by two. Why: observers miss
+things and testers misremember; the log answers "did they merge, use Rally, put
+archers in the back" for every attempt. Local only, no personal data, nothing is
+sent. Stays on during M1-M5; turn it off (or behind a debug flag) in the release
+build (PB-17). Summaries: `Tools/PlaytestSummary`.

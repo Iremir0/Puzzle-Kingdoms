@@ -23,6 +23,7 @@ namespace PuzzleKingdoms.EditorTools
             {
                 EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
             }
+            SceneBuilder.EnsureReady();
             EditorUserBuildSettings.buildAppBundle = false;
             Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));
 
