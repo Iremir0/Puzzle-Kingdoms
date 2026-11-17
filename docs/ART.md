@@ -127,3 +127,20 @@ Colours: goblin skin is green, like our Archers' capes. Keep goblin clothes and
 armour brown, grey, iron and bone, and avoid red and purple on them, so the two
 armies never mix up at a glance. Check the Archer row against the goblins in the
 spike render.
+
+### Result of the first try (2026-11-17, Meshy free plan, via the Chrome extension)
+
+- Meshy has no one-step Text to 3D any more: text → image (Nano Banana, 3 credits
+  per image), then image → 3D. "Smart Topology" T2.5 with texture costs 15 credits
+  and lets us set 3,000 polygons. One goblin ≈ 24 credits. Free plan: 100 credits
+  a month plus daily-login bonuses.
+- **Goblin_Grunt made: 3,154 triangles, textured, arms down (not a T-pose,** the
+  prompt alone does not get one; the Pose tool is paid).
+- **The free plan cannot download models** (any format asks for a subscription).
+  The daily-login rewards include one download on day 5.
+- Paid plans: Starter / Pro (prices shown billed yearly; the monthly-billed price is
+  still to be checked). Paid-plan models are fully ours, no CC BY attribution.
+
+So the zero-budget route needs either the one free download (enough to judge the
+Grunt in the game) or one paid month. Until then: KayKit Skeletons stand in for the
+goblins (CC0), and no more credits are spent on goblins we cannot download.
