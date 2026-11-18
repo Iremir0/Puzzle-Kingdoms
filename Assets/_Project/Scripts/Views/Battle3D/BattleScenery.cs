@@ -11,12 +11,12 @@ namespace PuzzleKingdoms.Views.Battle3D
     /// </summary>
     public static class BattleScenery
     {
-        private const int TextureSize = 1024;
+        private const int TextureSize = 2048;
         /// <summary>World size of the ground texture (x by z); the quad is scaled to match.</summary>
-        private const float GroundWidth = 24f;
-        private const float GroundDepth = 28f;
-        private const float ArenaHalfWidth = 3.7f;
-        private const float ArenaHalfDepth = 8.3f;
+        private const float GroundWidth = 18f;
+        private const float GroundDepth = 22f;
+        private const float ArenaHalfWidth = 3.0f;
+        private const float ArenaHalfDepth = 8.2f;
 
         private static Texture2D _groundTexture;
         private static readonly Dictionary<Color32, Material> Materials = new Dictionary<Color32, Material>();
@@ -41,10 +41,10 @@ namespace PuzzleKingdoms.Views.Battle3D
             SideProps(root, layer, random, 1f);
             FarProps(root, layer, random);
             NearProps(root, layer, random);
-            Banner(root, layer, new Vector3(-3.1f, 0f, -8.0f), new Color32(0x3D, 0x7B, 0xD9, 0xFF));
-            Banner(root, layer, new Vector3(3.1f, 0f, -8.0f), new Color32(0x3D, 0x7B, 0xD9, 0xFF));
-            Banner(root, layer, new Vector3(-3.1f, 0f, 8.0f), new Color32(0x6E, 0x8F, 0x2E, 0xFF));
-            Banner(root, layer, new Vector3(3.1f, 0f, 8.0f), new Color32(0x6E, 0x8F, 0x2E, 0xFF));
+            Banner(root, layer, new Vector3(-2.7f, 0f, -7.6f), new Color32(0x3D, 0x7B, 0xD9, 0xFF));
+            Banner(root, layer, new Vector3(2.7f, 0f, -7.6f), new Color32(0x3D, 0x7B, 0xD9, 0xFF));
+            Banner(root, layer, new Vector3(-2.7f, 0f, 7.0f), new Color32(0x6E, 0x8F, 0x2E, 0xFF));
+            Banner(root, layer, new Vector3(2.7f, 0f, 7.0f), new Color32(0x6E, 0x8F, 0x2E, 0xFF));
         }
 
         // ---- props ----
@@ -53,7 +53,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         {
             for (float z = -7.5f; z <= 9.5f; z += 1.9f)
             {
-                float x = side * (4.5f + (float)random.NextDouble() * 1.4f);
+                float x = side * (3.9f + (float)random.NextDouble() * 0.7f);
                 float zz = z + ((float)random.NextDouble() - 0.5f) * 0.8f;
                 double pick = random.NextDouble();
                 if (z < -6f)
@@ -79,7 +79,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         {
             for (float x = -6.5f; x <= 6.5f; x += 2.1f)
             {
-                Tree(root, layer, new Vector3(x + ((float)random.NextDouble() - 0.5f), 0f, 10.4f + (float)random.NextDouble() * 0.6f),
+                Tree(root, layer, new Vector3(x + ((float)random.NextDouble() - 0.5f), 0f, 9.4f + (float)random.NextDouble() * 0.5f),
                     1.1f + (float)random.NextDouble() * 0.5f, random);
             }
         }
@@ -89,7 +89,7 @@ namespace PuzzleKingdoms.Views.Battle3D
             // Low things only: a tall prop here would stand in front of the player's units.
             for (float x = -6f; x <= 6f; x += 2.4f)
             {
-                if (Mathf.Abs(x) < 3.6f)
+                if (Mathf.Abs(x) < 3.2f)
                 {
                     continue;
                 }
@@ -144,10 +144,10 @@ namespace PuzzleKingdoms.Views.Battle3D
             Color32 wood = new Color32(0x7A, 0x56, 0x34, 0xFF);
             for (float z = -7.6f; z <= 7.6f; z += 1.6f)
             {
-                Part(fence.transform, layer, PrimitiveType.Cube, new Vector3(side * 4.05f, 0.35f, z), new Vector3(0.12f, 0.7f, 0.12f), wood);
+                Part(fence.transform, layer, PrimitiveType.Cube, new Vector3(side * 3.3f, 0.35f, z), new Vector3(0.12f, 0.7f, 0.12f), wood);
             }
-            Part(fence.transform, layer, PrimitiveType.Cube, new Vector3(side * 4.05f, 0.52f, 0f), new Vector3(0.07f, 0.08f, 16.0f), wood);
-            Part(fence.transform, layer, PrimitiveType.Cube, new Vector3(side * 4.05f, 0.28f, 0f), new Vector3(0.07f, 0.08f, 16.0f), wood);
+            Part(fence.transform, layer, PrimitiveType.Cube, new Vector3(side * 3.3f, 0.52f, 0f), new Vector3(0.07f, 0.08f, 16.0f), wood);
+            Part(fence.transform, layer, PrimitiveType.Cube, new Vector3(side * 3.3f, 0.28f, 0f), new Vector3(0.07f, 0.08f, 16.0f), wood);
         }
 
         private static void Banner(Transform root, int layer, Vector3 at, Color32 cloth)
@@ -166,7 +166,7 @@ namespace PuzzleKingdoms.Views.Battle3D
             var line = new GameObject("Chalk Line");
             Prepare(line, root, layer);
             Color32 chalk = new Color32(0xE8, 0xDF, 0xC8, 0xFF);
-            for (float x = -3.3f; x <= 3.3f; x += 0.7f)
+            for (float x = -2.6f; x <= 2.6f; x += 0.65f)
             {
                 GameObject dash = Part(line.transform, layer, PrimitiveType.Quad, new Vector3(x, 0.012f, 0f), new Vector3(0.4f, 0.07f, 1f), chalk);
                 dash.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);

@@ -336,6 +336,8 @@ namespace PuzzleKingdoms.Views.Battle
                     : Loc.F("{0} {1:0.0}s", rallyName, (float)rally.TicksLeft / _sim.Rules.TicksPerSecond))
                 : (classic ? Loc.F("Rally ({0})", rally.Charges) : Loc.F("{0} ({1})", rallyName, rally.Charges));
             _rally.interactable = rally.CanActivate && !_sim.IsFinished;
+            // Dark text on the lit gold button; light text on the greyed one (dark on dark was unreadable).
+            _rally.GetComponentInChildren<Text>().color = _rally.interactable ? Palette.Background : new Color(1f, 1f, 1f, 0.8f);
         }
 
         /// <summary>PB-23: the banner text and colour of each Rally kind.</summary>
