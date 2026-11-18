@@ -44,6 +44,7 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-12](cards/PB-12.md) | Battle life: animations and effects | Alican | M4 | L | `feature/PB-12-battle-life` | In `main`: rigged Meshy models, one shared Animator (idle, walk, sword/bow/spell attack, hit, death), Rally ring + glow + shake, hit dust, goblin poof, coin pop, battle sounds (D-043); left: 30+ fps on a phone (PB-1) and a look at it in the real game |
 | [PB-16](cards/PB-16.md) | Final polish and balance | Alican | M6 | M | `feature/PB-16-final-polish` | In `main`: one font (Lilita One), six-step type scale, three button styles, contrast tests (D-044); left: playtest round 2 and the balance pass (need testers, after PB-5) |
 | [PB-17](cards/PB-17.md) | Release build | Alican | M6 | S | `feature/PB-17-release-build` | In `main`: version 0.1.0 (1), `BuildReleaseAab`, placeholder icon and splash, SETUP 4a, release key created outside the repo; left: back the key up in two places, a signed AAB and a phone install |
+| [PB-32](cards/PB-32.md) | Turkish and English | Alican | M6 | M | `feature/PB-32-localization` | Growth wave 1 (D-045); started 2026-11-18: string table, language setting, every screen |
 
 ## Ready (next up, in priority order)
 
@@ -51,6 +52,8 @@ is a piece of the game you can play or show, not a single code change.
 |---|---|---|---|---|---|
 | [PB-2](cards/PB-2.md) | Play the new rules in Unity and close the review | Emir | M1 | S | Merge into `main` and the Test Runner (with Data tests) are done; left: the play checklist for 1-1 to 1-3 (4×4 grid, stone gems, Merge all, enemy strength, PB-7 feel, PB-8 sound) |
 | [PB-6](cards/PB-6.md) | Go / pivot decision | both | M1 | S | Score the GDD pillars against the playtest evidence, record in DECISIONS.md. After PB-5 |
+| [PB-29](cards/PB-29.md) | Analytics, remote config, crash reports, consent | Alican | M6 | M | Growth wave 1: consent panel, event layer with a local sink, remote config overrides; the online services need an account |
+| [PB-19](cards/PB-19.md) | Stage tool and stage goals | Alican | M7 | M | Growth wave 1: Stage Editor window (paint, goal, test difficulty), goals "break stones" and "win within" |
 
 ## Backlog
 
@@ -60,9 +63,26 @@ Not started. Each card is a milestone slice that ends in something playable.
 |---|---|---|---|---|
 | [PB-15](cards/PB-15.md) | Phone performance and layout | M6 | L | Profile on 2 phones, fix top 3 hotspots, safe area, 4 aspect ratios |
 
-### Post-MVP ideas (do not start before the go decision, PB-6)
-Class levels with gold, Defender/Support classes, Daily Challenge, Expedition
-mode, Commander heroes (see GDD §10).
+### Growth (D-045): do not start before the go decision, PB-6
+Waves 2-4 of the growth plan; wave 1 (PB-29, PB-32, PB-19) is above. Mockups of every
+card: [growth screens page](https://claude.ai/artifact/PgA4zDSKLCXPzAjwZBPsLH) (Alican's,
+private until shared).
+
+| ID | Card | Wave | Milestone | Size | In short |
+|---|---|---|---|---|---|
+| [PB-18](cards/PB-18.md) | Chapter 2: Goblin Fort | 2 | M7 | L | 10-12 stages, shield goblin, shaman, wolf rider, bomber, boss stage |
+| [PB-20](cards/PB-20.md) | New gems and obstacles | 2 | M7 | M | Ice, chain, special combos, boss drops stones |
+| [PB-21](cards/PB-21.md) | New classes: Defender and Support | 2 | M7 | L | Tank and healer, their gems, up to 5 gem types per stage |
+| [PB-22](cards/PB-22.md) | Kingdom and buildings | 2 | M7 | L | Gold buys building levels, small permanent class bonuses, tab bar |
+| [PB-23](cards/PB-23.md) | Commander heroes | 2 | M7 | L | A Rally variant per commander, earned from stages, no loot boxes |
+| [PB-24](cards/PB-24.md) | Daily quests, achievements, star chests | 3 | M8 | M | 3-4 goals a day, a chest every 30 stars |
+| [PB-25](cards/PB-25.md) | Daily Challenge | 3 | M8 | M | Same seed for everyone, one try a day, local first, online after the backend decision |
+| [PB-26](cards/PB-26.md) | Expedition mode (roguelite) | 3 | M8 | L | 5 battles in a row, army and wounds carry over, reward picks |
+| [PB-30](cards/PB-30.md) | Economy and revenue | 3 | M8 | L | Crowns, rewarded ads, ad-free pack, season pass; power never sold |
+| [PB-31](cards/PB-31.md) | Cloud save, Google Play Games | 3 | M8 | M | Save follows the player to a new phone, conflict choice |
+| [PB-33](cards/PB-33.md) | Real music and sound | 3 | M8 | M | Music per screen, 15 effects replaced |
+| [PB-27](cards/PB-27.md) | Async PvP: defence armies | 4 | M9 | L | Save a defence, others attack it; server re-runs battles to verify |
+| [PB-28](cards/PB-28.md) | Battle replays and sharing | 4 | M9 | M | Replays from inputs, timeline, share a clip |
 
 ---
 

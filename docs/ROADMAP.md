@@ -11,6 +11,9 @@ Estimates assume two developers working full time; double them for part time.
 | M4 | 3D battle presentation | 3 wk | Isometric scene on top of the same simulator, our Meshy models and animations (D-043), Rally VFX |
 | M5 | Loop integration | 2 wk | 3 stages, stars, gold, local save, results screen |
 | M6 | Android & polish | 2 wk | Performance profile on target device, UI polish, playtest round |
+| M7 | Content & meta (growth wave 2) | 5–6 wk | Chapter 2, obstacles, Defender/Support, kingdom, commanders (D-045; after the go decision) |
+| M8 | Retention & soft launch (wave 3) | 5–6 wk | Quests, Daily Challenge, Expedition, economy, cloud save, real audio; ~40 stages; soft launch |
+| M9 | Live modes (wave 4) | 3 wk | Async PvP verified by re-running battles, replays and sharing |
 
 Art direction research (packs vs. freelancer) runs in parallel from M3.
 

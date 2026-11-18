@@ -197,6 +197,9 @@ Enemies use the same rules as player units and their own 4×4 formation.
 4. Expedition mode: 3–5 battles in a row with a persistent army (roguelite).
 5. Commander heroes: one special slot with a unique Rally variant.
 
+These are now board cards (PB-22, PB-21, PB-25, PB-26, PB-23) inside the wider growth plan
+of D-045 (16 cards, PB-18 to PB-33, in four waves).
+
 ## 11. Stages (MVP)
 
 | Stage | Name | Enemies | Lesson |

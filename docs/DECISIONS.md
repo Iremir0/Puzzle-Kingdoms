@@ -424,3 +424,22 @@ Danger red, all from `Palette`) with one pressed look (the fill darkens). Contra
 `ContrastTests`: white on the three button fills ≥ 3:1 (their captions are large text), dark text on the
 Rally gold and muted / gold text on the panels ≥ 4.5:1. Colours are GDD values and did not change.
 TextMeshPro is not adopted (the grey-box UI stays on `Text` until real UI art, PB-16 notes).
+
+## D-045 Growth plan: 16 cards in four waves; wave 1 starts before the go decision, 2026-11-18
+Alican approved the growth proposal (Claude's, written as the game's owner) and asked to start
+it. Cards PB-18 to PB-33 turn the three-stage prototype into a soft-launch game. Wave 1 does not
+depend on the playtest result and starts now: **PB-32** Turkish and English, **PB-29** analytics,
+remote config, crash reports and consent, **PB-19** stage tool and stage goals. Wave 2 waits for
+a "go" in PB-6: PB-18 Chapter 2, PB-20 obstacles, PB-21 Defender and Support, PB-22 kingdom,
+PB-23 commanders. Wave 3 leads to the soft launch: PB-24 quests, PB-25 Daily Challenge, PB-26
+Expedition, PB-30 economy, PB-31 cloud save, PB-33 real audio. Wave 4: PB-27 async PvP, PB-28
+replays. Soft-launch target: about 40 stages (Chapters 1-3; extending Chapter 1 and making
+Chapter 3 get their own cards once PB-19 exists), kingdom, two commanders, Daily Challenge,
+analytics, TR/EN, rewarded ads. **Never:** selling power, units or stars, loot-box heroes
+(pillar 2), real-time PvP (too heavy for two people), an energy system that blocks play (pillar 4).
+The plan uses determinism as the selling point (Daily Challenge, async PvP verified by re-running,
+replays from inputs). Open owner decisions: the business model (PB-30) and a backend (online part
+of PB-25, PB-27). Milestones M7-M9 added to the ROADMAP. Mockups of every card are on Alican's
+growth screens page (linked from BOARD.md). Why: competitors have hundreds of stages, long-term
+progress and daily reasons to return; we had none of these, and wave 1 is useful whatever the
+playtests say (the playtests themselves benefit from analytics and Turkish).
