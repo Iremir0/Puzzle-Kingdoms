@@ -52,7 +52,7 @@ namespace PuzzleKingdoms.Views.Battle3D
 
             foreach (Combatant combatant in sim.Combatants)
             {
-                _actors.Add(new UnitActor(combatant, _root.transform, Layer));
+                _actors.Add(new UnitActor(combatant, _root.transform, Layer, sim.Rules.TicksPerSecond));
             }
         }
 
@@ -83,7 +83,9 @@ namespace PuzzleKingdoms.Views.Battle3D
                     continue;
                 }
                 _actors[e.TargetId].Flash();
+                _actors[e.TargetId].PlayHit();
                 UnitActor source = e.SourceId >= 0 && e.SourceId < _actors.Count ? _actors[e.SourceId] : null;
+                source?.PlayAttack(_sim.Rally.IsActive ? 1f + _sim.Rules.RallyAttackSpeedBonus : 1f);
                 if (source != null && source.Combatant.AttackRange > 2f && _projectiles.Count < 40)
                 {
                     SpawnProjectile(source, _actors[e.TargetId]);

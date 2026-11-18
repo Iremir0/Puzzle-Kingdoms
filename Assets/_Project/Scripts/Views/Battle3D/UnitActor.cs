@@ -34,9 +34,20 @@ namespace PuzzleKingdoms.Views.Battle3D
         private float _flashLeft;
         private float _deathAge = -1f;
         private float _heading;
+        private readonly int _ticksPerSecond;
+        private Animator _animator;
+        private Transform _modelHolder;
+        private float _attackClipLength = 1f;
+        private float _hitCooldown;
+        private float _smoothSpeed;
 
-        public UnitActor(Combatant combatant, Transform parent, int layer)
+        /// <summary>A killed unit lies for this long (animated deaths), then sinks into the ground.</summary>
+        private const float LieSeconds = 1.5f;
+        private const float SinkSeconds = 0.5f;
+
+        public UnitActor(Combatant combatant, Transform parent, int layer, int ticksPerSecond)
         {
+            _ticksPerSecond = Mathf.Max(1, ticksPerSecond);
             Combatant = combatant;
             Root = new GameObject($"Unit {combatant.Id}");
             Root.transform.SetParent(parent, false);
@@ -107,6 +118,28 @@ namespace PuzzleKingdoms.Views.Battle3D
 
         public void Flash() => _flashLeft = FlashSeconds;
 
+        /// <summary>The unit attacks: starts the Attack clip, squeezed into the attack interval (and faster in Rally).</summary>
+        public void PlayAttack(float rallyFactor)
+        {
+            if (_animator == null)
+            {
+                return;
+            }
+            float interval = Mathf.Max(0.2f, Combatant.AttackInterval) / Mathf.Max(0.1f, rallyFactor);
+            _animator.SetFloat("attackSpeed", Mathf.Clamp(_attackClipLength / (interval * 0.9f), 0.6f, 4f));
+            _animator.SetTrigger("attack");
+        }
+
+        /// <summary>The unit is hit: a short stagger, at most once in a while so a stream of hits does not freeze it.</summary>
+        public void PlayHit()
+        {
+            if (_animator != null && _hitCooldown <= 0f && Combatant.IsAlive)
+            {
+                _animator.SetTrigger("hit");
+                _hitCooldown = 1.6f;
+            }
+        }
+
         /// <summary>Called after every simulator tick: keeps the last two positions to interpolate between.</summary>
         public void AfterTick()
         {
@@ -116,6 +149,7 @@ namespace PuzzleKingdoms.Views.Battle3D
             {
                 _deathAge = 0f;
                 _hpRoot.gameObject.SetActive(false);
+                _animator?.SetTrigger("die");
             }
         }
 
@@ -142,6 +176,17 @@ namespace PuzzleKingdoms.Views.Battle3D
             }
 
             Root.transform.localPosition = Vector3.Lerp(_previous, _current, alpha);
+            _hitCooldown -= deltaTime;
+            if (_animator != null)
+            {
+                float speed = Vector3.Distance(_previous, _current) * _ticksPerSecond;
+                _smoothSpeed = Mathf.MoveTowards(_smoothSpeed, speed, 8f * deltaTime);
+                _animator.SetFloat("speed", _smoothSpeed);
+                if (!Application.isPlaying)
+                {
+                    _animator.Update(deltaTime); // edit mode (the battle screenshots): nothing else ticks it
+                }
+            }
 
             Vector3 toTarget = lookAt.HasValue ? lookAt.Value - Root.transform.localPosition : Vector3.zero;
             float wanted = toTarget.sqrMagnitude > 0.01f
@@ -170,6 +215,22 @@ namespace PuzzleKingdoms.Views.Battle3D
         private void RenderDeath(float deltaTime)
         {
             _deathAge += deltaTime;
+            if (_animator != null)
+            {
+                // The Dead clip plays, the unit lies for a moment, then sinks into the ground and goes (PB-12).
+                if (!Application.isPlaying)
+                {
+                    _animator.Update(deltaTime);
+                }
+                float sink = Mathf.Clamp01((_deathAge - LieSeconds) / SinkSeconds);
+                _modelHolder.localPosition = Vector3.down * 0.6f * sink;
+                if (sink >= 1f)
+                {
+                    Root.SetActive(false);
+                }
+                return;
+            }
+
             float t = Mathf.Clamp01(_deathAge / DeathSeconds);
             Root.transform.localScale = new Vector3(1f + 0.3f * t, 1f - t, 1f + 0.3f * t);
             if (t >= 1f)
@@ -206,6 +267,25 @@ namespace PuzzleKingdoms.Views.Battle3D
             Bounds fitted = BoundsOf(parts);
             model.transform.position += Vector3.up * (Root.transform.position.y - fitted.min.y);
             holder.localScale = Vector3.one * tierScale;
+            _modelHolder = holder;
+
+            // A rigged (Humanoid) model brings an Animator; the shared controller drives it (PB-12, D-043).
+            Animator animator = model.GetComponent<Animator>() != null ? model.GetComponent<Animator>() : model.GetComponentInChildren<Animator>();
+            RuntimeAnimatorController controller = UnitModels.Controller;
+            if (animator != null && controller != null)
+            {
+                animator.runtimeAnimatorController = controller;
+                animator.applyRootMotion = false;
+                animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                _animator = animator;
+                foreach (AnimationClip clip in controller.animationClips)
+                {
+                    if (clip != null && clip.name == "Attack")
+                    {
+                        _attackClipLength = clip.length;
+                    }
+                }
+            }
             return parts;
         }
 

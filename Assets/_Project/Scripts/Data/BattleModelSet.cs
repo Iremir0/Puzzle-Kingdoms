@@ -28,7 +28,12 @@ namespace PuzzleKingdoms.Data
             public Vector3 uprightEuler;
         }
 
+        [Tooltip("One Animator Controller shared by all rigged models (they are all Humanoid, PB-12 / D-043); empty = no animation.")]
+        [SerializeField] private RuntimeAnimatorController animator;
         [SerializeField] private List<Entry> entries = new List<Entry>();
+
+        /// <summary>The shared Animator Controller (parameters speed, attackSpeed, attack, hit, die); may be null.</summary>
+        public RuntimeAnimatorController Animator => animator;
 
         public IReadOnlyList<Entry> Entries => entries;
 

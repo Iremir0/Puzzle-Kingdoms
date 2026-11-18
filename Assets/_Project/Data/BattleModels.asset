@@ -12,32 +12,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f526ae38bbdb73647bd251b91fc0499f, type: 3}
   m_Name: BattleModels
   m_EditorClassIdentifier: PuzzleKingdoms.Data::PuzzleKingdoms.Data.BattleModelSet
+  animator: {fileID: 9100000, guid: 081c805771b52f54a934ea182f18c02c, type: 2}
   entries:
   - look: 1
-    model: {fileID: 919132149155446097, guid: 91e3a0c124f14314986de881ad01ac9a, type: 3}
+    model: {fileID: 919132149155446097, guid: 2890c6450c748a74d948a64e75f381d3, type: 3}
     material: {fileID: 2100000, guid: 4e955bc21f5003b459356cffff36419a, type: 2}
-    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+    uprightEuler: {x: 0, y: 0, z: 0}
   - look: 2
-    model: {fileID: 919132149155446097, guid: 1228d6d41320b7543a17fb716535087e, type: 3}
+    model: {fileID: 919132149155446097, guid: 91e205e84877d354fa040719d47b898f, type: 3}
     material: {fileID: 2100000, guid: b27e30383e5091445a34743141210d71, type: 2}
-    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+    uprightEuler: {x: 0, y: 0, z: 0}
   - look: 3
-    model: {fileID: 919132149155446097, guid: 86df1cb94d41e7946883f546c7f2b4a9, type: 3}
+    model: {fileID: 919132149155446097, guid: 731f2ff6ef9a852499a2be613ba32da1, type: 3}
     material: {fileID: 2100000, guid: 6c559ea76828556498abd47974c78379, type: 2}
-    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+    uprightEuler: {x: 0, y: 0, z: 0}
   - look: 4
-    model: {fileID: 919132149155446097, guid: 2bb1d33561ecd4248be4b7a6687f837c, type: 3}
+    model: {fileID: 919132149155446097, guid: d958be349d923ea4e9828bd16d8cb2bb, type: 3}
     material: {fileID: 2100000, guid: 3f5e23909d2d1284a85d1344800a68ad, type: 2}
-    uprightEuler: {x: 90, y: 180, z: 0}
+    uprightEuler: {x: 0, y: 0, z: 0}
   - look: 5
-    model: {fileID: 919132149155446097, guid: 836d2e85baa93094cb6994b19df9a191, type: 3}
+    model: {fileID: 919132149155446097, guid: 5b811f777e889d849a4898cbe1cc6490, type: 3}
     material: {fileID: 2100000, guid: 7f34e2f81c3c08c49b2403cba6295549, type: 2}
-    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+    uprightEuler: {x: 0, y: 0, z: 0}
   - look: 6
-    model: {fileID: 919132149155446097, guid: 0c09dc718dfba914cbceaab9bf044faa, type: 3}
+    model: {fileID: 919132149155446097, guid: 7d3d41a8d53ec5d4d98ba516fb6b391c, type: 3}
     material: {fileID: 2100000, guid: 29402177ac01cfe4baa8c5ace7a563ab, type: 2}
-    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+    uprightEuler: {x: 0, y: 0, z: 0}
   - look: 7
-    model: {fileID: 919132149155446097, guid: 5876b82190f4ce44e82a4c84a997c71b, type: 3}
+    model: {fileID: 919132149155446097, guid: 2c39aaa4b264e624887531649ab9736c, type: 3}
     material: {fileID: 2100000, guid: 3e8394f12af8ec74796efcc3c57ee709, type: 2}
-    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+    uprightEuler: {x: 0, y: 0, z: 0}

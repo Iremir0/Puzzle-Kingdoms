@@ -25,3 +25,8 @@
 # Binary art assets: never diff or normalise line endings
 *.fbx binary
 *.png binary
+
+# Git LFS (PB-12, D-043): rigged Meshy models and the animation clip file are large (10-13 MB each).
+# The older static models in Art/Characters/<Name>/<Name>.fbx stay normal git files.
+Assets/_Project/Art/**/*_Rig.fbx filter=lfs diff=lfs merge=lfs -text
+Assets/_Project/Art/**/Clips_*.fbx filter=lfs diff=lfs merge=lfs -text

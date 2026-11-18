@@ -32,6 +32,50 @@ namespace PuzzleKingdoms.EditorTools
             ("Goblin_Chief", UnitLook.GoblinChief),
         };
 
+        /// <summary>
+        /// Euler angles that make a rigged model (a <c>_Rig.fbx</c>) stand up and face +Z, read from its own
+        /// skeleton: the head bone is above the hips, the left toes point ahead of the left foot. Rounded to
+        /// quarter turns because the bind pose is axis-aligned.
+        /// </summary>
+        private static Vector3 UprightFromSkeleton(GameObject rig)
+        {
+            GameObject instance = Object.Instantiate(rig);
+            try
+            {
+                Transform Find(string bone)
+                {
+                    foreach (Transform t in instance.GetComponentsInChildren<Transform>())
+                    {
+                        if (t.name == "mixamorig:" + bone)
+                        {
+                            return t;
+                        }
+                    }
+                    return null;
+                }
+
+                Transform hips = Find("Hips");
+                Transform head = Find("Head");
+                Transform foot = Find("LeftFoot");
+                Transform toes = Find("LeftToeBase");
+                if (hips == null || head == null || foot == null || toes == null)
+                {
+                    Debug.LogWarning($"[BattleModelBuilder] {rig.name}: bones Hips/Head/LeftFoot/LeftToeBase not found, no rotation.");
+                    return Vector3.zero;
+                }
+                Vector3 up = (head.position - hips.position).normalized;
+                Vector3 forward = Vector3.ProjectOnPlane(toes.position - foot.position, up).normalized;
+                Vector3 euler = Quaternion.Inverse(Quaternion.LookRotation(forward, up)).eulerAngles;
+                return new Vector3(Quarter(euler.x), Quarter(euler.y), Quarter(euler.z));
+            }
+            finally
+            {
+                Object.DestroyImmediate(instance);
+            }
+        }
+
+        private static float Quarter(float degrees) => Mathf.Round(degrees / 90f) * 90f % 360f;
+
         [MenuItem("Puzzle Kingdoms/Build Battle Models")]
         public static void Build()
         {
@@ -46,19 +90,39 @@ namespace PuzzleKingdoms.EditorTools
             foreach ((string name, UnitLook look) in Models)
             {
                 string folder = $"{ArtSpike.CharactersRoot}{name}";
-                var model = AssetDatabase.LoadAssetAtPath<GameObject>($"{folder}/{name}.fbx");
+
+                // The rigged model (PB-12, Humanoid, animated by the shared controller) if there is one,
+                // otherwise the static model (D-042).
+                var rig = AssetDatabase.LoadAssetAtPath<GameObject>($"{folder}/{name}_Rig.fbx");
+                var model = rig != null ? rig : AssetDatabase.LoadAssetAtPath<GameObject>($"{folder}/{name}.fbx");
                 if (model == null)
                 {
                     Debug.LogWarning($"[BattleModelBuilder] {folder}/{name}.fbx not found, {look} stays a capsule.");
                     continue;
                 }
-                Quaternion facing = ArtSpike.FacingCamera.TryGetValue(name, out Quaternion known) ? known : Quaternion.Euler(90f, 0f, 0f);
+                Vector3 upright;
+                if (rig != null)
+                {
+                    upright = UprightFromSkeleton(rig);
+                    // Checked by rendering: the skeleton rule is right for the Mage and the goblins, but the Knight
+                    // and the Archer export with a different bind pose and came out facing the camera.
+                    if (name == "Hero_Knight" || name == "Hero_Archer")
+                    {
+                        upright = Vector3.zero;
+                    }
+                    Debug.Log($"[BattleModelBuilder] {name} rig upright {upright}");
+                }
+                else
+                {
+                    Quaternion facing = ArtSpike.FacingCamera.TryGetValue(name, out Quaternion found) ? found : Quaternion.Euler(90f, 0f, 0f);
+                    upright = (Quaternion.Euler(0f, 180f, 0f) * facing).eulerAngles;
+                }
                 entries.Add(new BattleModelSet.Entry
                 {
                     look = look,
                     model = model,
                     material = BuildMaterial(folder, name),
-                    uprightEuler = (Quaternion.Euler(0f, 180f, 0f) * facing).eulerAngles,
+                    uprightEuler = upright,
                 });
             }
 
@@ -73,6 +137,8 @@ namespace PuzzleKingdoms.EditorTools
                 item.FindPropertyRelative("material").objectReferenceValue = entries[i].material;
                 item.FindPropertyRelative("uprightEuler").vector3Value = entries[i].uprightEuler;
             }
+            serialized.FindProperty("animator").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(BattleAnimatorBuilder.ControllerPath);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(set);
 
