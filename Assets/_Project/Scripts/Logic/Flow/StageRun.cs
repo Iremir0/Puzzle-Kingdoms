@@ -75,35 +75,66 @@ namespace PuzzleKingdoms.Logic.Flow
             meters[RallyKey] = new RecruitmentMeter(puzzleRules.PointsPerRallyCharge, puzzleRules.MaxRallyCharges);
 
             var board = new BoardModel(puzzleRules.BoardWidth, puzzleRules.BoardHeight, keys.Count, random);
-            if (BoardLayout.IsEmpty(stage.Layout))
+            SetUpBoard(board, stage, keys.Count);
+            Puzzle = new PuzzleSession(board, stage.Moves, keys, meters, puzzleRules.FourMatchBonusPoints);
+            Puzzle.SetBossStones(stage.BossStonesEvery, stage.BossStonesCount);
+            Puzzle.MarkIceAtStart();
+            Puzzle.RewardsEarned += OnRewardsEarned;
+            Puzzle.Finished += () => SetPhase(StagePhase.WarCamp);
+            Roster = new Roster(armyRules);
+        }
+
+        private const int MaxBoardAttempts = 30;
+
+        /// <summary>
+        /// The start board: random, or painted (PB-19: placed gems and stones, the rest random), then the
+        /// covers (PB-20: ice on cells, chains on gems) and the stage's random stones. Chains can take the
+        /// last move away, so random cells are drawn again until a move exists.
+        /// </summary>
+        private static void SetUpBoard(BoardModel board, StageDef stage, int gemTypes)
+        {
+            int[,] gems = null;
+            bool[,] stones = null;
+            if (!BoardLayout.IsEmpty(stage.Layout) && !BoardLayout.TryParse(stage.Layout, board.Width, board.Height, gemTypes,
+                    out gems, out stones, out string error))
             {
-                board.Generate();
+                throw new ArgumentException($"Stage '{stage.Id}' layout: {error}");
             }
-            else
+            if (!BoardLayout.TryParseCovers(stage.Covers, board.Width, board.Height, out int[,] ice, out bool[,] chains,
+                    out string coverError))
             {
-                // A hand-placed start board (PB-19): placed gems and stones stay, the rest is random.
-                if (!BoardLayout.TryParse(stage.Layout, board.Width, board.Height, keys.Count,
-                        out int[,] gems, out bool[,] stones, out string error))
+                throw new ArgumentException($"Stage '{stage.Id}' covers: {coverError}");
+            }
+            for (int attempt = 0; attempt < MaxBoardAttempts; attempt++)
+            {
+                if (gems == null)
                 {
-                    throw new ArgumentException($"Stage '{stage.Id}' layout: {error}");
+                    board.Generate();
                 }
-                board.Generate(gems);
+                else
+                {
+                    board.Generate(gems);
+                }
                 for (int y = 0; y < board.Height; y++)
                 {
                     for (int x = 0; x < board.Width; x++)
                     {
-                        if (stones[x, y])
-                        {
-                            board.SetStone(new GridPos(x, y), true);
-                        }
+                        var cell = new GridPos(x, y);
+                        board.SetStone(cell, stones != null && stones[x, y]);
+                        board.SetChain(cell, chains[x, y]);
+                        board.SetIce(cell, ice[x, y]);
                     }
+                }
+                if (board.HasValidMove())
+                {
+                    break;
+                }
+                if (attempt == MaxBoardAttempts - 1)
+                {
+                    throw new ArgumentException($"Stage '{stage.Id}': the chains leave no move on the start board");
                 }
             }
             board.PlaceStones(stage.StoneGems);
-            Puzzle = new PuzzleSession(board, stage.Moves, keys, meters, puzzleRules.FourMatchBonusPoints);
-            Puzzle.RewardsEarned += OnRewardsEarned;
-            Puzzle.Finished += () => SetPhase(StagePhase.WarCamp);
-            Roster = new Roster(armyRules);
         }
 
         /// <summary>Randomness for a stage: its fixed seed if it has one, otherwise the clock.</summary>
@@ -146,7 +177,7 @@ namespace PuzzleKingdoms.Logic.Flow
         /// A battle won while missing the goal (too few stones, too slow) is a defeat.
         /// </summary>
         public bool Won => Battle != null && Battle.IsFinished
-                           && Goal.IsMet(Battle.Result, Puzzle.StonesBroken, _battleRules.TicksPerSecond);
+                           && Goal.IsMet(Battle.Result, Puzzle.StonesBroken, _battleRules.TicksPerSecond, Puzzle.Board.IceLeft);
 
         /// <summary>Computes the reward once the battle is over. Returns null before that.</summary>
         public StageReward Finish()

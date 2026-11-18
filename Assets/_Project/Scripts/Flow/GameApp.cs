@@ -433,7 +433,8 @@ namespace PuzzleKingdoms.Flow
             float seconds = (float)Run.Battle.Result.Ticks / Run.Battle.Rules.TicksPerSecond;
             // PB-19: a battle won while missing the stage goal is a defeat; say which goal.
             string goalMissed = Run.Battle.Result.Victory && !Run.Won
-                ? Loc.T("Goal missed") + ": " + StageBadges.GoalText(Run.Stage, Run.Puzzle.StonesBroken)
+                ? Loc.T("Goal missed") + ": " + StageBadges.GoalText(Run.Stage, Run.Puzzle.StonesBroken,
+                    Run.Puzzle.IceAtStart - Run.Puzzle.Board.IceLeft, Run.Puzzle.IceAtStart)
                 : null;
             Show(ResultsScreen.Create(_screenRoot, Run.Stage.DisplayName, Run.Battle.Result, seconds, reward,
                 Profile.Gold, actions, Run.Won, goalMissed));

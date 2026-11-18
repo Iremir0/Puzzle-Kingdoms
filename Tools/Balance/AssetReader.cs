@@ -144,6 +144,11 @@ namespace PuzzleKingdoms.Balance
             };
             List<string> layout = ListItems(lines, "layout").Select(r => r.Trim().Trim('\'', '"')).ToList();
             stage.Layout = layout.Count > 0 ? layout.ToArray() : null;
+            // PB-20: ice and chains, and the boss dropping stones.
+            List<string> covers = ListItems(lines, "covers").Select(r => r.Trim().Trim('\'', '"')).ToList();
+            stage.Covers = covers.Count > 0 ? covers.ToArray() : null;
+            stage.BossStonesEvery = v.TryGetValue("bossStonesEvery", out string every) ? I(every) : 0;
+            stage.BossStonesCount = v.TryGetValue("bossStonesCount", out string count) ? I(count) : 0;
             int start = Array.IndexOf(lines, "  enemies:");
             EnemySlot slot = null;
             for (int i = start + 1; i < lines.Length && (lines[i].StartsWith("  - ") || lines[i].StartsWith("    ")); i++)

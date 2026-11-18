@@ -46,7 +46,7 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-17](cards/PB-17.md) | Release build | Alican | M6 | S | `feature/PB-17-release-build` | In `main`: version 0.1.0 (1), `BuildReleaseAab`, placeholder icon and splash, SETUP 4a, release key created outside the repo; left: back the key up in two places, a signed AAB and a phone install |
 | [PB-29](cards/PB-29.md) | Analytics, remote config, crash reports, consent | Alican | M6 | M | `feature/PB-29-analytics` | Growth wave 1 (D-047). In `main`: consent question (opt-in, asked again from Settings), events and error reports to local files with consent only, remote-config stage overrides, docs/PRIVACY.md; left: an online service and its account (owner's choice) |
 | [PB-19](cards/PB-19.md) | Stage tool and stage goals | Alican | M7 | M | `feature/PB-19-stage-tool` | Growth wave 1 (D-048). In `main`: goals (break stones, win within), painted start boards, one balance runner, Stage Editor window, The Quarry (1-4, not in the campaign); left: open the window in the editor and play The Quarry by hand |
-| [PB-20](cards/PB-20.md) | New gems and obstacles | Alican | M7 | M | `feature/PB-20-obstacles` | Growth wave 2, first card (D-049); started 2026-11-18: ice, chain, special combos, boss drops stones |
+| [PB-20](cards/PB-20.md) | New gems and obstacles | Alican | M7 | M | `feature/PB-20-obstacles` | Wave 2 (D-050). Built: chains, ice + "break all the ice", special combos, boss stones, covers in the Stage Editor, drafts 2-1 and 2-2 |
 
 ## Ready (next up, in priority order)
 

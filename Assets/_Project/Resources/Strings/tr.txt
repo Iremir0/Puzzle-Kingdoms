@@ -149,3 +149,13 @@ Goal: win within {0} s	Hedef: {0} sn içinde kazan
 {0:0.0} / {1} s	{0:0.0} / {1} sn
 Goal missed	Hedefe ulaşılamadı
 The Quarry	Taş Ocağı
+
+# ---- Obstacles, combos, boss (PB-20) ----
+Goal: break all the ice	Hedef: bütün buzu kır
+Blast + Blast!	Blast + Blast!
+Prism + Blast!	Prizma + Blast!
+Prism + Prism!	Prizma + Prizma!
+The boss throws stones!	Boss taş atıyor!
+Stones fall in {0}	{0} hamle sonra taş yağacak
+Frozen Gate	Donmuş Kapı
+The Chief's Forge	Şefin Demirhanesi

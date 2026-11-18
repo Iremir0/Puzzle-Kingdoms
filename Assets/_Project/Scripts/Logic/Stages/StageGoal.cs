@@ -11,6 +11,8 @@ namespace PuzzleKingdoms.Logic.Stages
         BreakStones = 1,
         /// <summary>Win the battle within <see cref="StageGoal.Target"/> seconds.</summary>
         WinWithin = 2,
+        /// <summary>Melt every layer of ice on the board, then win (PB-20).</summary>
+        BreakIce = 3,
     }
 
     /// <summary>
@@ -31,12 +33,18 @@ namespace PuzzleKingdoms.Logic.Stages
 
         public static StageGoal WinWithin(int seconds) => new StageGoal { Kind = StageGoalKind.WinWithin, Target = seconds };
 
-        /// <summary>A goal that needs a target has one above zero.</summary>
-        public bool IsValid => Kind == StageGoalKind.DefeatArmy || Target > 0;
+        public static StageGoal BreakIce() => new StageGoal { Kind = StageGoalKind.BreakIce };
+
+        /// <summary>A goal that needs a target has one above zero (break the ice needs none: all of it).</summary>
+        public bool IsValid => Kind == StageGoalKind.DefeatArmy || Kind == StageGoalKind.BreakIce || Target > 0;
 
         /// <summary>True when the stage is won: the battle won and the goal reached.</summary>
-        public bool IsMet(BattleResult battle, int stonesBroken, int ticksPerSecond)
+        public bool IsMet(BattleResult battle, int stonesBroken, int ticksPerSecond, int iceLeft = 0)
         {
+            if (Kind == StageGoalKind.BreakIce && iceLeft > 0)
+            {
+                return false;
+            }
             if (battle == null || !battle.Victory)
             {
                 return false;
