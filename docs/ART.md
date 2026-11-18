@@ -259,9 +259,10 @@ no holes, weapons clear of the body, no red or purple on the goblins.
 | Goblin_Chief | about 8,380 (counter read 8,364 / 8,384; confirm in Unity) | 8,000 | 53 |
 
 Brute and Chief are in the git-ignored `Assets/_Project/Sandbox/Meshy/` and copied (FBX and
-base-colour texture only, like the others) to `Assets/_Project/Art/Characters/<Name>/`, but **not
-yet committed**: Unity must import them once so it writes the `.meta` files, which are committed
-with the assets. Meshy's extra maps (normal, metallic, roughness) stay in the Sandbox only.
+base-colour texture only, like the others) to `Assets/_Project/Art/Characters/<Name>/`. Unity
+imported them once (headless, `-batchmode -quit`) so the `.meta` files exist, and both are
+committed with their `.meta` files. Meshy's extra maps (normal, metallic, roughness) stay in the
+Sandbox only.
 Credits left on the Pro plan after Goblin_Chief: 1,118 (the session started at 1,383, 265 spent).
 Still to do: find each new model's `FacingCamera` rotation in `ArtSpike`, then an army render
 with all seven (PB-10).
