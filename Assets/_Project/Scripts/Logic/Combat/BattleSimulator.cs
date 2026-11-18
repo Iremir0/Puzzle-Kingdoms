@@ -35,6 +35,7 @@ namespace PuzzleKingdoms.Logic.Combat
         private readonly int _timeoutTicks;
         private readonly List<BattleEvent> _pendingEvents = new List<BattleEvent>();
         private readonly List<BattleEvent> _hits = new List<BattleEvent>();
+        private readonly List<BattleEvent> _heals = new List<BattleEvent>();
 
         public BattleSimulator(BattleRules rules, ArmyRules armyRules, Formation player, Formation enemy, int rallyCharges)
         {
@@ -97,10 +98,12 @@ namespace PuzzleKingdoms.Logic.Combat
 
             float dt = 1f / Rules.TicksPerSecond;
             _hits.Clear();
+            _heals.Clear();
             foreach (Combatant c in Combatants)
             {
                 if (c.IsAlive)
                 {
+                    Heal(c, dt);
                     Act(c, dt);
                 }
             }
@@ -119,6 +122,17 @@ namespace PuzzleKingdoms.Logic.Combat
                     }
                 }
                 events.Add(hit);
+            }
+            // Heals land after the hits: a unit killed this tick is not saved by a heal (PB-18).
+            foreach (BattleEvent heal in _heals)
+            {
+                Combatant target = Combatants[heal.TargetId];
+                int restored = Math.Min(heal.Amount, target.MaxHp - target.Hp);
+                if (target.IsAlive && restored > 0)
+                {
+                    target.Hp += restored;
+                    events.Add(new BattleEvent(BattleEventType.Heal, Tick, heal.SourceId, heal.TargetId, restored));
+                }
             }
             foreach (Combatant c in died)
             {
@@ -182,8 +196,18 @@ namespace PuzzleKingdoms.Logic.Combat
             if (inRange && c.Cooldown <= Epsilon)
             {
                 float multiplier = 1f + (buffed ? Rules.RallyDamageBonus : 0f);
-                int amount = Damage.Compute(c.Damage, c.DamageType, target, multiplier);
-                _hits.Add(new BattleEvent(BattleEventType.Attack, Tick, c.Id, target.Id, amount));
+                _hits.Add(HitOn(c, target, multiplier));
+                if (c.Def.SplashRadius > 0f)
+                {
+                    foreach (Combatant other in Combatants)
+                    {
+                        if (other != target && other.IsAlive && c.IsEnemyOf(other)
+                            && Vector2.Distance(target.Position, other.Position) <= c.Def.SplashRadius)
+                        {
+                            _hits.Add(HitOn(c, other, multiplier * c.Def.SplashFraction));
+                        }
+                    }
+                }
                 c.Cooldown += c.AttackInterval;
             }
             else if (!inRange)
@@ -197,6 +221,67 @@ namespace PuzzleKingdoms.Logic.Combat
             if (c.Cooldown < 0f && !inRange)
             {
                 c.Cooldown = 0f; // no stored attacks while walking
+            }
+        }
+
+        private BattleEvent HitOn(Combatant attacker, Combatant target, float multiplier)
+        {
+            if (target.Def.RangedDamageReduction > 0f
+                && attacker.AttackRange > UnitDef.RangedThreshold
+                && IsFrontMost(target))
+            {
+                multiplier *= 1f - target.Def.RangedDamageReduction;
+            }
+            int amount = Damage.Compute(attacker.Damage, attacker.DamageType, target, multiplier);
+            return new BattleEvent(BattleEventType.Attack, Tick, attacker.Id, target.Id, amount);
+        }
+
+        /// <summary>True when no living ally of <paramref name="c"/> stands nearer the enemy line.</summary>
+        private bool IsFrontMost(Combatant c)
+        {
+            // The player side is at negative y and the enemy side at positive y, so "forward"
+            // is up for the player and down for the enemy.
+            float forward = c.Side == Side.Player ? c.Position.Y : -c.Position.Y;
+            foreach (Combatant other in Combatants)
+            {
+                if (other != c && other.Side == c.Side && other.IsAlive
+                    && (other.Side == Side.Player ? other.Position.Y : -other.Position.Y) > forward + Epsilon)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>Shaman: heals the most hurt living ally (lowest HP fraction) in range when ready.</summary>
+        private void Heal(Combatant c, float dt)
+        {
+            if (c.Def.HealAmount <= 0)
+            {
+                return;
+            }
+            c.HealCooldown = Math.Max(0f, c.HealCooldown - dt);
+            if (c.HealCooldown > Epsilon)
+            {
+                return;
+            }
+            Combatant best = null;
+            foreach (Combatant other in Combatants)
+            {
+                if (other == c || other.Side != c.Side || !other.IsAlive || other.Hp >= other.MaxHp
+                    || Vector2.Distance(c.Position, other.Position) > c.Def.HealRange + Epsilon)
+                {
+                    continue;
+                }
+                if (best == null || (long)other.Hp * best.MaxHp < (long)best.Hp * other.MaxHp)
+                {
+                    best = other;
+                }
+            }
+            if (best != null)
+            {
+                _heals.Add(new BattleEvent(BattleEventType.Heal, Tick, c.Id, best.Id, c.Def.HealAmount));
+                c.HealCooldown = c.Def.HealInterval;
             }
         }
 

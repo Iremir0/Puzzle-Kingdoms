@@ -14,5 +14,10 @@ namespace PuzzleKingdoms.Data
         GoblinArcher = 5,
         GoblinBrute = 6,
         GoblinChief = 7,
+        // Chapter 2 (PB-18): drawn with a Chapter 1 silhouette until their own models exist.
+        ShieldGoblin = 8,
+        GoblinShaman = 9,
+        WolfRider = 10,
+        GoblinBomber = 11,
     }
 }

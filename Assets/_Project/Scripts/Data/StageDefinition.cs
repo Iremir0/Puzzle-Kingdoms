@@ -22,6 +22,8 @@ namespace PuzzleKingdoms.Data
 
         [SerializeField] private string id = "";
         [SerializeField] private string displayName = "";
+        [Tooltip("Which chapter map this stage belongs to (PB-18). Campaign order stays one list.")]
+        [SerializeField, Min(1)] private int chapter = 1;
         [SerializeField, Min(1)] private int moves = 12;
         [Tooltip("0 = random board; any other value makes the board reproducible.")]
         [SerializeField] private long boardSeed;
@@ -71,6 +73,7 @@ namespace PuzzleKingdoms.Data
 
         public string Id => id;
         public string DisplayName => displayName;
+        public int Chapter => chapter;
         public IReadOnlyList<EnemySlotData> Enemies => enemies;
         public Vector2 MapPosition => mapPosition;
         public StageGoalKind GoalKind => goalKind;
@@ -94,6 +97,7 @@ namespace PuzzleKingdoms.Data
             {
                 Id = id,
                 DisplayName = displayName,
+                Chapter = chapter,
                 Moves = moves,
                 BoardSeed = (ulong)boardSeed,
                 GoldReward = goldReward,

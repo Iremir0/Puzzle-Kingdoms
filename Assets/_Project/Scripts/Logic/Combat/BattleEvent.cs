@@ -6,6 +6,8 @@ namespace PuzzleKingdoms.Logic.Combat
         Attack,
         /// <summary>Source died.</summary>
         Died,
+        /// <summary>Source healed target for Amount HP (PB-18 shaman).</summary>
+        Heal,
         RallyStarted,
         RallyEnded,
         /// <summary>Battle over; read BattleSimulator.Result.</summary>

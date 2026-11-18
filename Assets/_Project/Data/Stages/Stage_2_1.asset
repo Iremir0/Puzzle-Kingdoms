@@ -11,13 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ae7d63e5b21a4772a577bc78c74fe2b9, type: 3}
   m_Name: Stage_2_1
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   id: stage_2_1
-  displayName: Frozen Gate
+  displayName: Shield Wall
+  chapter: 2
   moves: 12
   boardSeed: 0
   enemies:
-  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
+  - unit: {fileID: 11400000, guid: 6a1d3f0c8e2b4c59a7f4d2e8b1c0a3f1, type: 2}
     tier: 1
     cell: {x: 0, y: 0}
   - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
@@ -26,36 +27,28 @@ MonoBehaviour:
   - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
     tier: 1
     cell: {x: 2, y: 0}
-  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
+  - unit: {fileID: 11400000, guid: 6a1d3f0c8e2b4c59a7f4d2e8b1c0a3f1, type: 2}
     tier: 1
     cell: {x: 3, y: 0}
-  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
-    tier: 1
-    cell: {x: 1, y: 1}
-  - unit: {fileID: 11400000, guid: 98f5e48e1c474660a13cfd557ca4f5dd, type: 2}
-    tier: 1
-    cell: {x: 0, y: 3}
   - unit: {fileID: 11400000, guid: 98f5e48e1c474660a13cfd557ca4f5dd, type: 2}
     tier: 1
     cell: {x: 1, y: 3}
   - unit: {fileID: 11400000, guid: 98f5e48e1c474660a13cfd557ca4f5dd, type: 2}
     tier: 1
-    cell: {x: 3, y: 3}
-  goldReward: 40
-  stoneGems: 0
-  enemyHpMultiplier: 1.1
+    cell: {x: 2, y: 3}
+  goldReward: 70
+  stoneGems: 3
+  enemyHpMultiplier: 1.35
   enemyDamageMultiplier: 1
-  goalKind: 3
+  goalKind: 0
   goalTarget: 0
   layout: []
-  covers:
-  - ......
-  - ..ii..
-  - .iIIi.
-  - .iIIi.
-  - ......
-  - ......
+  covers: []
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.3, y: 0.2}
-  tutorial: []
+  mapPosition: {x: 0.2, y: 0.180}
+  tutorial:
+  - id: 2-1.shield
+    trigger: 0
+    text: 'Shield Goblins in the front shrug off half of all arrow damage. Warriors and Mages hurt them most.'
+    target: 

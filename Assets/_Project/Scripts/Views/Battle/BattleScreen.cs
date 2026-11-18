@@ -232,6 +232,9 @@ namespace PuzzleKingdoms.Views.Battle
                         target.FlashLeft = FlashSeconds;
                         SpawnFloating(target, e.Amount.ToString());
                         break;
+                    case BattleEventType.Heal:
+                        SpawnFloating(_units[e.TargetId], "+" + e.Amount);
+                        break;
                     case BattleEventType.RallyStarted:
                         _banner.text = Loc.T("RALLY!");
                         _banner.color = Palette.Gold;

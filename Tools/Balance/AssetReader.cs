@@ -116,6 +116,14 @@ namespace PuzzleKingdoms.Balance
                 MoveSpeed = F(v["moveSpeed"]),
                 Armor = F(v["armor"]),
                 Ward = F(v["ward"]),
+                // PB-18 behaviours (absent in older unit assets).
+                RangedDamageReduction = v.TryGetValue("rangedDamageReduction", out string shield) ? F(shield) : 0f,
+                HealAmount = v.TryGetValue("healAmount", out string heal) ? I(heal) : 0,
+                HealInterval = v.TryGetValue("healInterval", out string healEvery) ? F(healEvery) : 2f,
+                HealRange = v.TryGetValue("healRange", out string healRange) ? F(healRange) : 3.5f,
+                TargetsBackRow = v.TryGetValue("targetsBackRow", out string back) && I(back) != 0,
+                SplashRadius = v.TryGetValue("splashRadius", out string radius) ? F(radius) : 0f,
+                SplashFraction = v.TryGetValue("splashFraction", out string fraction) ? F(fraction) : 0.5f,
             };
             _units[guid] = unit;
             return unit;
@@ -129,6 +137,7 @@ namespace PuzzleKingdoms.Balance
             {
                 Id = v["id"],
                 DisplayName = v["displayName"],
+                Chapter = v.TryGetValue("chapter", out string chapter) ? I(chapter) : 1,
                 Moves = I(v["moves"]),
                 BoardSeed = (ulong)long.Parse(v["boardSeed"], CultureInfo.InvariantCulture),
                 GoldReward = I(v["goldReward"]),

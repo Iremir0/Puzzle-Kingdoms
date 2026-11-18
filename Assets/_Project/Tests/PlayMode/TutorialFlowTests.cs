@@ -88,7 +88,11 @@ namespace PuzzleKingdoms.Tests.PlayMode
         public IEnumerator MapShowsNodesAndOpensTheStageCard()
         {
             var map = (StageMapScreen)_app.CurrentScreen;
-            int stages = _app.Content.Campaign.Count;
+            int stages = 0; // Chapter 1 is the map a new player sees (PB-18: later chapters have their own map)
+            foreach (var stage in _app.Content.Campaign)
+            {
+                stages += stage.Chapter == 1 ? 1 : 0;
+            }
 
             Assert.AreEqual(0, map.CurrentStage, "a new player starts at stage 1");
             Assert.AreEqual(0, map.SelectedStage, "its card is open");

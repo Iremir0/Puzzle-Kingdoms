@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae7d63e5b21a4772a577bc78c74fe2b9, type: 3}
+  m_Name: Stage_2_4
+  m_EditorClassIdentifier:
+  id: stage_2_4
+  displayName: Wolf Pack
+  chapter: 2
+  moves: 12
+  boardSeed: 0
+  enemies:
+  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
+    tier: 1
+    cell: {x: 1, y: 0}
+  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
+    tier: 1
+    cell: {x: 2, y: 0}
+  - unit: {fileID: 11400000, guid: 8c3f5b2eaa4d4e7bc9b6f4a0d3e2c5b3, type: 2}
+    tier: 1
+    cell: {x: 0, y: 1}
+  - unit: {fileID: 11400000, guid: 8c3f5b2eaa4d4e7bc9b6f4a0d3e2c5b3, type: 2}
+    tier: 1
+    cell: {x: 3, y: 1}
+  - unit: {fileID: 11400000, guid: 8c3f5b2eaa4d4e7bc9b6f4a0d3e2c5b3, type: 2}
+    tier: 1
+    cell: {x: 1, y: 2}
+  goldReward: 100
+  stoneGems: 3
+  enemyHpMultiplier: 2.4
+  enemyDamageMultiplier: 1.2
+  goalKind: 0
+  goalTarget: 0
+  layout: []
+  covers: []
+  bossStonesEvery: 0
+  bossStonesCount: 0
+  mapPosition: {x: 0.2, y: 0.380}
+  tutorial:
+  - id: 2-4.wolf
+    trigger: 3
+    text: 'Wolf Riders race past the front and hit your back row. Keep some tough units back there.'
+    target: 

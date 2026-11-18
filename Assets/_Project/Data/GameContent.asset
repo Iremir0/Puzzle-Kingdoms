@@ -20,6 +20,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 179fd51987194e5b829ace8e1ff3e120, type: 2}
   - {fileID: 11400000, guid: e7903c40966246d38f80892935d4f106, type: 2}
   - {fileID: 11400000, guid: 6b5b830248214845af7eabc170c9a09b, type: 2}
+  - {fileID: 11400000, guid: fc62a8aea83c5b34c826f7708b20e0d6, type: 2}
+  - {fileID: 11400000, guid: 802c80e668ebad044bbcb807529a1939, type: 2}
+  - {fileID: 11400000, guid: e8ae772e2ee8efe871f5d6fae87ac11d, type: 2}
+  - {fileID: 11400000, guid: 96968f054671968fdb592e5a9aa8f257, type: 2}
+  - {fileID: 11400000, guid: 51e891aaea206482e17d76475f4fd3e6, type: 2}
+  - {fileID: 11400000, guid: 7b37a0d0f856d00c0b8c53a9d3d3aefd, type: 2}
+  - {fileID: 11400000, guid: 020c65f2eaeb40ae91e6fac04165a5b3, type: 2}
+  - {fileID: 11400000, guid: ea3d5775efc46d2634125a8236dd9dd0, type: 2}
+  - {fileID: 11400000, guid: 58de5b996b9a820caea08801f5a114a9, type: 2}
+  - {fileID: 11400000, guid: 98066fea580274d762592c0b8bbf8be4, type: 2}
   puzzleRules: {fileID: 11400000, guid: 9f531eef03cb4df6b416a11d0ce32a9b, type: 2}
   armyRules: {fileID: 11400000, guid: 75c3b719b2ac4af3b347a79fc4354ba3, type: 2}
   battleRules: {fileID: 11400000, guid: d75dad277eea405e96ae59a57e35a46a, type: 2}

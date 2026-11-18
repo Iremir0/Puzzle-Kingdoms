@@ -266,3 +266,23 @@ Sandbox only.
 Credits left on the Pro plan after Goblin_Chief: 1,118 (the session started at 1,383, 265 spent).
 Still to do: find each new model's `FacingCamera` rotation in `ArtSpike`, then an army render
 with all seven (PB-10).
+
+### Chapter 2 enemies (PB-18, D-051): prompts ready, models not made yet
+
+Four new models, same method and common start as above. Each costs about 53 credits (18 for the two
+images, 35 for model + texture, 0 for the remesh), 212 in all, and needs Alican's go (D-043). Until they
+exist the Brute, Archer and Grunt silhouettes stand in (`UnitLook.ShieldGoblin` and the three after it).
+After import add each to `BattleModelBuilder.Models` (look → folder) and run *Puzzle Kingdoms → Build
+Battle Models*. Rigging as in PB-12 (the shared Humanoid Animator). Goblins stay olive with brown, iron
+and bone; no red or purple.
+
+| Name | Look | Remesh target | Prompt after the common start |
+|---|---|---|---|
+| Goblin_Shield | ShieldGoblin | 5,500 | A sturdy goblin guard, olive yellow-green skin, a round dented iron helmet, a huge round wooden tower shield with iron studs held in front of the body and clearly separate from it, a short iron sword in the other hand, brown leather straps, a ragged brown tunic. No red, no purple. |
+| Goblin_Shaman | GoblinShaman | 5,000 | A skinny hunched goblin shaman, olive yellow-green skin, a pale bone mask pushed up on the forehead, a headdress of brown and teal feathers, a ragged brown robe with bone charms and teal beads, a gnarled wooden staff with a glowing teal-green orb held out to the side. No red, no purple. |
+| Goblin_WolfRider | WolfRider | 8,000 | A small goblin warrior riding a big grey-brown wolf, olive yellow-green skin, a leather cap with small horns, a brown leather vest, a short spear held out to the side, simple rope reins; the wolf is large, lean and muscular with a mane, bared teeth and a brown saddle. Rider and wolf clearly readable. No red, no purple. |
+| Goblin_Bomber | GoblinBomber | 5,500 | A wild-eyed goblin bomber, olive yellow-green skin, round brown goggles on a leather cap, a bandolier of small black round bombs with yellow fuses across the chest, a small powder barrel strapped to the back, one black round bomb with a lit yellow fuse held out to the side, a ragged brown tunic. No red, no purple. |
+
+The Wolf Rider is the one to check twice: a rider on a mount may need a higher triangle target and a
+separate rig; if the Humanoid rig does not fit, ship it as a single non-rigged model with a bobbing
+idle first.

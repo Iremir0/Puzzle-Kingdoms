@@ -19,7 +19,7 @@ puzzle-kingdoms/
 │       │   │   ├── Puzzle/       ✅ BoardModel (+ chains, ice, combos: PB-20), BoardLayout (painted start boards, covers), ComboKind, MatchGroup, SpecialKind, MoveResult, MoveReplay, RecruitmentMeter,
 │       │   │   │                    PuzzleSession, PuzzleRules
 │       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster (+ Undo), MergeRules, AutoFormation, BenchGroup
-│       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,
+│       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage, (+ shield, heal, back-row, splash: PB-18)
 │       │   │   │                    Rally, BattleEvent, BattleResult
 │       │   │   ├── Analytics/    ✅ Consent (opt-in, text version), AnalyticsEvent (JSON line), GameEvents, RemoteConfig (PB-29, D-047)
 │       │   │   ├── Localization/ ✅ Language + Languages (codes, phone default), Localizer (English-keyed table, numbers; D-046)

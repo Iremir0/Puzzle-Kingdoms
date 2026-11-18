@@ -11,42 +11,50 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ae7d63e5b21a4772a577bc78c74fe2b9, type: 3}
   m_Name: Stage_2_2
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   id: stage_2_2
-  displayName: The Chief's Forge
+  displayName: Frozen Gate
+  chapter: 2
   moves: 12
   boardSeed: 0
   enemies:
-  - unit: {fileID: 11400000, guid: d499d080c53e4ac0bd5edc04f00c98d7, type: 2}
-    tier: 1
-    cell: {x: 0, y: 0}
-  - unit: {fileID: 11400000, guid: d499d080c53e4ac0bd5edc04f00c98d7, type: 2}
-    tier: 1
-    cell: {x: 2, y: 0}
-  - unit: {fileID: 11400000, guid: 5b5796f9fbb9454d814b1aa6f57afd9d, type: 2}
+  - unit: {fileID: 11400000, guid: 6a1d3f0c8e2b4c59a7f4d2e8b1c0a3f1, type: 2}
     tier: 1
     cell: {x: 1, y: 0}
+  - unit: {fileID: 11400000, guid: 6a1d3f0c8e2b4c59a7f4d2e8b1c0a3f1, type: 2}
+    tier: 1
+    cell: {x: 2, y: 0}
+  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
+    tier: 1
+    cell: {x: 0, y: 0}
+  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
+    tier: 1
+    cell: {x: 3, y: 0}
   - unit: {fileID: 11400000, guid: 98f5e48e1c474660a13cfd557ca4f5dd, type: 2}
     tier: 1
-    cell: {x: 0, y: 3}
+    cell: {x: 1, y: 3}
   - unit: {fileID: 11400000, guid: 98f5e48e1c474660a13cfd557ca4f5dd, type: 2}
     tier: 1
-    cell: {x: 3, y: 3}
-  goldReward: 60
-  stoneGems: 5
-  enemyHpMultiplier: 1.2
+    cell: {x: 2, y: 3}
+  goldReward: 80
+  stoneGems: 0
+  enemyHpMultiplier: 1.35
   enemyDamageMultiplier: 1
-  goalKind: 0
+  goalKind: 3
   goalTarget: 0
   layout: []
   covers:
-  - c....c
+  - ......
+  - ..ii..
+  - .iIIi.
+  - .iIIi.
   - ......
   - ......
-  - ......
-  - ......
-  - c....c
-  bossStonesEvery: 3
-  bossStonesCount: 2
-  mapPosition: {x: 0.7, y: 0.35}
-  tutorial: []
+  bossStonesEvery: 0
+  bossStonesCount: 0
+  mapPosition: {x: 0.5, y: 0.247}
+  tutorial:
+  - id: 2-2.ice
+    trigger: 0
+    text: 'Ice sits on some cells. Every gem cleared on it melts one layer. Melt all the ice, then win.'
+    target: Board Area
