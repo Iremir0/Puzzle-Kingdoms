@@ -26,6 +26,20 @@ namespace PuzzleKingdoms.Data
         [SerializeField, Range(0f, 0.95f)] private float armor;
         [Tooltip("Fraction of Magic damage blocked.")]
         [SerializeField, Range(0f, 0.95f)] private float ward;
+        [Header("Behaviours (PB-18); all off by default")]
+        [Tooltip("Fraction of ranged damage blocked while this unit is the front-most of its side (shield goblin).")]
+        [SerializeField, Range(0f, 0.95f)] private float rangedDamageReduction;
+        [Tooltip("HP given to the most hurt ally in range per heal; 0 = cannot heal (shaman).")]
+        [SerializeField, Min(0)] private int healAmount;
+        [SerializeField, Min(0.1f)] private float healInterval = 2f;
+        [SerializeField, Min(0.1f)] private float healRange = 3.5f;
+        [Tooltip("Attacks the back-most row of the other side first (wolf rider).")]
+        [SerializeField] private bool targetsBackRow;
+        [Tooltip("Others this close to the target take splash damage; 0 = none (bomber).")]
+        [SerializeField, Min(0f)] private float splashRadius;
+        [SerializeField, Range(0f, 1f)] private float splashFraction = 0.5f;
+
+        [Header("Look")]
         [Tooltip("Placeholder color for grey-box views.")]
         [SerializeField] private Color color = Color.white;
         [Tooltip("Silhouette drawn in the grey-box battle view.")]
@@ -50,6 +64,13 @@ namespace PuzzleKingdoms.Data
             MoveSpeed = moveSpeed,
             Armor = armor,
             Ward = ward,
+            RangedDamageReduction = rangedDamageReduction,
+            HealAmount = healAmount,
+            HealInterval = healInterval,
+            HealRange = healRange,
+            TargetsBackRow = targetsBackRow,
+            SplashRadius = splashRadius,
+            SplashFraction = splashFraction,
         };
 
         private void OnValidate() => _def = null;

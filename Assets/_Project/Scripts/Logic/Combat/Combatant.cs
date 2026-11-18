@@ -32,8 +32,11 @@ namespace PuzzleKingdoms.Logic.Combat
         public readonly float MoveSpeed;
         public readonly float Armor;
         public readonly float Ward;
+        public readonly UnitDef Def;
 
         public int Hp;
+        /// <summary>Seconds until the next heal is ready (healers only).</summary>
+        public float HealCooldown;
         public Vector2 Position;
         public int TargetId = NoTarget;
         /// <summary>Seconds until the next attack is ready; may carry a small negative rest.</summary>
@@ -46,6 +49,8 @@ namespace PuzzleKingdoms.Logic.Combat
             Unit = unit;
             Cell = cell;
             UnitDef def = unit.Def;
+            Def = def;
+            HealCooldown = def.HealInterval;
             MaxHp = unit.MaxHp(armyRules);
             Hp = MaxHp;
             Damage = unit.Damage(armyRules);

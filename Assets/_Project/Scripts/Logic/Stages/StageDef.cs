@@ -19,6 +19,8 @@ namespace PuzzleKingdoms.Logic.Stages
 
         public string Id = "";
         public string DisplayName = "";
+        /// <summary>Chapter map the stage belongs to (PB-18); 1 = Chapter 1.</summary>
+        public int Chapter = 1;
         public int Moves = 12;
         /// <summary>Fixed board seed for reproducible stages; NoSeed means random.</summary>
         public ulong BoardSeed = NoSeed;

@@ -16,6 +16,10 @@ namespace PuzzleKingdoms.Logic.Combat
 
         public static Combatant PickTarget(Combatant attacker, IReadOnlyList<Combatant> candidates, float sameLaneTie)
         {
+            if (attacker.Def.TargetsBackRow)
+            {
+                return PickBackRow(attacker, candidates);
+            }
             float nearest = float.PositiveInfinity;
             foreach (Combatant other in candidates)
             {
@@ -43,6 +47,32 @@ namespace PuzzleKingdoms.Logic.Combat
                     continue;
                 }
                 if (best == null || IsBetter(attacker, other, distance, best, bestDistance))
+                {
+                    best = other;
+                    bestDistance = distance;
+                }
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// Wolf rider (PB-18): the living enemy that started in the back-most formation row;
+        /// ties go to the nearer one, then the lower id.
+        /// </summary>
+        private static Combatant PickBackRow(Combatant attacker, IReadOnlyList<Combatant> candidates)
+        {
+            Combatant best = null;
+            float bestDistance = float.PositiveInfinity;
+            foreach (Combatant other in candidates)
+            {
+                if (!IsValid(attacker, other))
+                {
+                    continue;
+                }
+                float distance = Vector2.Distance(attacker.Position, other.Position);
+                if (best == null
+                    || other.Cell.Y > best.Cell.Y
+                    || (other.Cell.Y == best.Cell.Y && distance < bestDistance - DistanceEpsilon))
                 {
                     best = other;
                     bestDistance = distance;

@@ -29,6 +29,11 @@ namespace PuzzleKingdoms.Views.Common
                 case UnitLook.GoblinArcher: return GoblinArcher(x, y);
                 case UnitLook.GoblinBrute: return GoblinBrute(x, y);
                 case UnitLook.GoblinChief: return GoblinChief(x, y);
+                // PB-18 placeholders until the four Chapter 2 models exist.
+                case UnitLook.ShieldGoblin: return GoblinBrute(x, y);
+                case UnitLook.GoblinShaman: return GoblinArcher(x, y);
+                case UnitLook.WolfRider: return GoblinGrunt(x, y);
+                case UnitLook.GoblinBomber: return GoblinBrute(x, y);
                 default: return Generic(x, y);
             }
         }
