@@ -18,6 +18,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         /// <summary>World size of a painted ground picture.</summary>
         private const float PaintedWidth = 10.5f;
         private const float PaintedDepth = 19f;
+        private const float GatePaintedWidth = 8.9f;
         private const float ArenaHalfWidth = 3.0f;
         private const float ArenaHalfDepth = 8.2f;
 
@@ -37,13 +38,12 @@ namespace PuzzleKingdoms.Views.Battle3D
 
             if (painted != null)
             {
-                // The picture already has the trees, fences and camps; only the flags stay, to wave over it.
-                ground.transform.localScale = new Vector3(PaintedWidth, PaintedDepth, 1f);
+                // The picture already has the trees, fences and camps, so nothing else is put on it.
+                bool fort = painted.name == "Battle_Gate"; // full-width fort picture: its own side walls show
+                ground.transform.localScale = fort ? new Vector3(GatePaintedWidth, PaintedDepth, 1f) : new Vector3(PaintedWidth, PaintedDepth, 1f);
                 groundMaterial.mainTexture = painted;
                 // The picture is bright and the sun adds more: pull it down and a little toward grey so units stand out.
                 groundMaterial.SetColor("_BaseColor", new Color(0.62f, 0.6f, 0.58f, 1f));
-                Banner(root, layer, new Vector3(-2.9f, 0f, -7.6f), new Color32(0x3D, 0x7B, 0xD9, 0xFF));
-                Banner(root, layer, new Vector3(2.9f, 0f, -7.6f), new Color32(0x3D, 0x7B, 0xD9, 0xFF));
                 return;
             }
             ground.transform.localScale = new Vector3(GroundWidth, GroundDepth, 1f);

@@ -640,5 +640,5 @@ Chapter 2 goblins stays an art item (Meshy rig).
 Building pictures, chapter map paintings (Meshy text-to-image) and commander portraits plus battle ground
 paintings (ChatGPT image generation, supplied by the team) replace the procedural look where a file exists
 (`ArtSprites`, `Resources/Art/UI`). The battle ground picture replaces the procedural ground, trees and fence;
-only the blue banners stay, so they can wave. The fort-gate picture is used for stage 2-10. Missing files fall
+nothing else is added. The fort-gate picture is used for stage 2-10. Missing files fall
 back to the procedural look. Tab bar and commander emblems are drawn from simple shapes (`TabIcons`).
