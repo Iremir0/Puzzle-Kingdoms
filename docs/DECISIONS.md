@@ -649,3 +649,12 @@ Battle: scenery sways (D-056), a camera shake on enemy deaths and Fireball (stre
 sparks on every hit, a pop of sparks and two coins when an enemy dies. UI: every button squashes while pressed and
 springs back (`PressFeel`), the victory screen pops its title and stars in and throws confetti (`UiJuice`).
 PlayMode tests run with the master volume at zero (`SilentTests`), so they stay quiet; `Sfx` still counts plays.
+
+## D-059 - Defender and Support, per-stage class sets (2026-11-18)
+
+Two player classes: Defender (900 HP, armour 30 %, enemies within 4 cells attack it first; the wolf rider ignores
+the taunt) and Support (heals the most hurt ally 60 HP every 2 s). A stage chooses its own class set (at most 4,
+plus the Banner gem), stored on the stage asset; empty means Warrior, Archer, Mage. The Defender unlocks with the
+first win of stage 1-3, the Support with stage 2-5, and stages only use a class after its unlock stage.
+A fifth gem type cuts accidental chains, so recruits fell by about 60 % at equal moves: Chapter 2 moves were raised
+to 17-32 and checked with `Tools/Balance` (see the PB-21 card). Models and 3D effects stay an art item.
