@@ -14,6 +14,44 @@ namespace PuzzleKingdoms.Views.Common
     {
         public static readonly Vector2 ReferenceResolution = new Vector2(1080, 1920);
 
+        /// <summary>
+        /// The type scale (PB-16), in pixels at the 1080×1920 reference: every label and button caption is snapped to
+        /// the nearest of these, so the screens share six sizes instead of seventeen.
+        /// </summary>
+        public static class Type
+        {
+            public const int Small = 30;
+            public const int Body = 38;
+            public const int Action = 44;
+            public const int Heading = 52;
+            public const int Title = 64;
+            public const int Display = 90;
+
+            private static readonly int[] Steps = { Small, Body, Action, Heading, Title, Display };
+
+            /// <summary>The scale step nearest to <paramref name="size"/> (a tie goes to the larger step).</summary>
+            public static int Snap(int size)
+            {
+                int best = Steps[0];
+                foreach (int step in Steps)
+                {
+                    if (Mathf.Abs(step - size) <= Mathf.Abs(best - size))
+                    {
+                        best = step;
+                    }
+                }
+                return best;
+            }
+        }
+
+        /// <summary>Spacing scale on an 8 px grid, in pixels at the reference resolution.</summary>
+        public static class Space
+        {
+            public const int Small = 8;
+            public const int Medium = 16;
+            public const int Large = 32;
+        }
+
         private static Font _font;
 
         /// <summary>Unity's built-in font; grey-box only (TextMeshPro comes with real UI).</summary>
@@ -78,7 +116,7 @@ namespace PuzzleKingdoms.Views.Common
             var label = rect.gameObject.AddComponent<Text>();
             label.font = Font;
             label.text = text;
-            label.fontSize = size;
+            label.fontSize = Type.Snap(size);
             label.alignment = alignment;
             label.color = color;
             label.horizontalOverflow = HorizontalWrapMode.Wrap;
