@@ -201,6 +201,32 @@ namespace PuzzleKingdoms.Tests.Data
             }
         }
 
+        /// <summary>PB-23: commanders are valid: unique ids, unlock stages that exist, the numbers their Rally kind needs.</summary>
+        [Test]
+        public void CommandersAreValid()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            var stageIds = content.CampaignOrder();
+            var ids = new HashSet<string>();
+            Assert.AreEqual(3, content.Commanders.Count);
+            foreach (CommanderDefinition definition in content.Commanders)
+            {
+                Logic.Progression.Commander commander = definition.Commander;
+                Assert.IsNotEmpty(commander.Id);
+                Assert.IsTrue(ids.Add(commander.Id), "duplicate commander " + commander.Id);
+                Assert.Contains(commander.UnlockStageId, stageIds, commander.Id + " unlocks on a campaign stage");
+                Logic.Combat.RallyVariant v = commander.Variant;
+                Assert.Greater(v.DurationSeconds, 0f, commander.Id);
+                switch (v.Kind)
+                {
+                    case Logic.Combat.RallyKind.ShieldWall: Assert.Greater(v.FrontRowDamageReduction, 0f, commander.Id); break;
+                    case Logic.Combat.RallyKind.ArrowRain: Assert.Greater(v.VolleyCount, 0, commander.Id); Assert.Greater(v.VolleyPercentMaxHp, 0f, commander.Id); break;
+                    case Logic.Combat.RallyKind.Fireball: Assert.Greater(v.BlastRadius, 0f, commander.Id); Assert.Greater(v.BlastPercentMaxHp, 0f, commander.Id); break;
+                    default: Assert.Fail(commander.Id + " must be a variant, not the classic Rally"); break;
+                }
+            }
+        }
+
         [Test]
         public void GameContentIsComplete()
         {

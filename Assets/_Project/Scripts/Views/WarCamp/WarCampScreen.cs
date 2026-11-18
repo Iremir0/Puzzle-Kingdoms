@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
+using PuzzleKingdoms.Logic.Combat;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Views.Common;
 using UnityEngine;
@@ -82,6 +83,12 @@ namespace PuzzleKingdoms.Views.WarCamp
             Ui.Label(root, Loc.T("War Camp"), 52, TextAnchor.MiddleLeft, Palette.Text, 0.04f, 0.93f, 0.6f, 0.99f);
             Ui.Label(root, Loc.F("Rally charges: {0}", _run.RallyCharges), 40, TextAnchor.MiddleRight, Palette.Gold,
                 0.5f, 0.93f, 0.96f, 0.99f);
+            if (_run.RallyVariant != null && _run.RallyVariant.Kind != RallyKind.Classic)
+            {
+                // PB-23: the commander leading this army and what its Rally does.
+                Ui.Label(root, Loc.F("Commander: {0}", Loc.T(_run.RallyVariant.DisplayName)), 30, TextAnchor.MiddleRight, Palette.Muted,
+                    0.4f, 0.905f, 0.96f, 0.935f);
+            }
 
             Ui.Box(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);
             Ui.Label(root, Loc.T("Enemy army"), 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);

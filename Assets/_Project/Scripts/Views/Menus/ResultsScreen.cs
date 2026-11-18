@@ -18,16 +18,17 @@ namespace PuzzleKingdoms.Views.Menus
         }
 
         public static ResultsScreen Create(Transform parent, string stageName, BattleResult result, float battleSeconds,
-            StageReward reward, int totalGold, Actions actions, bool stageWon = true, string goalMissed = null)
+            StageReward reward, int totalGold, Actions actions, bool stageWon = true, string goalMissed = null,
+            string commandersUnlocked = "")
         {
             RectTransform root = Ui.Stretch(parent, "ResultsScreen");
             var screen = root.gameObject.AddComponent<ResultsScreen>();
-            screen.Build(stageName, result, battleSeconds, reward, totalGold, actions, stageWon && result.Victory, goalMissed);
+            screen.Build(stageName, result, battleSeconds, reward, totalGold, actions, stageWon && result.Victory, goalMissed, commandersUnlocked);
             return screen;
         }
 
         private void Build(string stageName, BattleResult result, float battleSeconds, StageReward reward, int totalGold,
-            Actions actions, bool won, string goalMissed)
+            Actions actions, bool won, string goalMissed, string commandersUnlocked)
         {
             Transform root = transform;
             Ui.Box(root, "Background", Palette.Background);
@@ -49,6 +50,12 @@ namespace PuzzleKingdoms.Views.Menus
                 Loc.F("Extra Banner points: {0}", reward.OverflowGold) + "\n" +
                 Loc.F("Total: +{0} gold   (you have {1})", reward.TotalGold, totalGold);
             Ui.Label(root, lines, 44, TextAnchor.UpperCenter, Palette.Text, 0.06f, 0.3f, 0.94f, 0.62f);
+            if (!string.IsNullOrEmpty(commandersUnlocked))
+            {
+                // PB-23: a stage that unlocks a commander says so.
+                Ui.Label(root, Loc.F("Commander unlocked: {0}", commandersUnlocked), 44, TextAnchor.MiddleCenter, Palette.Good,
+                    0.04f, 0.245f, 0.96f, 0.3f);
+            }
 
             float y = 0.2f;
             if (actions.Next != null)

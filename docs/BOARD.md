@@ -48,6 +48,7 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-19](cards/PB-19.md) | Stage tool and stage goals | Alican | M7 | M | `feature/PB-19-stage-tool` | Growth wave 1 (D-048). In `main`: goals (break stones, win within), painted start boards, one balance runner, Stage Editor window, The Quarry (1-4, not in the campaign); left: open the window in the editor and play The Quarry by hand |
 | [PB-18](cards/PB-18.md) | Chapter 2: Goblin Fort | Alican | M7 | L | `feature/PB-18-chapter-2` | Wave 2 (D-045). PB-20 is in `main`. Built (D-051): 4 enemy behaviours, stages 2-1 to 2-10 balanced, chapter map; left: the 4 Meshy models (Alican approves credits), a look at the map layout, a phone playthrough |
 | [PB-22](cards/PB-22.md) | Kingdom and buildings | Alican | M7 | L | `feature/PB-22-kingdom` | Wave 2 (D-052). Built: 4 buildings as data, bonuses in battle and gold, save v3, Kingdom screen, tab bar, Balance `--kingdom N`; left: look at the screens on a phone shape, Commanders and Shop tabs wait for PB-23 and PB-30 |
+| [PB-23](cards/PB-23.md) | Commander heroes | Alican | M7 | L | `feature/PB-23-commanders` | Wave 2 (D-053). Built: Shield Wall, Arrow Rain, Fireball as Rally variants, commanders unlocked by stages and chosen on the Commanders tab, save v4, balance per commander; left: 3 Meshy commander models, real 3D effects, a look at the screens |
 
 ## Ready (next up, in priority order)
 
@@ -72,7 +73,6 @@ private until shared).
 | ID | Card | Wave | Milestone | Size | In short |
 |---|---|---|---|---|---|
 | [PB-21](cards/PB-21.md) | New classes: Defender and Support | 2 | M7 | L | Tank and healer, their gems, up to 5 gem types per stage |
-| [PB-23](cards/PB-23.md) | Commander heroes | 2 | M7 | L | A Rally variant per commander, earned from stages, no loot boxes |
 | [PB-24](cards/PB-24.md) | Daily quests, achievements, star chests | 3 | M8 | M | 3-4 goals a day, a chest every 30 stars |
 | [PB-25](cards/PB-25.md) | Daily Challenge | 3 | M8 | M | Same seed for everyone, one try a day, local first, online after the backend decision |
 | [PB-26](cards/PB-26.md) | Expedition mode (roguelite) | 3 | M8 | L | 5 battles in a row, army and wounds carry over, reward picks |

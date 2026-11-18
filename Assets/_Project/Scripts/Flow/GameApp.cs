@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Logic.Analytics;
@@ -171,11 +172,27 @@ namespace PuzzleKingdoms.Flow
             Show(KingdomScreen.Create(_screenRoot, content, Profile, OnBuildingUpgraded, OnTab));
         }
 
+        /// <summary>The commanders: earned by stages, one leads the army and decides what Rally does (PB-23, D-053).</summary>
+        public void ShowCommanders()
+        {
+            Run = null;
+            Show(CommandersScreen.Create(_screenRoot, content, Profile, OnCommanderChosen, OnTab));
+        }
+
+        private void OnCommanderChosen(string commanderId)
+        {
+            _store.Save(Profile);
+        }
+
         private void OnTab(MainTab tab)
         {
             if (tab == MainTab.Kingdom)
             {
                 ShowKingdom();
+            }
+            else if (tab == MainTab.Commanders)
+            {
+                ShowCommanders();
             }
             else if (tab == MainTab.Map)
             {
@@ -395,7 +412,8 @@ namespace PuzzleKingdoms.Flow
                 Run.UnitRecruited -= OnUnitRecruited;
             }
             Run = content.CreateRun(stage, null, _config,
-                content.KingdomRules != null ? Profile.Bonuses(content.KingdomRules.Rules) : null);
+                content.KingdomRules != null ? Profile.Bonuses(content.KingdomRules.Rules) : null,
+                Profile.ChosenCommander(content.CommanderList())?.Variant);
             Run.UnitRecruited += OnUnitRecruited;
             _stageSteps = stage.TutorialSteps();
             _puzzleStarted = Time.realtimeSinceStartup;
@@ -428,8 +446,11 @@ namespace PuzzleKingdoms.Flow
             {
                 return;
             }
+            List<Commander> allCommanders = content.CommanderList();
+            var lockedBefore = new HashSet<string>(allCommanders.Where(c => !Profile.IsUnlocked(c)).Select(c => c.Id));
             Profile.Apply(Run.Stage.Id, reward);
             _store.Save(Profile);
+            string unlocked = string.Join(", ", allCommanders.Where(c => lockedBefore.Contains(c.Id) && Profile.IsUnlocked(c)).Select(c => Loc.T(c.DisplayName)));
             if (!_attemptLogged)
             {
                 _attemptLogged = true;
@@ -462,7 +483,7 @@ namespace PuzzleKingdoms.Flow
                     Run.Puzzle.IceAtStart - Run.Puzzle.Board.IceLeft, Run.Puzzle.IceAtStart)
                 : null;
             Show(ResultsScreen.Create(_screenRoot, Run.Stage.DisplayName, Run.Battle.Result, seconds, reward,
-                Profile.Gold, actions, Run.Won, goalMissed));
+                Profile.Gold, actions, Run.Won, goalMissed, unlocked));
             if (!Run.Won)
             {
                 OnTrigger(TutorialTrigger.BattleLost);

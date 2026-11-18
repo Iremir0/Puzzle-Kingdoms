@@ -235,9 +235,17 @@ namespace PuzzleKingdoms.Views.Battle
                     case BattleEventType.Heal:
                         SpawnFloating(_units[e.TargetId], "+" + e.Amount);
                         break;
+                    case BattleEventType.RallyStrike:
+                        if (e.TargetId >= 0 && e.TargetId < _units.Count)
+                        {
+                            _units[e.TargetId].FlashLeft = FlashSeconds;
+                            SpawnFloating(_units[e.TargetId], e.Amount.ToString());
+                        }
+                        break;
                     case BattleEventType.RallyStarted:
-                        _banner.text = Loc.T("RALLY!");
-                        _banner.color = Palette.Gold;
+                        _banner.text = Loc.T(RallyBanner(_sim.Variant.Kind));
+                        _banner.color = RallyColor(_sim.Variant.Kind);
+                        _rallyGlow.color = new Color(_banner.color.r, _banner.color.g, _banner.color.b, 0.12f);
                         break;
                     case BattleEventType.RallyEnded:
                         _banner.text = "";
@@ -321,11 +329,21 @@ namespace PuzzleKingdoms.Views.Battle
                 ? Loc.F("{0:0.0} / {1} s", seconds, _goal.Target)
                 : Loc.F("{0:0.0} s", seconds);
             Rally rally = _sim.Rally;
-            Ui.SetCaption(_rally, rally.IsActive
-                ? Loc.F("Rally {0:0.0}s", (float)rally.TicksLeft / _sim.Rules.TicksPerSecond)
-                : Loc.F("Rally ({0})", rally.Charges));
+            bool classic = _sim.Variant.Kind == RallyKind.Classic;
+            string rallyName = Loc.T(_sim.Variant.DisplayName);
+            _rally.GetComponentInChildren<Text>().text = rally.IsActive
+                ? (classic ? Loc.F("Rally {0:0.0}s", (float)rally.TicksLeft / _sim.Rules.TicksPerSecond)
+                    : Loc.F("{0} {1:0.0}s", rallyName, (float)rally.TicksLeft / _sim.Rules.TicksPerSecond))
+                : (classic ? Loc.F("Rally ({0})", rally.Charges) : Loc.F("{0} ({1})", rallyName, rally.Charges));
             _rally.interactable = rally.CanActivate && !_sim.IsFinished;
         }
+
+        /// <summary>PB-23: the banner text and colour of each Rally kind.</summary>
+        private static string RallyBanner(RallyKind kind) =>
+            kind == RallyKind.ShieldWall ? "SHIELD WALL!" : kind == RallyKind.ArrowRain ? "ARROW RAIN!" : kind == RallyKind.Fireball ? "FIREBALL!" : "RALLY!";
+
+        private static Color RallyColor(RallyKind kind) =>
+            kind == RallyKind.ShieldWall ? Palette.Primary : kind == RallyKind.ArrowRain ? Palette.Good : kind == RallyKind.Fireball ? Palette.Bad : Palette.Gold;
 
         private void OnRally()
         {

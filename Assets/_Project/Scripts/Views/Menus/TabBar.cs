@@ -27,7 +27,7 @@ namespace PuzzleKingdoms.Views.Menus
         {
             (MainTab.Map, "Map", true),
             (MainTab.Kingdom, "Kingdom", true),
-            (MainTab.Commanders, "Commanders", false),
+            (MainTab.Commanders, "Commanders", true),
             (MainTab.Shop, "Shop", false),
         };
 

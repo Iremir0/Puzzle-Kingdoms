@@ -586,3 +586,25 @@ PB-22 (Alican). Gold now has a use and the game a reason to replay.
   models are optional later (Meshy).
 Why: a long-term sink for gold that stays inside the "no loot boxes, no pay to win" line (D-045) and gives
 replays a purpose; data-driven buildings avoid per-class code before PB-21 adds classes.
+
+## D-053 Commanders change what Rally does; unlocked by stages, chosen once, saved in the profile, 2026-11-18
+PB-23 (Alican). The same stage plays differently with a different commander.
+- **Rally variants are data** (`RallyVariant` on the battle, built from `CommanderDefinition` assets): Classic
+  (the old Rally, from `BattleRules`, also for a player without a commander), Shield Wall, Arrow Rain, Fireball.
+  The simulator reads the fields; there is no class per variant. New `BattleEventType.RallyStrike` for
+  hits with no attacker.
+- **Deterministic:** no randomness anywhere; "back row" is the back-most spawn row still alive, the Fireball
+  centre is the enemy with most enemies within the radius (ties: lower id). The Rally input log still replays a
+  battle exactly (tested for every variant).
+- **Strikes** take a share of max HP (at least 1) and ignore armor and ward: they must not be wasted on
+  armored units or made useless by bosses with big HP pools; the share stays small (8 % a volley, 18 % a blast).
+- **Unlock and choice:** a commander is unlocked once its unlock stage has a star (nothing extra to save);
+  the profile stores only the chosen commander id (save version 4; older saves choose none). A chosen
+  commander that is no longer in the data falls back to the classic Rally. The results screen says when a
+  stage unlocked one.
+- **Balance:** no variant may be a must-have: each stays within about 8 points of the classic Rally on the
+  Chapter 2 stages (GDD §9 table); the first Fireball was cut after measuring.
+- **Art:** the commander crest is drawn in code (a colour and a shape); the three Meshy commander models of
+  the card are not made yet (credits need Alican's go, D-043). In 3D each variant has its own burst colours
+  and the banner and glow take the variant's colour; a dedicated particle effect per variant is left for the art pass.
+Why: Rally is the signature move; variants give replay value without a loot box (GDD pillar 2).

@@ -104,6 +104,25 @@ namespace PuzzleKingdoms.Views.Battle3D
                 {
                     EndRally();
                 }
+                if (e.Type == BattleEventType.RallyStrike && e.TargetId >= 0 && e.TargetId < _actors.Count)
+                {
+                    // A commander's Rally (PB-23): arrows fall as pale streaks, the fireball as a burst of fire.
+                    UnitActor struck = _actors[e.TargetId];
+                    struck.Flash();
+                    struck.PlayHit();
+                    Vector3 strikeAt = struck.Position + Vector3.up * 0.7f;
+                    if (_sim.Variant.Kind == RallyKind.Fireball)
+                    {
+                        Burst(strikeAt, new Color(1f, 0.55f, 0.15f), 14, 0.34f, 0.7f, 1.8f);
+                        Burst(strikeAt, new Color(1f, 0.85f, 0.3f), 8, 0.2f, 0.5f, 1.2f);
+                    }
+                    else
+                    {
+                        Burst(strikeAt + Vector3.up * 0.8f, new Color(0.92f, 0.88f, 0.7f), 5, 0.12f, 0.4f, 0.5f);
+                        Burst(strikeAt, new Color(0.78f, 0.72f, 0.6f), 3, 0.2f, 0.4f, 0.8f);
+                    }
+                    continue;
+                }
                 if (e.Type != BattleEventType.Attack || e.TargetId < 0 || e.TargetId >= _actors.Count)
                 {
                     continue;
@@ -124,7 +143,7 @@ namespace PuzzleKingdoms.Views.Battle3D
                     }
                 }
                 UnitActor source = e.SourceId >= 0 && e.SourceId < _actors.Count ? _actors[e.SourceId] : null;
-                source?.PlayAttack(_sim.Rally.IsActive ? 1f + _sim.Rules.RallyAttackSpeedBonus : 1f);
+                source?.PlayAttack(_sim.Rally.IsActive ? 1f + _sim.Variant.AttackSpeedBonus : 1f);
                 if (source != null)
                 {
                     SoundBank bank = Sfx.Bank;

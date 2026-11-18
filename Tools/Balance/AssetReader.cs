@@ -35,6 +35,8 @@ namespace PuzzleKingdoms.Balance
         public BattleRules BattleRules;
         public ProgressionRules ProgressionRules;
         public KingdomRules KingdomRules;
+        /// <summary>PB-23: the commanders, to test a stage with each.</summary>
+        public readonly List<Commander> Commanders = new List<Commander>();
 
         public AssetReader(string dataFolder)
         {
@@ -52,6 +54,10 @@ namespace PuzzleKingdoms.Balance
             ArmyRules = ReadArmyRules(PathOf(GuidIn(refs["armyRules"])));
             BattleRules = ReadBattleRules(PathOf(GuidIn(refs["battleRules"])));
             ProgressionRules = ReadProgressionRules(PathOf(GuidIn(refs["progressionRules"])));
+            foreach (string guid in ListGuids(content, "commanders"))
+            {
+                Commanders.Add(ReadCommander(PathOf(guid)));
+            }
             KingdomRules = refs.TryGetValue("kingdomRules", out string kingdom) ? ReadKingdomRules(PathOf(GuidIn(kingdom))) : new KingdomRules();
         }
 
@@ -223,6 +229,31 @@ namespace PuzzleKingdoms.Balance
                 RallyDamageBonus = F(v["rallyDamageBonus"]),
                 RallyAttackSpeedBonus = F(v["rallyAttackSpeedBonus"]),
                 RallyDurationSeconds = F(v["rallyDurationSeconds"]),
+            };
+        }
+
+        private static Commander ReadCommander(string path)
+        {
+            Dictionary<string, string> v = Scalars(File.ReadAllLines(path));
+            return new Commander
+            {
+                Id = v["id"],
+                DisplayName = v["displayName"],
+                UnlockStageId = v["unlockStageId"],
+                Variant = new RallyVariant
+                {
+                    Id = v["id"],
+                    DisplayName = v["displayName"],
+                    Kind = (RallyKind)I(v["kind"]),
+                    DurationSeconds = F(v["durationSeconds"]),
+                    DamageBonus = F(v["damageBonus"]),
+                    AttackSpeedBonus = F(v["attackSpeedBonus"]),
+                    FrontRowDamageReduction = F(v["frontRowDamageReduction"]),
+                    VolleyCount = I(v["volleyCount"]),
+                    VolleyPercentMaxHp = F(v["volleyPercentMaxHp"]),
+                    BlastRadius = F(v["blastRadius"]),
+                    BlastPercentMaxHp = F(v["blastPercentMaxHp"]),
+                },
             };
         }
 

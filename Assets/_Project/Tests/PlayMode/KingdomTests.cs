@@ -106,5 +106,26 @@ namespace PuzzleKingdoms.Tests.PlayMode
             Assert.AreEqual(40, screen.ShownGold, "the gold counter settled");
         }
 
+
+        [UnityTest]
+        public IEnumerator CommandersUnlockByStagesAndTheChoiceIsSaved()
+        {
+            _app.ShowCommanders();
+            yield return null;
+            var screen = (CommandersScreen)_app.CurrentScreen;
+            Assert.IsNull(screen.ChooseButton("shield_wall"), "locked: no Choose button");
+            Assert.IsNotNull(screen.ChooseButton(""), "the classic Rally can be chosen");
+
+            _app.Profile.Apply("stage_1_3", new StageReward { Stars = 1 });
+            _app.ShowCommanders();
+            yield return null;
+            screen = (CommandersScreen)_app.CurrentScreen;
+            screen.ChooseButton("shield_wall").onClick.Invoke();
+            yield return null;
+
+            Assert.AreEqual("shield_wall", _app.Profile.CommanderId);
+            Assert.AreEqual("shield_wall", new ProfileStore(_folder).Load().CommanderId, "saved at once");
+            Assert.IsNull(screen.ChooseButton("shield_wall"), "the leading commander has no Choose button");
+        }
     }
 }

@@ -206,3 +206,26 @@ MAX	MAKS
 Stage gold	Seviye altını
 {0} +{1}%	{0} +%{1}
 {0} +{1}% → +{2}%	{0} +%{1} → +%{2}
+
+# ---- Commanders (PB-23) ----
+Win stages to earn commanders. One leads your army.	Seviyeleri kazanarak komutan kazan. Biri ordunu yönetir.
+No commander	Komutansız
+The classic Rally.	Klasik Hücum.
+Leading	Önde
+Choose	Seç
+Win {0} to unlock	Açmak için {0} seviyesini kazan
+{0} s: front row takes {1}% less damage	{0} sn: ön sıra %{1} daha az hasar alır
+{0} s: {1} volleys, {2}% of max HP each, on the enemy back row	{0} sn: düşman arka sırasına {1} yağmur, her biri azami canın %{2}'si
+One blast: {0}% of max HP to the densest enemy group	Tek patlama: en kalabalık düşman grubuna azami canın %{0}'si
+{0} s: +{1}% damage and attack speed	{0} sn: hasar ve saldırı hızı +%{1}
+Commander unlocked: {0}	Komutan açıldı: {0}
+Commander: {0}	Komutan: {0}
+SHIELD WALL!	KALKAN DUVARI!
+ARROW RAIN!	OK YAĞMURU!
+FIREBALL!	ATEŞ TOPU!
+{0} {1:0.0}s	{0} {1:0.0} sn
+{0} ({1})	{0} ({1})
+Fireball	Ateş Topu
+Your front row takes half damage for a few seconds.	Ön sıran birkaç saniye boyunca yarı hasar alır.
+Volleys fall on the enemy back row: archers, shamans and bombers.	Düşman arka sırasına ok yağar: okçular, şamanlar ve bombacılar.
+One blast on the densest enemy group, then a short fighting spirit.	En kalabalık düşman grubuna tek patlama, ardından kısa bir savaş ruhu.

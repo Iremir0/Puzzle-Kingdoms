@@ -34,6 +34,8 @@ namespace PuzzleKingdoms.Logic.Flow
 
         public readonly StageDef Stage;
         public readonly PuzzleSession Puzzle;
+        /// <summary>What Rally does in this attempt: the chosen commander's variant, or null for the classic Rally (PB-23).</summary>
+        public RallyVariant RallyVariant => _rallyVariant;
         public readonly Roster Roster;
         public StagePhase Phase { get; private set; } = StagePhase.Puzzle;
         public BattleSimulator Battle { get; private set; }
