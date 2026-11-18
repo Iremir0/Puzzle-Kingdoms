@@ -52,7 +52,7 @@ MonoBehaviour:
   - ......
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.5, y: 0.247}
+  mapPosition: {x: 0.5, y: 0.14}
   tutorial:
   - id: 2-2.ice
     trigger: 0

@@ -49,7 +49,7 @@ MonoBehaviour:
   covers: []
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.5, y: 0.447}
+  mapPosition: {x: 0.5, y: 0.355}
   tutorial:
   - id: 2-5.bomber
     trigger: 3

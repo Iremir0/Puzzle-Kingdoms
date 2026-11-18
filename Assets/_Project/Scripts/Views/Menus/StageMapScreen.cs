@@ -32,6 +32,8 @@ namespace PuzzleKingdoms.Views.Menus
         private RectTransform _layer;
         private Text _chapterTitle;
         private int _chapter = 1;
+        private bool _labels = true;
+        private bool _fitted;
         private RectTransform _card;
         private RectTransform _arrow;
         private Vector2 _arrowHome;
@@ -133,6 +135,14 @@ namespace PuzzleKingdoms.Views.Menus
             _nodes.Clear();
             _arrow = null;
             _chapterTitle.text = ChapterTitle(chapter);
+            _fitted = false;
+            int inChapter = 0;
+            foreach (StageDefinition s in _content.Campaign)
+            {
+                inChapter += s.Chapter == chapter ? 1 : 0;
+            }
+            // A long chapter has no room for a name under every node: the names are on the stage card.
+            _labels = inChapter <= 5;
 
             IReadOnlyList<StageDefinition> stages = _content.Campaign;
             List<string> order = _content.CampaignOrder();
@@ -201,10 +211,34 @@ namespace PuzzleKingdoms.Views.Menus
 
         private void Update()
         {
+            if (!_fitted && _map != null && _map.rect.height > 1f)
+            {
+                FitNodes();
+            }
             if (_arrow != null)
             {
                 _arrow.anchoredPosition = _arrowHome + Vector2.up * Mathf.Abs(Mathf.Sin(Time.unscaledTime * ArrowSpeed)) * ArrowBounce;
             }
+        }
+
+        /// <summary>On a short map (a wide window) the nodes shrink so the rows of a long chapter do not overlap.</summary>
+        private void FitNodes()
+        {
+            _fitted = true;
+            float size = Mathf.Min(NodeSize, _map.rect.height * 0.16f);
+            foreach (Button node in _nodes)
+            {
+                if (node == null)
+                {
+                    continue;
+                }
+                ((RectTransform)node.transform).sizeDelta = new Vector2(size, size);
+                Text number = node.GetComponentInChildren<Text>();
+                number.resizeTextForBestFit = true;
+                number.resizeTextMinSize = 16;
+                number.resizeTextMaxSize = 64;
+            }
+            _arrowHome = new Vector2(0f, size * 0.5f + 0.33f * size);
         }
 
         /// <summary>Opens the card of stage <paramref name="index"/> (also for locked stages: they show why).</summary>
@@ -290,7 +324,13 @@ namespace PuzzleKingdoms.Views.Menus
             outline.enabled = false;
             if (!unlocked)
             {
-                node.GetComponentInChildren<Text>().color = Palette.Muted;
+                node.GetComponentInChildren<Text>().color = new Color(1f, 1f, 1f, 0.8f); // locked: dark node, but the number stays readable
+            }
+
+            if (!_labels)
+            {
+                AddStars(_layer, stars, unlocked, at.x - 0.07f, at.y - 0.105f, at.x + 0.07f, at.y - 0.075f);
+                return node;
             }
 
             // A plate behind name and stars, so the path dots never run through the text.

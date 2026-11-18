@@ -46,7 +46,7 @@ MonoBehaviour:
   covers: []
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.2, y: 0.180}
+  mapPosition: {x: 0.2, y: 0.14}
   tutorial:
   - id: 2-1.shield
     trigger: 0

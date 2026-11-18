@@ -325,7 +325,7 @@ stage asset, its own map. One lesson each; the last is the boss stage. Rally is 
 Enemy HP multipliers 1.35, 1.35, 1.2, 2.4 (damage x1.2), 1.1, 1.45, 1.7, 1.85, 1.05, 1.2; gold 70 to 220.
 Measured (300-400 runs, greedy puzzle bot, auto formation, no merges, without Rally): 2-1 92%, 2-2 89%, 2-3 70%,
 2-4 84%, 2-5 60%, 2-6 62%, 2-7 71%, 2-8 67%, 2-9 51%, 2-10 46%; with Rally 6-20 points higher.
-The random bot wins 13-58%. Nodes sit in a three-column sawtooth on the map (placeholder layout, see PB-18 notes).
+The random bot wins 13-58%. Nodes sit on a snake of four rows (3, 3, 3, 1) on the map; a chapter of more than 5 stages shows no name under the nodes (the stage card has it) and the nodes shrink on a short map.
 
 Measured difficulty (D-033, 400 runs; random/greedy puzzle bot, auto formation, no merges;
 without / with Rally): 1-1 won 94% / 96% (random) and 100% (greedy), battles 16â22 s

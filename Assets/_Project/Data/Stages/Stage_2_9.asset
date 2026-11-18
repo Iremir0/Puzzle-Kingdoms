@@ -49,7 +49,7 @@ MonoBehaviour:
   - c....c
   bossStonesEvery: 3
   bossStonesCount: 2
-  mapPosition: {x: 0.8, y: 0.714}
+  mapPosition: {x: 0.8, y: 0.57}
   tutorial:
   - id: 2-9.boss
     trigger: 0
