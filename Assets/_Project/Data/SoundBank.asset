@@ -21,6 +21,11 @@ MonoBehaviour:
   invalidSwap: {fileID: 8300000, guid: 0bf1df24032b5cd448dd5e5f10eb7c3e, type: 3}
   unitRecruited: {fileID: 8300000, guid: 261a3772093243f43a6825b6fee5c4f0, type: 3}
   rallyCharge: {fileID: 8300000, guid: 5b65287a90b8bab4992fc172f5568a1d, type: 3}
+  swordHit: {fileID: 8300000, guid: 8bd39bbb4d7ddfe479179699608b8eaa, type: 3}
+  bowShot: {fileID: 8300000, guid: 666b0ac0fbf97014794990976854d523, type: 3}
+  magicCast: {fileID: 8300000, guid: b3ee821e67a6aa4408fdac71393af39c, type: 3}
+  unitDied: {fileID: 8300000, guid: 474ee770d47d24d47b38be3999bb38c2, type: 3}
+  rallyStart: {fileID: 8300000, guid: 56d19920f04450245aa75c2ac7afecf8, type: 3}
   music: {fileID: 8300000, guid: 0302fbea22f626c4a8fbe2c7c7a3692c, type: 3}
   cascadePitchStep: 0.08
   maxCascadePitch: 1.4

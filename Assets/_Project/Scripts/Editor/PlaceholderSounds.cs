@@ -34,6 +34,11 @@ namespace PuzzleKingdoms.EditorTools
             Write("invalid-swap", Rate, Nope());
             Write("unit-recruited", Rate, Ding());
             Write("rally-charge", Rate, Horn());
+            Write("sword-hit", Rate, SwordHit());
+            Write("bow-shot", Rate, BowShot());
+            Write("magic-cast", Rate, MagicCast());
+            Write("unit-died", Rate, UnitDied());
+            Write("rally-start", Rate, Horn());
             Write("music-loop", MusicRate, MusicLoop(), normalize: 0.6f);
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
 
@@ -53,6 +58,11 @@ namespace PuzzleKingdoms.EditorTools
             Link(serialized, "invalidSwap", "invalid-swap");
             Link(serialized, "unitRecruited", "unit-recruited");
             Link(serialized, "rallyCharge", "rally-charge");
+            Link(serialized, "swordHit", "sword-hit");
+            Link(serialized, "bowShot", "bow-shot");
+            Link(serialized, "magicCast", "magic-cast");
+            Link(serialized, "unitDied", "unit-died");
+            Link(serialized, "rallyStart", "rally-start");
             Link(serialized, "music", "music-loop");
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(bank);
@@ -66,7 +76,7 @@ namespace PuzzleKingdoms.EditorTools
                 EditorUtility.SetDirty(content);
             }
             AssetDatabase.SaveAssets();
-            Debug.Log($"[PlaceholderSounds] wrote 10 clips to {Folder} and {BankPath}");
+            Debug.Log($"[PlaceholderSounds] wrote 15 clips to {Folder} and {BankPath}");
         }
 
         private static void Link(SerializedObject bank, string field, string file)
@@ -195,6 +205,33 @@ namespace PuzzleKingdoms.EditorTools
                 samples[first + i] += wave * envelope * volume;
             }
         }
+
+        /// <summary>Metal hit: a bright noise tick over a short ringing tone.</summary>
+        private static float[] SwordHit()
+        {
+            var highpass = new OnePole();
+            return Render(0.16f, Rate, (t, n) =>
+                highpass.High(n.Next(), 0.4f) * Decay(t, 38f) * 0.9f + Sine(1850f * t) * Decay(t, 22f) * 0.35f);
+        }
+
+        /// <summary>Bow shot: a plucked low twang and a quick airy whoosh.</summary>
+        private static float[] BowShot()
+        {
+            var lowpass = new OnePole();
+            return Render(0.22f, Rate, (t, n) =>
+                Sine(Sweep(t, 260f, 140f, 0.2f)) * Decay(t, 16f) * 0.7f + lowpass.Low(n.Next(), 0.25f) * Decay(t, 20f) * 0.6f);
+        }
+
+        /// <summary>Magic cast: a soft rising shimmer.</summary>
+        private static float[] MagicCast() => Render(0.3f, Rate, (t, n) =>
+        {
+            float phase = Sweep(t, 500f, 1500f, 0.3f);
+            return (Sine(phase) + 0.4f * Sine(1.5f * phase)) * Mathf.Sin(Mathf.PI * Mathf.Min(1f, t / 0.3f)) * 0.6f;
+        });
+
+        /// <summary>Unit down: a low falling tone with a dull thud.</summary>
+        private static float[] UnitDied() => Render(0.4f, Rate, (t, n) =>
+            Sine(Sweep(t, 220f, 70f, 0.35f)) * Decay(t, 7f) * 0.8f + n.Next() * 0.25f * Decay(t, 40f));
 
         // --- Building blocks -----------------------------------------------
 

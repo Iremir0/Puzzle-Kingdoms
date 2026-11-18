@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Combat;
 using PuzzleKingdoms.Views.Common;
@@ -78,9 +79,14 @@ namespace PuzzleKingdoms.Views.Battle3D
             }
             foreach (BattleEvent e in events)
             {
+                if (e.Type == BattleEventType.Died)
+                {
+                    PlaySound(Sfx.Bank?.UnitDied);
+                }
                 if (e.Type == BattleEventType.RallyStarted)
                 {
                     StartRally();
+                    PlaySound(Sfx.Bank?.RallyStart);
                 }
                 else if (e.Type == BattleEventType.RallyEnded)
                 {
@@ -94,10 +100,39 @@ namespace PuzzleKingdoms.Views.Battle3D
                 _actors[e.TargetId].PlayHit();
                 UnitActor source = e.SourceId >= 0 && e.SourceId < _actors.Count ? _actors[e.SourceId] : null;
                 source?.PlayAttack(_sim.Rally.IsActive ? 1f + _sim.Rules.RallyAttackSpeedBonus : 1f);
+                if (source != null)
+                {
+                    SoundBank bank = Sfx.Bank;
+                    AudioClip clip = bank == null ? null
+                        : source.Combatant.DamageType == DamageType.Magic ? bank.MagicCast
+                        : source.Combatant.AttackRange > 2f ? bank.BowShot : bank.SwordHit;
+                    PlaySound(clip);
+                }
                 if (source != null && source.Combatant.AttackRange > 2f && _projectiles.Count < 40)
                 {
                     SpawnProjectile(source, _actors[e.TargetId]);
                 }
+            }
+        }
+
+        private int _soundsThisTick;
+        private float _lastSoundTime;
+
+        /// <summary>Plays a battle sound, at most 3 per frame-burst and with a little pitch variety, so 32 units do not become noise.</summary>
+        private void PlaySound(AudioClip clip)
+        {
+            if (clip == null || !Application.isPlaying)
+            {
+                return;
+            }
+            if (Time.unscaledTime != _lastSoundTime)
+            {
+                _lastSoundTime = Time.unscaledTime;
+                _soundsThisTick = 0;
+            }
+            if (_soundsThisTick++ < 3)
+            {
+                Sfx.Play(clip, UnityEngine.Random.Range(0.92f, 1.08f));
             }
         }
 

@@ -23,6 +23,14 @@ namespace PuzzleKingdoms.Data
         [SerializeField] private AudioClip unitRecruited;
         [SerializeField] private AudioClip rallyCharge;
 
+        [Header("Battle (PB-12)")]
+        [SerializeField] private AudioClip swordHit;
+        [SerializeField] private AudioClip bowShot;
+        [SerializeField] private AudioClip magicCast;
+        [SerializeField] private AudioClip unitDied;
+        [Tooltip("Rally starts in the battle.")]
+        [SerializeField] private AudioClip rallyStart;
+
         [Header("Music")]
         [Tooltip("Loops quietly under every screen.")]
         [SerializeField] private AudioClip music;
@@ -43,6 +51,11 @@ namespace PuzzleKingdoms.Data
         public AudioClip InvalidSwap => invalidSwap;
         public AudioClip UnitRecruited => unitRecruited;
         public AudioClip RallyCharge => rallyCharge;
+        public AudioClip SwordHit => swordHit;
+        public AudioClip BowShot => bowShot;
+        public AudioClip MagicCast => magicCast;
+        public AudioClip UnitDied => unitDied;
+        public AudioClip RallyStart => rallyStart;
         public AudioClip Music => music;
         public float EffectsVolume => effectsVolume;
         public float MusicVolume => musicVolume;
