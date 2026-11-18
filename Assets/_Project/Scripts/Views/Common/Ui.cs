@@ -202,6 +202,7 @@ namespace PuzzleKingdoms.Views.Common
             gloss.raycastTarget = false;
             var button = image.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
+            image.gameObject.AddComponent<PressFeel>();
             ColorBlock colors = button.colors;
             colors.normalColor = Color.white;
             colors.highlightedColor = new Color(1.08f, 1.08f, 1.08f, 1f);

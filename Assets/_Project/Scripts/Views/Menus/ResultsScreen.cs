@@ -3,6 +3,7 @@ using PuzzleKingdoms.Logic.Combat;
 using PuzzleKingdoms.Logic.Progression;
 using PuzzleKingdoms.Views.Common;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PuzzleKingdoms.Views.Menus
 {
@@ -33,9 +34,15 @@ namespace PuzzleKingdoms.Views.Menus
             Transform root = transform;
             Ui.Backdrop(root);
             Ui.Label(root, Loc.T(stageName), 48, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.84f, 1f, 0.9f);
-            Ui.Label(root, won ? Loc.T("Victory!") : Loc.T("Defeat"), 110, TextAnchor.MiddleCenter,
+            Text title = Ui.Label(root, won ? Loc.T("Victory!") : Loc.T("Defeat"), 110, TextAnchor.MiddleCenter,
                 won ? Palette.Gold : Palette.Bad, 0f, 0.72f, 1f, 0.84f);
-            Ui.Label(root, Stars(reward.Stars), 90, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.63f, 1f, 0.72f);
+            Text starsLabel = Ui.Label(root, Stars(reward.Stars), 90, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.63f, 1f, 0.72f);
+            if (won)
+            {
+                StartCoroutine(UiJuice.PopIn(title.rectTransform, 0f, 0.5f));
+                StartCoroutine(UiJuice.PopIn(starsLabel.rectTransform, 0.35f, 0.5f));
+                UiJuice.Confetti(root, 70);
+            }
             if (!string.IsNullOrEmpty(goalMissed))
             {
                 // PB-19: the battle was won but the stage goal was not.

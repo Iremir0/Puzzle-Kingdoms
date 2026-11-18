@@ -642,3 +642,10 @@ paintings (ChatGPT image generation, supplied by the team) replace the procedura
 (`ArtSprites`, `Resources/Art/UI`). The battle ground picture replaces the procedural ground, trees and fence;
 nothing else is added. The fort-gate picture is used for stage 2-10. Missing files fall
 back to the procedural look. Tab bar and commander emblems are drawn from simple shapes (`TabIcons`).
+
+## D-058 - Liveliness pass (2026-11-18)
+
+Battle: scenery sways (D-056), a camera shake on enemy deaths and Fireball (strength and length per call), impact
+sparks on every hit, a pop of sparks and two coins when an enemy dies. UI: every button squashes while pressed and
+springs back (`PressFeel`), the victory screen pops its title and stars in and throws confetti (`UiJuice`).
+PlayMode tests run with the master volume at zero (`SilentTests`), so they stay quiet; `Sfx` still counts plays.

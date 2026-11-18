@@ -87,7 +87,10 @@ namespace PuzzleKingdoms.Views.Battle3D
                     {
                         // Goblin poof: a ring of dusty green-grey puffs, and a coin pops out (visual only).
                         Burst(at, new Color(0.62f, 0.66f, 0.5f), 10, 0.5f, 0.6f, 1.6f);
+                        Burst(at, new Color(1f, 0.95f, 0.75f), 6, 0.12f, 0.22f, 2.4f); // pop sparks
                         Burst(at + Vector3.up * 0.4f, Palette.Gold, 1, 0.32f, 0.9f, 0.5f, coin: true);
+                        Burst(at + Vector3.up * 0.3f, Palette.Gold, 2, 0.28f, 1.0f, 0.9f, coin: true);
+                        Shake(0.12f, 0.05f);
                     }
                     else
                     {
@@ -113,6 +116,7 @@ namespace PuzzleKingdoms.Views.Battle3D
                     if (_sim.Variant.Kind == RallyKind.Fireball)
                     {
                         Burst(strikeAt, new Color(1f, 0.55f, 0.15f), 14, 0.34f, 0.7f, 1.8f);
+                        Shake(0.25f, 0.16f);
                         Burst(strikeAt, new Color(1f, 0.85f, 0.3f), 8, 0.2f, 0.5f, 1.2f);
                     }
                     else
@@ -139,6 +143,7 @@ namespace PuzzleKingdoms.Views.Battle3D
                     else
                     {
                         Burst(hitAt, new Color(0.78f, 0.72f, 0.6f), 3, 0.22f, 0.4f, 0.9f);
+                        Burst(hitAt, new Color(1f, 0.96f, 0.8f), 2, 0.09f, 0.16f, 2.2f); // quick impact sparks
                     }
                 }
                 UnitActor source = e.SourceId >= 0 && e.SourceId < _actors.Count ? _actors[e.SourceId] : null;
@@ -169,7 +174,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         }
 
         private readonly List<Puff> _puffs = new List<Puff>();
-        private const int MaxPuffs = 70;
+        private const int MaxPuffs = 110;
 
         /// <summary>Little transient bits (dust, sparks, the goblin poof, a coin) that fly, shrink and vanish (PB-12).</summary>
         private void Burst(Vector3 at, Color color, int count, float size, float life, float spread, bool coin = false)
@@ -247,6 +252,8 @@ namespace PuzzleKingdoms.Views.Battle3D
         private GameObject _rallyRing;
         private float _ringAge = -1f;
         private float _shakeLeft;
+        private float _shakeTotal = ShakeSeconds;
+        private float _shakeStrength = 0.12f;
         private Vector3 _cameraRest;
 
         /// <summary>Rally begins (PB-12): a gold ring spreads from the player army, allies glow, the camera shakes briefly.</summary>
@@ -289,8 +296,22 @@ namespace PuzzleKingdoms.Views.Battle3D
             _rallyRing.transform.localPosition = new Vector3(centre.x, 0.03f, centre.z);
             _rallyRing.SetActive(true);
             _ringAge = 0f;
-            _shakeLeft = ShakeSeconds;
-            _cameraRest = _camera.transform.localPosition;
+            Shake(ShakeSeconds, 0.12f);
+        }
+
+        /// <summary>Shakes the camera: a stronger or longer shake replaces a weaker one that is still running.</summary>
+        private void Shake(float seconds, float strength)
+        {
+            if (_shakeLeft <= 0f)
+            {
+                _cameraRest = _camera.transform.localPosition;
+            }
+            if (strength >= _shakeStrength * Mathf.Clamp01(_shakeLeft / _shakeTotal) || _shakeLeft <= 0f)
+            {
+                _shakeTotal = seconds;
+                _shakeStrength = strength;
+                _shakeLeft = seconds;
+            }
         }
 
         private void EndRally()
@@ -323,7 +344,7 @@ namespace PuzzleKingdoms.Views.Battle3D
             if (_shakeLeft > 0f)
             {
                 _shakeLeft -= deltaTime;
-                float strength = 0.12f * Mathf.Clamp01(_shakeLeft / ShakeSeconds);
+                float strength = _shakeStrength * Mathf.Clamp01(_shakeLeft / _shakeTotal);
                 Vector3 jitter = new Vector3(Mathf.Sin(_shakeLeft * 90f), Mathf.Cos(_shakeLeft * 110f), 0f) * strength;
                 _camera.transform.localPosition = _cameraRest + _camera.transform.localRotation * jitter;
                 if (_shakeLeft <= 0f)
