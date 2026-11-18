@@ -49,6 +49,11 @@ namespace PuzzleKingdoms.Views.Puzzle
         /// <summary>The hinted gems pulse between 100% and 100% + this.</summary>
         private const float HintPulse = 0.08f;
         private static readonly Color StoneTint = new Color(0.68f, 0.68f, 0.72f, 1f);
+        /// <summary>PB-20: ice on a cell (one layer, two layers) and the bars of a chain.</summary>
+        private static readonly Color IceOneLayer = new Color(0.62f, 0.85f, 0.96f, 0.35f);
+        private static readonly Color IceTwoLayers = new Color(0.72f, 0.9f, 1f, 0.62f);
+        private static readonly Color ChainTint = new Color(0.84f, 0.86f, 0.9f, 0.95f);
+        private const float BossShake = 12f;
         /// <summary>Board shake in reference pixels (PB-8): Blast small, Prism bigger.</summary>
         private const float BlastShake = 10f;
         private const float PrismShake = 16f;
@@ -65,6 +70,9 @@ namespace PuzzleKingdoms.Views.Puzzle
         private CanvasGroup[,] _gemAlpha;
         private Image[,] _marks;
         private Image[,] _stoneMarks;
+        private Image[,] _iceTiles;      // PB-20: on the cell, behind the gem; ice never moves
+        private GameObject[,] _chainMarks; // PB-20: on the gem, so a chain falls with it
+        private Text _boss;              // PB-20: the boss countdown, null without a boss
         private Outline[,] _outlines;
         private int[,] _shownGrid;
         private SpecialKind[,] _shownSpecials;
@@ -137,6 +145,12 @@ namespace PuzzleKingdoms.Views.Puzzle
             Ui.Label(root, Loc.T("Enemy army"), 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);
             StageBadges.AddPanelLine(root, _run.Stage);
             _goal = StageBadges.AddGoalLine(root, _run.Stage, 0);
+            if (_run.Puzzle.MovesUntilBossStones >= 0)
+            {
+                // PB-20: the boss countdown, under the goal in the enemy panel.
+                _boss = Ui.Label(root, "", 30, TextAnchor.LowerRight, Palette.Bad, 0.66f, 0.76f, 0.95f, 0.84f);
+                _boss.gameObject.name = "Boss";
+            }
             new FormationGridView(root, "Enemy Formation", true, false, 0.35f, 0.755f, 0.65f, 0.92f)
                 .Show(Formation.ForStage(_run.Stage));
 
@@ -152,7 +166,8 @@ namespace PuzzleKingdoms.Views.Puzzle
                 0.2f, 0.02f, 0.8f, 0.09f);
             _continue.gameObject.SetActive(false);
 
-            Render(_run.Puzzle.Board.ToGrid(), _run.Puzzle.Board.ToSpecialGrid(), _run.Puzzle.Board.ToStoneGrid());
+            Render(_run.Puzzle.Board.ToGrid(), _run.Puzzle.Board.ToSpecialGrid(), _run.Puzzle.Board.ToStoneGrid(),
+                _run.Puzzle.Board.ToChainGrid(), _run.Puzzle.Board.ToIceGrid());
             RefreshHud();
         }
 
@@ -190,6 +205,8 @@ namespace PuzzleKingdoms.Views.Puzzle
             _gemAlpha = new CanvasGroup[board.Width, board.Height];
             _marks = new Image[board.Width, board.Height];
             _stoneMarks = new Image[board.Width, board.Height];
+            _iceTiles = new Image[board.Width, board.Height];
+            _chainMarks = new GameObject[board.Width, board.Height];
             _outlines = new Outline[board.Width, board.Height];
             float w = 1f / board.Width;
             float h = 1f / board.Height;
@@ -201,6 +218,11 @@ namespace PuzzleKingdoms.Views.Puzzle
                     // The slot takes the touches and never moves; its gem child is what animates.
                     Image slot = Ui.Box(_board, $"Cell {x},{y}", Color.clear,
                         x * w + 0.008f, top - h + 0.008f, (x + 1) * w - 0.008f, top - 0.008f);
+                    // Ice (PB-20) is the cell's floor: created first so it sits behind the gem.
+                    Image ice = Ui.Box(slot.transform, "Ice", IceOneLayer);
+                    ice.raycastTarget = false;
+                    ice.enabled = false;
+                    _iceTiles[x, y] = ice;
                     Image gem = Ui.Box(slot.transform, "Gem", Color.clear);
                     gem.preserveAspect = true;
                     gem.raycastTarget = false;
@@ -213,6 +235,16 @@ namespace PuzzleKingdoms.Views.Puzzle
                     stone.raycastTarget = false;
                     stone.enabled = false;
                     _stoneMarks[x, y] = stone;
+                    // A chain (PB-20): two crossed bars over the gem, travelling with it.
+                    RectTransform chain = Ui.Stretch(gem.transform, "Chain");
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Image bar = Ui.Box(chain, "Bar", ChainTint, 0.06f, 0.44f, 0.94f, 0.56f);
+                        bar.raycastTarget = false;
+                        bar.rectTransform.localRotation = Quaternion.Euler(0f, 0f, i == 0 ? 45f : -45f);
+                    }
+                    chain.gameObject.SetActive(false);
+                    _chainMarks[x, y] = chain.gameObject;
                     Image mark = Ui.Box(gem.transform, "Special", Color.white);
                     mark.preserveAspect = true;
                     mark.raycastTarget = false;
@@ -336,9 +368,11 @@ namespace PuzzleKingdoms.Views.Puzzle
             int[,] before = _run.Puzzle.Board.ToGrid();
             SpecialKind[,] beforeSpecials = _run.Puzzle.Board.ToSpecialGrid();
             bool[,] beforeStones = _run.Puzzle.Board.ToStoneGrid();
+            bool[,] beforeChains = _run.Puzzle.Board.ToChainGrid();
+            int[,] beforeIce = _run.Puzzle.Board.ToIceGrid();
             MoveResult result = _run.Puzzle.PlaySwap(a, b);
             IsBusy = true;
-            StartCoroutine(result.IsValid ? Animate(before, beforeSpecials, beforeStones, result) : Reject(a, b));
+            StartCoroutine(result.IsValid ? Animate(before, beforeSpecials, beforeStones, beforeChains, beforeIce, result) : Reject(a, b));
             return result.IsValid;
         }
 
@@ -359,10 +393,11 @@ namespace PuzzleKingdoms.Views.Puzzle
 
         // --- Playback ------------------------------------------------------
 
-        private IEnumerator Animate(int[,] before, SpecialKind[,] beforeSpecials, bool[,] beforeStones, MoveResult result)
+        private IEnumerator Animate(int[,] before, SpecialKind[,] beforeSpecials, bool[,] beforeStones, bool[,] beforeChains,
+            int[,] beforeIce, MoveResult result)
         {
             IsBusy = true;
-            foreach (MoveReplay.Frame frame in MoveReplay.Frames(before, result, beforeSpecials, beforeStones))
+            foreach (MoveReplay.Frame frame in MoveReplay.Frames(before, result, beforeSpecials, beforeStones, beforeChains, beforeIce))
             {
                 switch (frame.Kind)
                 {
@@ -373,7 +408,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                         // Start from wherever the finger left the gems.
                         Vector2 heldA = Gem(a).anchoredPosition;
                         Vector2 heldB = Gem(b).anchoredPosition;
-                        Render(frame.Grid, frame.Specials, frame.Stones);
+                        Render(frame.Grid, frame.Specials, frame.Stones, frame.Chains, frame.Ice);
                         var moves = new List<(GridPos, Vector2)> { (a, Offset(b, a) + heldB), (b, Offset(a, b) + heldA) };
                         yield return SlideHome(moves, SwapSeconds);
                         break;
@@ -392,7 +427,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                         PlayStepFeedback(frame.Step, frame.StepIndex);
                         yield return Pop(frame.Step.Cleared);
                         SetMatchOutlines(frame.Step, false);
-                        Render(frame.Grid, frame.Specials, frame.Stones);
+                        Render(frame.Grid, frame.Specials, frame.Stones, frame.Chains, frame.Ice);
                         foreach (GridPos cell in frame.Step.Cleared)
                         {
                             Park(cell);
@@ -400,15 +435,23 @@ namespace PuzzleKingdoms.Views.Puzzle
                         PlayCreated(frame.Step);
                         break;
                     case MoveReplay.FrameKind.Filled:
-                        Render(frame.Grid, frame.Specials, frame.Stones);
+                        Render(frame.Grid, frame.Specials, frame.Stones, frame.Chains, frame.Ice);
                         yield return Drop(frame.Step);
                         break;
                     case MoveReplay.FrameKind.Reshuffled:
                         _status.text = Loc.T("No moves left: the board was reshuffled.");
                         yield return new WaitForSeconds(ReshuffleNoticeSeconds);
                         List<(GridPos, Vector2)> flights = ReshuffleFlights(frame.Grid);
-                        Render(frame.Grid, frame.Specials, frame.Stones);
+                        Render(frame.Grid, frame.Specials, frame.Stones, frame.Chains, frame.Ice);
                         yield return SlideHome(flights, ReshuffleSeconds);
+                        break;
+                    case MoveReplay.FrameKind.StonesDropped:
+                        // PB-20: the boss throws stones once the move has settled.
+                        _bonus.text = Loc.T("The boss throws stones!");
+                        Render(frame.Grid, frame.Specials, frame.Stones, frame.Chains, frame.Ice);
+                        _effects.Shake(BossShake, BlastShakeSeconds);
+                        PlaySound(b => b.StoneCrack, 0.8f);
+                        yield return new WaitForSeconds(ReshuffleNoticeSeconds);
                         break;
                 }
             }
@@ -781,6 +824,12 @@ namespace PuzzleKingdoms.Views.Puzzle
 
         private static string SpecialLabel(MoveResult.CascadeStep step)
         {
+            switch (step.Combo) // PB-20: two special gems swapped together
+            {
+                case ComboKind.BlastBlast: return Loc.T("Blast + Blast!");
+                case ComboKind.PrismBlast: return Loc.T("Prism + Blast!");
+                case ComboKind.PrismPrism: return Loc.T("Prism + Prism!");
+            }
             foreach (MoveResult.SpecialTrigger trigger in step.Triggers)
             {
                 if (trigger.Kind == SpecialKind.Prism)
@@ -795,7 +844,7 @@ namespace PuzzleKingdoms.Views.Puzzle
             return step.Cracked.Count > 0 ? Loc.T("Stone cracked!") : "";
         }
 
-        private void Render(int[,] grid, SpecialKind[,] specials, bool[,] stones)
+        private void Render(int[,] grid, SpecialKind[,] specials, bool[,] stones, bool[,] chains = null, int[,] ice = null)
         {
             _shownGrid = (int[,])grid.Clone();
             _shownSpecials = (SpecialKind[,])specials.Clone();
@@ -824,6 +873,11 @@ namespace PuzzleKingdoms.Views.Puzzle
                     {
                         _marks[x, y].sprite = GemShapes.Get(kind == SpecialKind.Blast ? GemShape.Ring : GemShape.Sparkle);
                     }
+                    // PB-20: a chain on the gem, ice on the cell.
+                    _chainMarks[x, y].SetActive(!empty && chains != null && chains[x, y]);
+                    int layers = ice == null ? 0 : ice[x, y];
+                    _iceTiles[x, y].enabled = layers > 0;
+                    _iceTiles[x, y].color = layers >= 2 ? IceTwoLayers : IceOneLayer;
                 }
             }
         }
@@ -833,7 +887,12 @@ namespace PuzzleKingdoms.Views.Puzzle
             _moves.text = Loc.F("Moves: {0}", _run.Puzzle.MovesLeft);
             if (_goal != null)
             {
-                _goal.text = StageBadges.GoalText(_run.Stage, _run.Puzzle.StonesBroken);
+                _goal.text = StageBadges.GoalText(_run.Stage, _run.Puzzle.StonesBroken,
+                    _run.Puzzle.IceAtStart - _run.Puzzle.Board.IceLeft, _run.Puzzle.IceAtStart);
+            }
+            if (_boss != null)
+            {
+                _boss.text = Loc.F("Stones fall in {0}", _run.Puzzle.MovesUntilBossStones);
             }
             foreach ((string key, RectTransform fill, Text label) in _meters)
             {

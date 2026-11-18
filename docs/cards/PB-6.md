@@ -40,7 +40,11 @@ Implementing the changes it decides (they become cards).
 
 ## Done when
 - [ ] Decision with pillar scores and evidence recorded in DECISIONS.md
-- [ ] Board reordered (or new cards added) to match the decision
+- [x] Board reordered (or new cards added) to match the decision (wave 2 order, D-049)
 
 ## Notes
 _Findings, screenshots, numbers, decisions taken while working on this card._
+
+2026-11-18 — owner's go before the playtests (D-049): Alican asked to continue as if the sessions had
+been played. Nothing was scored and no evidence was written down, because there is none yet; wave 2
+started. The first box stays open until the pillars are scored from five real sessions.

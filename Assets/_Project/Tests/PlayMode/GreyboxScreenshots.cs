@@ -172,6 +172,54 @@ namespace PuzzleKingdoms.Tests.PlayMode
         }
 
         /// <summary>
+        /// PB-20: the puzzle of the two draft Chapter 2 stages (ice and the ice goal; chains and the boss
+        /// countdown), and the board right after the boss threw stones, into <c>Logs/Screenshots/obstacles-*.png</c>.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator CaptureObstacleStages()
+        {
+#if UNITY_EDITOR
+            var content = UnityEditor.AssetDatabase.LoadAssetAtPath<GameContent>("Assets/_Project/Data/GameContent.asset");
+            var gate = UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinition>("Assets/_Project/Data/Stages/Stage_2_1.asset");
+            var forge = UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinition>("Assets/_Project/Data/Stages/Stage_2_2.asset");
+#else
+            GameContent content = null;
+            StageDefinition gate = null, forge = null;
+            Assert.Ignore("editor only");
+#endif
+            string output = Path.GetFullPath("Logs/Screenshots");
+            Directory.CreateDirectory(output);
+            _saveFolder = Path.Combine(Path.GetTempPath(), "pk-shots-" + System.Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(_saveFolder);
+            _app = new GameObject("GameApp").AddComponent<GameApp>();
+            _app.SetContent(content);
+            _app.TutorialEnabled = false;
+            _app.ConsentEnabled = false;
+            _app.UseStore(new ProfileStore(_saveFolder));
+            _app.UseLanguage(Language.English);
+            yield return null;
+
+            _app.StartStage(gate);
+            yield return null;
+            yield return Capture(Path.Combine(output, "obstacles-ice.png"));
+
+            _app.StartStage(forge);
+            yield return null;
+            yield return Capture(Path.Combine(output, "obstacles-chains.png"));
+            var puzzle = (PuzzleScreen)_app.CurrentScreen;
+            for (int move = 0; move < _app.Run.Puzzle.BossStonesEvery; move++)
+            {
+                Assert.IsTrue(_app.Run.Puzzle.Board.TryFindValidMove(out GridPos a, out GridPos b));
+                Assert.IsTrue(puzzle.PlaySwap(a, b), "a valid move");
+                while (puzzle.IsBusy)
+                {
+                    yield return null;
+                }
+            }
+            yield return Capture(Path.Combine(output, "obstacles-boss-stones.png"));
+        }
+
+        /// <summary>
         /// PB-7: records the puzzle board at 30 fps (fixed time steps) through an
         /// invalid swap, eight moves, the idle hint and the PB-8 effects into
         /// <c>Logs/Screenshots/anim/frame-NNNN.png</c>, to turn into a GIF or video

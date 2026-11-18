@@ -16,7 +16,7 @@ puzzle-kingdoms/
 │       ├── Scripts/
 │       │   ├── Logic/            ✅ PuzzleKingdoms.Logic (no engine references)
 │       │   │   ├── Core/         ✅ GridPos, IRandom, SeededRandom (PCG32)
-│       │   │   ├── Puzzle/       ✅ BoardModel, BoardLayout (painted start boards), MatchGroup, SpecialKind, MoveResult, MoveReplay, RecruitmentMeter,
+│       │   │   ├── Puzzle/       ✅ BoardModel (+ chains, ice, combos: PB-20), BoardLayout (painted start boards, covers), ComboKind, MatchGroup, SpecialKind, MoveResult, MoveReplay, RecruitmentMeter,
 │       │   │   │                    PuzzleSession, PuzzleRules
 │       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster (+ Undo), MergeRules, AutoFormation, BenchGroup
 │       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,
@@ -56,7 +56,7 @@ puzzle-kingdoms/
 │       ├── Data/                 ✅ .asset files
 │       │   ├── Units/            Warrior, Archer, Mage
 │       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief
-│       │   ├── Stages/           Stage_1_1 … Stage_1_3 (+ map position, tutorial prompts); Stage_1_4 The Quarry (not in the campaign)
+│       │   ├── Stages/           Stage_1_1 … Stage_1_3 (+ map position, tutorial prompts); Stage_1_4 The Quarry, Stage_2_1 Frozen Gate, Stage_2_2 The Chief's Forge (drafts, not in the campaign)
 │       │   ├── GameContent.asset   root: units in gem order, campaign, rules
 │       │   ├── BattleModels.asset  3D battle models per UnitLook (PB-11, built by BattleModelBuilder)
 │       │   ├── PuzzleRules.asset

@@ -26,6 +26,12 @@ namespace PuzzleKingdoms.Logic.Puzzle
             public readonly List<SpecialTrigger> Triggers = new List<SpecialTrigger>();
             /// <summary>Stones that broke this wave; the gem under each one stays on the board.</summary>
             public readonly List<GridPos> Cracked = new List<GridPos>();
+            /// <summary>Chains that broke this wave (PB-20); the gem stays and can be swapped again.</summary>
+            public readonly List<GridPos> Unchained = new List<GridPos>();
+            /// <summary>Cells whose ice lost a layer this wave (PB-20); ice stays on its cell, it never falls.</summary>
+            public readonly List<GridPos> IceMelted = new List<GridPos>();
+            /// <summary>Two special gems swapped together this wave (PB-20), or <see cref="ComboKind.None"/>.</summary>
+            public ComboKind Combo;
             public readonly List<GemFall> Falls = new List<GemFall>();
             public readonly List<GemSpawn> Spawns = new List<GemSpawn>();
         }
@@ -99,6 +105,10 @@ namespace PuzzleKingdoms.Logic.Puzzle
         public SpecialKind[,] SpecialsAfterReshuffle;
         /// <summary>Stone layer after the reshuffle (only set when <see cref="Reshuffled"/>).</summary>
         public bool[,] StonesAfterReshuffle;
+        /// <summary>Chain layer after the reshuffle (only set when <see cref="Reshuffled"/>).</summary>
+        public bool[,] ChainsAfterReshuffle;
+        /// <summary>Stones the stage boss dropped after the move (PB-20); empty most moves.</summary>
+        public readonly List<GridPos> StonesDropped = new List<GridPos>();
 
         /// <summary>Cascade waves after the first clear (0 = no cascade).</summary>
         public int CascadeCount => Math.Max(Steps.Count - 1, 0);

@@ -104,6 +104,75 @@ namespace PuzzleKingdoms.Logic.Puzzle
             return true;
         }
 
+        /// <summary>
+        /// Reads the covers of a start board (PB-20): one row per board row, <c>.</c> nothing, <c>i</c> one
+        /// layer of ice, <c>I</c> two layers, <c>c</c> a chained gem, <c>k</c> a chained gem on one layer of
+        /// ice, <c>K</c> a chained gem on two. Null or empty rows mean no covers.
+        /// </summary>
+        public static bool TryParseCovers(IReadOnlyList<string> rows, int width, int height,
+            out int[,] ice, out bool[,] chains, out string error)
+        {
+            ice = new int[width, height];
+            chains = new bool[width, height];
+            error = null;
+            if (IsEmpty(rows))
+            {
+                return true;
+            }
+            if (rows.Count != height)
+            {
+                error = $"the covers need {height} rows";
+                return false;
+            }
+            for (int y = 0; y < height; y++)
+            {
+                string row = rows[y] ?? "";
+                if (row.Length != width)
+                {
+                    error = $"covers row {y + 1} needs {width} cells, it has {row.Length}";
+                    return false;
+                }
+                for (int x = 0; x < width; x++)
+                {
+                    switch (row[x])
+                    {
+                        case '.': break;
+                        case 'i': ice[x, y] = 1; break;
+                        case 'I': ice[x, y] = 2; break;
+                        case 'c': chains[x, y] = true; break;
+                        case 'k': chains[x, y] = true; ice[x, y] = 1; break;
+                        case 'K': chains[x, y] = true; ice[x, y] = 2; break;
+                        default:
+                            error = $"covers row {y + 1}, cell {x + 1}: unknown '{row[x]}' (use . i I c k K)";
+                            return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>Writes covers back as rows (for the stage editor); null when there are none.</summary>
+        public static string[] FormatCovers(int[,] ice, bool[,] chains)
+        {
+            int width = ice.GetLength(0);
+            int height = ice.GetLength(1);
+            var rows = new string[height];
+            bool any = false;
+            for (int y = 0; y < height; y++)
+            {
+                var row = new StringBuilder(width);
+                for (int x = 0; x < width; x++)
+                {
+                    int layers = ice[x, y];
+                    bool chain = chains[x, y];
+                    any |= layers > 0 || chain;
+                    row.Append(chain ? (layers == 0 ? 'c' : layers == 1 ? 'k' : 'K') : layers == 0 ? '.' : layers == 1 ? 'i' : 'I');
+                }
+                rows[y] = row.ToString();
+            }
+            return any ? rows : null;
+        }
+
         /// <summary>Writes a board back as layout rows (for the stage editor).</summary>
         public static string[] Format(int[,] gems, bool[,] stones)
         {

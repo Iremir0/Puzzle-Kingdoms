@@ -514,3 +514,37 @@ PB-19.
   three stages for the playtests; adding it is one click (owner's call).
 Why: about 40 stages are planned (D-045); a goal changes how a stage is played without new rules, and a
 painted board lets a stage teach one thing on purpose.
+
+## D-049 Go to growth wave 2 before the playtests (owner's call), 2026-11-18
+Alican decided to treat PB-6 as **go** without waiting for the PB-5 playtest sessions. No tester has
+played the game yet, so the GDD pillars are **not scored** and there is no tester evidence; the only
+data is the balance bots (D-026, D-048: every stage winnable, battles 10-40 s, Rally 6-10 s shorter),
+which say nothing about whether the loop is fun. **Risk:** weeks of content (wave 2) on a loop nobody
+has played. **Kept open:** the playtests still run (kit from PB-5), analytics with consent records real
+play (PB-29), and PB-6 gets its pillar scores once five sessions are in; a "pivot" then stops wave 2
+where it stands. Wave 2 order: **PB-20** obstacles (code only, Chapter 2 stages use them) → **PB-18**
+Chapter 2 (four new enemy models cost Meshy credits; Alican approves each) → **PB-22** kingdom →
+**PB-23** commanders → **PB-21** Defender and Support.
+
+## D-050 Chains hold a gem in place, ice is a floor to melt; special combos; the boss drops stones, 2026-11-18
+PB-20. The card described ice as a cover that holds the gem; that is what a **chain** now does, so ice
+became the other classic obstacle and the two do not overlap.
+- **Chain** (on a gem, falls with it): the gem can not be swapped but can be part of a match; the first
+  hit breaks the chain and the gem stays (like a stone, D-032). A gem with a chain and a stone loses the
+  chain first. No special gem is created on a chained gem.
+- **Ice** (on a cell, 1 or 2 layers, never moves): each hit on the cell melts one layer (a cleared gem,
+  a cracked stone, a broken chain). New goal **break all the ice** (`StageGoalKind.BreakIce`).
+- **Combos:** two special gems swapped together always swap and combine: Blast + Blast 5×5, Prism + Blast
+  turns every free gem of the Blast's colour into a Blast (not gems under stone or chain: a Blast left on
+  them would outlive the move), Prism + Prism the whole board. `CascadeStep.Combo` tells the view.
+- **Boss stones** (`bossStonesEvery`, `bossStonesCount` on the stage): after every N-th move the boss
+  drops K stones (not on special gems, not touching, not after the last move); `MoveResult.StonesDropped`
+  and a `StonesDropped` replay frame; the puzzle shows "Stones fall in N".
+- **Data:** a second row block on the stage, `covers` (`.` `i` `I` `c` `k` `K`), painted in the Stage
+  Editor; chains can take away the last move, so random cells are drawn again until a move exists.
+- Random boards draw exactly as before (same seeds, same boards; the tests did not change).
+- Two **draft Chapter 2 stages** made with the Stage Editor, not in the campaign: *Frozen Gate* (2-1, break
+  all the ice, 14 layers, 12 moves; bots win 70 % / 94 %, goal missed 18 % / 7 %) and *The Chief's Forge*
+  (2-2, as 1-3 with four chained corners and 2 boss stones every 3 moves; bots win 48 % / 84 %).
+Why: Chapter 2 needs boards that play differently from Chapter 1 without new screens; chains and ice
+are known to players from other match-3 games, so they need little teaching.

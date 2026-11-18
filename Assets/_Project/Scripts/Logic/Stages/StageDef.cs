@@ -36,5 +36,13 @@ namespace PuzzleKingdoms.Logic.Stages
 
         /// <summary>A hand-placed start board (<see cref="Puzzle.BoardLayout"/>); null or empty = random.</summary>
         public string[] Layout;
+
+        /// <summary>Ice and chains on the start board (<see cref="Puzzle.BoardLayout.TryParseCovers"/>, PB-20); null = none.</summary>
+        public string[] Covers;
+
+        /// <summary>The boss drops <see cref="BossStonesCount"/> stones every this many moves (PB-20); 0 = never.</summary>
+        public int BossStonesEvery;
+
+        public int BossStonesCount;
     }
 }

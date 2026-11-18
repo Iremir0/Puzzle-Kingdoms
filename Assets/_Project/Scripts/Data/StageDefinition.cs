@@ -42,6 +42,14 @@ namespace PuzzleKingdoms.Data
         [Tooltip("Hand-placed start board, 6 rows of 6: . random, 0-9 gem type, a-j gem type in stone, x random in stone. " +
                  "Empty = a random board. Easier to paint in Puzzle Kingdoms → Stage Editor.")]
         [SerializeField] private List<string> layout = new List<string>();
+        [Tooltip("Ice and chains, 6 rows of 6 (PB-20): . none, i ice, I two layers of ice, c chain, k chain on ice, K chain on two layers.")]
+        [SerializeField] private List<string> covers = new List<string>();
+
+        [Header("Boss (PB-20)")]
+        [Tooltip("The boss drops stones every this many moves; 0 = never.")]
+        [SerializeField, Min(0)] private int bossStonesEvery;
+        [Tooltip("How many stones the boss drops each time.")]
+        [SerializeField, Min(0)] private int bossStonesCount;
 
         [Header("Stage map (PB-13)")]
         [Tooltip("Where the node sits on the chapter map: x 0 = left … 1 = right, y 0 = bottom … 1 = top.")]
@@ -94,6 +102,9 @@ namespace PuzzleKingdoms.Data
                 EnemyDamageMultiplier = enemyDamageMultiplier,
                 Goal = new StageGoal { Kind = goalKind, Target = goalTarget },
                 Layout = layout == null || layout.Count == 0 ? null : layout.ToArray(),
+                Covers = covers == null || covers.Count == 0 ? null : covers.ToArray(),
+                BossStonesEvery = bossStonesEvery,
+                BossStonesCount = bossStonesCount,
             };
             foreach (EnemySlotData slot in enemies)
             {

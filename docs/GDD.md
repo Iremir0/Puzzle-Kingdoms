@@ -100,6 +100,17 @@ readable for color-blind players (D-027).
 
 Post-MVP: more special gems, stage objectives, boss board modifiers.
 
+**Obstacles, combos and the boss (PB-20, D-050).** Stage data can add:
+- **Chains** on gems: a chained gem can not be swapped, but it can be part of a match; the first
+  hit (a match or a special effect) breaks the chain and the gem stays. Chains fall with their gem.
+- **Ice** on cells, one or two layers: every hit on the cell (a cleared gem, a broken stone or chain)
+  melts one layer. Ice stays on its cell. Goal *break all the ice*: every layer melted, then win.
+- **Special combos** when two special gems are swapped into each other: Blast + Blast hits a 5×5
+  square; Prism + Blast turns every free gem of the Blast's colour into a Blast and sets them all off;
+  Prism + Prism hits the whole board. Two special gems can always be swapped.
+- **Boss stones:** the boss drops K stones every N moves (never on a special gem, never two side by
+  side); the puzzle shows the countdown.
+
 ## 6. War Camp (army preparation)
 
 - 4×4 formation grid (D-031). **Rows** = depth (row 0 faces the enemy, row 3 is the
@@ -234,6 +245,10 @@ Stage Editor, not yet in the campaign:
 | Stage | Name | Enemies | Goal | Board | Lesson |
 |---|---|---|---|---|---|
 | 1-4 | The Quarry | as 1-2 | break 5 stones | 4 painted + 2 random stones | match next to stones |
+| 2-1 | Frozen Gate (draft) | as 1-2 | break all the ice | 14 ice layers in the middle, 12 moves | aim your matches |
+| 2-2 | The Chief's Forge (draft) | as 1-3 | defeat the army | 4 chained corner gems; boss drops 2 stones every 3 moves | play around the boss |
+
+The two Chapter 2 drafts use today's enemies; PB-18 gives Chapter 2 its own enemies and the rest of its stages.
 
 Measured difficulty (D-033, 400 runs; random/greedy puzzle bot, auto formation, no merges;
 without / with Rally): 1-1 won 94% / 96% (random) and 100% (greedy), battles 16–22 s

@@ -26,7 +26,7 @@ namespace PuzzleKingdoms.Views.Common
         /// The stage goal in words (PB-19), empty for "defeat the army"; with <paramref name="stonesBroken"/>
         /// the progress of a stone goal ("Goal: break 6 stones  2/6").
         /// </summary>
-        public static string GoalText(StageDef stage, int stonesBroken = -1)
+        public static string GoalText(StageDef stage, int stonesBroken = -1, int iceMelted = -1, int iceTotal = 0)
         {
             StageGoal goal = stage.Goal;
             if (goal == null || goal.Kind == StageGoalKind.DefeatArmy)
@@ -36,6 +36,12 @@ namespace PuzzleKingdoms.Views.Common
             if (goal.Kind == StageGoalKind.WinWithin)
             {
                 return Loc.F("Goal: win within {0} s", goal.Target);
+            }
+            if (goal.Kind == StageGoalKind.BreakIce)
+            {
+                // PB-20: progress counts ice layers melted out of those on the start board.
+                string ice = Loc.T("Goal: break all the ice");
+                return iceMelted < 0 || iceTotal <= 0 ? ice : $"{ice}  {System.Math.Min(iceMelted, iceTotal)}/{iceTotal}";
             }
             string text = Loc.F("Goal: break {0} stones", goal.Target);
             return stonesBroken < 0 ? text : $"{text}  {System.Math.Min(stonesBroken, goal.Target)}/{goal.Target}";

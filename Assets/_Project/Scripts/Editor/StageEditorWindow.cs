@@ -38,6 +38,11 @@ namespace PuzzleKingdoms.EditorTools
         private SerializedObject _serialized;
         private Brush _brush = Brush.Gem0;
         private bool _stoneBrush;
+        // PB-20: the second layer of the board, ice on cells and chains on gems.
+        private static readonly string[] CoverNames = { "none", "ice", "ice ×2", "chain", "chain + ice" };
+        private static readonly char[] CoverChars = { '.', 'i', 'I', 'c', 'k' };
+        private bool _paintCovers;
+        private int _coverBrush = 1;
         private Vector2 _listScroll;
         private Vector2 _detailScroll;
         private string _report = "";
@@ -135,7 +140,7 @@ namespace PuzzleKingdoms.EditorTools
             _serialized.Update();
             EditorGUILayout.LabelField(AssetDatabase.GetAssetPath(_selected), EditorStyles.miniLabel);
             foreach (string field in new[] { "id", "displayName", "moves", "goldReward", "stoneGems", "enemyHpMultiplier",
-                         "enemyDamageMultiplier", "goalKind", "goalTarget", "mapPosition" })
+                         "enemyDamageMultiplier", "goalKind", "goalTarget", "bossStonesEvery", "bossStonesCount", "mapPosition" })
             {
                 EditorGUILayout.PropertyField(_serialized.FindProperty(field));
             }
@@ -162,16 +167,26 @@ namespace PuzzleKingdoms.EditorTools
         private void DrawBoard()
         {
             EditorGUILayout.LabelField("Start board (empty = random)", EditorStyles.boldLabel);
+            _paintCovers = GUILayout.Toolbar(_paintCovers ? 1 : 0, new[] { "Paint gems", "Paint ice and chains" }) == 1;
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Brush", GUILayout.Width(40));
-            Brush[] brushes = Enumerable.Range(0, GemTypes + 1).Select(i => (Brush)i).ToArray();
-            string[] names = brushes.Select(BrushName).ToArray();
-            _brush = brushes[Mathf.Max(0, GUILayout.Toolbar(System.Array.IndexOf(brushes, _brush), names))];
-            _stoneBrush = GUILayout.Toggle(_stoneBrush, "in stone", GUILayout.Width(70));
+            if (_paintCovers)
+            {
+                _coverBrush = GUILayout.Toolbar(_coverBrush, CoverNames);
+            }
+            else
+            {
+                Brush[] brushes = Enumerable.Range(0, GemTypes + 1).Select(i => (Brush)i).ToArray();
+                string[] names = brushes.Select(BrushName).ToArray();
+                _brush = brushes[Mathf.Max(0, GUILayout.Toolbar(System.Array.IndexOf(brushes, _brush), names))];
+                _stoneBrush = GUILayout.Toggle(_stoneBrush, "in stone", GUILayout.Width(70));
+            }
             EditorGUILayout.EndHorizontal();
 
             SerializedProperty layout = _serialized.FindProperty("layout");
+            SerializedProperty coversProperty = _serialized.FindProperty("covers");
             char[,] cells = ReadCells(layout);
+            char[,] covers = ReadCells(coversProperty);
             const float size = 34f;
             for (int y = 0; y < BoardSize; y++)
             {
@@ -183,27 +198,46 @@ namespace PuzzleKingdoms.EditorTools
                     bool stone = c == BoardLayout.RandomStone || c >= 'a' && c <= 'j';
                     Color old = GUI.backgroundColor;
                     GUI.backgroundColor = type >= 0 && type < GemColors.Length ? GemColors[type] : new Color(0.35f, 0.35f, 0.35f);
-                    if (GUILayout.Button(stone ? "▣" : type >= 0 ? type.ToString() : "·", GUILayout.Width(size), GUILayout.Height(size)))
+                    char cover = covers[x, y];
+                    string label = (stone ? "▣" : type >= 0 ? type.ToString() : "·") + (cover == BoardLayout.RandomCell ? "" : cover.ToString());
+                    if (GUILayout.Button(label, GUILayout.Width(size), GUILayout.Height(size)))
                     {
-                        cells[x, y] = Paint();
-                        WriteCells(layout, cells);
+                        if (_paintCovers)
+                        {
+                            covers[x, y] = CoverChars[_coverBrush];
+                            WriteCells(coversProperty, covers);
+                        }
+                        else
+                        {
+                            cells[x, y] = Paint();
+                            WriteCells(layout, cells);
+                        }
                     }
                     GUI.backgroundColor = old;
                 }
                 EditorGUILayout.EndHorizontal();
             }
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Clear board", GUILayout.Width(110)))
+            if (GUILayout.Button("Clear gems", GUILayout.Width(110)))
             {
                 layout.ClearArray();
             }
+            if (GUILayout.Button("Clear ice and chains", GUILayout.Width(150)))
+            {
+                coversProperty.ClearArray();
+            }
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.LabelField("Letters on a cell: i / I ice, c chain, k chain on ice.", EditorStyles.miniLabel);
 
             List<string> rows = Rows(layout);
             if (!BoardLayout.IsEmpty(rows) &&
                 !BoardLayout.TryParse(rows, BoardSize, BoardSize, GemTypes, out _, out _, out string error))
             {
                 EditorGUILayout.HelpBox("Board: " + error, MessageType.Error);
+            }
+            if (!BoardLayout.TryParseCovers(Rows(coversProperty), BoardSize, BoardSize, out _, out _, out string coverError))
+            {
+                EditorGUILayout.HelpBox("Ice and chains: " + coverError, MessageType.Error);
             }
         }
 
