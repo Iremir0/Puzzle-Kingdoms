@@ -548,3 +548,21 @@ became the other classic obstacle and the two do not overlap.
   (2-2, as 1-3 with four chained corners and 2 boss stones every 3 moves; bots win 48 % / 84 %).
 Why: Chapter 2 needs boards that play differently from Chapter 1 without new screens; chains and ice
 are known to players from other match-3 games, so they need little teaching.
+
+## D-051 Chapter 2: four enemy behaviours as unit data, ten stages, one map per chapter, 2026-11-18
+PB-18 (Alican). Chapter 2 is playable end to end except for the four new models.
+- **Behaviours are data on `UnitDef`**, all off by default so Chapter 1 is unchanged: `RangedDamageReduction`
+  (shield goblin, only while front-most of its side), `HealAmount`/`HealInterval`/`HealRange` (shaman),
+  `TargetsBackRow` (wolf rider), `SplashRadius`/`SplashFraction` (bomber). No new unit classes or enums in
+  logic; the simulator reads the fields. New `BattleEventType.Heal`; heals land after the hits of a tick.
+- **Ranged** = attack range above 1.5 cells (`UnitDef.RangedThreshold`). **Back row** = the formation row
+  the unit started in (positions move, rows do not). Splash is armor/ward-aware per victim.
+- **Ten stages** `Stage_2_1` to `Stage_2_10`, in the campaign after 1-3 (a star on 1-3 opens 2-1). The two
+  D-050 drafts were reworked: Frozen Gate is 2-2, The Chief's Forge 2-9. Each stage has one tutorial prompt.
+  Difficulty is tuned only through stage data (HP/damage multipliers, stones, goals) against `Tools/Balance`.
+- **`chapter` on the stage asset** (`StageDef.Chapter`, default 1) and a chapter switch on the stage map;
+  stage numbers are chapter-local ("2-3"). A chapter button is greyed until its first stage is unlocked.
+- **Art:** the four Meshy models are not made (credits need Alican's approval each, D-043): the grey-box
+  silhouettes of Brute, Archer and Grunt stand in via four new `UnitLook` values.
+Why: data-driven behaviours keep logic free of per-enemy special cases and let PB-21 reuse healing; a
+`chapter` field instead of nested campaigns keeps unlock order and the save format unchanged.

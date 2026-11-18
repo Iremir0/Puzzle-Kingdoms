@@ -169,7 +169,27 @@ Values after the balance passes (D-026, D-033, `Tools/Balance`):
 | Goblin Brute | 672 | 16 | 1.4 | 1.0 | 0.9 | 50% |
 | Goblin Chief | 1764 | 30 | 1.2 | 1.2 | 1.0 | 20% |
 
-All goblins deal Physical damage and have 0% Ward.
+All Chapter 1 goblins deal Physical damage and have 0% Ward.
+
+**Chapter 2 enemies (PB-18, D-051).** Each changes how you recruit or place units:
+
+| Enemy | Role | Behaviour | Trait taught |
+|---|---|---|---|
+| Shield Goblin | armored melee | blocks 50% of ranged damage while it is the front-most unit of its side | bring Warriors and Mages |
+| Goblin Shaman | healer | every 2 s restores 60 HP to the most hurt ally within 3.5 cells | kill it first |
+| Wolf Rider | fast melee | targets the back-most formation row first | protect the back row |
+| Goblin Bomber | splash ranged | hits others within 1.5 cells of its target for 50% | spread your units |
+
+| Enemy | HP | Damage | Type | Interval (s) | Range | Speed | Armor | Ward |
+|---|---|---|---|---|---|---|---|---|
+| Shield Goblin | 756 | 12 | Physical | 1.2 | 1.0 | 0.9 | 20% | 0% |
+| Goblin Shaman | 231 | 8 | Magic | 1.6 | 3.5 | 0.9 | 0% | 20% |
+| Wolf Rider | 336 | 14 | Physical | 0.9 | 1.0 | 2.0 | 0% | 0% |
+| Goblin Bomber | 252 | 22 | Physical | 2.0 | 3.0 | 0.9 | 0% | 0% |
+
+"Ranged" means an attack range above 1.5 cells. Heals land after the hits of a tick, so a unit killed
+this tick is not saved. "Back row" is the formation row a unit started in. Until the four Meshy models
+exist (ART.md §7) the grey-box silhouettes of Brute, Archer and Grunt stand in for them.
 
 Enemies use the same rules as player units and their own 4×4 formation.
 
@@ -248,7 +268,26 @@ Stage Editor, not yet in the campaign:
 | 2-1 | Frozen Gate (draft) | as 1-2 | break all the ice | 14 ice layers in the middle, 12 moves | aim your matches |
 | 2-2 | The Chief's Forge (draft) | as 1-3 | defeat the army | 4 chained corner gems; boss drops 2 stones every 3 moves | play around the boss |
 
-The two Chapter 2 drafts use today's enemies; PB-18 gives Chapter 2 its own enemies and the rest of its stages.
+**Chapter 2: Goblin Fort (PB-18, D-051).** Ten stages, campaign order after 1-3, `chapter: 2` on the
+stage asset, its own map. One lesson each; the last is the boss stage. Rally is taught again in 2-8 and 2-10.
+
+| Stage | Name | Enemies | Goal / board | Lesson |
+|---|---|---|---|---|
+| 2-1 | Shield Wall | 2 Shield Goblins, 2 Grunts, 2 Archers | 3 stones | arrows bounce off the front shield |
+| 2-2 | Frozen Gate | 2 Shield Goblins, 2 Grunts, 2 Archers | break all the ice | aim your matches |
+| 2-3 | Healer's Camp | 2 Brutes, 2 Grunts, 2 Shamans | 3 stones | kill the healers first |
+| 2-4 | Wolf Pack | 2 Grunts, 3 Wolf Riders | 3 stones | the back row gets dived |
+| 2-5 | Powder Keg | 2 Brutes, 2 Shields, 3 Bombers | 3 stones | spread your units |
+| 2-6 | Chain Gang | 2 Shields, 2 Wolves, 2 Shamans | 4 chained corner gems | match chains open |
+| 2-7 | Stone Pit | 2 Brutes, Shaman, Bomber, 2 Wolves | break 4 stones | stones first |
+| 2-8 | Race the Clock | 4 Grunts, 2 Wolves | win within 30 s | fast army, Rally |
+| 2-9 | The Chief's Forge | Chief, 2 Brutes, Shaman, Bomber | chains; boss stones every 3 moves | play around the boss |
+| 2-10 | Goblin Fort Gate | Chief, 2 Shields, Wolf, Shaman, Bomber | boss stones every 3 moves | everything at once |
+
+Enemy HP multipliers 1.35, 1.35, 1.2, 2.4 (damage x1.2), 1.1, 1.45, 1.7, 1.85, 1.05, 1.2; gold 70 to 220.
+Measured (300-400 runs, greedy puzzle bot, auto formation, no merges, without Rally): 2-1 92%, 2-2 89%, 2-3 70%,
+2-4 84%, 2-5 60%, 2-6 62%, 2-7 71%, 2-8 67%, 2-9 51%, 2-10 46%; with Rally 6-20 points higher.
+The random bot wins 13-58%. Nodes sit in a three-column sawtooth on the map (placeholder layout, see PB-18 notes).
 
 Measured difficulty (D-033, 400 runs; random/greedy puzzle bot, auto formation, no merges;
 without / with Rally): 1-1 won 94% / 96% (random) and 100% (greedy), battles 16–22 s
