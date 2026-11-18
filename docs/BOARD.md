@@ -39,7 +39,7 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-1](cards/PB-1.md) | Run the game on a real phone | Emir | M0 | M | — | Dev APK builds (38 MB, IL2CPP ARM64, 2026-11-14); still to do: install and play on a phone |
 | [PB-7](cards/PB-7.md) | Puzzle feel: input and animations | Emir | M2 | L | `feature/PB-7-puzzle-feel` | Animations, drag-follow swipe and hint pulse built, tested and in `main`; left: feel check on a phone (PB-1 build) |
 | [PB-13](cards/PB-13.md) | Stage map and tutorial | Alican | M5 | M | `feature/PB-13-map-tutorial` | Map with nodes, stars, arrow and stage card; tutorial prompts for 1-1 to 1-3 from the stage assets, skip + reset (D-040); left: a new person plays 1-1 without help |
-| [PB-10](cards/PB-10.md) | Art direction decision | Alican (prepares), both decide | M3 | M | `feature/PB-10-art-direction` | Draft `docs/ART.md`: constraints, options A/B/C, KayKit spike renders; waiting for budget and the goblins-or-skeletons call |
+| [PB-10](cards/PB-10.md) | Art direction decision | Alican (prepares), both decide | M3 | M | `feature/PB-10-art-assets` | Decision made (D-041); all 7 characters made with Meshy Pro (own, private licence) and in `Art/Characters/`, army render in `ArtSpike`; left: phone screenshots (PB-1), rigs are for PB-12 |
 
 ## Ready (next up, in priority order)
 

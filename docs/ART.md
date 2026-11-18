@@ -256,7 +256,7 @@ no holes, weapons clear of the body, no red or purple on the goblins.
 | Hero_Mage | 5,171 | 5,000 | 53 |
 | Goblin_Archer | 5,213 | 5,000 | 53 |
 | Goblin_Brute | 6,228 | 6,000 | 53 |
-| Goblin_Chief | about 8,380 (counter read 8,364 / 8,384; confirm in Unity) | 8,000 | 53 |
+| Goblin_Chief | 8,364 (confirmed by the `ArtSpike` report) | 8,000 | 53 |
 
 Brute and Chief are in the git-ignored `Assets/_Project/Sandbox/Meshy/` and copied (FBX and
 base-colour texture only, like the others) to `Assets/_Project/Art/Characters/<Name>/`. Unity

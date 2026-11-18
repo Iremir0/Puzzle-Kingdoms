@@ -234,6 +234,8 @@ namespace PuzzleKingdoms.EditorTools
             { "Hero_Archer", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
             { "Hero_Mage", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
             { "Goblin_Archer", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
+            { "Goblin_Brute", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
+            { "Goblin_Chief", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
         };
 
         /// <summary>Stands a Meshy model up; players face away from the camera, towards the enemy.</summary>
