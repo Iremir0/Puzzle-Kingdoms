@@ -55,9 +55,16 @@ namespace PuzzleKingdoms.Views.Common
         /// <summary>Raw texture of an art file, or null.</summary>
         public static Texture2D Texture(string name) => Resources.Load<Texture2D>("Art/UI/" + name);
 
-        /// <summary>Painted battle ground of a stage: the meadow, the goblin camp, or the fort gate for the last stage; null = procedural.</summary>
+        /// <summary>Painted battle ground of a stage: the meadow, the goblin camp, or the fort gate from stage 5 of the chapter on; null = procedural.</summary>
         public static Texture2D Arena(string stageId, int chapter) =>
-            stageId == "stage_2_10" ? Texture("Battle_Gate") : chapter >= 2 ? Texture("Battle_Chapter2") : Texture("Battle_Chapter1");
+            chapter >= 2 && StageNumber(stageId) >= 5 ? Texture("Battle_Gate") : chapter >= 2 ? Texture("Battle_Chapter2") : Texture("Battle_Chapter1");
+
+        /// <summary>The number after the last underscore of "stage_2_7", or 0.</summary>
+        private static int StageNumber(string stageId)
+        {
+            int cut = stageId.LastIndexOf('_');
+            return cut >= 0 && int.TryParse(stageId.Substring(cut + 1), out int number) ? number : 0;
+        }
 
         /// <summary>Painting behind the stage map of a chapter, or null.</summary>
         public static Sprite ChapterMap(int chapter) => Get("Map_Chapter" + chapter);
