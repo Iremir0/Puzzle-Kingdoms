@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PuzzleKingdoms.Logic.Kingdom;
 
 namespace PuzzleKingdoms.Logic.Progression
 {
@@ -21,15 +22,19 @@ namespace PuzzleKingdoms.Logic.Progression
             /// <summary>Version 2 (D-040): tutorial prompts already shown.</summary>
             public List<string> seenTutorialSteps = new List<string>();
             public bool tutorialSkipped;
+            /// <summary>Version 3 (D-052): building levels, ids and levels side by side.</summary>
+            public List<string> buildingIds = new List<string>();
+            public List<int> buildingLevels = new List<int>();
         }
 
-        /// <summary>2 = tutorial progress added (D-040); version 1 files load with none seen.</summary>
-        public const int CurrentVersion = 2;
+        /// <summary>3 = building levels added (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
+        public const int CurrentVersion = 3;
 
         public event Action Changed;
 
         private readonly Dictionary<string, int> _bestStars = new Dictionary<string, int>();
         private readonly List<string> _seenSteps = new List<string>();
+        private readonly Dictionary<string, int> _buildingLevels = new Dictionary<string, int>();
 
         public int Gold { get; private set; }
 
@@ -68,6 +73,26 @@ namespace PuzzleKingdoms.Logic.Progression
             Changed?.Invoke();
         }
 
+        public int BuildingLevel(string buildingId) => _buildingLevels.TryGetValue(buildingId, out int level) ? level : 0;
+
+        /// <summary>Spends the gold for the next level of a building. False at the cap, for an unknown building or without the gold.</summary>
+        public bool TryUpgradeBuilding(KingdomRules rules, string buildingId)
+        {
+            int level = BuildingLevel(buildingId);
+            int cost = rules.CostToUpgrade(buildingId, level);
+            if (cost < 0 || cost > Gold)
+            {
+                return false;
+            }
+            Gold -= cost;
+            _buildingLevels[buildingId] = level + 1;
+            Changed?.Invoke();
+            return true;
+        }
+
+        /// <summary>The bonuses of the buildings as they stand now.</summary>
+        public KingdomBonuses Bonuses(KingdomRules rules) => rules.BonusesFor(BuildingLevel);
+
         public int BestStars(string stageId) => _bestStars.TryGetValue(stageId, out int stars) ? stars : 0;
 
         /// <summary>True if the stage at <paramref name="index"/> in <paramref name="campaignOrder"/> can be played.</summary>
@@ -99,6 +124,11 @@ namespace PuzzleKingdoms.Logic.Progression
                 seenTutorialSteps = new List<string>(_seenSteps),
                 tutorialSkipped = TutorialSkipped,
             };
+            foreach (KeyValuePair<string, int> building in _buildingLevels)
+            {
+                snapshot.buildingIds.Add(building.Key);
+                snapshot.buildingLevels.Add(building.Value);
+            }
             foreach (KeyValuePair<string, int> pair in _bestStars)
             {
                 snapshot.stageIds.Add(pair.Key);
@@ -135,6 +165,17 @@ namespace PuzzleKingdoms.Logic.Progression
                 }
             }
             profile.TutorialSkipped = snapshot.tutorialSkipped;
+            if (snapshot.buildingIds != null && snapshot.buildingLevels != null)
+            {
+                int buildings = Math.Min(snapshot.buildingIds.Count, snapshot.buildingLevels.Count);
+                for (int i = 0; i < buildings; i++)
+                {
+                    if (!string.IsNullOrEmpty(snapshot.buildingIds[i]))
+                    {
+                        profile._buildingLevels[snapshot.buildingIds[i]] = Math.Max(0, snapshot.buildingLevels[i]);
+                    }
+                }
+            }
             return profile;
         }
     }

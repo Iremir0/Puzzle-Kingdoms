@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using PuzzleKingdoms.Logic.Army;
+using PuzzleKingdoms.Logic.Kingdom;
 
 namespace PuzzleKingdoms.Logic.Combat
 {
@@ -32,16 +33,19 @@ namespace PuzzleKingdoms.Logic.Combat
         /// <summary>Set when the battle is over.</summary>
         public BattleResult Result { get; private set; }
 
+        private readonly KingdomBonuses _bonuses;
         private readonly int _timeoutTicks;
         private readonly List<BattleEvent> _pendingEvents = new List<BattleEvent>();
         private readonly List<BattleEvent> _hits = new List<BattleEvent>();
         private readonly List<BattleEvent> _heals = new List<BattleEvent>();
 
-        public BattleSimulator(BattleRules rules, ArmyRules armyRules, Formation player, Formation enemy, int rallyCharges)
+        public BattleSimulator(BattleRules rules, ArmyRules armyRules, Formation player, Formation enemy, int rallyCharges,
+            KingdomBonuses bonuses = null)
         {
             Rules = rules ?? throw new ArgumentNullException(nameof(rules));
             _timeoutTicks = rules.SecondsToTicks(rules.TimeoutSeconds);
             Rally = new Rally(rallyCharges, rules.SecondsToTicks(rules.RallyDurationSeconds));
+            _bonuses = bonuses ?? KingdomBonuses.None;
             SpawnSide(player, Side.Player, armyRules);
             SpawnSide(enemy, Side.Enemy, armyRules);
         }
@@ -175,7 +179,7 @@ namespace PuzzleKingdoms.Logic.Combat
                     {
                         continue;
                     }
-                    var c = new Combatant(Combatants.Count, side, unit, cell, armyRules);
+                    var c = new Combatant(Combatants.Count, side, unit, cell, armyRules, _bonuses);
                     c.Position = CellToPosition(side, cell);
                     Combatants.Add(c);
                 }

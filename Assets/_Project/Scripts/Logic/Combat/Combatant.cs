@@ -1,5 +1,6 @@
 using System.Numerics;
 using PuzzleKingdoms.Logic.Army;
+using PuzzleKingdoms.Logic.Kingdom;
 
 namespace PuzzleKingdoms.Logic.Combat
 {
@@ -42,7 +43,7 @@ namespace PuzzleKingdoms.Logic.Combat
         /// <summary>Seconds until the next attack is ready; may carry a small negative rest.</summary>
         public float Cooldown;
 
-        public Combatant(int id, Side side, ArmyUnit unit, GridPos cell, ArmyRules armyRules)
+        public Combatant(int id, Side side, ArmyUnit unit, GridPos cell, ArmyRules armyRules, KingdomBonuses bonuses = null)
         {
             Id = id;
             Side = side;
@@ -51,16 +52,20 @@ namespace PuzzleKingdoms.Logic.Combat
             UnitDef def = unit.Def;
             Def = def;
             HealCooldown = def.HealInterval;
-            MaxHp = unit.MaxHp(armyRules);
+            KingdomBonuses kingdom = side == Side.Player ? bonuses ?? KingdomBonuses.None : KingdomBonuses.None; // PB-22: the player's buildings
+            MaxHp = ScaleInt(unit.MaxHp(armyRules), kingdom.HpMultiplier(def.Id));
             Hp = MaxHp;
-            Damage = unit.Damage(armyRules);
+            Damage = ScaleInt(unit.Damage(armyRules), kingdom.DamageMultiplier(def.Id));
             DamageType = def.DamageType;
-            AttackInterval = def.AttackInterval;
+            AttackInterval = def.AttackInterval / kingdom.AttackSpeedMultiplier(def.Id);
             AttackRange = def.AttackRange;
             MoveSpeed = def.MoveSpeed;
             Armor = def.Armor;
             Ward = def.Ward;
         }
+
+        private static int ScaleInt(int value, float multiplier) =>
+            multiplier == 1f ? value : System.Math.Max(1, (int)System.Math.Round(value * multiplier, System.MidpointRounding.AwayFromZero));
 
         public bool IsAlive => Hp > 0;
 
