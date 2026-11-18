@@ -54,8 +54,8 @@ namespace PuzzleKingdoms.Views.Common
 
         private static Font _font;
 
-        /// <summary>Unity's built-in font; grey-box only (TextMeshPro comes with real UI).</summary>
-        public static Font Font => _font != null ? _font : (_font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"));
+        /// <summary>The UI font (PB-16): Lilita One, loaded from <c>Resources/UiFont</c>; the built-in font if it is missing.</summary>
+        public static Font Font => _font != null ? _font : (_font = Resources.Load<Font>("UiFont") ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"));
 
         /// <summary>Portrait overlay canvas scaled from 1080×1920.</summary>
         public static Canvas CreateCanvas(string name)
