@@ -32,7 +32,9 @@ puzzle-kingdoms/
 │       │   │                        AndroidBuild (dev APK → Builds/Android/),
 │       │   │                        PlaceholderSounds (generates Audio/Placeholder + SoundBank),
 │       │   │                        PlaytestBuild (Windows playtest build → Builds/Windows/),
-│       │   │                        ArtSpike (PB-10: renders models from the git-ignored Sandbox/)
+│       │   │                        ArtSpike (PB-10: renders models from the git-ignored Sandbox/),
+│       │   │                        MeshyRigImport (PB-12: Humanoid, no finger mapping, looping clips
+│       │   │                        for our Meshy-rigged FBX; D-043)
 │       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save),
 │       │   │                        SettingsStore (settings.json, D-039), SafeFile (crash-safe writes),
 │       │   │                        PlaytestLog (playtest-log.jsonl, D-037)
