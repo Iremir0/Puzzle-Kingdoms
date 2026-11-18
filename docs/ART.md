@@ -214,3 +214,31 @@ rendering four candidates side by side. The Knight seen from above reads as the 
 
 Heads-up on size: every re-export adds ~14 MB to the history. Keep only approved models here and
 consider Git LFS once the cast is complete (7 models, ~100 MB).
+
+## 7. Prompts for the remaining characters (Meshy Pro)
+
+Method for each: crop the character from the style frame (`<Name>_reference.png`, kept in the
+Downloads folder of whoever runs Meshy), put **only that crop** in "Görsel Referanslar", generate
+2 images (Nano Banana Pro, 3:4, Pose = None), choose one, then image → 3D (Meshy 7.1 high detail +
+texture, Pose = none, private licence), remesh custom target 5,000 triangles (Brute 6,000, Chief
+8,000) triangle topology keeping the texture, check front / side / back, download FBX with
+textures. Prompts stay under 800 characters and never name a real game.
+
+Common start of every prompt:
+
+> Hand-painted cartoon style exactly like the reference image: same face style, big expressive
+> eyes, large head, chunky simple shapes, painted textures with soft gradients. Full body, front
+> view, A-pose, arms away from the body, weapon clearly separate from the body, plain light grey
+> background.
+
+| Name | Prompt after the common start |
+|---|---|
+| Hero_Archer | A cheerful young archer with a bright mint green hooded cloak and hood (#58C889) with white trim, a light brown tunic, brown leather gloves and boots, a quiver of arrows on the back, a wooden longbow held out to the side. No dark green. |
+| Hero_Mage | A determined young mage with white hair, a tall purple pointed hat with a gold buckle, a long purple robe with gold trim and a high collar, a small brown satchel, a twisted wooden staff with a glowing cyan flame held out to the side. |
+| Goblin_Archer | A lean sneaky goblin archer with olive yellow-green skin, a brown hooded cloak with a torn collar, one bandaged arm, a small leather pouch on the belt, a quiver of feathered arrows on the back, a short curved wooden bow held out to the side. No red, no purple. |
+| Goblin_Brute | A huge hulking goblin brute, much wider than the others, olive yellow-green skin, a steel helmet, heavy dented iron armour plates with spiked shoulder pads and iron bracers, a ragged brown loincloth, a giant spiked iron club held out to the side. Must clearly look armoured. No red, no purple. |
+| Goblin_Chief | A large proud goblin chieftain, the boss, olive yellow-green skin, a crown of bones and gold with GOLD gems (no red or purple gems), a fur-collared dark brown cape, round gold shoulder discs, a bone necklace, a belt with a skull buckle, a brown loincloth (no red), a big double-headed steel axe held out to the side. |
+
+Done so far: Goblin_Grunt, Hero_Knight (both in `Assets/_Project/Art/Characters/`). Colours: heroes
+red / mint / purple, goblins olive with brown, iron and bone, so no army mixes up with the other.
+Credits used so far: about 290 of the Pro plan's ~1,400.
