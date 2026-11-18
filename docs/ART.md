@@ -239,6 +239,6 @@ Common start of every prompt:
 | Goblin_Brute | A huge hulking goblin brute, much wider than the others, olive yellow-green skin, a steel helmet, heavy dented iron armour plates with spiked shoulder pads and iron bracers, a ragged brown loincloth, a giant spiked iron club held out to the side. Must clearly look armoured. No red, no purple. |
 | Goblin_Chief | A large proud goblin chieftain, the boss, olive yellow-green skin, a crown of bones and gold with GOLD gems (no red or purple gems), a fur-collared dark brown cape, round gold shoulder discs, a bone necklace, a belt with a skull buckle, a brown loincloth (no red), a big double-headed steel axe held out to the side. |
 
-Done so far: Goblin_Grunt, Hero_Knight, Hero_Archer, Hero_Mage (in `Assets/_Project/Art/Characters/`). Colours: heroes
+Done so far: Goblin_Grunt, Goblin_Archer (5,213), Hero_Knight, Hero_Archer, Hero_Mage (in `Assets/_Project/Art/Characters/`). Colours: heroes
 red / mint / purple, goblins olive with brown, iron and bone, so no army mixes up with the other.
-Credits used so far: about 370 of the Pro plan's ~1,400.
+Credits used so far: about 425 of the Pro plan's ~1,400.
