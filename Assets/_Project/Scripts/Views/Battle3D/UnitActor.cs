@@ -68,6 +68,15 @@ namespace PuzzleKingdoms.Views.Battle3D
                 GameObject ring = Primitive(PrimitiveType.Cylinder, "Tier Ring", Root.transform, Palette.Gold);
                 ring.transform.localScale = new Vector3(1.1f, 0.01f, 1.1f) * tierScale;
                 ring.transform.localPosition = new Vector3(0f, 0.02f, 0f);
+                if (combatant.Unit.Tier >= 3)
+                {
+                    // T3 glows (GDD §6): a bright ring and a soft gold emission on the body.
+                    Glow(ring.GetComponent<Renderer>(), Palette.Gold * 1.6f);
+                    foreach (Renderer part in _bodyRenderers)
+                    {
+                        Glow(part, Palette.Gold * 0.3f);
+                    }
+                }
             }
 
             // HP bar: a dark quad with a coloured fill, turned towards the camera every frame.
@@ -227,6 +236,14 @@ namespace PuzzleKingdoms.Views.Battle3D
                 weapon.transform.localPosition = new Vector3(0.45f, 0.7f, 0.4f) * tierScale;
             }
             return new[] { body.GetComponent<Renderer>(), weapon.GetComponent<Renderer>() };
+        }
+
+        /// <summary>Turns on the emission of this renderer's own material (URP Lit) with the given colour.</summary>
+        private static void Glow(Renderer renderer, Color emission)
+        {
+            Material material = renderer.material;
+            material.EnableKeyword("_EMISSION");
+            material.SetColor("_EmissionColor", emission);
         }
 
         private static Bounds BoundsOf(Renderer[] renderers)
