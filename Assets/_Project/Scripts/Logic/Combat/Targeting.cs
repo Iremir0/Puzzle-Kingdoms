@@ -20,6 +20,11 @@ namespace PuzzleKingdoms.Logic.Combat
             {
                 return PickBackRow(attacker, candidates);
             }
+            Combatant taunter = PickTaunter(attacker, candidates);
+            if (taunter != null)
+            {
+                return taunter;
+            }
             float nearest = float.PositiveInfinity;
             foreach (Combatant other in candidates)
             {
@@ -47,6 +52,34 @@ namespace PuzzleKingdoms.Logic.Combat
                     continue;
                 }
                 if (best == null || IsBetter(attacker, other, distance, best, bestDistance))
+                {
+                    best = other;
+                    bestDistance = distance;
+                }
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// Defender (PB-21): the nearest living enemy that taunts and is within its own taunt radius of the attacker.
+        /// </summary>
+        private static Combatant PickTaunter(Combatant attacker, IReadOnlyList<Combatant> candidates)
+        {
+            Combatant best = null;
+            float bestDistance = float.PositiveInfinity;
+            foreach (Combatant other in candidates)
+            {
+                if (!IsValid(attacker, other) || other.Def.TauntRadius <= 0f)
+                {
+                    continue;
+                }
+                float distance = Vector2.Distance(attacker.Position, other.Position);
+                if (distance > other.Def.TauntRadius + DistanceEpsilon)
+                {
+                    continue;
+                }
+                if (best == null || distance < bestDistance - DistanceEpsilon
+                    || (Math.Abs(distance - bestDistance) <= DistanceEpsilon && other.Id < best.Id))
                 {
                     best = other;
                     bestDistance = distance;
