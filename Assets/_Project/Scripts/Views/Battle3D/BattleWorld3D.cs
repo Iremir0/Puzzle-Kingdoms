@@ -24,7 +24,6 @@ namespace PuzzleKingdoms.Views.Battle3D
         public const float Aspect = 0.72f;
         private const float MarginCells = 1.5f;
         private static readonly Vector3 Origin = new Vector3(3000f, 0f, 0f);
-        private static readonly Color GroundColor = new Color32(0x4A, 0x6B, 0x4F, 0xFF);
 
         private sealed class Projectile
         {
@@ -433,25 +432,7 @@ namespace PuzzleKingdoms.Views.Battle3D
 
         private void BuildGround()
         {
-            GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            ground.name = "Ground";
-            ground.transform.SetParent(_root.transform, false);
-            ground.GetComponent<Collider>().enabled = false;
-            ground.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            ground.transform.localScale = new Vector3(40f, 40f, 1f);
-            ground.GetComponent<Renderer>().material.color = GroundColor;
-            ground.layer = Layer;
-
-            // A faint line across the middle where the two armies meet.
-            GameObject line = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            line.name = "Midline";
-            line.transform.SetParent(_root.transform, false);
-            line.GetComponent<Collider>().enabled = false;
-            line.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            line.transform.localPosition = new Vector3(0f, 0.01f, 0f);
-            line.transform.localScale = new Vector3(40f, 0.06f, 1f);
-            line.GetComponent<Renderer>().material.color = new Color(1f, 1f, 1f, 1f) * 0.9f;
-            line.layer = Layer;
+            BattleScenery.Build(_root.transform, Layer); // D-055: painted ground, trees, fence, banners
         }
 
         private void BuildLight()
@@ -463,7 +444,8 @@ namespace PuzzleKingdoms.Views.Battle3D
             light.type = LightType.Directional;
             light.intensity = 1.1f;
             light.color = new Color(1f, 0.97f, 0.9f);
-            light.shadows = LightShadows.None;
+            light.shadows = LightShadows.Soft;
+            light.shadowStrength = 0.45f;
             light.cullingMask = 1 << Layer;
             go.layer = Layer;
         }

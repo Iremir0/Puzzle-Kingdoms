@@ -619,3 +619,11 @@ Alican found the flat grey-box screens plain. All of it is code, no art files (D
   stay readable. Results stats sit on a card.
 - The palette is unchanged, so the contrast tests (D-044) still hold. Screens are checked with
   `GreyboxScreenshots` (`Logs/Screenshots/`), which now also captures Chapter 2, the Kingdom and the Commanders.
+
+## D-055 The battlefield is a place: painted ground, trees, fence, banners, 2026-11-18
+Alican found the flat green battlefield childish. `BattleScenery` (Views/Battle3D) builds it from code: a
+procedural ground texture (mown grass, a trampled dirt arena with a muddy rim, pebbles, shade towards the
+edges), chalk marks where the armies meet, a fence along both sides, trees, bushes and rocks at the sides and the
+far end, a banner at each corner (blue for the player, olive for the goblins), and a soft sun with shadows.
+Low props only at the player's end, so nothing stands in front of the player's units. No art files; the same
+every battle (fixed random seed). Tuned by looking at `GreyboxScreenshots.CaptureChapterTwoBattle`.
