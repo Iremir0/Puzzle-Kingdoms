@@ -145,6 +145,8 @@ more, merging is. Verified by headless simulation.
 | Warrior | 504 | 12 | Physical | 1.0 | 1.0 (melee) | 1.2 | Frontline |
 | Archer | 252 | 10 | Physical | 0.8 | 4.0 | 1.0 | Back line DPS |
 | Mage | 231 | 22 | Magic | 1.6 | 3.5 | 0.9 | Ignores armor; AoE post-MVP |
+| Defender | 900 | 14 | Physical | 1.3 | 1.0 (melee) | 1.0 | 30% armor; taunt: enemies within 4 cells attack it first (not the wolf rider). Unlocks after stage 1-3 (PB-21, D-059) |
+| Support | 300 | 9 | Magic | 1.4 | 3.0 | 0.95 | 20% ward; heals the most hurt ally in 4 cells for 60 HP every 2 s. Unlocks after stage 2-5 (PB-21, D-059) |
 
 HP of every unit and enemy was tripled in the first balance pass (D-026) and raised
 by 40% in D-033, so battles reach the 20â40 s target; damage is unchanged.
@@ -261,7 +263,7 @@ without making the boss trivial.
 ### Post-MVP progression order
 
 1. Permanent class levels bought with gold (small % per level).
-2. New classes as chapter rewards: Defender (blue), Support (yellow).
+2. ~~New classes as chapter rewards: Defender (blue shield), Support (pink cross)~~ done in PB-21 (D-059): a stage picks up to 4 classes plus the Banner gem.
 3. Daily Challenge: fixed seed, same board and enemy for everyone.
 4. Expedition mode: 3â5 battles in a row with a persistent army (roguelite).
 5. Commander heroes: one special slot with a unique Rally variant.

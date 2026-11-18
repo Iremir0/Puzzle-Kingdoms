@@ -20,16 +20,16 @@ namespace PuzzleKingdoms.Views.Menus
 
         public static ResultsScreen Create(Transform parent, string stageName, BattleResult result, float battleSeconds,
             StageReward reward, int totalGold, Actions actions, bool stageWon = true, string goalMissed = null,
-            string commandersUnlocked = "")
+            string commandersUnlocked = "", string classesUnlocked = "")
         {
             RectTransform root = Ui.Stretch(parent, "ResultsScreen");
             var screen = root.gameObject.AddComponent<ResultsScreen>();
-            screen.Build(stageName, result, battleSeconds, reward, totalGold, actions, stageWon && result.Victory, goalMissed, commandersUnlocked);
+            screen.Build(stageName, result, battleSeconds, reward, totalGold, actions, stageWon && result.Victory, goalMissed, commandersUnlocked, classesUnlocked);
             return screen;
         }
 
         private void Build(string stageName, BattleResult result, float battleSeconds, StageReward reward, int totalGold,
-            Actions actions, bool won, string goalMissed, string commandersUnlocked)
+            Actions actions, bool won, string goalMissed, string commandersUnlocked, string classesUnlocked)
         {
             Transform root = transform;
             Ui.Backdrop(root);
@@ -58,11 +58,18 @@ namespace PuzzleKingdoms.Views.Menus
                 Loc.F("Total: +{0} gold   (you have {1})", reward.TotalGold, totalGold);
             Ui.Card(root, "Stats Panel", Palette.Panel, 0.05f, 0.285f, 0.95f, 0.625f);
             Ui.Label(root, lines, 44, TextAnchor.UpperCenter, Palette.Text, 0.06f, 0.3f, 0.94f, 0.62f);
+            string unlockLine = "";
             if (!string.IsNullOrEmpty(commandersUnlocked))
             {
-                // PB-23: a stage that unlocks a commander says so.
-                Ui.Label(root, Loc.F("Commander unlocked: {0}", commandersUnlocked), 44, TextAnchor.MiddleCenter, Palette.Good,
-                    0.04f, 0.215f, 0.96f, 0.275f);
+                unlockLine = Loc.F("Commander unlocked: {0}", commandersUnlocked); // PB-23
+            }
+            if (!string.IsNullOrEmpty(classesUnlocked))
+            {
+                unlockLine += (unlockLine.Length > 0 ? "  ·  " : "") + Loc.F("Class unlocked: {0}", classesUnlocked); // PB-21
+            }
+            if (unlockLine.Length > 0)
+            {
+                Ui.Label(root, unlockLine, 38, TextAnchor.MiddleCenter, Palette.Good, 0.04f, 0.215f, 0.96f, 0.275f);
             }
 
             float y = 0.2f;

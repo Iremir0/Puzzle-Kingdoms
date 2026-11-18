@@ -452,9 +452,14 @@ namespace PuzzleKingdoms.Flow
             }
             List<Commander> allCommanders = content.CommanderList();
             var lockedBefore = new HashSet<string>(allCommanders.Where(c => !Profile.IsUnlocked(c)).Select(c => c.Id));
+            bool firstWin = Run.Won && Profile.BestStars(Run.Stage.Id) == 0;
             Profile.Apply(Run.Stage.Id, reward);
             _store.Save(Profile);
             string unlocked = string.Join(", ", allCommanders.Where(c => lockedBefore.Contains(c.Id) && Profile.IsUnlocked(c)).Select(c => Loc.T(c.DisplayName)));
+            // PB-21: a class that unlocks with this first win (Defender, Support).
+            string classesUnlocked = firstWin
+                ? string.Join(", ", content.ExtraUnits.Where(u => u.UnlockStageId == Run.Stage.Id).Select(u => Loc.T(u.Def.DisplayName)))
+                : "";
             if (!_attemptLogged)
             {
                 _attemptLogged = true;
@@ -487,7 +492,7 @@ namespace PuzzleKingdoms.Flow
                     Run.Puzzle.IceAtStart - Run.Puzzle.Board.IceLeft, Run.Puzzle.IceAtStart)
                 : null;
             Show(ResultsScreen.Create(_screenRoot, Run.Stage.DisplayName, Run.Battle.Result, seconds, reward,
-                Profile.Gold, actions, Run.Won, goalMissed, unlocked));
+                Profile.Gold, actions, Run.Won, goalMissed, unlocked, classesUnlocked));
             if (!Run.Won)
             {
                 OnTrigger(TutorialTrigger.BattleLost);

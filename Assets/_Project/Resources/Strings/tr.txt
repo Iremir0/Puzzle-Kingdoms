@@ -231,3 +231,4 @@ Volleys fall on the enemy back row: archers, shamans and bombers.	Düşman arka 
 One blast on the densest enemy group, then a short fighting spirit.	En kalabalık düşman grubuna tek patlama, ardından kısa bir savaş ruhu.
 Defender	Savunmacı
 Support	Destek
+Class unlocked: {0}	Sınıf açıldı: {0}
