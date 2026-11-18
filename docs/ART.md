@@ -203,8 +203,8 @@ matches. Close-up from the battle camera:
 Own-made Meshy Pro models live in `Assets/_Project/Art/Characters/<Name>/` (FBX and
 base-colour texture; ~14 MB each), so Emir has them and they are backed up. New downloads are
 tried first in the git-ignored `Assets/_Project/Sandbox/Meshy/`. In: **Goblin_Grunt** (5,222
-triangles), **Hero_Knight** (5,197) and **Hero_Archer** (5,208). KayKit stays only as a stand-in for
-the Mage, outside git.
+triangles), **Hero_Knight** (5,197), **Hero_Archer** (5,208) and **Hero_Mage** (5,171): all three heroes.
+KayKit is no longer used in the Meshy renders (kept outside git for the old comparison).
 
 Meshy does not export every model with the same axes: the Grunt stands up with +90° about X, the
 Knight with −90°. `ArtSpike.FacingCamera` keeps the rotation per model; find a new one by
@@ -239,6 +239,6 @@ Common start of every prompt:
 | Goblin_Brute | A huge hulking goblin brute, much wider than the others, olive yellow-green skin, a steel helmet, heavy dented iron armour plates with spiked shoulder pads and iron bracers, a ragged brown loincloth, a giant spiked iron club held out to the side. Must clearly look armoured. No red, no purple. |
 | Goblin_Chief | A large proud goblin chieftain, the boss, olive yellow-green skin, a crown of bones and gold with GOLD gems (no red or purple gems), a fur-collared dark brown cape, round gold shoulder discs, a bone necklace, a belt with a skull buckle, a brown loincloth (no red), a big double-headed steel axe held out to the side. |
 
-Done so far: Goblin_Grunt, Hero_Knight, Hero_Archer (in `Assets/_Project/Art/Characters/`). Colours: heroes
+Done so far: Goblin_Grunt, Hero_Knight, Hero_Archer, Hero_Mage (in `Assets/_Project/Art/Characters/`). Colours: heroes
 red / mint / purple, goblins olive with brown, iron and bone, so no army mixes up with the other.
-Credits used so far: about 330 of the Pro plan's ~1,400.
+Credits used so far: about 370 of the Pro plan's ~1,400.

@@ -50,7 +50,7 @@ namespace PuzzleKingdoms.EditorTools
             {
                 Name = "KayKit",
                 // Warrior, Archer (Rogue with crossbow stands in for the Ranger), Mage; enemies: skeletons for goblins.
-                PlayerRows = new[] { "Meshy/Hero_Knight", "Meshy/Hero_Knight", "Meshy/Hero_Archer", "KayKit/Mage" },
+                PlayerRows = new[] { "KayKit/Knight", "KayKit/Knight", "KayKit/Rogue", "KayKit/Mage" },
                 EnemyRows = new[] { "KayKit/Skeleton_Warrior", "KayKit/Skeleton_Minion", "KayKit/Skeleton_Rogue", "KayKit/Skeleton_Mage" },
                 Textures = new Dictionary<string, string>
                 {
@@ -73,13 +73,13 @@ namespace PuzzleKingdoms.EditorTools
                 // D-041: our own Meshy models (Pro plan, private licence) against the KayKit stand-ins.
                 // New downloads go into the git-ignored Sandbox/Meshy/; approved ones into Art/Characters/<Name>/. Missing models are skipped.
                 Name = "Meshy",
-                PlayerRows = new[] { "Meshy/Hero_Knight", "Meshy/Hero_Knight", "Meshy/Hero_Archer", "KayKit/Mage" },
+                PlayerRows = new[] { "Meshy/Hero_Knight", "Meshy/Hero_Knight", "Meshy/Hero_Archer", "Meshy/Hero_Mage" },
                 EnemyRows = new[] { "Meshy/Goblin_Brute", "Meshy/Goblin_Grunt", "Meshy/Goblin_Chief", "Meshy/Goblin_Archer" },
                 Textures = new Dictionary<string, string>
                 {
                     { "Knight", "knight_texture" }, { "Rogue", "rogue_texture" }, { "Mage", "mage_texture" },
                     // Meshy exports: the base colour PNG is saved next to the FBX under the same name.
-                    { "Hero_Knight", "Hero_Knight" }, { "Hero_Archer", "Hero_Archer" }, { "Goblin_Grunt", "Goblin_Grunt" }, { "Goblin_Archer", "Goblin_Archer" },
+                    { "Hero_Knight", "Hero_Knight" }, { "Hero_Archer", "Hero_Archer" }, { "Hero_Mage", "Hero_Mage" }, { "Goblin_Grunt", "Goblin_Grunt" }, { "Goblin_Archer", "Goblin_Archer" },
                     { "Goblin_Brute", "Goblin_Brute" }, { "Goblin_Chief", "Goblin_Chief" },
                 },
                 Hide = new Dictionary<string, string[]>
@@ -232,6 +232,7 @@ namespace PuzzleKingdoms.EditorTools
             { "Goblin_Grunt", Quaternion.Euler(90f, 0f, 0f) },
             { "Hero_Knight", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
             { "Hero_Archer", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
+            { "Hero_Mage", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
         };
 
         /// <summary>Stands a Meshy model up; players face away from the camera, towards the enemy.</summary>
@@ -338,7 +339,7 @@ namespace PuzzleKingdoms.EditorTools
         {
             GameObject ring = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             Object.DestroyImmediate(ring.GetComponent<Collider>());
-            ring.transform.position = at + Vector3.up * 0.02f;
+            ring.transform.position = new Vector3(at.x, 0.02f, at.z); // on the ground, not at the model's pivot
             float size = tier == 2 ? 1.0f : 1.25f;
             ring.transform.localScale = new Vector3(size, 0.01f, size);
             Color gold = new Color32(0xF4, 0xBE, 0x4F, 0xFF);
@@ -353,7 +354,7 @@ namespace PuzzleKingdoms.EditorTools
                 glow.color = gold;
                 glow.range = 1.4f;
                 glow.intensity = 1.2f;
-                glow.transform.position = at + Vector3.up * 1.2f;
+                glow.transform.position = new Vector3(at.x, 1.2f, at.z);
             }
         }
 
