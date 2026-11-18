@@ -142,7 +142,17 @@ namespace PuzzleKingdoms.Views.Menus
             plate.sprite = GemShapes.Get(GemShape.Circle);
             plate.preserveAspect = true;
             plate.raycastTarget = false;
-            if (building.Stat == BuildingStat.StageGold)
+            Sprite picture = ArtSprites.Building(building.Id);
+            if (picture != null)
+            {
+                // A painted picture of the building, standing a little out of its plate.
+                Image art = Ui.Box(rect, "Building Art", Color.white, 0.0f, 0.04f, 0.22f, 0.96f);
+                art.sprite = picture;
+                art.preserveAspect = true;
+                art.raycastTarget = false;
+                plate.color = new Color(plate.color.r, plate.color.g, plate.color.b, 0.35f);
+            }
+            else if (building.Stat == BuildingStat.StageGold)
             {
                 Image star = Ui.Box(plate.rectTransform, "Star", Palette.Gold, 0.2f, 0.2f, 0.8f, 0.8f);
                 star.sprite = GemShapes.Get(GemShape.Star);

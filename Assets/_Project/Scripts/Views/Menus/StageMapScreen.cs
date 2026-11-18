@@ -127,6 +127,25 @@ namespace PuzzleKingdoms.Views.Menus
             : chapter == 2 ? Loc.T("Chapter 2: Goblin Fort")
             : Loc.F("Chapter {0}", chapter);
 
+        /// <summary>The chapter's painted ground behind the path and nodes, dimmed a little so the nodes read.</summary>
+        private void AddPainting(int chapter)
+        {
+            Sprite art = ArtSprites.ChapterMap(chapter);
+            if (art == null)
+            {
+                return;
+            }
+            if (_map.GetComponent<Mask>() == null)
+            {
+                _map.gameObject.AddComponent<Mask>().showMaskGraphic = true; // keeps the rounded corners
+            }
+            Image painting = Ui.Box(_layer, "Painting", Color.white);
+            painting.sprite = art;
+            painting.raycastTarget = false;
+            Image dim = Ui.Box(_layer, "Dim", new Color(0f, 0f, 0f, 0.22f));
+            dim.raycastTarget = false;
+        }
+
         /// <summary>Draws the map of one chapter: its path, nodes, arrow and the buttons to the next and previous chapter.</summary>
         public void ShowChapter(int chapter)
         {
@@ -135,6 +154,7 @@ namespace PuzzleKingdoms.Views.Menus
             _nodes.Clear();
             _arrow = null;
             _chapterTitle.text = ChapterTitle(chapter);
+            AddPainting(chapter);
             _fitted = false;
             int inChapter = 0;
             foreach (StageDefinition s in _content.Campaign)

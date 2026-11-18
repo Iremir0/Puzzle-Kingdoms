@@ -18,3 +18,9 @@ Candidates reviewed:
   git-ignored `Assets/_Project/Sandbox/` (reviewed 2026-11-17, not committed).
 - Kenney Starter Kit Match-3 — code MIT (keep notice if copied), assets CC0.
   https://github.com/KenneyNL/Starter-Kit-Match-3 (reviewed 2026-11-13, not used yet)
+
+## UI paintings (2026-11-18)
+
+Building pictures (`Assets/_Project/Resources/Art/UI/Building_*.png`) and chapter map paintings
+(`Map_Chapter1.png`, `Map_Chapter2.png`): generated with Meshy AI text-to-image (Nano Banana Pro), Pro plan
+private licence. Magenta background keyed out and resized locally.
