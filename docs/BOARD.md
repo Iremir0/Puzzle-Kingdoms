@@ -41,6 +41,7 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-13](cards/PB-13.md) | Stage map and tutorial | Alican | M5 | M | `feature/PB-13-map-tutorial` | Map with nodes, stars, arrow and stage card; tutorial prompts for 1-1 to 1-3 from the stage assets, skip + reset (D-040); left: a new person plays 1-1 without help |
 | [PB-10](cards/PB-10.md) | Art direction decision | Alican (prepares), both decide | M3 | M | `feature/PB-10-art-assets` | Decision made (D-041); all 7 characters made with Meshy Pro (own, private licence) and in `Art/Characters/`, army render in `ArtSpike`; left: phone screenshots (PB-1), rigs are for PB-12 |
 | [PB-11](cards/PB-11.md) | 3D battle scene | Alican | M4 | L | `feature/PB-11-battle-3d` | Started 2026-11-18. Third card for Alican: the two-card limit was relaxed on purpose (PB-10 is only waiting for the phone). 3D battle plays with the Meshy models, T3 glow, 2D behind a toggle (D-042); built in code, no `Main.unity` edit; left: phone check and fps (PB-1), the real game screen, animations are PB-12 |
+| [PB-12](cards/PB-12.md) | Battle life: animations and effects | Alican | M4 | L | `feature/PB-12-battle-life` | Started 2026-11-18, on top of the PB-11 branch (it needs the 3D actors). Fourth card for Alican, the limit is relaxed on purpose. Meshy rigs and clips (D-043) and the import tool are ready; Animator per class, Rally effect, hit and death effects, battle sounds to build |
 
 ## Ready (next up, in priority order)
 
@@ -55,7 +56,6 @@ Not started. Each card is a milestone slice that ends in something playable.
 
 | ID | Card | Milestone | Size | In short |
 |---|---|---|---|---|
-| [PB-12](cards/PB-12.md) | Battle life: animations and effects | M4 | L | Meshy-rigged idle/walk/attack/hit/death (D-043), Rally ring and aura, hit flash, battle sounds |
 | [PB-15](cards/PB-15.md) | Phone performance and layout | M6 | L | Profile on 2 phones, fix top 3 hotspots, safe area, 4 aspect ratios |
 | [PB-16](cards/PB-16.md) | Final polish and balance | M6 | M | Font, type and spacing scale, second playtest round, balance pass |
 | [PB-17](cards/PB-17.md) | Release build | M6 | S | Icon, splash, release keystore kept outside the repo, signed AAB command |
