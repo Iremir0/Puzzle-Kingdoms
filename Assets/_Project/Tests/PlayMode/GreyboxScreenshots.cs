@@ -68,6 +68,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app = new GameObject("GameApp").AddComponent<GameApp>();
             _app.SetContent(content);
             _app.TutorialEnabled = false; // PB-13 prompts are tested in TutorialFlowTests
+            _app.ConsentEnabled = false; // PB-29: the question is captured on its own below
             _app.UseStore(new ProfileStore(_saveFolder));
             _app.UsePlaytestLog(new PlaytestLog(_saveFolder));
             _app.UseLanguage(language);
@@ -77,6 +78,10 @@ namespace PuzzleKingdoms.Tests.PlayMode
             yield return null;
             yield return Capture(Path.Combine(output, "1-settings.png"));
             Object.Destroy(settings.gameObject);
+            var consent = _app.AskConsent(); // PB-29
+            yield return null;
+            yield return Capture(Path.Combine(output, "1-consent.png"));
+            Object.Destroy(consent.gameObject);
 
             _app.TutorialEnabled = true; // one prompt for the record (PB-13), then off again
             _app.StartStage(2);
@@ -143,6 +148,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app = new GameObject("GameApp").AddComponent<GameApp>();
             _app.SetContent(content);
             _app.TutorialEnabled = false; // PB-13 prompts are tested in TutorialFlowTests
+            _app.ConsentEnabled = false; // PB-29: the question is captured on its own below
             _app.UseStore(new ProfileStore(_saveFolder));
             yield return null;
             yield return Capture(Path.Combine(output, "short-1-stage-select.png"), Width, shortHeight);
@@ -194,6 +200,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app = new GameObject("GameApp").AddComponent<GameApp>();
             _app.SetContent(content);
             _app.TutorialEnabled = false; // PB-13 prompts are tested in TutorialFlowTests
+            _app.ConsentEnabled = false; // PB-29: the question is captured on its own below
             _app.UseStore(new ProfileStore(_saveFolder));
             yield return null;
             _app.StartStage(2);

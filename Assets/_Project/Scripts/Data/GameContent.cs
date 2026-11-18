@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PuzzleKingdoms.Logic;
+using PuzzleKingdoms.Logic.Analytics;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Logic.Stages;
@@ -40,10 +41,14 @@ namespace PuzzleKingdoms.Data
 
         public List<string> CampaignOrder() => campaign.Select(s => s.Id).ToList();
 
-        /// <summary>Starts a new attempt at a campaign stage.</summary>
-        public StageRun CreateRun(StageDefinition stage, IRandom random = null)
+        /// <summary>
+        /// Starts a new attempt at a campaign stage; <paramref name="config"/> may override the stage's
+        /// moves and enemy strength (PB-29, <see cref="StageTuning"/>).
+        /// </summary>
+        public StageRun CreateRun(StageDefinition stage, IRandom random = null, RemoteConfig config = null)
         {
             StageDef def = stage.ToStageDef();
+            StageTuning.Apply(def, config);
             List<UnitDef> units = recruitableUnits.Select(u => u.Def).ToList();
             return new StageRun(
                 def,

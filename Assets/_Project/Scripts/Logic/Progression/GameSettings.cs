@@ -25,6 +25,21 @@ namespace PuzzleKingdoms.Logic.Progression
         /// </summary>
         public string language = Languages.Auto;
 
+        // Consent (PB-29, KVKK / GDPR): nothing is collected until the player says yes. New fields with
+        // defaults, so older files load as "not asked yet".
+
+        /// <summary>The version of the consent text the player answered; 0 = never asked.</summary>
+        public int consentVersion;
+
+        /// <summary>Anonymous play statistics (stages started, won, lost, moves, time).</summary>
+        public bool analytics;
+
+        /// <summary>Error and crash reports.</summary>
+        public bool crashReports;
+
+        /// <summary>Ads chosen from the player's interests (only matters once ads exist, PB-30).</summary>
+        public bool personalisedAds;
+
         /// <summary>The battle speed to start at: an allowed value, 1 for anything else.</summary>
         public int BattleSpeed => Array.IndexOf(BattleSpeeds, battleSpeed) >= 0 ? battleSpeed : 1;
 
@@ -36,6 +51,7 @@ namespace PuzzleKingdoms.Logic.Progression
         {
             battleSpeed = BattleSpeed;
             language = Languages.Normalize(language);
+            consentVersion = Math.Max(0, consentVersion);
             version = CurrentVersion;
             return this;
         }

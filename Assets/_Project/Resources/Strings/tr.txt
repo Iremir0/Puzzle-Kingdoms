@@ -132,3 +132,13 @@ Enemy Archers shoot from afar. Keep your own Archers safe in the back row.	Düş
 Three of the same unit merge into a stronger one. Try Merge all.	Aynı birlikten üçü birleşip daha güçlü bir birlik olur. Hepsini birleştir'i dene.
 Brutes wear armour that halves normal damage. Mages (purple) ignore armour: recruit plenty.	Zorbaların zırhı normal hasarı yarıya indirir. Büyücüler (mor) zırhı deler: bolca topla.
 Tap Rally when the armies meet: for 5 seconds your units hit harder and faster.	Ordular karşılaşınca Hücum'a dokun: 5 saniye boyunca birliklerin daha sert ve daha hızlı vurur.
+
+# ---- Consent (PB-29) ----
+Data and privacy	Veri ve gizlilik
+Help us improve the game	Oyunu birlikte geliştirelim
+We would like to record how you play: which stages you win or lose, your moves and how long they take. Nothing that names you is collected, and you can change this any time in Settings.	Nasıl oynadığını kaydetmek istiyoruz: hangi seviyeleri kazanıp kaybettiğin, hamlelerin ve ne kadar sürdükleri. Seni tanıtan hiçbir bilgi toplanmaz; bu seçimi istediğin zaman Ayarlar'dan değiştirebilirsin.
+Play statistics	Oyun istatistikleri
+Error reports	Hata raporları
+Personalised ads	Kişiselleştirilmiş reklamlar
+Allow all	Hepsine izin ver
+Save my choice	Seçimimi kaydet

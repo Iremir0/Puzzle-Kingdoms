@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using PuzzleKingdoms.Data;
+using PuzzleKingdoms.Logic.Analytics;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Logic.Localization;
@@ -59,6 +60,22 @@ namespace PuzzleKingdoms.Flow
 
         private Language? _languageOverride;
 
+        // ---- Statistics, error reports, remote config (PB-29, D-047) ----
+
+        private AnalyticsHub _analytics;
+        private ErrorReporter _errors;
+        private RemoteConfig _config = RemoteConfig.Empty;
+        private readonly Dictionary<string, int> _attemptsPerStage = new Dictionary<string, int>();
+
+        /// <summary>Where game events go; they are dropped unless the player allowed statistics.</summary>
+        public AnalyticsHub Analytics => _analytics;
+
+        /// <summary>False keeps the consent question away (screenshots); the question is never answered for the player.</summary>
+        public bool ConsentEnabled { get; set; } = true;
+
+        /// <summary>The consent question on screen, or null.</summary>
+        public ConsentPanel ConsentPrompt { get; private set; }
+
         public void SetContent(GameContent gameContent) => content = gameContent;
 
         private void Start()
@@ -98,24 +115,67 @@ namespace PuzzleKingdoms.Flow
             Sfx.EffectsOn = Settings.sound;
             Sfx.MusicOn = Settings.music;
             Sfx.Changed += OnSoundSwitched;
+
+            // Events go nowhere without consent. Tester builds keep them, the errors and the remote-config
+            // overrides in local files next to the save; a store build gets the online service later (PB-29).
+            _analytics = new AnalyticsHub(() => Settings);
+            if (Debug.isDebugBuild || Application.platform != RuntimePlatform.Android)
+            {
+                _analytics.Add(new LocalEventLog(_store.Folder));
+                _errors = new ErrorReporter(_store.Folder, () => Settings, Application.version);
+                _config = RemoteConfigFile.Load(_store.Folder);
+            }
+            _analytics.Send(GameEvents.AppStarted(Application.version, Languages.Code(Loc.Language)));
+
             Ui.EnsureEventSystem();
             _screenRoot = Ui.CreateCanvas("Canvas").transform;
             ShowStageSelect();
         }
 
-        private void OnDestroy() => Sfx.Changed -= OnSoundSwitched;
+        private void OnDestroy()
+        {
+            Sfx.Changed -= OnSoundSwitched;
+            _errors?.Dispose();
+        }
 
         public void ShowStageSelect()
         {
             Run = null;
             Show(StageMapScreen.Create(_screenRoot, content, Profile, StartStage, () => OpenSettings()));
+            if (ConsentEnabled && Consent.NeedsAsking(Settings))
+            {
+                AskConsent();
+            }
         }
 
         /// <summary>Opens the settings over the stage map (PB-14).</summary>
         public SettingsPanel OpenSettings()
         {
             string version = Application.version + (Debug.isDebugBuild ? " (dev)" : "");
-            return SettingsPanel.Create(_screen.transform, Settings, version, ApplySettings, ResetProgress, ResetTutorial);
+            return SettingsPanel.Create(_screen.transform, Settings, version, ApplySettings, ResetProgress, ResetTutorial,
+                () => AskConsent());
+        }
+
+        /// <summary>Shows the consent question (first launch, a new consent text, or Settings → Data and privacy).</summary>
+        public ConsentPanel AskConsent()
+        {
+            ConsentPrompt = ConsentPanel.Create(_screen.transform, Settings, !Consent.NeedsAsking(Settings), OnConsentAnswered);
+            return ConsentPrompt;
+        }
+
+        private void OnConsentAnswered(bool analytics, bool crashReports, bool personalisedAds)
+        {
+            bool firstAnswer = Consent.NeedsAsking(Settings);
+            GameSettings answered = Settings.Copy();
+            Consent.Answer(answered, analytics, crashReports, personalisedAds);
+            Settings = answered.Normalize();
+            _settingsStore.Save(Settings);
+            ConsentPrompt = null;
+            if (firstAnswer)
+            {
+                // The session start could not be counted before the answer.
+                _analytics.Send(GameEvents.AppStarted(Application.version, Languages.Code(Loc.Language)));
+            }
         }
 
         /// <summary>Shows every tutorial prompt again; stars and gold stay (PB-13).</summary>
@@ -183,6 +243,7 @@ namespace PuzzleKingdoms.Flow
 
         private void OnTutorialSkipped()
         {
+            _analytics.Send(GameEvents.TutorialSkipped(Tutorial != null && Tutorial.Current != null ? Tutorial.Current.Id : ""));
             Profile.SkipTutorial();
             _store.Save(Profile);
         }
@@ -200,9 +261,17 @@ namespace PuzzleKingdoms.Flow
 
         private void ApplySettings(GameSettings settings)
         {
+            GameSettings before = Settings;
             string languageBefore = Settings.language;
-            Settings = settings.Copy().Normalize();
+            GameSettings next = settings.Copy();
+            // Consent only changes through its own question: keep it even if the settings panel holds an older copy.
+            next.consentVersion = before.consentVersion;
+            next.analytics = before.analytics;
+            next.crashReports = before.crashReports;
+            next.personalisedAds = before.personalisedAds;
+            Settings = next.Normalize();
             _settingsStore.Save(Settings);
+            SendSettingChanges(before, Settings);
             Sfx.Changed -= OnSoundSwitched; // already saved; do not save twice
             Sfx.EffectsOn = Settings.sound;
             Sfx.MusicOn = Settings.music;
@@ -220,9 +289,31 @@ namespace PuzzleKingdoms.Flow
         /// <summary>The puzzle screen's sound button changed the sound: remember it.</summary>
         private void OnSoundSwitched()
         {
+            GameSettings before = Settings.Copy();
             Settings.sound = Sfx.EffectsOn;
             Settings.music = Sfx.MusicOn;
             _settingsStore.Save(Settings);
+            SendSettingChanges(before, Settings);
+        }
+
+        private void SendSettingChanges(GameSettings before, GameSettings after)
+        {
+            if (before.sound != after.sound)
+            {
+                _analytics.Send(GameEvents.SettingChanged("sound", after.sound ? "on" : "off"));
+            }
+            if (before.music != after.music)
+            {
+                _analytics.Send(GameEvents.SettingChanged("music", after.music ? "on" : "off"));
+            }
+            if (before.BattleSpeed != after.BattleSpeed)
+            {
+                _analytics.Send(GameEvents.SettingChanged("battle_speed", after.BattleSpeed + "x"));
+            }
+            if (before.language != after.language)
+            {
+                _analytics.Send(GameEvents.SettingChanged("language", after.language.Length > 0 ? after.language : "auto"));
+            }
         }
 
         /// <summary>Deletes stars and gold (settings stay) and redraws the stage map.</summary>
@@ -241,11 +332,14 @@ namespace PuzzleKingdoms.Flow
             {
                 Run.UnitRecruited -= OnUnitRecruited;
             }
-            Run = content.CreateRun(content.Campaign[index]);
+            Run = content.CreateRun(content.Campaign[index], null, _config);
             Run.UnitRecruited += OnUnitRecruited;
             _stageSteps = content.Campaign[index].TutorialSteps();
             _puzzleStarted = Time.realtimeSinceStartup;
             _attemptLogged = false;
+            _attemptsPerStage.TryGetValue(Run.Stage.Id, out int attempts);
+            _attemptsPerStage[Run.Stage.Id] = ++attempts;
+            _analytics.Send(GameEvents.StageStarted(Run.Stage.Id, attempts));
             Show(PuzzleScreen.Create(_screenRoot, Run, ShowWarCamp));
             OnTrigger(TutorialTrigger.PuzzleStarted);
         }
@@ -276,8 +370,16 @@ namespace PuzzleKingdoms.Flow
             if (!_attemptLogged)
             {
                 _attemptLogged = true;
-                _playtestLog?.Write(StageAttempt.From(Run),
-                    _campStarted - _puzzleStarted, _battleStarted - _campStarted);
+                StageAttempt attempt = StageAttempt.From(Run);
+                if (attempt != null)
+                {
+                    float puzzleSeconds = _campStarted - _puzzleStarted;
+                    float campSeconds = _battleStarted - _campStarted;
+                    attempt.puzzleSeconds = Mathf.Round(puzzleSeconds * 10f) / 10f;
+                    attempt.campSeconds = Mathf.Round(campSeconds * 10f) / 10f;
+                    _playtestLog?.Write(attempt, puzzleSeconds, campSeconds);
+                    _analytics.Send(GameEvents.StageFinished(attempt));
+                }
             }
 
             bool hasNext = _stageIndex + 1 < content.Campaign.Count

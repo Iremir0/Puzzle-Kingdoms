@@ -466,3 +466,25 @@ name). English has no table; a missing translation shows the English text, never
 Why: one plain file is the simplest thing a translator can work on, and the English code stays readable;
 Unity's Localization package (string tables, smart strings, an editor of its own) is more than about 110
 texts need. If we add many languages or plural rules beyond "{0} taş", revisit.
+
+## D-047 Statistics and error reports only after an opt-in; local files until a service is chosen, 2026-11-18
+PB-29. The first launch asks before anything is recorded (KVKK and GDPR want consent that is freely
+given and specific): three switches (play statistics, error reports, personalised ads), all **off** at
+first, "Allow all" or "Save my choice"; Settings → Data and privacy asks again. The answer is stored in
+`settings.json` with the version of the consent text (`Consent.CurrentVersion`); raising it asks
+everyone again. Without consent an event is dropped, not queued.
+- **Events** are built in Logic (`GameEvents`, tested): app_started, stage_started, stage_won /
+  stage_lost (numbers from the playtest record, no formation or free text), tutorial_skipped,
+  setting_changed. The full list, and where data goes, is `docs/PRIVACY.md`.
+- **Where they go:** `AnalyticsHub` (Flow) passes events to sinks only with consent. Today the only
+  sink is a local `analytics-log.jsonl` in tester builds (editor, Windows playtest, Android development);
+  errors go to `error-log.jsonl` (exceptions only, 20 per session). A store build records nothing until
+  an online service is connected; that is one more sink, no game code changes.
+- **Remote config:** `StageTuning` applies `stage.<id>.moves | stones | enemy_hp | enemy_damage` overrides
+  when a run starts; out-of-range values are ignored. Today the values come from a local
+  `remote-config.txt` (tester builds), later from the service. The stage map card still shows the
+  asset's numbers.
+- **Open (owner):** which service (Unity Gaming Services or Firebase), the account, and a public privacy
+  policy URL for Google Play.
+Why: the playtests need numbers per stage, and doing consent right from the first build is cheaper than
+adding it to a released game; keeping the service behind a sink keeps that choice open.

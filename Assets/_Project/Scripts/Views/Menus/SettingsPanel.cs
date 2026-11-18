@@ -26,17 +26,17 @@ namespace PuzzleKingdoms.Views.Menus
         private GameObject _confirm;
 
         public static SettingsPanel Create(Transform parent, GameSettings settings, string version,
-            Action<GameSettings> onChanged, Action onResetProgress, Action onResetTutorial = null)
+            Action<GameSettings> onChanged, Action onResetProgress, Action onResetTutorial = null, Action onPrivacy = null)
         {
             // A dimmed full-screen layer that swallows taps meant for the screen below.
             Image shade = Ui.Box(parent, "SettingsPanel", new Color(0f, 0f, 0f, 0.6f));
             var panel = shade.gameObject.AddComponent<SettingsPanel>();
-            panel.Build(settings.Copy(), version, onChanged, onResetProgress, onResetTutorial);
+            panel.Build(settings.Copy(), version, onChanged, onResetProgress, onResetTutorial, onPrivacy);
             return panel;
         }
 
         private void Build(GameSettings settings, string version, Action<GameSettings> onChanged, Action onResetProgress,
-            Action onResetTutorial)
+            Action onResetTutorial, Action onPrivacy)
         {
             _settings = settings;
             _onChanged = onChanged;
@@ -60,6 +60,8 @@ namespace PuzzleKingdoms.Views.Menus
             _turkish = Name(Ui.Button(box, Languages.NativeName(Language.Turkish), Ui.ButtonStyle.Secondary,
                 () => SetLanguage(Language.Turkish), 0.73f, 0.395f, 0.94f, 0.485f, 40), "Language tr");
 
+            // Reset tutorial and Data and privacy (PB-29) share a row; either takes the whole row alone.
+            float split = onResetTutorial != null && onPrivacy != null ? 0.49f : 0.94f;
             if (onResetTutorial != null)
             {
                 Button resetTutorial = null;
@@ -68,7 +70,12 @@ namespace PuzzleKingdoms.Views.Menus
                     onResetTutorial();
                     Ui.SetCaption(resetTutorial, "Tips will show again");
                     resetTutorial.interactable = false;
-                }, 0.06f, 0.255f, 0.94f, 0.345f, 40), "Reset Tutorial");
+                }, 0.06f, 0.255f, split, 0.345f, 40), "Reset Tutorial");
+            }
+            if (onPrivacy != null)
+            {
+                Name(Ui.Button(box, "Data and privacy", Ui.ButtonStyle.Secondary, onPrivacy,
+                    onResetTutorial != null ? 0.51f : 0.06f, 0.255f, 0.94f, 0.345f, 40), "Privacy");
             }
             Name(Ui.Button(box, "Reset progress", Ui.ButtonStyle.Danger, AskReset, 0.06f, 0.125f, 0.94f, 0.225f, 40), "Reset Progress");
             Ui.Label(box, Loc.F("Version {0}", version), 30, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.02f, 1f, 0.09f);

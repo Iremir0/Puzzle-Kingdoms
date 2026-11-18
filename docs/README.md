@@ -10,6 +10,7 @@
 | [DECISIONS.md](DECISIONS.md) | you want to know *why* something is the way it is |
 | [ROADMAP.md](ROADMAP.md) | you see the milestones and status |
 | [BOARD.md](BOARD.md) | you pick the next task or move a card |
+| [PRIVACY.md](PRIVACY.md) | you add a game event or touch consent, statistics or error reports |
 | [../CREDITS.md](../CREDITS.md) | you add a third-party asset |
 
 Keep docs in sync with code: a change that contradicts a document updates the

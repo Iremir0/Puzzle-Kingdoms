@@ -8,7 +8,7 @@ puzzle-kingdoms/
 ├── CLAUDE.md                     ✅ rules for Claude Code sessions
 ├── .github/workflows/            ✅ logic-tests.yml: GitHub runs the logic tests and a balance table on every push (PB-4)
 ├── CREDITS.md                    ✅ third-party licenses (fill before adding assets)
-├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, task board, PLAYTESTS, ART (draft)
+├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, task board, PLAYTESTS, ART (draft), PRIVACY (collected data)
 │   └── cards/                    ✅ one detail file per board card (PB-n.md) + img/ mockups (SVG)
 │
 ├── Assets/
@@ -21,8 +21,9 @@ puzzle-kingdoms/
 │       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster (+ Undo), MergeRules, AutoFormation, BenchGroup
 │       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,
 │       │   │   │                    Rally, BattleEvent, BattleResult
+│       │   │   ├── Analytics/    ✅ Consent (opt-in, text version), AnalyticsEvent (JSON line), GameEvents, RemoteConfig (PB-29, D-047)
 │       │   │   ├── Localization/ ✅ Language + Languages (codes, phone default), Localizer (English-keyed table, numbers; D-046)
-│       │   │   ├── Stages/       ✅ StageDef, EnemySlot
+│       │   │   ├── Stages/       ✅ StageDef, EnemySlot, StageTuning (remote-config overrides)
 │       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot, seen tutorial),
 │       │   │   │                   GameSettings, TutorialStep + TutorialGuide (D-040)
 │       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward; StageAttempt (playtest record)
@@ -39,13 +40,15 @@ puzzle-kingdoms/
 │       │   │                        for our Meshy-rigged FBX; D-043)
 │       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save),
 │       │   │                        SettingsStore (settings.json, D-039), SafeFile (crash-safe writes),
-│       │   │                        PlaytestLog (playtest-log.jsonl, D-037)
+│       │   │                        PlaytestLog (playtest-log.jsonl, D-037),
+│       │   │                        AnalyticsHub + IAnalyticsSink + LocalEventLog, ErrorReporter,
+│       │   │                        RemoteConfigFile (PB-29: consent-gated statistics, D-047)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
 │       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes, StageBadges, Tween, Sfx, TutorialOverlay),
 │       │                            Puzzle (+ BoardEffects), WarCamp (+ BenchView, DraggableUnit), Battle,
 │       │                            Battle3D (PB-11: BattleWorld3D camera + ground + actors drawn into a texture,
 │       │                            UnitActor capsule stand-in; BattleScreen shows it, 2D behind a toggle),
-│       │                            Menus (StageMapScreen, SettingsPanel, ResultsScreen);
+│       │                            Menus (StageMapScreen, SettingsPanel, ResultsScreen, ConsentPanel);
 │       │                            Common/Loc: the current language for every screen (PB-32)
 │       ├── Resources/            ✅ UiFont.ttf (Lilita One, D-044); Strings/tr.txt: Turkish texts (PB-32, D-046)
 │       ├── Data/                 ✅ .asset files
