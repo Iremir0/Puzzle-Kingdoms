@@ -41,27 +41,27 @@ namespace PuzzleKingdoms.Views.Menus
 
             Transform box = Ui.Box(transform, "Box", Palette.Panel, 0.06f, 0.25f, 0.94f, 0.78f).transform;
             Ui.Label(box, "Settings", 60, TextAnchor.MiddleLeft, Palette.Text, 0.06f, 0.87f, 0.7f, 0.97f);
-            Name(Ui.Button(box, "Close", Palette.Button, Close, 0.72f, 0.87f, 0.95f, 0.97f, 38), "Close");
+            Name(Ui.Button(box, "Close", Ui.ButtonStyle.Secondary, Close, 0.72f, 0.87f, 0.95f, 0.97f, 38), "Close");
 
             Row(box, "Sound effects", 0.73f);
-            _sound = Name(Ui.Button(box, "", Palette.Button, ToggleSound, 0.66f, 0.71f, 0.94f, 0.81f, 40), "Sound Toggle");
+            _sound = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleSound, 0.66f, 0.71f, 0.94f, 0.81f, 40), "Sound Toggle");
             Row(box, "Music", 0.6f);
-            _music = Name(Ui.Button(box, "", Palette.Button, ToggleMusic, 0.66f, 0.58f, 0.94f, 0.68f, 40), "Music Toggle");
+            _music = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleMusic, 0.66f, 0.58f, 0.94f, 0.68f, 40), "Music Toggle");
             Row(box, "Battle speed", 0.47f);
-            _speed1 = Name(Ui.Button(box, "1x", Palette.Button, () => SetSpeed(1), 0.66f, 0.45f, 0.79f, 0.55f, 40), "Speed 1x");
-            _speed2 = Name(Ui.Button(box, "2x", Palette.Button, () => SetSpeed(2), 0.81f, 0.45f, 0.94f, 0.55f, 40), "Speed 2x");
+            _speed1 = Name(Ui.Button(box, "1x", Ui.ButtonStyle.Secondary, () => SetSpeed(1), 0.66f, 0.45f, 0.79f, 0.55f, 40), "Speed 1x");
+            _speed2 = Name(Ui.Button(box, "2x", Ui.ButtonStyle.Secondary, () => SetSpeed(2), 0.81f, 0.45f, 0.94f, 0.55f, 40), "Speed 2x");
 
             if (onResetTutorial != null)
             {
                 Button resetTutorial = null;
-                resetTutorial = Name(Ui.Button(box, "Reset tutorial", Palette.Button, () =>
+                resetTutorial = Name(Ui.Button(box, "Reset tutorial", Ui.ButtonStyle.Secondary, () =>
                 {
                     onResetTutorial();
                     Ui.SetCaption(resetTutorial, "Tips will show again");
                     resetTutorial.interactable = false;
                 }, 0.06f, 0.29f, 0.94f, 0.39f, 40), "Reset Tutorial");
             }
-            Name(Ui.Button(box, "Reset progress", Palette.Bad, AskReset, 0.06f, 0.15f, 0.94f, 0.26f, 40), "Reset Progress");
+            Name(Ui.Button(box, "Reset progress", Ui.ButtonStyle.Danger, AskReset, 0.06f, 0.15f, 0.94f, 0.26f, 40), "Reset Progress");
             Ui.Label(box, "Version " + version, 30, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.02f, 1f, 0.09f);
 
             // Second step of the reset: a box over the settings with Yes / Cancel.
@@ -69,9 +69,9 @@ namespace PuzzleKingdoms.Views.Menus
             _confirm = confirm.gameObject;
             Ui.Label(confirm.transform, "Are you sure?\nThis deletes your stars and gold.", 44, TextAnchor.MiddleCenter,
                 Palette.Text, 0.05f, 0.45f, 0.95f, 0.95f);
-            Name(Ui.Button(confirm.transform, "Yes, delete", Palette.Bad, ConfirmReset, 0.05f, 0.08f, 0.48f, 0.38f, 40),
+            Name(Ui.Button(confirm.transform, "Yes, delete", Ui.ButtonStyle.Danger, ConfirmReset, 0.05f, 0.08f, 0.48f, 0.38f, 40),
                 "Yes Delete");
-            Name(Ui.Button(confirm.transform, "Cancel", Palette.Button, () => _confirm.SetActive(false),
+            Name(Ui.Button(confirm.transform, "Cancel", Ui.ButtonStyle.Secondary, () => _confirm.SetActive(false),
                 0.52f, 0.08f, 0.95f, 0.38f, 40), "Cancel Reset");
             _confirm.SetActive(false);
 

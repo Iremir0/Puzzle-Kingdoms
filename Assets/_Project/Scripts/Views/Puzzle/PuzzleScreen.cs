@@ -144,9 +144,9 @@ namespace PuzzleKingdoms.Views.Puzzle
             _bonus = Ui.Label(root, "", 64, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.1f, 1f, 0.15f);
             _status = Ui.Label(root, "Swap two neighbouring gems. Tap or swipe.", 36, TextAnchor.MiddleCenter,
                 Palette.Muted, 0.04f, 0.02f, 0.82f, 0.1f);
-            _sound = Ui.Button(root, "", Palette.Button, ToggleSound, 0.84f, 0.03f, 0.97f, 0.09f, 28);
+            _sound = Ui.Button(root, "", Ui.ButtonStyle.Secondary, ToggleSound, 0.84f, 0.03f, 0.97f, 0.09f, 28);
             RefreshSoundButton();
-            _continue = Ui.Button(root, "To the War Camp", Palette.Primary, () => _onDone?.Invoke(),
+            _continue = Ui.Button(root, "To the War Camp", Ui.ButtonStyle.Primary, () => _onDone?.Invoke(),
                 0.2f, 0.02f, 0.8f, 0.09f);
             _continue.gameObject.SetActive(false);
 

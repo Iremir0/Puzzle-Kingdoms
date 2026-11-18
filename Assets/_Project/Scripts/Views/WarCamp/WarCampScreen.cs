@@ -109,16 +109,16 @@ namespace PuzzleKingdoms.Views.WarCamp
             const float w = 0.176f;
             const float gap = 0.012f;
             float left = 0.03f;
-            Ui.Button(root, "Auto", Palette.Button, OnAuto, left, 0.09f, left + w, 0.15f, 30);
+            Ui.Button(root, "Auto", Ui.ButtonStyle.Secondary, OnAuto, left, 0.09f, left + w, 0.15f, 30);
             left += w + gap;
-            _merge = Ui.Button(root, "Merge", Palette.Button, OnMerge, left, 0.09f, left + w, 0.15f, 30);
+            _merge = Ui.Button(root, "Merge", Ui.ButtonStyle.Secondary, OnMerge, left, 0.09f, left + w, 0.15f, 30);
             left += w + gap;
-            _mergeAll = Ui.Button(root, "Merge all", Palette.Primary, OnMergeAll, left, 0.09f, left + w, 0.15f, 30);
+            _mergeAll = Ui.Button(root, "Merge all", Ui.ButtonStyle.Primary, OnMergeAll, left, 0.09f, left + w, 0.15f, 30);
             left += w + gap;
-            _undo = Ui.Button(root, "Undo", Palette.Button, OnUndo, left, 0.09f, left + w, 0.15f, 30);
+            _undo = Ui.Button(root, "Undo", Ui.ButtonStyle.Secondary, OnUndo, left, 0.09f, left + w, 0.15f, 30);
             left += w + gap;
-            Ui.Button(root, "Clear", Palette.Button, OnClear, left, 0.09f, left + w, 0.15f, 30);
-            _fight = Ui.Button(root, "Fight!", Palette.Bad, OnFight, 0.2f, 0.015f, 0.8f, 0.08f, 52);
+            Ui.Button(root, "Clear", Ui.ButtonStyle.Secondary, OnClear, left, 0.09f, left + w, 0.15f, 30);
+            _fight = Ui.Button(root, "Fight!", Ui.ButtonStyle.Danger, OnFight, 0.2f, 0.015f, 0.8f, 0.08f, 52);
 
             Roster.Changed += Refresh;
             Refresh();

@@ -414,3 +414,13 @@ The clip FBX (Knight) holds five clips: Running, Walking, Attack (2.8 s), Dead, 
 loops by default and there is no idle yet (nothing in the library search was clearly an idle).
 PB-12's "Mixamo" step is replaced by this. Rigged FBX files stay in the git-ignored Sandbox
 (`Sandbox/Meshy/<Name>_Rig/`, `Clips_Knight/`) until PB-12 picks the final set.
+
+## D-044 UI: one font, a six-step type scale and three button styles, 2026-11-18
+Alican approved the font download. All UI text uses **Lilita One** (SIL OFL 1.1, `Resources/UiFont.ttf`,
+in CREDITS.md): Unity's legacy `Text` cannot pick weights from a variable font, so one bold static family
+serves titles and text. Sizes snap to six steps in `Ui.Type` (30 / 38 / 44 / 52 / 64 / 90 px at 1080 wide,
+17 sizes before); buttons come in three styles in `Ui.ButtonStyle` (Primary blue, Secondary grey-blue,
+Danger red, all from `Palette`) with one pressed look (the fill darkens). Contrast is checked by
+`ContrastTests`: white on the three button fills ≥ 3:1 (their captions are large text), dark text on the
+Rally gold and muted / gold text on the panels ≥ 4.5:1. Colours are GDD values and did not change.
+TextMeshPro is not adopted (the grey-box UI stays on `Text` until real UI art, PB-16 notes).

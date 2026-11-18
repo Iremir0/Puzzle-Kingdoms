@@ -48,18 +48,18 @@ namespace PuzzleKingdoms.Views.Menus
             float y = 0.2f;
             if (actions.Next != null)
             {
-                Ui.Button(root, "Next stage", Palette.Primary, actions.Next, 0.15f, y, 0.85f, y + 0.07f, 52);
+                Ui.Button(root, "Next stage", Ui.ButtonStyle.Primary, actions.Next, 0.15f, y, 0.85f, y + 0.07f, 52);
                 y -= 0.09f;
             }
             if (actions.Retry != null)
             {
-                Ui.Button(root, "Retry", result.Victory ? Palette.Button : Palette.Primary, actions.Retry,
+                Ui.Button(root, "Retry", result.Victory ? Ui.ButtonStyle.Secondary : Ui.ButtonStyle.Primary, actions.Retry,
                     0.15f, y, 0.85f, y + 0.07f, 52);
                 y -= 0.09f;
             }
             if (actions.StageSelect != null)
             {
-                Ui.Button(root, "Stage map", Palette.Button, actions.StageSelect, 0.15f, y, 0.85f, y + 0.07f, 52);
+                Ui.Button(root, "Stage map", Ui.ButtonStyle.Secondary, actions.StageSelect, 0.15f, y, 0.85f, y + 0.07f, 52);
             }
         }
 

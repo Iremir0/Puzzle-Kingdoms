@@ -125,6 +125,26 @@ namespace PuzzleKingdoms.Views.Common
             return label;
         }
 
+        /// <summary>Button looks (PB-16): the three colours every button uses, all from <see cref="Palette"/>.</summary>
+        public enum ButtonStyle
+        {
+            /// <summary>The one main action of a screen (Play, Fight, Continue): blue.</summary>
+            Primary,
+            /// <summary>Any other action: grey-blue.</summary>
+            Secondary,
+            /// <summary>Destructive or committing action (Reset progress, Fight): red.</summary>
+            Danger,
+        }
+
+        /// <summary>The fill colour of a button style.</summary>
+        public static Color StyleColor(ButtonStyle style) =>
+            style == ButtonStyle.Primary ? Palette.Primary : style == ButtonStyle.Danger ? Palette.Bad : Palette.Button;
+
+        /// <summary>A button in one of the three styles (with the shared pressed look).</summary>
+        public static Button Button(Transform parent, string caption, ButtonStyle style, Action onClick,
+            float xMin, float yMin, float xMax, float yMax, int fontSize = 44) =>
+            Button(parent, caption, StyleColor(style), onClick, xMin, yMin, xMax, yMax, fontSize);
+
         /// <summary>Colored button with a centered caption.</summary>
         public static Button Button(Transform parent, string caption, Color color, Action onClick,
             float xMin, float yMin, float xMax, float yMax, int fontSize = 44)
@@ -133,6 +153,10 @@ namespace PuzzleKingdoms.Views.Common
             var button = image.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
             ColorBlock colors = button.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1.08f, 1.08f, 1.08f, 1f);
+            colors.pressedColor = new Color(0.72f, 0.72f, 0.72f, 1f); // the shared pressed look (PB-16)
+            colors.colorMultiplier = 1f;
             colors.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
             button.colors = colors;
             if (onClick != null)

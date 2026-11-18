@@ -64,7 +64,7 @@ namespace PuzzleKingdoms.Views.Menus
             Ui.Label(root, $"Gold {profile.Gold}", 44, TextAnchor.MiddleCenter, Palette.Text, 0.4f, 0.935f, 0.68f, 0.99f);
             if (onSettings != null)
             {
-                Ui.Button(root, "Settings", Palette.Button, onSettings, 0.7f, 0.94f, 0.97f, 0.985f, 36);
+                Ui.Button(root, "Settings", Ui.ButtonStyle.Secondary, onSettings, 0.7f, 0.94f, 0.97f, 0.985f, 36);
             }
 
             _map = Ui.Box(root, "Map", Land, 0.03f, 0.33f, 0.97f, 0.925f).rectTransform;
@@ -145,13 +145,14 @@ namespace PuzzleKingdoms.Views.Menus
                 0.04f, 0.8f, 0.7f, 0.97f);
             AddStars(_card, _profile.BestStars(stage.Id), unlocked, 0.72f, 0.82f, 0.96f, 0.96f);
             StageBadges.AddRow(_card, def, !unlocked, 0.04f, 0.64f, 0.96f, 0.78f);
-            Ui.Label(_card, "Enemy army", 30, TextAnchor.UpperLeft, Palette.Muted, 0.04f, 0.04f, 0.3f, 0.6f);
             new FormationGridView(_card, "Enemy Preview", true, false, 0.04f, 0.04f, 0.36f, 0.56f)
                 .Show(Formation.ForStage(def));
+            // After the grid, so the grid panel does not cover the tail of the caption.
+            Ui.Label(_card, "Enemy army", 30, TextAnchor.UpperLeft, Palette.Muted, 0.04f, 0.04f, 0.3f, 0.6f);
             if (unlocked)
             {
                 int play = index;
-                Button button = Ui.Button(_card, "Play", Palette.Primary, () => _onPlay?.Invoke(play),
+                Button button = Ui.Button(_card, "Play", Ui.ButtonStyle.Primary, () => _onPlay?.Invoke(play),
                     0.42f, 0.08f, 0.96f, 0.5f, 56);
                 button.gameObject.name = "Play Button";
             }

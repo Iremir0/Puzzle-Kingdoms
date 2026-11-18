@@ -124,16 +124,16 @@ namespace PuzzleKingdoms.Views.Battle
             }
 
             _banner = Ui.Label(root, "", 80, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.84f, 1f, 0.92f);
-            _viewToggle = Ui.Button(root, "2D", Palette.Button, OnToggleView, 0.03f, 0.855f, 0.15f, 0.915f, 34);
+            _viewToggle = Ui.Button(root, "2D", Ui.ButtonStyle.Secondary, OnToggleView, 0.03f, 0.855f, 0.15f, 0.915f, 34);
             _viewToggle.gameObject.name = "View Toggle";
             ApplyView();
 
             _rally = Ui.Button(root, "", Palette.Gold, OnRally, 0.03f, 0.02f, 0.5f, 0.12f, 48);
             _rally.gameObject.name = "Rally Button"; // the tutorial points at it (PB-13)
             _rally.GetComponentInChildren<Text>().color = Palette.Background;
-            _speed = Ui.Button(root, $"{_speedFactor}x", Palette.Button, OnSpeed, 0.52f, 0.02f, 0.67f, 0.12f);
-            _pause = Ui.Button(root, "Pause", Palette.Button, OnPause, 0.69f, 0.02f, 0.84f, 0.12f, 38);
-            Ui.Button(root, "Skip", Palette.Button, OnSkip, 0.86f, 0.02f, 0.97f, 0.12f, 38);
+            _speed = Ui.Button(root, $"{_speedFactor}x", Ui.ButtonStyle.Secondary, OnSpeed, 0.52f, 0.02f, 0.67f, 0.12f);
+            _pause = Ui.Button(root, "Pause", Ui.ButtonStyle.Secondary, OnPause, 0.69f, 0.02f, 0.84f, 0.12f, 38);
+            Ui.Button(root, "Skip", Ui.ButtonStyle.Secondary, OnSkip, 0.86f, 0.02f, 0.97f, 0.12f, 38);
             RefreshHud();
         }
 

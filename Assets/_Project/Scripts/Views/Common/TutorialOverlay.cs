@@ -89,7 +89,7 @@ namespace PuzzleKingdoms.Views.Common
             _bubble = bubble.rectTransform;
             _text = Ui.Label(_bubble, "", 42, TextAnchor.MiddleLeft, Palette.Text, 0.05f, 0.3f, 0.95f, 0.95f);
             Ui.Label(_bubble, "Tap to continue", 30, TextAnchor.LowerLeft, Palette.Muted, 0.05f, 0.05f, 0.6f, 0.28f);
-            Button skip = Ui.Button(_bubble, "Skip tutorial", Palette.Button, Skip, 0.6f, 0.06f, 0.96f, 0.28f, 30);
+            Button skip = Ui.Button(_bubble, "Skip tutorial", Ui.ButtonStyle.Secondary, Skip, 0.6f, 0.06f, 0.96f, 0.28f, 30);
             skip.gameObject.name = "Skip Tutorial";
         }
 
