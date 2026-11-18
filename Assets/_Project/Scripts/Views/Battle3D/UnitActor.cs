@@ -118,6 +118,18 @@ namespace PuzzleKingdoms.Views.Battle3D
 
         public void Flash() => _flashLeft = FlashSeconds;
 
+        /// <summary>Rally aura: a gold glow on the body while Rally lasts (PB-12).</summary>
+        public void SetAura(bool on)
+        {
+            foreach (Renderer part in _bodyRenderers)
+            {
+                Material material = part.material;
+                bool tier3 = Combatant.Unit.Tier >= 3;
+                material.EnableKeyword("_EMISSION");
+                material.SetColor("_EmissionColor", on ? Palette.Gold * 0.22f : (tier3 ? Palette.Gold * 0.3f : Color.black));
+            }
+        }
+
         /// <summary>The unit attacks: starts the Attack clip, squeezed into the attack interval (and faster in Rally).</summary>
         public void PlayAttack(float rallyFactor)
         {

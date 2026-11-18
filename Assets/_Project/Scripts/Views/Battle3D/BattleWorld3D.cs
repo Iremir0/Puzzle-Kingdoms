@@ -78,6 +78,14 @@ namespace PuzzleKingdoms.Views.Battle3D
             }
             foreach (BattleEvent e in events)
             {
+                if (e.Type == BattleEventType.RallyStarted)
+                {
+                    StartRally();
+                }
+                else if (e.Type == BattleEventType.RallyEnded)
+                {
+                    EndRally();
+                }
                 if (e.Type != BattleEventType.Attack || e.TargetId < 0 || e.TargetId >= _actors.Count)
                 {
                     continue;
@@ -89,6 +97,97 @@ namespace PuzzleKingdoms.Views.Battle3D
                 if (source != null && source.Combatant.AttackRange > 2f && _projectiles.Count < 40)
                 {
                     SpawnProjectile(source, _actors[e.TargetId]);
+                }
+            }
+        }
+
+        private const float RingSeconds = 0.9f;
+        private const float ShakeSeconds = 0.2f;
+        private GameObject _rallyRing;
+        private float _ringAge = -1f;
+        private float _shakeLeft;
+        private Vector3 _cameraRest;
+
+        /// <summary>Rally begins (PB-12): a gold ring spreads from the player army, allies glow, the camera shakes briefly.</summary>
+        private void StartRally()
+        {
+            Vector3 centre = Vector3.zero;
+            int count = 0;
+            foreach (UnitActor actor in _actors)
+            {
+                if (actor.Combatant.Side == Side.Player && actor.Combatant.IsAlive)
+                {
+                    centre += actor.Position;
+                    count++;
+                    actor.SetAura(true);
+                }
+            }
+            centre = count > 0 ? centre / count : Vector3.zero;
+            if (_rallyRing == null)
+            {
+                // A thin ring (a looped line on the ground), so it does not hide the units it passes.
+                _rallyRing = new GameObject("Rally Ring");
+                _rallyRing.transform.SetParent(_root.transform, false);
+                _rallyRing.layer = Layer;
+                var line = _rallyRing.AddComponent<LineRenderer>();
+                line.useWorldSpace = false;
+                line.loop = true;
+                const int points = 64;
+                line.positionCount = points;
+                for (int i = 0; i < points; i++)
+                {
+                    float angle = i * Mathf.PI * 2f / points;
+                    line.SetPosition(i, new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * 0.5f);
+                }
+                line.widthMultiplier = 0.22f;
+                line.alignment = LineAlignment.TransformZ;
+                line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                line.material = new Material(Shader.Find("Sprites/Default"));
+                line.startColor = line.endColor = Palette.Gold;
+            }
+            _rallyRing.transform.localPosition = new Vector3(centre.x, 0.03f, centre.z);
+            _rallyRing.SetActive(true);
+            _ringAge = 0f;
+            _shakeLeft = ShakeSeconds;
+            _cameraRest = _camera.transform.localPosition;
+        }
+
+        private void EndRally()
+        {
+            foreach (UnitActor actor in _actors)
+            {
+                actor.SetAura(false);
+            }
+        }
+
+        private void RenderRally(float deltaTime)
+        {
+            if (_ringAge >= 0f && _rallyRing != null)
+            {
+                _ringAge += deltaTime;
+                float t = Mathf.Clamp01(_ringAge / RingSeconds);
+                float diameter = Mathf.Lerp(1f, 14f, t);
+                _rallyRing.transform.localScale = new Vector3(diameter, 1f, diameter);
+                _rallyRing.GetComponent<LineRenderer>().widthMultiplier = 0.22f;
+                Color fade = Palette.Gold;
+                fade.a = 1f - t * 0.8f;
+                _rallyRing.GetComponent<LineRenderer>().startColor = fade;
+                _rallyRing.GetComponent<LineRenderer>().endColor = fade;
+                if (t >= 1f)
+                {
+                    _rallyRing.SetActive(false);
+                    _ringAge = -1f;
+                }
+            }
+            if (_shakeLeft > 0f)
+            {
+                _shakeLeft -= deltaTime;
+                float strength = 0.12f * Mathf.Clamp01(_shakeLeft / ShakeSeconds);
+                Vector3 jitter = new Vector3(Mathf.Sin(_shakeLeft * 90f), Mathf.Cos(_shakeLeft * 110f), 0f) * strength;
+                _camera.transform.localPosition = _cameraRest + _camera.transform.localRotation * jitter;
+                if (_shakeLeft <= 0f)
+                {
+                    _camera.transform.localPosition = _cameraRest;
                 }
             }
         }
@@ -106,6 +205,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         /// <param name="alpha">Fraction of the current tick that has passed (0..1).</param>
         public void Render(float alpha, float deltaTime)
         {
+            RenderRally(deltaTime);
             Quaternion cameraRotation = _camera.transform.rotation;
             foreach (UnitActor actor in _actors)
             {
