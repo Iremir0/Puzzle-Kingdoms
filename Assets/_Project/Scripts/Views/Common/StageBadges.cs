@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Globalization;
 using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Logic.Stages;
 using UnityEngine;
@@ -21,11 +20,10 @@ namespace PuzzleKingdoms.Views.Common
 
         /// <summary>"No stones", "1 stone", "3 stones".</summary>
         public static string Stones(StageDef stage) =>
-            stage.StoneGems <= 0 ? "No stones" : stage.StoneGems == 1 ? "1 stone" : $"{stage.StoneGems} stones";
+            stage.StoneGems <= 0 ? Loc.T("No stones") : stage.StoneGems == 1 ? Loc.T("1 stone") : Loc.F("{0} stones", stage.StoneGems);
 
-        /// <summary>"×1.1" style multiplier text.</summary>
-        public static string Times(float multiplier) =>
-            "×" + multiplier.ToString("0.0#", CultureInfo.InvariantCulture);
+        /// <summary>"×1.1" style multiplier text ("×1,1" in Turkish).</summary>
+        public static string Times(float multiplier) => "×" + Loc.Number(multiplier, "0.0#");
 
         /// <summary>Grey at ×1.0 (or less), gold up to ×1.15, red above.</summary>
         public static Color MultiplierColor(float multiplier) =>
@@ -50,23 +48,23 @@ namespace PuzzleKingdoms.Views.Common
             var badges = new List<(string, Color)>
             {
                 (Stones(stage), stage.StoneGems > 0 ? Palette.Text : Palette.Muted),
-                ("Enemy " + Times(stage.EnemyHpMultiplier), MultiplierColor(stage.EnemyHpMultiplier)),
+                (Loc.F("Enemy {0}", Times(stage.EnemyHpMultiplier)), MultiplierColor(stage.EnemyHpMultiplier)),
             };
             if (Mathf.Abs(stage.EnemyDamageMultiplier - 1f) > 0.001f)
             {
-                badges.Add(("DMG " + Times(stage.EnemyDamageMultiplier), MultiplierColor(stage.EnemyDamageMultiplier)));
+                badges.Add((Loc.F("DMG {0}", Times(stage.EnemyDamageMultiplier)), MultiplierColor(stage.EnemyDamageMultiplier)));
             }
-            badges.Add(HasBoss(stage) ? ("Boss", Palette.Bad) : ($"{stage.Enemies.Count} enemies", Palette.Muted));
+            badges.Add(HasBoss(stage) ? (Loc.T("Boss"), Palette.Bad) : (Loc.F("{0} enemies", stage.Enemies.Count), Palette.Muted));
             return badges;
         }
 
         /// <summary>One line for the enemy panels: "HP ×1.1 · 3 stones".</summary>
         public static string PanelLine(StageDef stage)
         {
-            string line = "HP " + Times(stage.EnemyHpMultiplier);
+            string line = Loc.F("HP {0}", Times(stage.EnemyHpMultiplier));
             if (Mathf.Abs(stage.EnemyDamageMultiplier - 1f) > 0.001f)
             {
-                line += " · DMG " + Times(stage.EnemyDamageMultiplier);
+                line += " · " + Loc.F("DMG {0}", Times(stage.EnemyDamageMultiplier));
             }
             return line + " · " + Stones(stage);
         }

@@ -1,10 +1,12 @@
 using System.Collections;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Flow;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
+using PuzzleKingdoms.Logic.Localization;
 using PuzzleKingdoms.Logic.Progression;
 using PuzzleKingdoms.Views.Battle;
 using PuzzleKingdoms.Views.Common;
@@ -32,6 +34,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app.TutorialEnabled = false; // PB-13 prompts are tested in TutorialFlowTests
             _app.UseStore(new ProfileStore(_folder));
             _app.UsePlaytestLog(new PlaytestLog(_folder));
+            _app.UseLanguage(Language.English);
             yield return null;
             Assert.IsInstanceOf<StageMapScreen>(_app.CurrentScreen);
         }
@@ -109,6 +112,34 @@ namespace PuzzleKingdoms.Tests.PlayMode
             yield return null;
             Assert.IsTrue(panel == null, "Close removes the panel");
         }
+
+        /// <summary>PB-32: choosing Türkçe saves it and redraws the map and the open settings in Turkish.</summary>
+        [UnityTest]
+        public IEnumerator LanguageSwitchRedrawsInTheNewLanguage()
+        {
+            Assert.IsTrue(MapShows("Chapter 1"), "starts in English");
+            Press(_app.CurrentScreen, "Button Settings");
+            SettingsPanel panel = _app.CurrentScreen.GetComponentInChildren<SettingsPanel>();
+
+            Press(panel, "Language tr");
+            yield return null;
+            Assert.AreEqual("tr", SavedSettings().language, "saved at once");
+            Assert.AreEqual(Language.Turkish, Loc.Language);
+            Assert.IsInstanceOf<StageMapScreen>(_app.CurrentScreen);
+            Assert.IsTrue(MapShows("Bölüm 1"), "the map is drawn again in Turkish");
+            panel = _app.CurrentScreen.GetComponentInChildren<SettingsPanel>();
+            Assert.IsNotNull(panel, "the settings stay open");
+            Assert.IsNotNull(Find(panel.transform, "Reset Progress"), "button objects keep their names");
+            Assert.IsTrue(panel.GetComponentsInChildren<Text>().Any(t => t.text == "Kapat"), "captions are Turkish");
+
+            Press(panel, "Language en");
+            yield return null;
+            Assert.AreEqual("en", SavedSettings().language);
+            Assert.IsTrue(MapShows("Chapter 1"), "and back to English");
+        }
+
+        private bool MapShows(string text) =>
+            _app.CurrentScreen.GetComponentsInChildren<Text>().Any(t => t.text == text);
 
         [UnityTest]
         public IEnumerator PuzzleSoundButtonIsRemembered()

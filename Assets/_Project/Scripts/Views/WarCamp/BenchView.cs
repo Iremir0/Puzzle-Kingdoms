@@ -45,7 +45,7 @@ namespace PuzzleKingdoms.Views.WarCamp
             _dropOutline.effectDistance = new Vector2(6, 6);
             _dropOutline.enabled = false;
 
-            _empty = Ui.Label(viewport, "Empty", 34, TextAnchor.MiddleCenter, Palette.Muted);
+            _empty = Ui.Label(viewport, Loc.T("Empty"), 34, TextAnchor.MiddleCenter, Palette.Muted);
         }
 
         /// <summary>Groups shown by the last <see cref="Show"/>, left to right.</summary>

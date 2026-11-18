@@ -5,6 +5,7 @@ using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Flow;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
+using PuzzleKingdoms.Logic.Localization;
 using PuzzleKingdoms.Views.Battle;
 using PuzzleKingdoms.Views.Puzzle;
 using UnityEngine;
@@ -56,7 +57,10 @@ namespace PuzzleKingdoms.Tests.PlayMode
             GameContent content = null;
             Assert.Ignore("editor only");
 #endif
-            string output = Path.GetFullPath("Logs/Screenshots");
+            // PB-32: English by default; PK_SCREENSHOT_LANG=tr writes the Turkish set to Logs/Screenshots/tr/.
+            Language language = Languages.TryParse(System.Environment.GetEnvironmentVariable("PK_SCREENSHOT_LANG"),
+                out Language chosen) ? chosen : Language.English;
+            string output = Path.GetFullPath(language == Language.English ? "Logs/Screenshots" : "Logs/Screenshots/" + Languages.Code(language));
             Directory.CreateDirectory(output);
             _saveFolder = Path.Combine(Path.GetTempPath(), "pk-shots-" + System.Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(_saveFolder);
@@ -66,6 +70,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app.TutorialEnabled = false; // PB-13 prompts are tested in TutorialFlowTests
             _app.UseStore(new ProfileStore(_saveFolder));
             _app.UsePlaytestLog(new PlaytestLog(_saveFolder));
+            _app.UseLanguage(language);
             yield return null;
             yield return Capture(Path.Combine(output, "1-stage-map.png"));
             var settings = _app.OpenSettings(); // PB-14

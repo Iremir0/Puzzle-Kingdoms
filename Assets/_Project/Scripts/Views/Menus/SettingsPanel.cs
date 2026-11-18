@@ -1,4 +1,5 @@
 using System;
+using PuzzleKingdoms.Logic.Localization;
 using PuzzleKingdoms.Logic.Progression;
 using PuzzleKingdoms.Views.Common;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace PuzzleKingdoms.Views.Menus
 {
     /// <summary>
     /// Settings over the stage map (PB-14): sound effects, music, the speed battles
-    /// start at, and "Reset progress" behind a second confirmation. Every change is
+    /// start at, the language (PB-32), and "Reset progress" behind a second confirmation. Every change is
     /// reported at once through <c>onChanged</c>, which saves it.
     /// </summary>
     public sealed class SettingsPanel : MonoBehaviour
@@ -20,6 +21,8 @@ namespace PuzzleKingdoms.Views.Menus
         private Button _music;
         private Button _speed1;
         private Button _speed2;
+        private Button _english;
+        private Button _turkish;
         private GameObject _confirm;
 
         public static SettingsPanel Create(Transform parent, GameSettings settings, string version,
@@ -39,17 +42,23 @@ namespace PuzzleKingdoms.Views.Menus
             _onChanged = onChanged;
             _onResetProgress = onResetProgress;
 
-            Transform box = Ui.Box(transform, "Box", Palette.Panel, 0.06f, 0.25f, 0.94f, 0.78f).transform;
-            Ui.Label(box, "Settings", 60, TextAnchor.MiddleLeft, Palette.Text, 0.06f, 0.87f, 0.7f, 0.97f);
-            Name(Ui.Button(box, "Close", Ui.ButtonStyle.Secondary, Close, 0.72f, 0.87f, 0.95f, 0.97f, 38), "Close");
+            Transform box = Ui.Box(transform, "Box", Palette.Panel, 0.06f, 0.2f, 0.94f, 0.83f).transform;
+            Ui.Label(box, Loc.T("Settings"), 60, TextAnchor.MiddleLeft, Palette.Text, 0.06f, 0.89f, 0.7f, 0.98f);
+            Name(Ui.Button(box, "Close", Ui.ButtonStyle.Secondary, Close, 0.72f, 0.89f, 0.95f, 0.98f, 38), "Close");
 
-            Row(box, "Sound effects", 0.73f);
-            _sound = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleSound, 0.66f, 0.71f, 0.94f, 0.81f, 40), "Sound Toggle");
-            Row(box, "Music", 0.6f);
-            _music = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleMusic, 0.66f, 0.58f, 0.94f, 0.68f, 40), "Music Toggle");
-            Row(box, "Battle speed", 0.47f);
-            _speed1 = Name(Ui.Button(box, "1x", Ui.ButtonStyle.Secondary, () => SetSpeed(1), 0.66f, 0.45f, 0.79f, 0.55f, 40), "Speed 1x");
-            _speed2 = Name(Ui.Button(box, "2x", Ui.ButtonStyle.Secondary, () => SetSpeed(2), 0.81f, 0.45f, 0.94f, 0.55f, 40), "Speed 2x");
+            Row(box, Loc.T("Sound effects"), 0.76f);
+            _sound = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleSound, 0.66f, 0.74f, 0.94f, 0.83f, 40), "Sound Toggle");
+            Row(box, Loc.T("Music"), 0.645f);
+            _music = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleMusic, 0.66f, 0.625f, 0.94f, 0.715f, 40), "Music Toggle");
+            Row(box, Loc.T("Battle speed"), 0.53f);
+            _speed1 = Name(Ui.Button(box, "1x", Ui.ButtonStyle.Secondary, () => SetSpeed(1), 0.66f, 0.51f, 0.79f, 0.6f, 40), "Speed 1x");
+            _speed2 = Name(Ui.Button(box, "2x", Ui.ButtonStyle.Secondary, () => SetSpeed(2), 0.81f, 0.51f, 0.94f, 0.6f, 40), "Speed 2x");
+            // Each language button shows the language's own name, whatever language is on (PB-32).
+            Row(box, Loc.T("Language"), 0.415f);
+            _english = Name(Ui.Button(box, Languages.NativeName(Language.English), Ui.ButtonStyle.Secondary,
+                () => SetLanguage(Language.English), 0.5f, 0.395f, 0.71f, 0.485f, 40), "Language en");
+            _turkish = Name(Ui.Button(box, Languages.NativeName(Language.Turkish), Ui.ButtonStyle.Secondary,
+                () => SetLanguage(Language.Turkish), 0.73f, 0.395f, 0.94f, 0.485f, 40), "Language tr");
 
             if (onResetTutorial != null)
             {
@@ -59,15 +68,15 @@ namespace PuzzleKingdoms.Views.Menus
                     onResetTutorial();
                     Ui.SetCaption(resetTutorial, "Tips will show again");
                     resetTutorial.interactable = false;
-                }, 0.06f, 0.29f, 0.94f, 0.39f, 40), "Reset Tutorial");
+                }, 0.06f, 0.255f, 0.94f, 0.345f, 40), "Reset Tutorial");
             }
-            Name(Ui.Button(box, "Reset progress", Ui.ButtonStyle.Danger, AskReset, 0.06f, 0.15f, 0.94f, 0.26f, 40), "Reset Progress");
-            Ui.Label(box, "Version " + version, 30, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.02f, 1f, 0.09f);
+            Name(Ui.Button(box, "Reset progress", Ui.ButtonStyle.Danger, AskReset, 0.06f, 0.125f, 0.94f, 0.225f, 40), "Reset Progress");
+            Ui.Label(box, Loc.F("Version {0}", version), 30, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.02f, 1f, 0.09f);
 
             // Second step of the reset: a box over the settings with Yes / Cancel.
             Image confirm = Ui.Box(transform, "Confirm Reset", Palette.Background, 0.1f, 0.38f, 0.9f, 0.62f);
             _confirm = confirm.gameObject;
-            Ui.Label(confirm.transform, "Are you sure?\nThis deletes your stars and gold.", 44, TextAnchor.MiddleCenter,
+            Ui.Label(confirm.transform, Loc.T("Are you sure?\nThis deletes your stars and gold."), 44, TextAnchor.MiddleCenter,
                 Palette.Text, 0.05f, 0.45f, 0.95f, 0.95f);
             Name(Ui.Button(confirm.transform, "Yes, delete", Ui.ButtonStyle.Danger, ConfirmReset, 0.05f, 0.08f, 0.48f, 0.38f, 40),
                 "Yes Delete");
@@ -107,6 +116,13 @@ namespace PuzzleKingdoms.Views.Menus
             Changed();
         }
 
+        /// <summary>Saves the choice; GameApp then redraws the map and this panel in the new language.</summary>
+        private void SetLanguage(Language language)
+        {
+            _settings.language = Languages.Code(language);
+            Changed();
+        }
+
         private void Changed()
         {
             Refresh();
@@ -130,6 +146,9 @@ namespace PuzzleKingdoms.Views.Menus
             SetToggle(_music, _settings.music);
             _speed1.image.color = _settings.BattleSpeed == 1 ? Palette.Primary : Palette.Button;
             _speed2.image.color = _settings.BattleSpeed == 2 ? Palette.Primary : Palette.Button;
+            Language shown = _settings.LanguageFor(Loc.SystemIsTurkish);
+            _english.image.color = shown == Language.English ? Palette.Primary : Palette.Button;
+            _turkish.image.color = shown == Language.Turkish ? Palette.Primary : Palette.Button;
         }
 
         private static void SetToggle(Button button, bool on)

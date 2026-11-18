@@ -230,7 +230,7 @@ namespace PuzzleKingdoms.Views.Battle
                         SpawnFloating(target, e.Amount.ToString());
                         break;
                     case BattleEventType.RallyStarted:
-                        _banner.text = "RALLY!";
+                        _banner.text = Loc.T("RALLY!");
                         _banner.color = Palette.Gold;
                         break;
                     case BattleEventType.RallyEnded:
@@ -309,12 +309,12 @@ namespace PuzzleKingdoms.Views.Battle
 
         private void RefreshHud()
         {
-            _header.text = $"Allies {_sim.AliveCount(Side.Player)}  vs  Enemies {_sim.AliveCount(Side.Enemy)}";
-            _clock.text = $"{(float)_sim.Tick / _sim.Rules.TicksPerSecond:0.0} s";
+            _header.text = Loc.F("Allies {0}  vs  Enemies {1}", _sim.AliveCount(Side.Player), _sim.AliveCount(Side.Enemy));
+            _clock.text = Loc.F("{0:0.0} s", (float)_sim.Tick / _sim.Rules.TicksPerSecond);
             Rally rally = _sim.Rally;
             Ui.SetCaption(_rally, rally.IsActive
-                ? $"Rally {(float)rally.TicksLeft / _sim.Rules.TicksPerSecond:0.0}s"
-                : $"Rally ({rally.Charges})");
+                ? Loc.F("Rally {0:0.0}s", (float)rally.TicksLeft / _sim.Rules.TicksPerSecond)
+                : Loc.F("Rally ({0})", rally.Charges));
             _rally.interactable = rally.CanActivate && !_sim.IsFinished;
         }
 
@@ -365,7 +365,7 @@ namespace PuzzleKingdoms.Views.Battle
             }
             RefreshHud();
             BattleResult result = _sim.Result;
-            _banner.text = result.Victory ? "Victory!" : (result.TimedOut ? "Time up" : "Defeat");
+            _banner.text = result.Victory ? Loc.T("Victory!") : (result.TimedOut ? Loc.T("Time up") : Loc.T("Defeat"));
             _banner.color = result.Victory ? Palette.Gold : Palette.Bad;
             _endTimer = EndDelaySeconds;
         }

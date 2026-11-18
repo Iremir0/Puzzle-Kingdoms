@@ -44,8 +44,6 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-12](cards/PB-12.md) | Battle life: animations and effects | Alican | M4 | L | `feature/PB-12-battle-life` | In `main`: rigged Meshy models, one shared Animator (idle, walk, sword/bow/spell attack, hit, death), Rally ring + glow + shake, hit dust, goblin poof, coin pop, battle sounds (D-043); left: 30+ fps on a phone (PB-1) and a look at it in the real game |
 | [PB-16](cards/PB-16.md) | Final polish and balance | Alican | M6 | M | `feature/PB-16-final-polish` | In `main`: one font (Lilita One), six-step type scale, three button styles, contrast tests (D-044); left: playtest round 2 and the balance pass (need testers, after PB-5) |
 | [PB-17](cards/PB-17.md) | Release build | Alican | M6 | S | `feature/PB-17-release-build` | In `main`: version 0.1.0 (1), `BuildReleaseAab`, placeholder icon and splash, SETUP 4a, release key created outside the repo; left: back the key up in two places, a signed AAB and a phone install |
-| [PB-32](cards/PB-32.md) | Turkish and English | Alican | M6 | M | `feature/PB-32-localization` | Growth wave 1 (D-045); started 2026-11-18: string table, language setting, every screen |
-
 ## Ready (next up, in priority order)
 
 | ID | Card | Owner | Milestone | Size | In short |
@@ -107,6 +105,7 @@ private until shared).
 | [PB-5](cards/PB-5.md) | Playtest kit: Windows build, session script, form, playtest log (D-037), summary tool (2026-11-17) |
 | [PB-9](cards/PB-9.md) | War Camp drag and drop, grouped scrolling bench, merge animation, Undo (D-038) (2026-11-17) |
 | [PB-14](cards/PB-14.md) | Crash-safe saves, settings.json (D-039), settings panel with reset progress (2026-11-17) |
+| [PB-32](cards/PB-32.md) | Turkish and English: one table `Resources/Strings/tr.txt`, Settings → Language, phone language by default, coverage tests (D-046) (2026-11-18) |
 
 ---
 

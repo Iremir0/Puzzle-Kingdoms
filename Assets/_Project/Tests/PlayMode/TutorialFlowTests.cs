@@ -6,6 +6,7 @@ using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Flow;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
+using PuzzleKingdoms.Logic.Localization;
 using PuzzleKingdoms.Views.Battle;
 using PuzzleKingdoms.Views.Menus;
 using PuzzleKingdoms.Views.Puzzle;
@@ -32,6 +33,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app.SetContent(LoadContent());
             _app.UseStore(new ProfileStore(_folder));
             _app.UsePlaytestLog(new PlaytestLog(_folder));
+            _app.UseLanguage(Language.English); // the prompts are checked by their English text
             yield return null;
         }
 

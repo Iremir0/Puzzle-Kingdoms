@@ -1,0 +1,134 @@
+# Turkish texts for Puzzle Kingdoms (PB-32, D-046).
+# One pair per line: the English text exactly as in the code or the asset, a TAB, the Turkish text.
+# {0}, {1} ... are filled in by the game and must stay; {0:0.0} also says how to write the number.
+# \n is a line break. Lines starting with # are notes. "Rally" is "Hücum" everywhere.
+
+# ---- Buttons ----
+Settings	Ayarlar
+Play	Oyna
+Next stage	Sonraki seviye
+Retry	Tekrar dene
+Stage map	Harita
+To the War Camp	Savaş Kampına
+Auto	Otomatik
+Merge	Birleştir
+Merge all	Hepsini birleştir
+Undo	Geri al
+Clear	Temizle
+Fight!	Savaş!
+Pause	Duraklat
+Skip	Atla
+Skip tutorial	Öğreticiyi atla
+Close	Kapat
+Reset tutorial	Öğreticiyi sıfırla
+Tips will show again	İpuçları yeniden gösterilecek
+Reset progress	İlerlemeyi sıfırla
+Yes, delete	Evet, sil
+Cancel	Vazgeç
+ON	AÇIK
+OFF	KAPALI
+Muted	Sessiz
+Sound	Ses
+1x	1x
+2x	2x
+2D	2D
+3D	3D
+
+# ---- Stage map and badges ----
+Chapter 1	Bölüm 1
+Gold {0}	Altın {0}
+Chapter 2: Goblin Fort (coming later)	Bölüm 2: Goblin Kalesi (yakında)
+Enemy army	Düşman ordusu
+Locked: win stage {0} first.	Kilitli: önce {0}. seviyeyi kazan.
+No stones	Taş yok
+1 stone	1 taş
+{0} stones	{0} taş
+Enemy {0}	Düşman {0}
+DMG {0}	Hasar {0}
+HP {0}	Can {0}
+Boss	Boss
+{0} enemies	{0} düşman
+
+# ---- Puzzle ----
+Swap two neighbouring gems. Tap or swipe.	Yan yana iki taşın yerini değiştir. Dokun ya da kaydır.
+Bonus!	Bonus!
+Bonus! x{0}	Bonus! x{0}
+No moves left: the board was reshuffled.	Hamle kalmadı: tahta karıştırıldı.
+Prism!	Prizma!
+Blast!	Patlama!
+Stone cracked!	Taş çatladı!
+Moves: {0}	Hamle: {0}
+Rally {0}/{1}	Hücum {0}/{1}
+Army recruited: {0} units, {1} Rally	Toplanan ordu: {0} birlik, {1} Hücum
+# One-letter class tags on the puzzle meters (Warrior, Archer, Mage).
+W	S
+A	O
+M	B
+
+# ---- War Camp ----
+War Camp	Savaş Kampı
+Rally charges: {0}	Hücum hakkı: {0}
+Front row faces the enemy	Ön sıra düşmana bakar
+Bench	Yedekler
+Empty	Boş
+{0} T{1}  HP {2}  DMG {3}  Range {4:0.#}  (you have {5})	{0} T{1}  Can {2}  Hasar {3}  Menzil {4:0.#}  (sende {5})
+Highest tier: cannot merge.	En yüksek kademe: birleştirilemez.
+Merge needs {0} of the same class and tier (you have {1}).	Birleştirmek için aynı sınıf ve kademeden {0} birlik gerekir (sende {1}).
+Merge: {0} x {1} T{2} -> T{3}  (HP {4} -> {5}, DMG {6} -> {7})	Birleştir: {0} x {1} T{2} -> T{3}  (Can {4} -> {5}, Hasar {6} -> {7})
+Drag units onto the grid. {0} on the bench leave for gold when the battle starts.	Birlikleri ızgaraya sürükle. Savaş başlayınca yedekteki {0} birlik altın karşılığında ayrılır.
+Drag a unit to move it, or onto the bench to take it off.	Yerini değiştirmek için birliği sürükle, çıkarmak için yedeklere bırak.
+Merge all: {0}	Hepsini birleştir: {0}
+
+# ---- Battle ----
+Allies {0}  vs  Enemies {1}	Dostlar {0}  -  Düşmanlar {1}
+{0:0.0} s	{0:0.0} sn
+Rally {0:0.0}s	Hücum {0:0.0} sn
+Rally ({0})	Hücum ({0})
+Victory!	Zafer!
+Defeat	Yenilgi
+RALLY!	HÜCUM!
+Time up	Süre doldu
+
+# ---- Results ----
+Survivors: {0} / {1}	Hayatta kalan: {0} / {1}
+Battle time: {0:0.0} s	Savaş süresi: {0:0.0} sn
+(time up)	(süre doldu)
+Victory gold: {0}	Zafer altını: {0}
+Dismissed units: {0}	Gönderilen birlikler: {0}
+Extra Banner points: {0}	Fazla Sancak puanı: {0}
+Total: +{0} gold   (you have {1})	Toplam: +{0} altın   (sende {1})
+
+# ---- Settings and tutorial ----
+Sound effects	Ses efektleri
+Music	Müzik
+Battle speed	Savaş hızı
+Language	Dil
+Version {0}	Sürüm {0}
+Are you sure?\nThis deletes your stars and gold.	Emin misin?\nYıldızların ve altının silinecek.
+Tap to continue	Devam etmek için dokun
+
+# ---- Stage names (Data/Stages) ----
+Border Watch	Sınır Nöbeti
+Arrow Rain	Ok Yağmuru
+The Chief's Guard	Şefin Muhafızları
+
+# ---- Unit names (Data/Units, Data/Enemies) ----
+Warrior	Savaşçı
+Archer	Okçu
+Mage	Büyücü
+Goblin Grunt	Goblin Er
+Goblin Archer	Goblin Okçu
+Goblin Brute	Goblin Zorba
+Goblin Chief	Goblin Şef
+
+# ---- Tutorial prompts (Data/Stages, D-040) ----
+Swap two neighbouring gems to match 3 of a colour. Red gems recruit Warriors, green Archers, purple Mages.	Aynı renkten 3 taş eşleştirmek için yan yana iki taşın yerini değiştir. Kırmızı taşlar Savaşçı, yeşiller Okçu, morlar Büyücü toplar.
+A unit joined your army! Keep an eye on the enemy above: 6 Grunts are waiting.	Orduna bir birlik katıldı! Yukarıdaki düşmanı gözden kaçırma: 6 Goblin Er bekliyor.
+Drag your units onto the grid. The top row faces the enemy: put Warriors in front.	Birliklerini ızgaraya sürükle. En üst sıra düşmana bakar: Savaşçıları öne koy.
+The battle plays by itself. Watch how your formation holds.	Savaş kendi kendine oynanır. Dizilişinin nasıl dayandığını izle.
+Lost this time. Recruit more units and keep Warriors in the front row, then try again.	Bu sefer kaybettin. Daha çok birlik topla, Savaşçıları ön sırada tut ve yeniden dene.
+Grey half gems are stone: the first match only breaks the stone, the next one counts.	Yarısı gri taşlar taşlaşmış: ilk eşleşme yalnızca taşı kırar, sonraki sayılır.
+Enemy Archers shoot from afar. Keep your own Archers safe in the back row.	Düşman okçuları uzaktan atar. Kendi Okçularını arka sırada güvende tut.
+Three of the same unit merge into a stronger one. Try Merge all.	Aynı birlikten üçü birleşip daha güçlü bir birlik olur. Hepsini birleştir'i dene.
+Brutes wear armour that halves normal damage. Mages (purple) ignore armour: recruit plenty.	Zorbaların zırhı normal hasarı yarıya indirir. Büyücüler (mor) zırhı deler: bolca topla.
+Tap Rally when the armies meet: for 5 seconds your units hit harder and faster.	Ordular karşılaşınca Hücum'a dokun: 5 saniye boyunca birliklerin daha sert ve daha hızlı vurur.

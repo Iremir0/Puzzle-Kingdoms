@@ -145,7 +145,10 @@ namespace PuzzleKingdoms.Views.Common
             float xMin, float yMin, float xMax, float yMax, int fontSize = 44) =>
             Button(parent, caption, StyleColor(style), onClick, xMin, yMin, xMax, yMax, fontSize);
 
-        /// <summary>Colored button with a centered caption.</summary>
+        /// <summary>
+        /// Colored button with a centered caption. The caption is the English text: it is shown in the
+        /// current language (<see cref="Loc"/>) and the object keeps the English name ("Button Merge all").
+        /// </summary>
         public static Button Button(Transform parent, string caption, Color color, Action onClick,
             float xMin, float yMin, float xMax, float yMax, int fontSize = 44)
         {
@@ -163,12 +166,13 @@ namespace PuzzleKingdoms.Views.Common
             {
                 button.onClick.AddListener(() => onClick());
             }
-            Label(image.transform, caption, fontSize, TextAnchor.MiddleCenter, Palette.Text);
+            Label(image.transform, Loc.T(caption), fontSize, TextAnchor.MiddleCenter, Palette.Text);
             return button;
         }
 
+        /// <summary>Changes a button's caption; like <see cref="Button(Transform, string, Color, Action, float, float, float, float, int)"/> it takes the English text.</summary>
         public static void SetCaption(Button button, string caption) =>
-            button.GetComponentInChildren<Text>().text = caption;
+            button.GetComponentInChildren<Text>().text = Loc.T(caption);
 
         /// <summary>Destroys all children (at the end of the frame).</summary>
         public static void Clear(Transform parent)

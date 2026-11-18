@@ -79,17 +79,17 @@ namespace PuzzleKingdoms.Views.WarCamp
             Transform root = transform;
             Ui.Box(root, "Background", Palette.Background);
 
-            Ui.Label(root, "War Camp", 52, TextAnchor.MiddleLeft, Palette.Text, 0.04f, 0.93f, 0.6f, 0.99f);
-            Ui.Label(root, $"Rally charges: {_run.RallyCharges}", 40, TextAnchor.MiddleRight, Palette.Gold,
+            Ui.Label(root, Loc.T("War Camp"), 52, TextAnchor.MiddleLeft, Palette.Text, 0.04f, 0.93f, 0.6f, 0.99f);
+            Ui.Label(root, Loc.F("Rally charges: {0}", _run.RallyCharges), 40, TextAnchor.MiddleRight, Palette.Gold,
                 0.5f, 0.93f, 0.96f, 0.99f);
 
             Ui.Box(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);
-            Ui.Label(root, "Enemy army", 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);
+            Ui.Label(root, Loc.T("Enemy army"), 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);
             StageBadges.AddPanelLine(root, _run.Stage);
             new FormationGridView(root, "Enemy Formation", true, false, 0.35f, 0.755f, 0.65f, 0.92f)
                 .Show(Formation.ForStage(_run.Stage));
 
-            Ui.Label(root, "Front row faces the enemy", 34, TextAnchor.MiddleCenter, Palette.Muted,
+            Ui.Label(root, Loc.T("Front row faces the enemy"), 34, TextAnchor.MiddleCenter, Palette.Muted,
                 0.04f, 0.705f, 0.96f, 0.74f);
             _grid = new FormationGridView(root, "Player Formation", false, true, 0.15f, 0.41f, 0.85f, 0.70f);
             _grid.CellClicked += OnCellClicked;
@@ -103,7 +103,7 @@ namespace PuzzleKingdoms.Views.WarCamp
             }
 
             _info = Ui.Label(root, "", 30, TextAnchor.MiddleCenter, Palette.Text, 0.04f, 0.33f, 0.96f, 0.41f);
-            Ui.Label(root, "Bench", 32, TextAnchor.MiddleLeft, Palette.Muted, 0.04f, 0.303f, 0.5f, 0.33f);
+            Ui.Label(root, Loc.T("Bench"), 32, TextAnchor.MiddleLeft, Palette.Muted, 0.04f, 0.303f, 0.5f, 0.33f);
             _bench = new BenchView(Ui.Box(root, "Bench", Palette.Panel, 0.03f, 0.165f, 0.97f, 0.303f));
 
             const float w = 0.176f;
@@ -545,8 +545,8 @@ namespace PuzzleKingdoms.Views.WarCamp
             UnitDef def = unit.Def;
             ArmyRules rules = Roster.Rules;
             int owned = Roster.AllUnits().Count(u => u.IsSameKind(unit));
-            string stats = $"{def.DisplayName} T{unit.Tier}  HP {unit.MaxHp(rules)}  DMG {unit.Damage(rules)}  " +
-                           $"Range {def.AttackRange:0.#}  (you have {owned})";
+            string stats = Loc.F("{0} T{1}  HP {2}  DMG {3}  Range {4:0.#}  (you have {5})",
+                Loc.T(def.DisplayName), unit.Tier, unit.MaxHp(rules), unit.Damage(rules), def.AttackRange, owned);
             return stats + "\n" + MergeLine(unit);
         }
 
@@ -556,31 +556,32 @@ namespace PuzzleKingdoms.Views.WarCamp
             ArmyRules rules = Roster.Rules;
             if (unit.Tier >= rules.MaxTier)
             {
-                return "Highest tier: cannot merge.";
+                return Loc.T("Highest tier: cannot merge.");
             }
             if (!Roster.CanMerge(unit))
             {
                 int owned = Roster.AllUnits().Count(u => u.IsSameKind(unit));
-                return $"Merge needs {rules.MergeCount} of the same class and tier (you have {owned}).";
+                return Loc.F("Merge needs {0} of the same class and tier (you have {1}).", rules.MergeCount, owned);
             }
             var next = new ArmyUnit(unit.Def, unit.Tier + 1);
-            return $"Merge: {rules.MergeCount} x {unit.Def.DisplayName} T{unit.Tier} -> T{next.Tier}  " +
-                   $"(HP {unit.MaxHp(rules)} -> {next.MaxHp(rules)}, DMG {unit.Damage(rules)} -> {next.Damage(rules)})";
+            return Loc.F("Merge: {0} x {1} T{2} -> T{3}  (HP {4} -> {5}, DMG {6} -> {7})",
+                rules.MergeCount, Loc.T(unit.Def.DisplayName), unit.Tier, next.Tier,
+                unit.MaxHp(rules), next.MaxHp(rules), unit.Damage(rules), next.Damage(rules));
         }
 
         private string DefaultHint()
         {
             string hint = Roster.Bench.Count > 0
-                ? $"Drag units onto the grid. {Roster.Bench.Count} on the bench leave for gold when the battle starts."
-                : "Drag a unit to move it, or onto the bench to take it off.";
+                ? Loc.F("Drag units onto the grid. {0} on the bench leave for gold when the battle starts.", Roster.Bench.Count)
+                : Loc.T("Drag a unit to move it, or onto the bench to take it off.");
             List<MergePlanEntry> plan = Roster.PlanMergeAll();
             if (plan.Count == 0)
             {
                 return hint;
             }
             IEnumerable<string> parts = plan.Select(p =>
-                $"{p.Merges} x {p.Def.DisplayName} T{p.FromTier}->T{p.ToTier}");
-            return hint + "\nMerge all: " + string.Join(", ", parts);
+                $"{p.Merges} x {Loc.T(p.Def.DisplayName)} T{p.FromTier}->T{p.ToTier}");
+            return hint + "\n" + Loc.F("Merge all: {0}", string.Join(", ", parts));
         }
     }
 }

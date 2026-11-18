@@ -60,15 +60,15 @@ namespace PuzzleKingdoms.Views.Menus
             Transform root = transform;
             Ui.Box(root, "Background", Palette.Background);
 
-            Ui.Label(root, "Chapter 1", 56, TextAnchor.MiddleLeft, Palette.Gold, 0.04f, 0.935f, 0.45f, 0.99f);
-            Ui.Label(root, $"Gold {profile.Gold}", 44, TextAnchor.MiddleCenter, Palette.Text, 0.4f, 0.935f, 0.68f, 0.99f);
+            Ui.Label(root, Loc.T("Chapter 1"), 56, TextAnchor.MiddleLeft, Palette.Gold, 0.04f, 0.935f, 0.45f, 0.99f);
+            Ui.Label(root, Loc.F("Gold {0}", profile.Gold), 44, TextAnchor.MiddleCenter, Palette.Text, 0.4f, 0.935f, 0.68f, 0.99f);
             if (onSettings != null)
             {
                 Ui.Button(root, "Settings", Ui.ButtonStyle.Secondary, onSettings, 0.7f, 0.94f, 0.97f, 0.985f, 36);
             }
 
             _map = Ui.Box(root, "Map", Land, 0.03f, 0.33f, 0.97f, 0.925f).rectTransform;
-            Ui.Label(_map, "Chapter 2: Goblin Fort (coming later)", 30, TextAnchor.UpperCenter, Palette.Muted,
+            Ui.Label(_map, Loc.T("Chapter 2: Goblin Fort (coming later)"), 30, TextAnchor.UpperCenter, Palette.Muted,
                 0f, 0.9f, 1f, 0.98f);
 
             IReadOnlyList<StageDefinition> stages = content.Campaign;
@@ -141,14 +141,14 @@ namespace PuzzleKingdoms.Views.Menus
             StageDefinition stage = stages[index];
             StageDef def = stage.ToStageDef();
             bool unlocked = _profile.IsUnlocked(_content.CampaignOrder(), index);
-            Ui.Label(_card, $"{index + 1}. {stage.DisplayName}", 48, TextAnchor.MiddleLeft, Palette.Text,
+            Ui.Label(_card, $"{index + 1}. {Loc.T(stage.DisplayName)}", 48, TextAnchor.MiddleLeft, Palette.Text,
                 0.04f, 0.8f, 0.7f, 0.97f);
             AddStars(_card, _profile.BestStars(stage.Id), unlocked, 0.72f, 0.82f, 0.96f, 0.96f);
             StageBadges.AddRow(_card, def, !unlocked, 0.04f, 0.64f, 0.96f, 0.78f);
             new FormationGridView(_card, "Enemy Preview", true, false, 0.04f, 0.04f, 0.36f, 0.56f)
                 .Show(Formation.ForStage(def));
             // After the grid, so the grid panel does not cover the tail of the caption.
-            Ui.Label(_card, "Enemy army", 30, TextAnchor.UpperLeft, Palette.Muted, 0.04f, 0.04f, 0.3f, 0.6f);
+            Ui.Label(_card, Loc.T("Enemy army"), 30, TextAnchor.UpperLeft, Palette.Muted, 0.04f, 0.04f, 0.3f, 0.6f);
             if (unlocked)
             {
                 int play = index;
@@ -158,7 +158,7 @@ namespace PuzzleKingdoms.Views.Menus
             }
             else
             {
-                Ui.Label(_card, $"Locked: win stage {index} first.", 38, TextAnchor.MiddleCenter, Palette.Muted,
+                Ui.Label(_card, Loc.F("Locked: win stage {0} first.", index), 38, TextAnchor.MiddleCenter, Palette.Muted,
                     0.42f, 0.08f, 0.96f, 0.5f);
             }
         }
@@ -201,7 +201,7 @@ namespace PuzzleKingdoms.Views.Menus
             Image plate = Ui.Box(_map, "Label Plate", new Color(0.08f, 0.13f, 0.1f, 0.85f),
                 at.x - 0.19f, at.y - 0.135f, at.x + 0.19f, at.y - 0.055f);
             plate.raycastTarget = false;
-            Ui.Label(_map, stage.DisplayName, 34, TextAnchor.UpperCenter, unlocked ? Palette.Text : Palette.Muted,
+            Ui.Label(_map, Loc.T(stage.DisplayName), 34, TextAnchor.UpperCenter, unlocked ? Palette.Text : Palette.Muted,
                 at.x - 0.2f, at.y - 0.13f, at.x + 0.2f, at.y - 0.085f);
             AddStars(_map, stars, unlocked, at.x - 0.09f, at.y - 0.085f, at.x + 0.09f, at.y - 0.06f);
             return node;

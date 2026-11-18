@@ -31,18 +31,18 @@ namespace PuzzleKingdoms.Views.Menus
         {
             Transform root = transform;
             Ui.Box(root, "Background", Palette.Background);
-            Ui.Label(root, stageName, 48, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.84f, 1f, 0.9f);
-            Ui.Label(root, result.Victory ? "Victory!" : "Defeat", 110, TextAnchor.MiddleCenter,
+            Ui.Label(root, Loc.T(stageName), 48, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.84f, 1f, 0.9f);
+            Ui.Label(root, result.Victory ? Loc.T("Victory!") : Loc.T("Defeat"), 110, TextAnchor.MiddleCenter,
                 result.Victory ? Palette.Gold : Palette.Bad, 0f, 0.72f, 1f, 0.84f);
             Ui.Label(root, Stars(reward.Stars), 90, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.63f, 1f, 0.72f);
 
             string lines =
-                $"Survivors: {result.Survivors} / {result.Deployed}\n" +
-                $"Battle time: {battleSeconds:0.0} s{(result.TimedOut ? " (time up)" : "")}\n\n" +
-                $"Victory gold: {reward.VictoryGold}\n" +
-                $"Dismissed units: {reward.DismissGold}\n" +
-                $"Extra Banner points: {reward.OverflowGold}\n" +
-                $"Total: +{reward.TotalGold} gold   (you have {totalGold})";
+                Loc.F("Survivors: {0} / {1}", result.Survivors, result.Deployed) + "\n" +
+                Loc.F("Battle time: {0:0.0} s", battleSeconds) + (result.TimedOut ? " " + Loc.T("(time up)") : "") + "\n\n" +
+                Loc.F("Victory gold: {0}", reward.VictoryGold) + "\n" +
+                Loc.F("Dismissed units: {0}", reward.DismissGold) + "\n" +
+                Loc.F("Extra Banner points: {0}", reward.OverflowGold) + "\n" +
+                Loc.F("Total: +{0} gold   (you have {1})", reward.TotalGold, totalGold);
             Ui.Label(root, lines, 44, TextAnchor.UpperCenter, Palette.Text, 0.06f, 0.3f, 0.94f, 0.62f);
 
             float y = 0.2f;

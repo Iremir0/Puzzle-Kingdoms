@@ -35,6 +35,17 @@
 - Asset file names: `PascalCase` (`GoblinGrunt.asset`, `Stage_1_2.asset`);
   ids inside assets: `snake_case` (`goblin_grunt`).
 
+## Player-facing text (PB-32, D-046)
+
+- Write the English text in the code and let `Loc` show it in the player's language:
+  `Loc.T("Enemy army")`, `Loc.F("Moves: {0}", moves)` (numbers: `{0:0.0}`). Button captions
+  (`Ui.Button`, `Ui.SetCaption`) are translated by `Ui` itself; pass the English text.
+- Never `Loc.T($"...")`: the text must be fixed, with `{0}` for what changes.
+- Add the Turkish line to `Assets/_Project/Resources/Strings/tr.txt` in the same commit:
+  `English<TAB>Türkçe`. Changing an English text (in code, or a stage / unit / tutorial text in an
+  asset) means changing its line there too. `TurkishTableTests` lists what is missing.
+- Object names stay English and are not shown to the player.
+
 ## Tests
 
 - NUnit. Logic tests: `Tests/EditMode/<Feature>/<Topic>Tests.cs`; method

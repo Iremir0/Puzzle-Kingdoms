@@ -21,6 +21,7 @@ puzzle-kingdoms/
 │       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster (+ Undo), MergeRules, AutoFormation, BenchGroup
 │       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,
 │       │   │   │                    Rally, BattleEvent, BattleResult
+│       │   │   ├── Localization/ ✅ Language + Languages (codes, phone default), Localizer (English-keyed table, numbers; D-046)
 │       │   │   ├── Stages/       ✅ StageDef, EnemySlot
 │       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot, seen tutorial),
 │       │   │   │                   GameSettings, TutorialStep + TutorialGuide (D-040)
@@ -44,7 +45,9 @@ puzzle-kingdoms/
 │       │                            Puzzle (+ BoardEffects), WarCamp (+ BenchView, DraggableUnit), Battle,
 │       │                            Battle3D (PB-11: BattleWorld3D camera + ground + actors drawn into a texture,
 │       │                            UnitActor capsule stand-in; BattleScreen shows it, 2D behind a toggle),
-│       │                            Menus (StageMapScreen, SettingsPanel, ResultsScreen)
+│       │                            Menus (StageMapScreen, SettingsPanel, ResultsScreen);
+│       │                            Common/Loc: the current language for every screen (PB-32)
+│       ├── Resources/            ✅ UiFont.ttf (Lilita One, D-044); Strings/tr.txt: Turkish texts (PB-32, D-046)
 │       ├── Data/                 ✅ .asset files
 │       │   ├── Units/            Warrior, Archer, Mage
 │       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief

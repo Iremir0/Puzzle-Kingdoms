@@ -88,7 +88,7 @@ namespace PuzzleKingdoms.Views.Common
             edge.effectDistance = new Vector2(4, 4);
             _bubble = bubble.rectTransform;
             _text = Ui.Label(_bubble, "", 42, TextAnchor.MiddleLeft, Palette.Text, 0.05f, 0.3f, 0.95f, 0.95f);
-            Ui.Label(_bubble, "Tap to continue", 30, TextAnchor.LowerLeft, Palette.Muted, 0.05f, 0.05f, 0.6f, 0.28f);
+            Ui.Label(_bubble, Loc.T("Tap to continue"), 30, TextAnchor.LowerLeft, Palette.Muted, 0.05f, 0.05f, 0.6f, 0.28f);
             Button skip = Ui.Button(_bubble, "Skip tutorial", Ui.ButtonStyle.Secondary, Skip, 0.6f, 0.06f, 0.96f, 0.28f, 30);
             skip.gameObject.name = "Skip Tutorial";
         }
@@ -124,7 +124,7 @@ namespace PuzzleKingdoms.Views.Common
                 return;
             }
             Current = _queue.Dequeue();
-            _text.text = Current.Text;
+            _text.text = Loc.T(Current.Text);
             _target = string.IsNullOrEmpty(Current.Target) ? null : _findTarget?.Invoke(Current.Target);
             _onShown?.Invoke(Current);
             Layout();

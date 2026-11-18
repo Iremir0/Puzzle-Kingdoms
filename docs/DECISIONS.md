@@ -443,3 +443,26 @@ of PB-25, PB-27). Milestones M7-M9 added to the ROADMAP. Mockups of every card a
 growth screens page (linked from BOARD.md). Why: competitors have hundreds of stages, long-term
 progress and daily reasons to return; we had none of these, and wave 1 is useful whatever the
 playtests say (the playtests themselves benefit from analytics and Turkish).
+
+## D-046 Texts: the English text is the key; one Turkish table; language in the settings, 2026-11-18
+PB-32. Every text the player reads is looked up by its English source text: `Loc.T("Merge all")`,
+`Loc.F("Moves: {0}", n)`. `Ui.Button` and `Ui.SetCaption` translate their captions themselves, so
+button objects keep their English names in every language (tests and tutorial targets find them by
+name). English has no table; a missing translation shows the English text, never a key.
+- **Table:** `Resources/Strings/tr.txt`, one `English<TAB>Türkçe` pair per line, `#` notes, `\n` for a
+  line break: a translator can edit it in any editor or spreadsheet, without Unity. Stage names,
+  tutorial prompts and unit names stay English on the assets and go through the same table, so no
+  asset changed.
+- **Checked by `TurkishTableTests`** (Unity and `dotnet test`): the table reads cleanly, every row keeps
+  its `{n}` placeholders, and every literal passed to `Loc.T` / `Loc.F` / `Ui.Button` / `Ui.SetCaption` in
+  Views and Flow, and every stage, unit and tutorial text in the assets, has a Turkish row. `Loc.T($"…")`
+  fails the test. `LocalizationTests` checks that Lilita One draws every character of the table.
+- **Numbers:** "2.5" in English, "2,5" in Turkish, from a number format built in code rather than
+  `CultureInfo("tr-TR")`, so it does not depend on the platform's culture data.
+- **Language choice:** `language` in `settings.json`: "" follows the phone (Turkish on a Turkish phone,
+  English anywhere else), "en" or "tr" is the player's choice from Settings → Language, which redraws
+  the map and the settings at once. The settings file stays version 1 (a new field with a default).
+- **Words:** Rally is "Hücum" in Turkish; the one-letter class tags W / A / M become S / O / B.
+Why: one plain file is the simplest thing a translator can work on, and the English code stays readable;
+Unity's Localization package (string tables, smart strings, an editor of its own) is more than about 110
+texts need. If we add many languages or plural rules beyond "{0} taş", revisit.

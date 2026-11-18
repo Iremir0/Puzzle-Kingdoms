@@ -129,11 +129,11 @@ namespace PuzzleKingdoms.Views.Puzzle
             Transform root = transform;
             Ui.Box(root, "Background", Palette.Background);
 
-            Ui.Label(root, _run.Stage.DisplayName, 52, TextAnchor.MiddleLeft, Palette.Text, 0.04f, 0.93f, 0.7f, 0.99f);
+            Ui.Label(root, Loc.T(_run.Stage.DisplayName), 52, TextAnchor.MiddleLeft, Palette.Text, 0.04f, 0.93f, 0.7f, 0.99f);
             _moves = Ui.Label(root, "", 52, TextAnchor.MiddleRight, Palette.Gold, 0.6f, 0.93f, 0.96f, 0.99f);
 
             Ui.Box(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);
-            Ui.Label(root, "Enemy army", 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);
+            Ui.Label(root, Loc.T("Enemy army"), 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);
             StageBadges.AddPanelLine(root, _run.Stage);
             new FormationGridView(root, "Enemy Formation", true, false, 0.35f, 0.755f, 0.65f, 0.92f)
                 .Show(Formation.ForStage(_run.Stage));
@@ -142,7 +142,7 @@ namespace PuzzleKingdoms.Views.Puzzle
             BuildBoard(root);
 
             _bonus = Ui.Label(root, "", 64, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.1f, 1f, 0.15f);
-            _status = Ui.Label(root, "Swap two neighbouring gems. Tap or swipe.", 36, TextAnchor.MiddleCenter,
+            _status = Ui.Label(root, Loc.T("Swap two neighbouring gems. Tap or swipe."), 36, TextAnchor.MiddleCenter,
                 Palette.Muted, 0.04f, 0.02f, 0.82f, 0.1f);
             _sound = Ui.Button(root, "", Ui.ButtonStyle.Secondary, ToggleSound, 0.84f, 0.03f, 0.97f, 0.09f, 28);
             RefreshSoundButton();
@@ -385,7 +385,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                         }
                         else if (frame.StepIndex > 0)
                         {
-                            _bonus.text = frame.StepIndex > 1 ? $"Bonus! x{frame.StepIndex}" : "Bonus!";
+                            _bonus.text = frame.StepIndex > 1 ? Loc.F("Bonus! x{0}", frame.StepIndex) : Loc.T("Bonus!");
                         }
                         PlayStepFeedback(frame.Step, frame.StepIndex);
                         yield return Pop(frame.Step.Cleared);
@@ -402,7 +402,7 @@ namespace PuzzleKingdoms.Views.Puzzle
                         yield return Drop(frame.Step);
                         break;
                     case MoveReplay.FrameKind.Reshuffled:
-                        _status.text = "No moves left: the board was reshuffled.";
+                        _status.text = Loc.T("No moves left: the board was reshuffled.");
                         yield return new WaitForSeconds(ReshuffleNoticeSeconds);
                         List<(GridPos, Vector2)> flights = ReshuffleFlights(frame.Grid);
                         Render(frame.Grid, frame.Specials, frame.Stones);
@@ -783,14 +783,14 @@ namespace PuzzleKingdoms.Views.Puzzle
             {
                 if (trigger.Kind == SpecialKind.Prism)
                 {
-                    return "Prism!";
+                    return Loc.T("Prism!");
                 }
             }
             if (step.Triggers.Count > 0)
             {
-                return "Blast!";
+                return Loc.T("Blast!");
             }
-            return step.Cracked.Count > 0 ? "Stone cracked!" : "";
+            return step.Cracked.Count > 0 ? Loc.T("Stone cracked!") : "";
         }
 
         private void Render(int[,] grid, SpecialKind[,] specials, bool[,] stones)
@@ -828,24 +828,22 @@ namespace PuzzleKingdoms.Views.Puzzle
 
         private void RefreshHud()
         {
-            _moves.text = $"Moves: {_run.Puzzle.MovesLeft}";
+            _moves.text = Loc.F("Moves: {0}", _run.Puzzle.MovesLeft);
             foreach ((string key, RectTransform fill, Text label) in _meters)
             {
                 RecruitmentMeter meter = _run.Puzzle.Meters[key];
                 fill.anchorMax = new Vector2(meter.IsFull ? 1f : meter.Progress, 1f);
-                string tag = Palette.GemTag(key, StageRun.RallyKey);
+                // The one-letter class tag ("W") is translated as a text of its own ("S" for Savaşçı).
+                string tag = Loc.T(Palette.GemTag(key, StageRun.RallyKey));
                 label.text = key == StageRun.RallyKey
-                    ? $"Rally {meter.Rewards}/{meter.MaxRewards}"
+                    ? Loc.F("Rally {0}/{1}", meter.Rewards, meter.MaxRewards)
                     : $"{tag} x{meter.Rewards}";
             }
         }
 
         private void ShowFinished()
         {
-            var summary = new StringBuilder("Army recruited: ");
-            summary.Append(_run.Roster.Bench.Count).Append(" units, ")
-                .Append(_run.RallyCharges).Append(" Rally");
-            _status.text = summary.ToString();
+            _status.text = Loc.F("Army recruited: {0} units, {1} Rally", _run.Roster.Bench.Count, _run.RallyCharges);
             _status.rectTransform.anchorMin = new Vector2(0.04f, 0.095f);
             _status.rectTransform.anchorMax = new Vector2(0.96f, 0.155f);
             _continue.gameObject.SetActive(true);

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Flow;
+using PuzzleKingdoms.Logic.Localization;
 using PuzzleKingdoms.Logic.Progression;
 using PuzzleKingdoms.Views.Battle;
 using PuzzleKingdoms.Views.Battle3D;
@@ -50,6 +51,14 @@ namespace PuzzleKingdoms.Flow
         /// <summary>Lets tests point the playtest log somewhere harmless before Start runs.</summary>
         public void UsePlaytestLog(PlaytestLog log) => _playtestLog = log;
 
+        /// <summary>
+        /// Lets tests fix the language before Start runs, whatever the settings file and the computer's
+        /// language say (a choice made later in Settings still wins).
+        /// </summary>
+        public void UseLanguage(Language language) => _languageOverride = language;
+
+        private Language? _languageOverride;
+
         public void SetContent(GameContent gameContent) => content = gameContent;
 
         private void Start()
@@ -85,6 +94,7 @@ namespace PuzzleKingdoms.Flow
             }
             Profile = _store.Load();
             Settings = _settingsStore.Load();
+            Loc.Use(_languageOverride ?? Settings.LanguageFor(Loc.SystemIsTurkish));
             Sfx.EffectsOn = Settings.sound;
             Sfx.MusicOn = Settings.music;
             Sfx.Changed += OnSoundSwitched;
@@ -190,12 +200,21 @@ namespace PuzzleKingdoms.Flow
 
         private void ApplySettings(GameSettings settings)
         {
+            string languageBefore = Settings.language;
             Settings = settings.Copy().Normalize();
             _settingsStore.Save(Settings);
             Sfx.Changed -= OnSoundSwitched; // already saved; do not save twice
             Sfx.EffectsOn = Settings.sound;
             Sfx.MusicOn = Settings.music;
             Sfx.Changed += OnSoundSwitched;
+            if (Settings.language != languageBefore)
+            {
+                // A new language: redraw the map and the open settings in it (PB-32).
+                _languageOverride = null;
+                Loc.Use(Settings.LanguageFor(Loc.SystemIsTurkish));
+                ShowStageSelect();
+                OpenSettings();
+            }
         }
 
         /// <summary>The puzzle screen's sound button changed the sound: remember it.</summary>
