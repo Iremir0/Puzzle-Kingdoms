@@ -47,18 +47,18 @@ namespace PuzzleKingdoms.Views.Menus
         public int SelectedStage { get; private set; } = -1;
 
         public static StageMapScreen Create(Transform parent, GameContent content, PlayerProfile profile,
-            Action<int> onPlay, Action onSettings = null)
+            Action<int> onPlay, Action onSettings = null, Action<MainTab> onTab = null)
         {
             RectTransform root = Ui.Stretch(parent, "StageMapScreen");
             var screen = root.gameObject.AddComponent<StageMapScreen>();
-            screen.Build(content, profile, onPlay, onSettings);
+            screen.Build(content, profile, onPlay, onSettings, onTab);
             return screen;
         }
 
         /// <summary>The tappable node of a stage (tests and the tutorial use it).</summary>
         public RectTransform Node(int index) => (RectTransform)_nodes[index].transform;
 
-        private void Build(GameContent content, PlayerProfile profile, Action<int> onPlay, Action onSettings)
+        private void Build(GameContent content, PlayerProfile profile, Action<int> onPlay, Action onSettings, Action<MainTab> onTab)
         {
             _content = content;
             _profile = profile;
@@ -74,7 +74,7 @@ namespace PuzzleKingdoms.Views.Menus
                 Ui.Button(root, "Settings", Ui.ButtonStyle.Secondary, onSettings, 0.7f, 0.94f, 0.97f, 0.985f, 36);
             }
 
-            _map = Ui.Box(root, "Map", Land, 0.03f, 0.33f, 0.97f, 0.925f).rectTransform;
+            _map = Ui.Box(root, "Map", Land, 0.03f, onTab != null ? 0.375f : 0.33f, 0.97f, 0.925f).rectTransform;
             _layer = Ui.Rect(_map, "Layer", 0f, 0f, 1f, 1f);
 
             IReadOnlyList<StageDefinition> stages = content.Campaign;
@@ -89,7 +89,11 @@ namespace PuzzleKingdoms.Views.Menus
                 }
             }
 
-            _card = Ui.Box(root, "Stage Card", Palette.Panel, 0.03f, 0.02f, 0.97f, 0.315f).rectTransform;
+            _card = Ui.Box(root, "Stage Card", Palette.Panel, 0.03f, onTab != null ? TabBar.Height + 0.008f : 0.02f, 0.97f, onTab != null ? 0.36f : 0.315f).rectTransform;
+            if (onTab != null)
+            {
+                TabBar.Add(root, MainTab.Map, onTab);
+            }
             int first = stages.Count == 0 ? -1 : CurrentStage >= 0 ? CurrentStage : LastUnlocked(order);
             ShowChapter(first >= 0 ? stages[first].Chapter : 1);
             SelectStage(first);

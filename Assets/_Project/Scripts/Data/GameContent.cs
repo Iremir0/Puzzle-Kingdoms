@@ -23,6 +23,7 @@ namespace PuzzleKingdoms.Data
         [SerializeField] private ArmyRulesAsset armyRules;
         [SerializeField] private BattleRulesAsset battleRules;
         [SerializeField] private ProgressionRulesAsset progressionRules;
+        [SerializeField] private KingdomRulesAsset kingdomRules;
         [SerializeField] private SoundBank sounds;
         [Tooltip("3D models of the battle view (PB-11); may be empty, units are then drawn as capsules.")]
         [SerializeField] private BattleModelSet battleModels;
@@ -36,6 +37,8 @@ namespace PuzzleKingdoms.Data
         public ArmyRulesAsset ArmyRules => armyRules;
         public BattleRulesAsset BattleRules => battleRules;
         public ProgressionRulesAsset ProgressionRules => progressionRules;
+        /// <summary>Buildings and their costs (PB-22).</summary>
+        public KingdomRulesAsset KingdomRules => kingdomRules;
         /// <summary>Sound effects and music; may be null (the game then stays silent).</summary>
         public SoundBank Sounds => sounds;
 
@@ -45,7 +48,8 @@ namespace PuzzleKingdoms.Data
         /// Starts a new attempt at a campaign stage; <paramref name="config"/> may override the stage's
         /// moves and enemy strength (PB-29, <see cref="StageTuning"/>).
         /// </summary>
-        public StageRun CreateRun(StageDefinition stage, IRandom random = null, RemoteConfig config = null)
+        public StageRun CreateRun(StageDefinition stage, IRandom random = null, RemoteConfig config = null,
+            Logic.Kingdom.KingdomBonuses bonuses = null)
         {
             StageDef def = stage.ToStageDef();
             StageTuning.Apply(def, config);
@@ -57,7 +61,8 @@ namespace PuzzleKingdoms.Data
                 armyRules.Rules,
                 battleRules.Rules,
                 progressionRules.Rules,
-                random ?? StageRun.CreateRandom(def));
+                random ?? StageRun.CreateRandom(def),
+                bonuses);
         }
     }
 }

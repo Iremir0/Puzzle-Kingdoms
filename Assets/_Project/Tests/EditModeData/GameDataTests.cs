@@ -175,6 +175,32 @@ namespace PuzzleKingdoms.Tests.Data
             Assert.Greater(chapter2[chapter2.Count - 1].BossStonesEvery, 0, "the boss throws stones");
         }
 
+        /// <summary>PB-22: the Kingdom asset is valid: unique ids, buildings that exist in the game, small steps, rising costs.</summary>
+        [Test]
+        public void KingdomRulesAreValid()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            Assert.IsNotNull(content.KingdomRules, "GameContent has the Kingdom rules");
+            Logic.Kingdom.KingdomRules rules = content.KingdomRules.Rules;
+            Assert.AreEqual(4, rules.Buildings.Count);
+            var recruitable = content.RecruitableUnits.Select(u => u.Def.Id).ToList();
+            var ids = new HashSet<string>();
+            foreach (Logic.Kingdom.BuildingRule building in rules.Buildings)
+            {
+                Assert.IsTrue(ids.Add(building.Id), "duplicate building " + building.Id);
+                Assert.IsNotEmpty(building.DisplayName, building.Id);
+                if (building.Stat != Logic.Kingdom.BuildingStat.StageGold)
+                {
+                    Assert.Contains(building.UnitId, recruitable, building.Id + " improves a class the player can recruit");
+                }
+                Assert.LessOrEqual(building.BonusPerLevel * rules.MaxLevel, 0.5f, building.Id + " stays a small bonus");
+                for (int level = 1; level < rules.MaxLevel; level++)
+                {
+                    Assert.Greater(rules.CostToUpgrade(building.Id, level), rules.CostToUpgrade(building.Id, level - 1), building.Id + " gets dearer");
+                }
+            }
+        }
+
         [Test]
         public void GameContentIsComplete()
         {

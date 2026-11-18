@@ -1,4 +1,4 @@
-# Puzzle Kingdoms — Game Design Document (v0.1)
+# Puzzle Kingdoms â Game Design Document (v0.1)
 
 Status: **MVP design locked for prototyping.** Every number in this document is a
 starting value to be validated by playtests and headless balance simulations.
@@ -10,7 +10,7 @@ starting value to be validated by playtests and headless balance simulations.
 
 Puzzle Kingdoms is a portrait mobile game in which the player solves a short
 Match-3 puzzle to recruit an army, arranges and merges it on a 4×4 formation,
-and watches it fight an auto battle — while holding a small number of
+and watches it fight an auto battle â while holding a small number of
 **Rally** charges that they earned on the puzzle board and fire at the moment
 they choose.
 
@@ -23,7 +23,7 @@ they choose.
    wins.
 3. **Auto battle, not idle battle.** The player commands once or twice per battle
    (Rally). Small, timed, high-impact input.
-4. **Short sessions.** 2–4 minutes per stage. Battles last 20–40 seconds and can
+4. **Short sessions.** 2â4 minutes per stage. Battles last 20â40 seconds and can
    be sped up.
 
 ## 3. Differentiation (vs. Empires & Puzzles, Puzzle Quest, Auto Chess-likes)
@@ -37,8 +37,8 @@ they choose.
 
 ## 4. Core Loop
 
-Stage Select → **Puzzle** (12 moves, enemy visible) → **War Camp** (formation,
-merge, bench) → **Battle** (auto + Rally) → Results (stars, gold) → upgrades →
+Stage Select â **Puzzle** (12 moves, enemy visible) â **War Camp** (formation,
+merge, bench) â **Battle** (auto + Rally) â Results (stars, gold) â upgrades â
 next stage.
 
 ## 5. Puzzle
@@ -91,7 +91,7 @@ readable for color-blind players (D-027).
 - **Cascades** count fully and are shown as "Bonus!". With 4 gem types on 6×6
   a move clears ~7 gems on average, cascades included.
 - **Rally meter:** 10 Banner points = 1 Rally charge, max 3 charges (typically
-  1–2 per stage). Banner points
+  1â2 per stage). Banner points
   beyond the cap convert to gold (1 gold per point, start value).
 - If no valid move exists, the board reshuffles for free.
 - The initial board never contains a ready-made match (lines or squares) and always has at least
@@ -116,7 +116,7 @@ Post-MVP: more special gems, stage objectives, boss board modifiers.
 - 4×4 formation grid (D-031). **Rows** = depth (row 0 faces the enemy, row 3 is the
   back). **Columns** = four lanes, left to right.
 - Unlimited **bench**; at most 16 units deployed.
-- **Merge:** three units of the same class and tier → one unit of the next tier,
+- **Merge:** three units of the same class and tier â one unit of the next tier,
   max tier 3. Select a unit and press **Merge** to merge that one, or press
   **Merge all** to merge everything that can be merged in one go (merges chain:
   nine tier 1 become one tier 3). The screen says what will happen: the selected
@@ -135,7 +135,7 @@ Post-MVP: more special gems, stage objectives, boss board modifiers.
 | 3 | ×3.2 | larger, glow |
 
 Intent: one merged unit is slightly stronger than three separate ones in raw
-numbers but occupies one slot. With ≤ 16 units, spreading is usually better; with
+numbers but occupies one slot. With â¤ 16 units, spreading is usually better; with
 more, merging is. Verified by headless simulation.
 
 ## 7. Units (Tier 1 start values)
@@ -147,7 +147,7 @@ more, merging is. Verified by headless simulation.
 | Mage | 231 | 22 | Magic | 1.6 | 3.5 | 0.9 | Ignores armor; AoE post-MVP |
 
 HP of every unit and enemy was tripled in the first balance pass (D-026) and raised
-by 40% in D-033, so battles reach the 20–40 s target; damage is unchanged.
+by 40% in D-033, so battles reach the 20â40 s target; damage is unchanged.
 
 Damage types: **Physical** is reduced by Armor (%), **Magic** by Ward (%).
 
@@ -189,7 +189,7 @@ All Chapter 1 goblins deal Physical damage and have 0% Ward.
 
 "Ranged" means an attack range above 1.5 cells. Heals land after the hits of a tick, so a unit killed
 this tick is not saved. "Back row" is the formation row a unit started in. Until the four Meshy models
-exist (ART.md §7) the grey-box silhouettes of Brute, Archer and Grunt stand in for them.
+exist (ART.md Â§7) the grey-box silhouettes of Brute, Archer and Grunt stand in for them.
 
 Enemies use the same rules as player units and their own 4×4 formation.
 
@@ -215,17 +215,37 @@ Enemies use the same rules as player units and their own 4×4 formation.
 
 ## 10. Results & Progression (MVP)
 
-- Victory: gold + stars. Stars: 1 = win, 2 = win with ≥ 50% of deployed units
+- Victory: gold + stars. Stars: 1 = win, 2 = win with â¥ 50% of deployed units
   alive, 3 = win with all deployed units alive.
 - Defeat: retry immediately; nothing is lost.
 - Three stages in Chapter 1. Progress saved locally.
+
+**The Kingdom (PB-22, D-052).** Gold buys building levels; each is a small permanent bonus. Numbers on
+`Data/KingdomRules.asset`: 4 buildings, 10 levels, +3 % per level (+30 % at the cap), level cost
+60 × 1.4^level × the building's cost factor, rounded to 5:
+
+| Building | Improves | Cost factor | Level 1 | Level 5 | Level 10 |
+|---|---|---|---|---|---|
+| Barracks | Warrior HP | 1.0 | 60 | 230 | 1240 |
+| Archer Tower | Archer attack speed | 1.0 | 60 | 230 | 1240 |
+| Mage Tower | Mage damage | 1.2 | 70 | 275 | 1490 |
+| Treasury | victory gold of a stage | 1.5 | 90 | 345 | 1860 |
+
+All four to level 5 is about 3,100 gold; a full pass of both chapters pays about 1,500, so levels come
+from replaying. Bonuses apply to the player's units only, when the battle is set up (HP, damage rounded,
+attack interval divided by the speed bonus); the Treasury raises victory gold, not dismissal or Banner gold.
+The save is version 3 (levels by building id); older saves load with no buildings. A bottom tab bar
+(Map Â· Kingdom Â· Commanders Â· Shop) switches screens; Commanders and Shop are greyed until PB-23 and PB-30.
+Measured with `Tools/Balance --kingdom N` (every building at level N, greedy bot, no Rally): 1-3 81% → 91% at
+level 5; 2-1 92% → 96%; 2-5 60% → 77%; 2-10 46% → 61% (68% at level 10). Level 0 stays winnable, level 5 helps
+without making the boss trivial.
 
 ### Post-MVP progression order
 
 1. Permanent class levels bought with gold (small % per level).
 2. New classes as chapter rewards: Defender (blue), Support (yellow).
 3. Daily Challenge: fixed seed, same board and enemy for everyone.
-4. Expedition mode: 3–5 battles in a row with a persistent army (roguelite).
+4. Expedition mode: 3â5 battles in a row with a persistent army (roguelite).
 5. Commander heroes: one special slot with a unique Rally variant.
 
 These are now board cards (PB-22, PB-21, PB-25, PB-26, PB-23) inside the wider growth plan
@@ -241,7 +261,7 @@ of D-045 (16 cards, PB-18 to PB-33, in four waves).
 
 Formations (row 0 = front, four lanes): 1-1 a front row of 4 Grunts and 2 behind
 them; 1-2 a front row of 4 Grunts, 1 in the second row and 3 Archers in the back
-row; 1-3 has Brute–Chief–Brute (in lanes 0, 1, 2) in front and Archers in the back
+row; 1-3 has BruteâChiefâBrute (in lanes 0, 1, 2) in front and Archers in the back
 corners. Gold rewards: 30 / 40 / 60 (start
 values).
 
@@ -290,6 +310,6 @@ Measured (300-400 runs, greedy puzzle bot, auto formation, no merges, without Ra
 The random bot wins 13-58%. Nodes sit in a three-column sawtooth on the map (placeholder layout, see PB-18 notes).
 
 Measured difficulty (D-033, 400 runs; random/greedy puzzle bot, auto formation, no merges;
-without / with Rally): 1-1 won 94% / 96% (random) and 100% (greedy), battles 16–22 s
-without Rally; 1-2 won 74% / 81% and 96% / 98%, 23–28 s; 1-3 won 42% / 54% and 81% / 87%,
-38–41 s. With Rally battles are 6–10 s shorter.
+without / with Rally): 1-1 won 94% / 96% (random) and 100% (greedy), battles 16â22 s
+without Rally; 1-2 won 74% / 81% and 96% / 98%, 23â28 s; 1-3 won 42% / 54% and 81% / 87%,
+38â41 s. With Rally battles are 6â10 s shorter.
