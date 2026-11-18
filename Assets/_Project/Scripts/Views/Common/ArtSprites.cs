@@ -38,6 +38,27 @@ namespace PuzzleKingdoms.Views.Common
             }
         }
 
+
+        /// <summary>Portrait of a commander by id ("" = the classic Rally's king), or null.</summary>
+        public static Sprite Commander(string commanderId)
+        {
+            switch (commanderId)
+            {
+                case "": return Get("Commander_Classic");
+                case "shield_wall": return Get("Commander_ShieldWall");
+                case "arrow_rain": return Get("Commander_ArrowRain");
+                case "fireball": return Get("Commander_Fireball");
+                default: return null;
+            }
+        }
+
+        /// <summary>Raw texture of an art file, or null.</summary>
+        public static Texture2D Texture(string name) => Resources.Load<Texture2D>("Art/UI/" + name);
+
+        /// <summary>Painted battle ground of a stage: the meadow, the goblin camp, or the fort gate for the last stage; null = procedural.</summary>
+        public static Texture2D Arena(string stageId, int chapter) =>
+            stageId == "stage_2_10" ? Texture("Battle_Gate") : chapter >= 2 ? Texture("Battle_Chapter2") : Texture("Battle_Chapter1");
+
         /// <summary>Painting behind the stage map of a chapter, or null.</summary>
         public static Sprite ChapterMap(int chapter) => Get("Map_Chapter" + chapter);
     }

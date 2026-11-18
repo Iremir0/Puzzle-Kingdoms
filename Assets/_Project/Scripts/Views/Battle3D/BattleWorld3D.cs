@@ -40,13 +40,13 @@ namespace PuzzleKingdoms.Views.Battle3D
         private readonly List<UnitActor> _actors = new List<UnitActor>();
         private readonly List<Projectile> _projectiles = new List<Projectile>();
 
-        private BattleWorld3D(BattleSimulator sim, int textureWidth, int textureHeight)
+        private BattleWorld3D(BattleSimulator sim, int textureWidth, int textureHeight, Texture2D arena)
         {
             _sim = sim;
             _root = new GameObject("Battle3D");
             _root.transform.position = Origin;
 
-            BuildGround();
+            BuildGround(arena);
             BuildLight();
             _camera = BuildCamera(sim.Rules, textureWidth, textureHeight);
 
@@ -56,9 +56,9 @@ namespace PuzzleKingdoms.Views.Battle3D
             }
         }
 
-        public static BattleWorld3D Create(BattleSimulator sim, int textureWidth = 720, int textureHeight = 1000)
+        public static BattleWorld3D Create(BattleSimulator sim, int textureWidth = 720, int textureHeight = 1000, Texture2D arena = null)
         {
-            return new BattleWorld3D(sim, textureWidth, textureHeight);
+            return new BattleWorld3D(sim, textureWidth, textureHeight, arena);
         }
 
         public RenderTexture Texture => _camera.targetTexture;
@@ -430,9 +430,9 @@ namespace PuzzleKingdoms.Views.Battle3D
             _puffs.Clear();
         }
 
-        private void BuildGround()
+        private void BuildGround(Texture2D arena)
         {
-            BattleScenery.Build(_root.transform, Layer); // D-055: painted ground, trees, fence, banners
+            BattleScenery.Build(_root.transform, Layer, arena); // D-055: painted ground, trees, fence, banners
         }
 
         private void BuildLight()

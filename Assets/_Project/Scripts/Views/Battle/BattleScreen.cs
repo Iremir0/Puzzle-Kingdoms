@@ -106,7 +106,7 @@ namespace PuzzleKingdoms.Views.Battle
             _flat.Add(ground);
 
             // PB-11: the 3D battlefield is drawn by its own camera into a texture shown here, below the glow.
-            _world = BattleWorld3D.Create(_sim);
+            _world = BattleWorld3D.Create(_sim, arena: ArtSprites.Arena(run.Stage.Id, run.Stage.Chapter));
             RectTransform view3D = Ui.Stretch(_field, "View 3D");
             var picture = view3D.gameObject.AddComponent<RawImage>();
             picture.texture = _world.Texture;

@@ -164,6 +164,22 @@ namespace PuzzleKingdoms.Views.Menus
             shape.preserveAspect = true;
             shape.raycastTarget = false;
 
+            // A painted portrait fills the round plate (clipped to the circle); the emblem moves to a small badge.
+            Sprite portrait = ArtSprites.Commander(id);
+            if (portrait != null)
+            {
+                plate.gameObject.AddComponent<Mask>().showMaskGraphic = true;
+                Image face = Ui.Box(plate.rectTransform, "Portrait", unlocked ? Color.white : new Color(0.55f, 0.57f, 0.68f, 1f));
+                face.sprite = portrait;
+                face.raycastTarget = false;
+                shape.rectTransform.SetParent(rect, false);
+                Ui.SetAnchors(shape.rectTransform, 0.135f, 0.14f, 0.215f, 0.3f);
+                Image badge = Ui.Box(rect, "Badge", unlocked ? color : Palette.Button, 0.125f, 0.12f, 0.225f, 0.32f);
+                badge.sprite = GemShapes.Get(GemShape.Circle);
+                badge.raycastTarget = false;
+                badge.transform.SetSiblingIndex(shape.transform.GetSiblingIndex());
+            }
+
             string name = classic ? Loc.T("No commander") : Loc.T(commander.DisplayName);
             Ui.Label(rect, name, 44, TextAnchor.MiddleLeft, unlocked ? Palette.Text : Palette.Muted, 0.23f, 0.62f, 0.72f, 0.95f);
             string description = classic ? Loc.T("The classic Rally.") : Loc.T(commander.Description);

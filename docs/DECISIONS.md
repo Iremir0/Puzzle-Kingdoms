@@ -634,3 +634,11 @@ The battlefield and the unrigged goblin models felt lifeless. Trees and bushes s
 (`SceneryMotion`, play mode only). Models without an Animator breathe, bob and lean while walking and lunge when
 they strike (`UnitActor.AnimateByCode`). Purely visual, nothing in Logic changes. Rigged animation for the four
 Chapter 2 goblins stays an art item (Meshy rig).
+
+## D-057 - Painted art pass for menus and battlefield (2026-11-18)
+
+Building pictures, chapter map paintings (Meshy text-to-image) and commander portraits plus battle ground
+paintings (ChatGPT image generation, supplied by the team) replace the procedural look where a file exists
+(`ArtSprites`, `Resources/Art/UI`). The battle ground picture replaces the procedural ground, trees and fence;
+only the blue banners stay, so they can wave. The fort-gate picture is used for stage 2-10. Missing files fall
+back to the procedural look. Tab bar and commander emblems are drawn from simple shapes (`TabIcons`).

@@ -24,3 +24,6 @@ Candidates reviewed:
 Building pictures (`Assets/_Project/Resources/Art/UI/Building_*.png`) and chapter map paintings
 (`Map_Chapter1.png`, `Map_Chapter2.png`): generated with Meshy AI text-to-image (Nano Banana Pro), Pro plan
 private licence. Magenta background keyed out and resized locally.
+
+Commander portraits (`Commander_*.png`) and battle ground paintings (`Battle_*.png`): generated with ChatGPT
+image generation by the team; keyed/cropped locally. Check the service terms before a commercial release.

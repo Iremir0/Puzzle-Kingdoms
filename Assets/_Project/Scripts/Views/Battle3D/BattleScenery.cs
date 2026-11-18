@@ -15,23 +15,39 @@ namespace PuzzleKingdoms.Views.Battle3D
         /// <summary>World size of the ground texture (x by z); the quad is scaled to match.</summary>
         private const float GroundWidth = 18f;
         private const float GroundDepth = 22f;
+        /// <summary>World size of a painted ground picture.</summary>
+        private const float PaintedWidth = 10.5f;
+        private const float PaintedDepth = 19f;
         private const float ArenaHalfWidth = 3.0f;
         private const float ArenaHalfDepth = 8.2f;
 
         private static Texture2D _groundTexture;
         private static readonly Dictionary<Color32, Material> Materials = new Dictionary<Color32, Material>();
 
-        public static void Build(Transform root, int layer)
+        /// <param name="painted">A painted ground picture (PB-18 art pass); null builds the procedural ground with its props.</param>
+        public static void Build(Transform root, int layer, Texture2D painted = null)
         {
             GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Quad);
             ground.name = "Ground";
             Prepare(ground, root, layer);
             ground.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            ground.transform.localScale = new Vector3(GroundWidth, GroundDepth, 1f);
             Material groundMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-            groundMaterial.mainTexture = GroundTexture();
             groundMaterial.SetFloat("_Smoothness", 0f);
             ground.GetComponent<Renderer>().sharedMaterial = groundMaterial;
+
+            if (painted != null)
+            {
+                // The picture already has the trees, fences and camps; only the flags stay, to wave over it.
+                ground.transform.localScale = new Vector3(PaintedWidth, PaintedDepth, 1f);
+                groundMaterial.mainTexture = painted;
+                // The picture is bright and the sun adds more: pull it down and a little toward grey so units stand out.
+                groundMaterial.SetColor("_BaseColor", new Color(0.62f, 0.6f, 0.58f, 1f));
+                Banner(root, layer, new Vector3(-2.9f, 0f, -7.6f), new Color32(0x3D, 0x7B, 0xD9, 0xFF));
+                Banner(root, layer, new Vector3(2.9f, 0f, -7.6f), new Color32(0x3D, 0x7B, 0xD9, 0xFF));
+                return;
+            }
+            ground.transform.localScale = new Vector3(GroundWidth, GroundDepth, 1f);
+            groundMaterial.mainTexture = GroundTexture();
 
             var random = new System.Random(20261118);
             ChalkLine(root, layer);
