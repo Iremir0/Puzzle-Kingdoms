@@ -402,5 +402,15 @@ Unity (Animator Controller per class on top); the other six models are downloade
 without clips. Known issues: the Mage's staff bends when the body moves (it is skinned to the
 body, handle in PB-12), and nobody has yet checked whether the preset library has clips made for
 a bow or a staff; until PB-12 does, Archer and Mage reuse the generic attack/hit/death clips.
+**Unity import check of all seven (headless, Humanoid):** Knight, Mage, Goblin Archer, Brute and
+Chief became valid Humanoid avatars as downloaded. The **Goblin Grunt** failed (`mixamorig:RightHand
+is not an ancestor of Bone_047`: Unity auto-mapped a finger bone to one of Meshy's extra "SmartRig"
+bones) and the **Hero Archer** rig-only download failed too (`RightHand not found`; its animated
+download worked). Fix: in the Humanoid avatar mapping drop the finger bones (44 → 25 mapped bones,
+fingers are not needed in battle): the Grunt then becomes a valid Humanoid with human motion.
+PB-12 needs an import step for this (an `AssetPostprocessor` or a one-off editor tool that sets
+Humanoid and removes the finger mapping) so it does not depend on clicks in the Inspector.
+The clip FBX (Knight) holds five clips: Running, Walking, Attack (2.8 s), Dead, Hit_Reaction; none
+loops by default and there is no idle yet (nothing in the library search was clearly an idle).
 PB-12's "Mixamo" step is replaced by this. Rigged FBX files stay in the git-ignored Sandbox
-until PB-12 picks the final set.
+(`Sandbox/Meshy/<Name>_Rig/`, `Clips_Knight/`) until PB-12 picks the final set.
