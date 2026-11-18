@@ -375,3 +375,15 @@ has no goblins; AI keeps the goblins of the GDD at no cost. Fallback if the AI
 goblins do not match the style: KayKit Skeletons as the enemy (CC0), which means
 renaming the enemies in the GDD, data and tutorial texts. Downloaded models stay
 in the git-ignored `Assets/_Project/Sandbox/` until chosen.
+
+## D-042 Art: all seven characters made by us with Meshy Pro; replaces D-041's art source, 2026-11-18
+Alican approved. Alican bought Meshy Pro, so every character (Hero_Knight, Hero_Archer,
+Hero_Mage, Goblin_Grunt, Goblin_Archer, Goblin_Brute, Goblin_Chief) is made by us from our own
+concept images (Nano Banana Pro in Meshy, then image → 3D) and lives in
+`Assets/_Project/Art/Characters/`. Models made on a paid plan have a private licence: we own
+the output and the game needs **no Meshy credit** (D-041's CC BY 4.0 credit screen no longer
+applies to them). KayKit stays only in the git-ignored Sandbox as a spike comparison and is not
+shipped. Why: one hand-painted style for all seven (KayKit next to the Meshy goblins looked like
+two games), at about 53 credits per model. Triangle budget: about 5k per model, Brute 6k, Chief
+8k (36.7k for the seven). Method, prompts and credits in `docs/ART.md` §7. Open: the models have
+no rig (PB-12), and each model adds ~14 MB to the repository (consider Git LFS).
