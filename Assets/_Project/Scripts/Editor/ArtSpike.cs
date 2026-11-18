@@ -21,6 +21,8 @@ namespace PuzzleKingdoms.EditorTools
     public static class ArtSpike
     {
         public const string SandboxRoot = "Assets/_Project/Sandbox/";
+        /// <summary>Approved, own-made models (Meshy Pro, private licence) live here, one folder per model, in git.</summary>
+        public const string CharactersRoot = "Assets/_Project/Art/Characters/";
         public const string OutputFolder = "Logs/ArtSpike";
         private const int Width = 1080;
         private const int Height = 1920;
@@ -48,7 +50,7 @@ namespace PuzzleKingdoms.EditorTools
             {
                 Name = "KayKit",
                 // Warrior, Archer (Rogue with crossbow stands in for the Ranger), Mage; enemies: skeletons for goblins.
-                PlayerRows = new[] { "KayKit/Knight", "KayKit/Knight", "KayKit/Rogue", "KayKit/Mage" },
+                PlayerRows = new[] { "Meshy/Hero_Knight", "Meshy/Hero_Knight", "KayKit/Rogue", "KayKit/Mage" },
                 EnemyRows = new[] { "KayKit/Skeleton_Warrior", "KayKit/Skeleton_Minion", "KayKit/Skeleton_Rogue", "KayKit/Skeleton_Mage" },
                 Textures = new Dictionary<string, string>
                 {
@@ -68,16 +70,16 @@ namespace PuzzleKingdoms.EditorTools
             },
             new Pack
             {
-                // D-041: KayKit players against AI-made goblins (Meshy free plan, CC BY 4.0).
-                // Put the downloaded FBX files in Sandbox/Goblins/ with these names; missing ones are skipped.
-                Name = "Goblins",
-                PlayerRows = new[] { "KayKit/Knight", "KayKit/Knight", "KayKit/Rogue", "KayKit/Mage" },
-                EnemyRows = new[] { "Goblins/Goblin_Brute", "Goblins/Goblin_Grunt", "Goblins/Goblin_Chief", "Goblins/Goblin_Archer" },
+                // D-041: our own Meshy models (Pro plan, private licence) against the KayKit stand-ins.
+                // New downloads go into the git-ignored Sandbox/Meshy/; approved ones into Art/Characters/<Name>/. Missing models are skipped.
+                Name = "Meshy",
+                PlayerRows = new[] { "Meshy/Hero_Knight", "Meshy/Hero_Knight", "KayKit/Rogue", "KayKit/Mage" },
+                EnemyRows = new[] { "Meshy/Goblin_Brute", "Meshy/Goblin_Grunt", "Meshy/Goblin_Chief", "Meshy/Goblin_Archer" },
                 Textures = new Dictionary<string, string>
                 {
                     { "Knight", "knight_texture" }, { "Rogue", "rogue_texture" }, { "Mage", "mage_texture" },
                     // Meshy exports: the base colour PNG is saved next to the FBX under the same name.
-                    { "Goblin_Grunt", "Goblin_Grunt" }, { "Goblin_Archer", "Goblin_Archer" },
+                    { "Hero_Knight", "Hero_Knight" }, { "Goblin_Grunt", "Goblin_Grunt" }, { "Goblin_Archer", "Goblin_Archer" },
                     { "Goblin_Brute", "Goblin_Brute" }, { "Goblin_Chief", "Goblin_Chief" },
                 },
                 Hide = new Dictionary<string, string[]>
@@ -93,15 +95,13 @@ namespace PuzzleKingdoms.EditorTools
         public static void Capture()
         {
             AssetDatabase.Refresh();
-            StandUpMeshyModels();
             Directory.CreateDirectory(OutputFolder);
             var report = new StringBuilder();
             foreach (Pack pack in Packs)
             {
-                string folder = SandboxRoot + pack.Name;
-                if (!AssetDatabase.IsValidFolder(folder))
+                if (!pack.PlayerRows.Concat(pack.EnemyRows).Any(row => File.Exists(Locate(SandboxRoot, row, ".fbx"))))
                 {
-                    report.AppendLine($"{pack.Name}: missing {folder}/, skipped");
+                    report.AppendLine($"{pack.Name}: no model found in {SandboxRoot} or {CharactersRoot}, skipped");
                     continue;
                 }
                 CapturePack(pack, SandboxRoot, report);
@@ -110,22 +110,6 @@ namespace PuzzleKingdoms.EditorTools
             Debug.Log("[ArtSpike]\n" + report);
         }
 
-        /// <summary>
-        /// Meshy exports FBX with Z up, so the models arrive lying on their back. Baking the
-        /// axis conversion on import makes them stand like every other model.
-        /// </summary>
-        private static void StandUpMeshyModels()
-        {
-            foreach (string guid in AssetDatabase.FindAssets("t:Model", new[] { SandboxRoot + "Goblins" }))
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                if (AssetImporter.GetAtPath(path) is ModelImporter importer && !importer.bakeAxisConversion)
-                {
-                    importer.bakeAxisConversion = true;
-                    importer.SaveAndReimport();
-                }
-            }
-        }
 
         private static void CapturePack(Pack pack, string folder, StringBuilder report)
         {
@@ -175,10 +159,10 @@ namespace PuzzleKingdoms.EditorTools
         {
             for (int row = 0; row < rows.Length; row++)
             {
-                var model = AssetDatabase.LoadAssetAtPath<GameObject>(folder + rows[row] + ".fbx");
+                var model = AssetDatabase.LoadAssetAtPath<GameObject>(Locate(folder, rows[row], ".fbx"));
                 if (model == null)
                 {
-                    Debug.LogWarning($"[ArtSpike] missing {folder}{rows[row]}.fbx");
+                    Debug.LogWarning($"[ArtSpike] missing {rows[row]}.fbx (looked in {folder} and {CharactersRoot})");
                     continue;
                 }
                 Material material = MaterialFor(pack, folder, rows[row], lit);
@@ -202,7 +186,10 @@ namespace PuzzleKingdoms.EditorTools
                             }
                         }
                     }
-                    StandUp(unit);
+                    if (rows[row].StartsWith("Meshy/"))
+                    {
+                        StandUp(unit, Path.GetFileName(rows[row]), enemy);
+                    }
                     float height = BodyHeight(unit, Path.GetFileName(rows[row]));
                     float tierScale = tier == 1 ? 1f : tier == 2 ? 1.1f : 1.2f;
                     // Multiply, not replace: some imports carry a root scale (Meshy: ×100 for centimetres).
@@ -236,6 +223,23 @@ namespace PuzzleKingdoms.EditorTools
             }
         }
 
+        /// <summary>
+        /// World rotation that makes a Meshy model stand up facing the camera (towards -Z). Meshy does not
+        /// export every model with the same axes: found by rendering candidates side by side (PB-10).
+        /// </summary>
+        private static readonly Dictionary<string, Quaternion> FacingCamera = new Dictionary<string, Quaternion>
+        {
+            { "Goblin_Grunt", Quaternion.Euler(90f, 0f, 0f) },
+            { "Hero_Knight", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
+        };
+
+        /// <summary>Stands a Meshy model up; players face away from the camera, towards the enemy.</summary>
+        private static void StandUp(GameObject unit, string name, bool enemy)
+        {
+            Quaternion rotation = FacingCamera.TryGetValue(name, out Quaternion known) ? known : Quaternion.Euler(90f, 0f, 0f);
+            unit.transform.rotation = enemy ? rotation : Quaternion.Euler(0f, 180f, 0f) * rotation;
+        }
+
         private static Bounds VisibleBounds(GameObject unit)
         {
             Renderer[] renderers = unit.GetComponentsInChildren<Renderer>();
@@ -248,24 +252,10 @@ namespace PuzzleKingdoms.EditorTools
         }
 
         /// <summary>
-        /// A model lying on its back (Z-up export, e.g. Meshy) is much deeper than tall:
-        /// turn its children 90° about X so it stands. The head side ends up on top
+        /// Meshy exports lie on their back (Z-up) and face backwards, in every file:
+        /// turn the root 90° about X so it stands, then 180° so it faces the camera.
         /// because Z-up exporters put the head at +Z.
         /// </summary>
-        private static void StandUp(GameObject unit)
-        {
-            Bounds bounds = VisibleBounds(unit);
-            if (bounds.size.z <= bounds.size.y * 1.3f)
-            {
-                return;
-            }
-            // The mesh may sit on the root itself (Meshy: one MeshRenderer, no children),
-            // so turn the root: first the X turn in model space, then the facing.
-            unit.transform.rotation *= Quaternion.Euler(90f, 0f, 0f);
-            // Z-up exports also face the other way once standing.
-            unit.transform.rotation = Quaternion.Euler(0f, 180f, 0f) * unit.transform.rotation;
-            Debug.Log($"[ArtSpike] {unit.name} was lying down; stood it up");
-        }
 
         /// <summary>Moves the unit up or down so its lowest point touches the ground.</summary>
         private static void Ground(GameObject unit)
@@ -315,10 +305,26 @@ namespace PuzzleKingdoms.EditorTools
                 return null;
             }
             var material = new Material(lit);
-            string directory = Path.GetDirectoryName(row)?.Replace('\\', '/');
-            material.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>($"{folder}{directory}/{texture}.png"));
+            string directory = Path.GetDirectoryName(Locate(folder, row, ".fbx"))?.Replace('\\', '/');
+            material.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>($"{directory}/{texture}.png"));
             material.SetFloat("_Smoothness", 0.15f);
             return material;
+        }
+
+        /// <summary>
+        /// Where a model is: first in the git-ignored sandbox (new downloads being tried), otherwise in
+        /// <see cref="CharactersRoot"/>, where approved models live in git (one folder per model).
+        /// </summary>
+        private static string Locate(string sandbox, string row, string extension)
+        {
+            string tried = sandbox + row + extension;
+            if (File.Exists(tried))
+            {
+                return tried;
+            }
+            string name = Path.GetFileName(row);
+            string committed = $"{CharactersRoot}{name}/{name}{extension}";
+            return File.Exists(committed) ? committed : tried;
         }
 
         /// <summary>Tier 2: a trim-coloured ring under the feet; tier 3: a brighter, larger, glowing ring.</summary>

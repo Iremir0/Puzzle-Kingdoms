@@ -21,3 +21,7 @@
 *.glb binary
 *.ttf binary
 *.otf binary
+
+# Binary art assets: never diff or normalise line endings
+*.fbx binary
+*.png binary

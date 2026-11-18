@@ -197,3 +197,20 @@ Meshy preview). The spike lighting is now softer (sun 0.85, ambient 0.42) and th
 matches. Close-up from the battle camera:
 
 ![Grunt close-up](cards/img/pb-10-grunt-closeup.png)
+
+### Approved models are in git (2026-11-18)
+
+Own-made Meshy Pro models live in `Assets/_Project/Art/Characters/<Name>/` (FBX and
+base-colour texture; ~14 MB each), so Emir has them and they are backed up. New downloads are
+tried first in the git-ignored `Assets/_Project/Sandbox/Meshy/`. In: **Goblin_Grunt** (5,222
+triangles) and **Hero_Knight** (5,197 triangles). KayKit stays only as a stand-in for the Archer
+and Mage, outside git.
+
+Meshy does not export every model with the same axes: the Grunt stands up with +90° about X, the
+Knight with −90°. `ArtSpike.FacingCamera` keeps the rotation per model; find a new one by
+rendering four candidates side by side. The Knight seen from above reads as the red Warrior.
+
+![Meshy Knight and Grunt](cards/img/pb-10-meshy-front.png)
+
+Heads-up on size: every re-export adds ~14 MB to the history. Keep only approved models here and
+consider Git LFS once the cast is complete (7 models, ~100 MB).
