@@ -41,6 +41,8 @@ puzzle-kingdoms/
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
 │       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes, StageBadges, Tween, Sfx, TutorialOverlay),
 │       │                            Puzzle (+ BoardEffects), WarCamp (+ BenchView, DraggableUnit), Battle,
+│       │                            Battle3D (PB-11: BattleWorld3D camera + ground + actors drawn into a texture,
+│       │                            UnitActor capsule stand-in; BattleScreen shows it, 2D behind a toggle),
 │       │                            Menus (StageMapScreen, SettingsPanel, ResultsScreen)
 │       ├── Data/                 ✅ .asset files
 │       │   ├── Units/            Warrior, Archer, Mage

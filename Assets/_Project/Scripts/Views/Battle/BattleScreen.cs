@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Combat;
 using PuzzleKingdoms.Logic.Flow;
+using PuzzleKingdoms.Views.Battle3D;
 using PuzzleKingdoms.Views.Common;
 using UnityEngine;
 using UnityEngine.UI;
@@ -59,8 +60,16 @@ namespace PuzzleKingdoms.Views.Battle
         private int _speedFactor = 1;
         private bool _paused;
         private float _endTimer = -1f;
+        private BattleWorld3D _world;
+        private bool _show3D = true;
+        private GameObject _view3D;
+        private Button _viewToggle;
+        private readonly List<GameObject> _flat = new List<GameObject>();
 
         public BattleSimulator Simulator => _sim;
+
+        /// <summary>True while the 3D view is shown (PB-11); false for the grey-box 2D debug view.</summary>
+        public bool Is3D => _show3D;
 
         /// <param name="startSpeed">1 or 2: the battle speed from the settings (PB-14); the 1x/2x button still toggles it.</param>
         public static BattleScreen Create(Transform parent, StageRun run, Action onFinished, int startSpeed = 1)
@@ -90,11 +99,20 @@ namespace PuzzleKingdoms.Views.Battle
             var fitter = _field.gameObject.AddComponent<AspectRatioFitter>();
             fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
             fitter.aspectRatio = 0.72f;
-            Ui.Box(_field, "Ground", Palette.Panel);
-            _rallyGlow = Ui.Box(_field, "Rally Glow", new Color(Palette.Gold.r, Palette.Gold.g, Palette.Gold.b, 0.12f));
+            GameObject ground = Ui.Box(_field, "Ground", Palette.Panel).gameObject;
+            _flat.Add(ground);
+
+            // PB-11: the 3D battlefield is drawn by its own camera into a texture shown here, below the glow.
+            _world = BattleWorld3D.Create(_sim);
+            RectTransform view3D = Ui.Stretch(_field, "View 3D");
+            var picture = view3D.gameObject.AddComponent<RawImage>();
+            picture.texture = _world.Texture;
+            picture.raycastTarget = false;
+            _view3D = view3D.gameObject;
+            _rallyGlow =Ui.Box(_field, "Rally Glow", new Color(Palette.Gold.r, Palette.Gold.g, Palette.Gold.b, 0.12f));
             _rallyGlow.raycastTarget = false;
             _rallyGlow.enabled = false;
-            Ui.Box(_field, "Midline", new Color(1f, 1f, 1f, 0.08f), 0f, 0.498f, 1f, 0.502f);
+            _flat.Add(Ui.Box(_field, "Midline", new Color(1f, 1f, 1f, 0.08f), 0f, 0.498f, 1f, 0.502f).gameObject);
 
             BattleRules rules = _sim.Rules;
             _spanY = 2f * (rules.FrontGap / 2f + (Formation.Size - 1) * rules.RowSpacing + FieldMarginCells);
@@ -106,6 +124,9 @@ namespace PuzzleKingdoms.Views.Battle
             }
 
             _banner = Ui.Label(root, "", 80, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.84f, 1f, 0.92f);
+            _viewToggle = Ui.Button(root, "2D", Palette.Button, OnToggleView, 0.03f, 0.855f, 0.15f, 0.915f, 34);
+            _viewToggle.gameObject.name = "View Toggle";
+            ApplyView();
 
             _rally = Ui.Button(root, "", Palette.Gold, OnRally, 0.03f, 0.02f, 0.5f, 0.12f, 48);
             _rally.gameObject.name = "Rally Button"; // the tutorial points at it (PB-13)
@@ -125,6 +146,7 @@ namespace PuzzleKingdoms.Views.Battle
             body.raycastTarget = false;
             view.Body = body;
             view.Rect = body.rectTransform;
+            _flat.Add(body.gameObject);
             var outline = body.gameObject.AddComponent<Outline>();
             outline.effectColor = combatant.Side == Side.Player ? Palette.Text : Palette.Bad;
             outline.effectDistance = new Vector2(4, 4);
@@ -162,7 +184,9 @@ namespace PuzzleKingdoms.Views.Battle
                 while (_accumulator >= tick && !_sim.IsFinished && steps++ < MaxTicksPerFrame)
                 {
                     _accumulator -= tick;
-                    Play(_sim.Step());
+                    List<BattleEvent> events = _sim.Step();
+                    Play(events);
+                    _world.OnStep(events);
                 }
                 if (_sim.IsFinished)
                 {
@@ -170,6 +194,28 @@ namespace PuzzleKingdoms.Views.Battle
                 }
             }
             Render(Time.deltaTime);
+        }
+
+        private void OnDestroy()
+        {
+            _world?.Dispose();
+        }
+
+        private void OnToggleView()
+        {
+            _show3D = !_show3D;
+            ApplyView();
+        }
+
+        /// <summary>Shows either the 3D picture or the grey-box 2D field (the 2D one stays for debugging).</summary>
+        private void ApplyView()
+        {
+            _view3D.SetActive(_show3D);
+            foreach (GameObject flat in _flat)
+            {
+                flat.SetActive(!_show3D);
+            }
+            Ui.SetCaption(_viewToggle, _show3D ? "2D" : "3D");
         }
 
         private void Play(List<BattleEvent> events)
@@ -197,6 +243,8 @@ namespace PuzzleKingdoms.Views.Battle
 
         private void Render(float deltaTime)
         {
+            float tickSeconds = 1f / _sim.Rules.TicksPerSecond;
+            _world.Render(_sim.IsFinished ? 1f : Mathf.Clamp01(_accumulator / tickSeconds), deltaTime);
             float cell = _field.rect.height / _spanY;
             foreach (UnitView view in _units)
             {
@@ -241,10 +289,21 @@ namespace PuzzleKingdoms.Views.Battle
             }
             Text label = Ui.Label(_field, value, 30, TextAnchor.MiddleCenter, Color.white);
             RectTransform rect = label.rectTransform;
-            rect.anchorMin = target.Rect.anchorMin;
-            rect.anchorMax = target.Rect.anchorMax;
             rect.sizeDelta = new Vector2(120, 40);
-            rect.anchoredPosition = new Vector2(0f, target.Rect.sizeDelta.y * 0.9f);
+            if (_show3D)
+            {
+                // Above the unit's head, where the 3D camera sees it (the picture fills the field).
+                Vector2 anchor = _world.ViewportPointAbove(target.Combatant.Id);
+                rect.anchorMin = anchor;
+                rect.anchorMax = anchor;
+                rect.anchoredPosition = Vector2.zero;
+            }
+            else
+            {
+                rect.anchorMin = target.Rect.anchorMin;
+                rect.anchorMax = target.Rect.anchorMax;
+                rect.anchoredPosition = new Vector2(0f, target.Rect.sizeDelta.y * 0.9f);
+            }
             _floating.Add(new FloatingText { Label = label });
         }
 
@@ -293,6 +352,7 @@ namespace PuzzleKingdoms.Views.Battle
             {
                 _sim.Step();
             }
+            _world.SnapToSimulator();
             RefreshHud();
             OnBattleOver();
         }

@@ -5,6 +5,7 @@
         "PuzzleKingdoms.Logic",
         "PuzzleKingdoms.Data",
         "PuzzleKingdoms.Flow",
+        "PuzzleKingdoms.Views",
         "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.Universal.Runtime"
     ],
