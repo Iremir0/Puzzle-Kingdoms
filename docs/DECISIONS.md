@@ -514,3 +514,14 @@ PB-19.
   three stages for the playtests; adding it is one click (owner's call).
 Why: about 40 stages are planned (D-045); a goal changes how a stage is played without new rules, and a
 painted board lets a stage teach one thing on purpose.
+
+## D-049 Go to growth wave 2 before the playtests (owner's call), 2026-11-18
+Alican decided to treat PB-6 as **go** without waiting for the PB-5 playtest sessions. No tester has
+played the game yet, so the GDD pillars are **not scored** and there is no tester evidence; the only
+data is the balance bots (D-026, D-048: every stage winnable, battles 10-40 s, Rally 6-10 s shorter),
+which say nothing about whether the loop is fun. **Risk:** weeks of content (wave 2) on a loop nobody
+has played. **Kept open:** the playtests still run (kit from PB-5), analytics with consent records real
+play (PB-29), and PB-6 gets its pillar scores once five sessions are in; a "pivot" then stops wave 2
+where it stands. Wave 2 order: **PB-20** obstacles (code only, Chapter 2 stages use them) → **PB-18**
+Chapter 2 (four new enemy models cost Meshy credits; Alican approves each) → **PB-22** kingdom →
+**PB-23** commanders → **PB-21** Defender and Support.
