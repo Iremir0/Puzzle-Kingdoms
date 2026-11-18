@@ -134,10 +134,10 @@ namespace PuzzleKingdoms.EditorTools
             Shader unlit = Shader.Find("Universal Render Pipeline/Unlit");
 
             RenderSettings.ambientMode = AmbientMode.Flat;
-            RenderSettings.ambientLight = new Color(0.55f, 0.58f, 0.65f);
+            RenderSettings.ambientLight = new Color(0.42f, 0.44f, 0.5f);
             var sun = new GameObject("Sun").AddComponent<Light>();
             sun.type = LightType.Directional;
-            sun.intensity = 1.25f;
+            sun.intensity = 0.85f;
             sun.shadows = LightShadows.Soft;
             sun.transform.rotation = Quaternion.Euler(50f, -35f, 0f);
 
@@ -166,6 +166,7 @@ namespace PuzzleKingdoms.EditorTools
             Shoot(camera, 45f, 0f, 7.5f, Path.Combine(OutputFolder, $"{pack.Name}-front.png"));
             Shoot(camera, 35f, 45f, 8f, Path.Combine(OutputFolder, $"{pack.Name}-iso45.png"));
             Shoot(camera, 45f, 0f, 3.6f, Path.Combine(OutputFolder, $"{pack.Name}-closeup.png"), new Vector3(0f, 0f, -FrontGap / 2f - RowSpacing));
+            Shoot(camera, 30f, 0f, 1.6f, Path.Combine(OutputFolder, $"{pack.Name}-enemy-closeup.png"), new Vector3(-LaneSpacing * 1.5f, 0.6f, FrontGap / 2f));
         }
 
         /// <summary>A 4×4 army; tiers 1-3 across the lanes to show the GDD tier look (size, trim ring, glow).</summary>

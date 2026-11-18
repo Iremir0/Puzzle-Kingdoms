@@ -191,3 +191,9 @@ round, multiplies instead of replacing the scale and puts every model on the gro
 Reads well at phone size and the yellow-olive skin is clearly not the archers'
 green. Next to the flat KayKit heroes the painted goblin looks like another game,
 which is why the heroes are being made in Meshy from the same style frame.
+
+Update: the first Grunt render was too bright (lemon yellow, not the matte olive of the
+Meshy preview). The spike lighting is now softer (sun 0.85, ambient 0.42) and the colour
+matches. Close-up from the battle camera:
+
+![Grunt close-up](cards/img/pb-10-grunt-closeup.png)
