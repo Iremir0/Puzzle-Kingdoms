@@ -97,9 +97,6 @@ namespace PuzzleKingdoms.Views.Menus
             return Palette.Gold;
         }
 
-        private static GemShape ShapeOf(RallyKind kind) =>
-            kind == RallyKind.ShieldWall ? GemShape.Square : kind == RallyKind.ArrowRain ? GemShape.Triangle
-            : kind == RallyKind.Fireball ? GemShape.Diamond : GemShape.Star;
 
         /// <summary>One line on what the Rally does, with its numbers.</summary>
         private static string Effect(RallyVariant v)
@@ -140,13 +137,30 @@ namespace PuzzleKingdoms.Views.Menus
                 outline.effectDistance = new Vector2(5f, 5f);
             }
 
-            // The crest: a round plate in the commander's colour with its shape.
-            Image plate = Ui.Box(rect, "Crest", unlocked ? color : Palette.Button, 0.03f, 0.16f, 0.2f, 0.84f);
+            // The card takes a tint of the commander's colour, with an accent stripe on the left edge.
+            if (unlocked)
+            {
+                card.color = Color.Lerp(card.color, color, leading ? 0.22f : 0.12f);
+                Image stripe = Ui.Box(rect, "Accent", color, 0f, 0.1f, 0.012f, 0.9f);
+                stripe.raycastTarget = false;
+            }
+
+            // The crest: a glowing round plate in the commander's colour with a ring and its emblem.
+            Image glow = Ui.Box(rect, "Crest Glow", unlocked ? new Color(color.r, color.g, color.b, 0.55f) : Color.clear,
+                -0.02f, -0.05f, 0.25f, 1.05f);
+            glow.sprite = UiStyle.Glow;
+            glow.raycastTarget = false;
+            Image ring = Ui.Box(rect, "Crest Ring", unlocked ? Color.Lerp(color, Color.white, 0.55f) : Palette.PanelLight,
+                0.025f, 0.13f, 0.205f, 0.87f);
+            ring.sprite = GemShapes.Get(GemShape.Circle);
+            ring.preserveAspect = true;
+            ring.raycastTarget = false;
+            Image plate = Ui.Box(rect, "Crest", unlocked ? color : Palette.Button, 0.035f, 0.17f, 0.195f, 0.83f);
             plate.sprite = GemShapes.Get(GemShape.Circle);
             plate.preserveAspect = true;
             plate.raycastTarget = false;
-            Image shape = Ui.Box(plate.rectTransform, "Shape", unlocked ? Color.white : Palette.Muted, 0.25f, 0.25f, 0.75f, 0.75f);
-            shape.sprite = GemShapes.Get(ShapeOf(variant.Kind));
+            Image shape = Ui.Box(plate.rectTransform, "Shape", unlocked ? Color.white : Palette.Muted, 0.2f, 0.2f, 0.8f, 0.8f);
+            shape.sprite = classic ? GemShapes.Get(GemShape.Star) : TabIcons.Emblem(variant.Kind);
             shape.preserveAspect = true;
             shape.raycastTarget = false;
 
@@ -163,7 +177,11 @@ namespace PuzzleKingdoms.Views.Menus
             }
             else if (leading)
             {
-                Ui.Label(rect, Loc.T("Leading"), 42, TextAnchor.MiddleCenter, Palette.Gold, 0.74f, 0.15f, 0.97f, 0.85f);
+                Image pill = Ui.Box(rect, "Leading Pill", Palette.Gold, 0.74f, 0.28f, 0.97f, 0.72f);
+                pill.sprite = UiStyle.Rounded;
+                pill.type = Image.Type.Sliced;
+                pill.raycastTarget = false;
+                Ui.Label(rect, Loc.T("Leading"), 38, TextAnchor.MiddleCenter, Palette.Hex("1B1F2E"), 0.74f, 0.28f, 0.97f, 0.72f);
             }
             else
             {
