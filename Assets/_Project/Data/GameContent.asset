@@ -25,3 +25,4 @@ MonoBehaviour:
   battleRules: {fileID: 11400000, guid: d75dad277eea405e96ae59a57e35a46a, type: 2}
   progressionRules: {fileID: 11400000, guid: b8a15d65a3c04103add37c8ddeb749ef, type: 2}
   sounds: {fileID: 11400000, guid: 23d4d94169568ab4bb3d44272d09a18b, type: 2}
+  battleModels: {fileID: 11400000, guid: 5e2af3946bd71f14bbfb7b9368fb62f8, type: 2}

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f526ae38bbdb73647bd251b91fc0499f, type: 3}
+  m_Name: BattleModels
+  m_EditorClassIdentifier: PuzzleKingdoms.Data::PuzzleKingdoms.Data.BattleModelSet
+  entries:
+  - look: 1
+    model: {fileID: 919132149155446097, guid: 91e3a0c124f14314986de881ad01ac9a, type: 3}
+    material: {fileID: 2100000, guid: 4e955bc21f5003b459356cffff36419a, type: 2}
+    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+  - look: 2
+    model: {fileID: 919132149155446097, guid: 1228d6d41320b7543a17fb716535087e, type: 3}
+    material: {fileID: 2100000, guid: b27e30383e5091445a34743141210d71, type: 2}
+    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+  - look: 3
+    model: {fileID: 919132149155446097, guid: 86df1cb94d41e7946883f546c7f2b4a9, type: 3}
+    material: {fileID: 2100000, guid: 6c559ea76828556498abd47974c78379, type: 2}
+    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+  - look: 4
+    model: {fileID: 919132149155446097, guid: 2bb1d33561ecd4248be4b7a6687f837c, type: 3}
+    material: {fileID: 2100000, guid: 3f5e23909d2d1284a85d1344800a68ad, type: 2}
+    uprightEuler: {x: 90, y: 180, z: 0}
+  - look: 5
+    model: {fileID: 919132149155446097, guid: 836d2e85baa93094cb6994b19df9a191, type: 3}
+    material: {fileID: 2100000, guid: 7f34e2f81c3c08c49b2403cba6295549, type: 2}
+    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+  - look: 6
+    model: {fileID: 919132149155446097, guid: 0c09dc718dfba914cbceaab9bf044faa, type: 3}
+    material: {fileID: 2100000, guid: 29402177ac01cfe4baa8c5ace7a563ab, type: 2}
+    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+  - look: 7
+    model: {fileID: 919132149155446097, guid: 5876b82190f4ce44e82a4c84a997c71b, type: 3}
+    material: {fileID: 2100000, guid: 3e8394f12af8ec74796efcc3c57ee709, type: 2}
+    uprightEuler: {x: 270, y: 0.000010017912, z: 0}

@@ -33,6 +33,7 @@ puzzle-kingdoms/
 │       │   │                        PlaceholderSounds (generates Audio/Placeholder + SoundBank),
 │       │   │                        PlaytestBuild (Windows playtest build → Builds/Windows/),
 │       │   │                        ArtSpike (PB-10: renders models from the git-ignored Sandbox/),
+│       │   │                        BattleModelBuilder + BattleView3DSpike (PB-11: model data, battle frames),
 │       │   │                        MeshyRigImport (PB-12: Humanoid, no finger mapping, looping clips
 │       │   │                        for our Meshy-rigged FBX; D-043)
 │       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save),
@@ -49,6 +50,7 @@ puzzle-kingdoms/
 │       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief
 │       │   ├── Stages/           Stage_1_1 … Stage_1_3 (+ map position, tutorial prompts)
 │       │   ├── GameContent.asset   root: units in gem order, campaign, rules
+│       │   ├── BattleModels.asset  3D battle models per UnitLook (PB-11, built by BattleModelBuilder)
 │       │   ├── PuzzleRules.asset
 │       │   ├── ArmyRules.asset
 │       │   ├── BattleRules.asset

@@ -227,7 +227,7 @@ namespace PuzzleKingdoms.EditorTools
         /// World rotation that makes a Meshy model stand up facing the camera (towards -Z). Meshy does not
         /// export every model with the same axes: found by rendering candidates side by side (PB-10).
         /// </summary>
-        private static readonly Dictionary<string, Quaternion> FacingCamera = new Dictionary<string, Quaternion>
+        public static readonly Dictionary<string, Quaternion> FacingCamera = new Dictionary<string, Quaternion>
         {
             { "Goblin_Grunt", Quaternion.Euler(90f, 0f, 0f) },
             { "Hero_Knight", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },

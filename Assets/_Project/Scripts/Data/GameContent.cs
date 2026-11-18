@@ -23,6 +23,11 @@ namespace PuzzleKingdoms.Data
         [SerializeField] private BattleRulesAsset battleRules;
         [SerializeField] private ProgressionRulesAsset progressionRules;
         [SerializeField] private SoundBank sounds;
+        [Tooltip("3D models of the battle view (PB-11); may be empty, units are then drawn as capsules.")]
+        [SerializeField] private BattleModelSet battleModels;
+
+        /// <summary>3D models for the battle view; may be null.</summary>
+        public BattleModelSet BattleModels => battleModels;
 
         public IReadOnlyList<UnitDefinition> RecruitableUnits => recruitableUnits;
         public IReadOnlyList<StageDefinition> Campaign => campaign;

@@ -1,3 +1,4 @@
+using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Combat;
 using PuzzleKingdoms.Views.Common;
@@ -6,8 +7,9 @@ using UnityEngine;
 namespace PuzzleKingdoms.Views.Battle3D
 {
     /// <summary>
-    /// The 3D stand-in of one <see cref="Combatant"/> (PB-11): a coloured capsule with a weapon block, a tier ring
-    /// and a world-space HP bar. It only displays state: position, hit flash, death. 1 cell = 1 metre.
+    /// The 3D stand-in of one <see cref="Combatant"/> (PB-11): the unit's model from the <see cref="BattleModelSet"/>
+    /// (a coloured capsule with a weapon block when there is none), a tier ring and a world-space HP bar. It only
+    /// displays state: position, hit flash, death. 1 cell = 1 metre.
     /// </summary>
     internal sealed class UnitActor
     {
@@ -15,12 +17,15 @@ namespace PuzzleKingdoms.Views.Battle3D
         private const float DeathSeconds = 0.6f;
         private const float TurnSpeed = 540f;
         private const float HpBarWidth = 0.9f;
+        /// <summary>Colour multiplier of a hit flash on a textured model (values above 1 brighten the texture).</summary>
+        private static readonly Color ModelFlash = new Color(2.6f, 2.6f, 2.6f, 1f);
 
         public readonly Combatant Combatant;
         public readonly GameObject Root;
 
         private readonly Renderer[] _bodyRenderers;
         private readonly Color[] _baseColors;
+        private readonly Color[] _flashColors;
         private readonly Transform _hpRoot;
         private readonly Transform _hpFill;
         private readonly float _height;
@@ -36,34 +41,26 @@ namespace PuzzleKingdoms.Views.Battle3D
             Root = new GameObject($"Unit {combatant.Id}");
             Root.transform.SetParent(parent, false);
 
-            Color color = Palette.For(combatant.Unit.Def);
-            float tierScale = 1f + 0.1f * (combatant.Unit.Tier - 1);
-            _height = 1.2f * tierScale;
-
-            GameObject body = Primitive(PrimitiveType.Capsule, "Body", Root.transform, color);
-            body.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f) * tierScale;
-            body.transform.localPosition = new Vector3(0f, 0.6f * tierScale, 0f);
-
-            // Weapon block, by what the unit does: sword (melee), bow (ranged physical), orb (magic).
             UnitDef def = combatant.Unit.Def;
-            GameObject weapon;
-            if (def.DamageType == DamageType.Magic)
+            float tierScale = 1f + 0.1f * (combatant.Unit.Tier - 1);
+            if (UnitModels.TryGet(Palette.LookFor(def), out BattleModelSet.Entry entry))
             {
-                weapon = Primitive(PrimitiveType.Sphere, "Orb", Root.transform, Palette.Rally);
-                weapon.transform.localScale = Vector3.one * 0.3f * tierScale;
-                weapon.transform.localPosition = new Vector3(0.45f, 1.0f, 0.25f) * tierScale;
-            }
-            else if (def.AttackRange > 2f)
-            {
-                weapon = Primitive(PrimitiveType.Cube, "Bow", Root.transform, new Color(0.55f, 0.35f, 0.2f));
-                weapon.transform.localScale = new Vector3(0.06f, 0.8f, 0.06f) * tierScale;
-                weapon.transform.localPosition = new Vector3(0.45f, 0.7f, 0.25f) * tierScale;
+                _bodyRenderers = BuildModel(entry, tierScale);
+                _baseColors = new Color[_bodyRenderers.Length];
+                _flashColors = new Color[_bodyRenderers.Length];
+                for (int i = 0; i < _bodyRenderers.Length; i++)
+                {
+                    _baseColors[i] = _bodyRenderers[i].material.color;
+                    _flashColors[i] = ModelFlash;
+                }
+                _height = BattleModelSet.UnitHeightMetres * tierScale;
             }
             else
             {
-                weapon = Primitive(PrimitiveType.Cube, "Sword", Root.transform, new Color(0.85f, 0.88f, 0.92f));
-                weapon.transform.localScale = new Vector3(0.08f, 0.08f, 0.8f) * tierScale;
-                weapon.transform.localPosition = new Vector3(0.45f, 0.7f, 0.4f) * tierScale;
+                _bodyRenderers = BuildCapsule(def, Palette.For(def), tierScale);
+                _baseColors = new[] { _bodyRenderers[0].material.color, _bodyRenderers[1].material.color };
+                _flashColors = new[] { Color.white, Color.white };
+                _height = 1.2f * tierScale;
             }
 
             if (combatant.Unit.Tier > 1)
@@ -72,9 +69,6 @@ namespace PuzzleKingdoms.Views.Battle3D
                 ring.transform.localScale = new Vector3(1.1f, 0.01f, 1.1f) * tierScale;
                 ring.transform.localPosition = new Vector3(0f, 0.02f, 0f);
             }
-
-            _bodyRenderers = new[] { body.GetComponent<Renderer>(), weapon.GetComponent<Renderer>() };
-            _baseColors = new[] { _bodyRenderers[0].material.color, _bodyRenderers[1].material.color };
 
             // HP bar: a dark quad with a coloured fill, turned towards the camera every frame.
             _hpRoot = new GameObject("HP").transform;
@@ -150,7 +144,7 @@ namespace PuzzleKingdoms.Views.Battle3D
             _flashLeft -= deltaTime;
             for (int i = 0; i < _bodyRenderers.Length; i++)
             {
-                _bodyRenderers[i].material.color = _flashLeft > 0f ? Color.white : _baseColors[i];
+                _bodyRenderers[i].material.color = _flashLeft > 0f ? _flashColors[i] : _baseColors[i];
             }
 
             bool hurt = Combatant.Hp < Combatant.MaxHp;
@@ -176,6 +170,74 @@ namespace PuzzleKingdoms.Views.Battle3D
         }
 
         private Vector3 WorldPosition() => new Vector3(Combatant.Position.X, 0f, Combatant.Position.Y);
+
+        /// <summary>
+        /// The model of the set: stood up and turned to face +Z, scaled so its visible body is
+        /// <see cref="BattleModelSet.UnitHeightMetres"/> tall (a Meshy export is in centimetres and lies on
+        /// its back), feet on the ground, then the tier scale on top.
+        /// </summary>
+        private Renderer[] BuildModel(BattleModelSet.Entry entry, float tierScale)
+        {
+            Transform holder = new GameObject("Model").transform;
+            holder.SetParent(Root.transform, false);
+            GameObject model = Object.Instantiate(entry.model, holder, false);
+            model.transform.localRotation = Quaternion.Euler(entry.uprightEuler);
+
+            Renderer[] parts = model.GetComponentsInChildren<Renderer>();
+            if (entry.material != null)
+            {
+                foreach (Renderer part in parts)
+                {
+                    part.sharedMaterial = entry.material;
+                }
+            }
+
+            float height = Mathf.Max(0.1f, BoundsOf(parts).size.y);
+            model.transform.localScale *= BattleModelSet.UnitHeightMetres / height; // multiply: imports carry a root scale
+            Bounds fitted = BoundsOf(parts);
+            model.transform.position += Vector3.up * (Root.transform.position.y - fitted.min.y);
+            holder.localScale = Vector3.one * tierScale;
+            return parts;
+        }
+
+        private Renderer[] BuildCapsule(UnitDef def, Color color, float tierScale)
+        {
+            GameObject body = Primitive(PrimitiveType.Capsule, "Body", Root.transform, color);
+            body.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f) * tierScale;
+            body.transform.localPosition = new Vector3(0f, 0.6f * tierScale, 0f);
+
+            // Weapon block, by what the unit does: sword (melee), bow (ranged physical), orb (magic).
+            GameObject weapon;
+            if (def.DamageType == DamageType.Magic)
+            {
+                weapon = Primitive(PrimitiveType.Sphere, "Orb", Root.transform, Palette.Rally);
+                weapon.transform.localScale = Vector3.one * 0.3f * tierScale;
+                weapon.transform.localPosition = new Vector3(0.45f, 1.0f, 0.25f) * tierScale;
+            }
+            else if (def.AttackRange > 2f)
+            {
+                weapon = Primitive(PrimitiveType.Cube, "Bow", Root.transform, new Color(0.55f, 0.35f, 0.2f));
+                weapon.transform.localScale = new Vector3(0.06f, 0.8f, 0.06f) * tierScale;
+                weapon.transform.localPosition = new Vector3(0.45f, 0.7f, 0.25f) * tierScale;
+            }
+            else
+            {
+                weapon = Primitive(PrimitiveType.Cube, "Sword", Root.transform, new Color(0.85f, 0.88f, 0.92f));
+                weapon.transform.localScale = new Vector3(0.08f, 0.08f, 0.8f) * tierScale;
+                weapon.transform.localPosition = new Vector3(0.45f, 0.7f, 0.4f) * tierScale;
+            }
+            return new[] { body.GetComponent<Renderer>(), weapon.GetComponent<Renderer>() };
+        }
+
+        private static Bounds BoundsOf(Renderer[] renderers)
+        {
+            Bounds bounds = renderers[0].bounds;
+            foreach (Renderer renderer in renderers)
+            {
+                bounds.Encapsulate(renderer.bounds);
+            }
+            return bounds;
+        }
 
         private static GameObject Primitive(PrimitiveType type, string name, Transform parent, Color color)
         {

@@ -4,6 +4,7 @@ using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Logic.Progression;
 using PuzzleKingdoms.Views.Battle;
+using PuzzleKingdoms.Views.Battle3D;
 using PuzzleKingdoms.Views.Common;
 using PuzzleKingdoms.Views.Menus;
 using PuzzleKingdoms.Views.Puzzle;
@@ -60,6 +61,7 @@ namespace PuzzleKingdoms.Flow
                 enabled = false;
                 return;
             }
+            UnitModels.Register(content.BattleModels);
             foreach (UnitDefinition unit in content.RecruitableUnits)
             {
                 Palette.Register(unit);

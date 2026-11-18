@@ -31,6 +31,7 @@ namespace PuzzleKingdoms.EditorTools
                 PuzzleKingdoms.Views.Common.Palette.Register(AssetDatabase.LoadAssetAtPath<UnitDefinition>(AssetDatabase.GUIDToAssetPath(guid)));
             }
             GameContent content = AssetDatabase.LoadAssetAtPath<GameContent>(ContentPath);
+            UnitModels.Register(content.BattleModels);
             StageDefinition stage = content.Campaign[content.Campaign.Count - 1];
             Formation player = BuildPlayerArmy(content);
             Formation enemy = Formation.ForStage(stage.ToStageDef());
