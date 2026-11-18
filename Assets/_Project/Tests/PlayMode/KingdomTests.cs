@@ -73,7 +73,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             FindButton(_app.CurrentScreen, "Tab Kingdom").onClick.Invoke();
             yield return null;
             Assert.IsInstanceOf<KingdomScreen>(_app.CurrentScreen);
-            Assert.IsFalse(FindButton(_app.CurrentScreen, "Tab Commanders").interactable, "Commanders is not built yet");
+            Assert.IsTrue(FindButton(_app.CurrentScreen, "Tab Commanders").interactable, "Commanders opens since PB-23");
             Assert.IsFalse(FindButton(_app.CurrentScreen, "Tab Shop").interactable, "the Shop is not built yet");
             FindButton(_app.CurrentScreen, "Tab Map").onClick.Invoke();
             yield return null;
@@ -114,7 +114,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             yield return null;
             var screen = (CommandersScreen)_app.CurrentScreen;
             Assert.IsNull(screen.ChooseButton("shield_wall"), "locked: no Choose button");
-            Assert.IsNotNull(screen.ChooseButton(""), "the classic Rally can be chosen");
+            Assert.IsNull(screen.ChooseButton(""), "with no commander chosen the classic Rally is the one leading");
 
             _app.Profile.Apply("stage_1_3", new StageReward { Stars = 1 });
             _app.ShowCommanders();
@@ -126,6 +126,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             Assert.AreEqual("shield_wall", _app.Profile.CommanderId);
             Assert.AreEqual("shield_wall", new ProfileStore(_folder).Load().CommanderId, "saved at once");
             Assert.IsNull(screen.ChooseButton("shield_wall"), "the leading commander has no Choose button");
+            Assert.IsNotNull(screen.ChooseButton(""), "the classic Rally can be chosen again");
         }
     }
 }

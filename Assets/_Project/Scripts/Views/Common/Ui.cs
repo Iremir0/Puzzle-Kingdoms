@@ -108,6 +108,37 @@ namespace PuzzleKingdoms.Views.Common
             return image;
         }
 
+        /// <summary>A rounded panel with a soft drop shadow: the look of every card, box and bar.</summary>
+        public static Image Card(Transform parent, string name, Color color, float xMin = 0, float yMin = 0, float xMax = 1, float yMax = 1)
+        {
+            Image image = Box(parent, name, color, xMin, yMin, xMax, yMax);
+            image.sprite = UiStyle.Rounded;
+            image.type = Image.Type.Sliced;
+            Shadow shadow = image.gameObject.AddComponent<Shadow>();
+            shadow.effectColor = new Color(0f, 0f, 0f, 0.38f);
+            shadow.effectDistance = new Vector2(0f, -8f);
+            return image;
+        }
+
+        /// <summary>The screen background: a deep blue gradient with three soft coloured glows, so no screen is a flat slab.</summary>
+        public static Image Backdrop(Transform parent)
+        {
+            Image background = Box(parent, "Background", Color.white);
+            background.sprite = UiStyle.Gradient(Palette.Hex("2E3860"), Palette.Hex("11141E"));
+            AddGlow(background.transform, 0.12f, 0.88f, 1100f, new Color(0.24f, 0.48f, 0.85f, 0.30f));
+            AddGlow(background.transform, 0.95f, 0.5f, 1000f, new Color(0.55f, 0.32f, 0.85f, 0.22f));
+            AddGlow(background.transform, 0.15f, 0.12f, 1000f, new Color(0.2f, 0.7f, 0.65f, 0.18f));
+            return background;
+        }
+
+        private static void AddGlow(Transform parent, float x, float y, float size, Color color)
+        {
+            Image glow = Box(parent, "Glow", color, x, y, x, y);
+            glow.sprite = UiStyle.Glow;
+            glow.raycastTarget = false;
+            glow.rectTransform.sizeDelta = new Vector2(size, size);
+        }
+
         /// <summary>Text label; does not block clicks.</summary>
         public static Text Label(Transform parent, string text, int size, TextAnchor alignment, Color color,
             float xMin = 0, float yMin = 0, float xMax = 1, float yMax = 1)
@@ -122,6 +153,13 @@ namespace PuzzleKingdoms.Views.Common
             label.horizontalOverflow = HorizontalWrapMode.Wrap;
             label.verticalOverflow = VerticalWrapMode.Overflow;
             label.raycastTarget = false;
+            if (label.fontSize >= 44)
+            {
+                // Big text gets a soft shadow so it stands off the background.
+                Shadow shadow = rect.gameObject.AddComponent<Shadow>();
+                shadow.effectColor = new Color(0f, 0f, 0f, 0.5f);
+                shadow.effectDistance = new Vector2(0f, -4f);
+            }
             return label;
         }
 
@@ -153,6 +191,15 @@ namespace PuzzleKingdoms.Views.Common
             float xMin, float yMin, float xMax, float yMax, int fontSize = 44)
         {
             Image image = Box(parent, "Button " + caption, color, xMin, yMin, xMax, yMax);
+            image.sprite = UiStyle.Rounded;
+            image.type = Image.Type.Sliced;
+            Shadow lift = image.gameObject.AddComponent<Shadow>();
+            lift.effectColor = new Color(0f, 0f, 0f, 0.42f);
+            lift.effectDistance = new Vector2(0f, -7f);
+            Image gloss = Box(image.transform, "Gloss", new Color(1f, 1f, 1f, 0.10f), 0.03f, 0.52f, 0.97f, 0.95f);
+            gloss.sprite = UiStyle.Rounded;
+            gloss.type = Image.Type.Sliced;
+            gloss.raycastTarget = false;
             var button = image.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
             ColorBlock colors = button.colors;

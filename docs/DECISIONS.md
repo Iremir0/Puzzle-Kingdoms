@@ -608,3 +608,14 @@ PB-23 (Alican). The same stage plays differently with a different commander.
   the card are not made yet (credits need Alican's go, D-043). In 3D each variant has its own burst colours
   and the banner and glow take the variant's colour; a dedicated particle effect per variant is left for the art pass.
 Why: Rally is the signature move; variants give replay value without a loot box (GDD pillar 2).
+
+## D-054 One UI look for every screen: gradient backdrop, rounded shadowed cards, glossy buttons, 2026-11-18
+Alican found the flat grey-box screens plain. All of it is code, no art files (D-025 still holds).
+- `Ui.Backdrop` (deep blue gradient with three soft glows) replaces the flat background on every screen;
+  `Ui.Card` (rounded 9-slice with a drop shadow) is the panel, box, bar and card; `Ui.Button` is rounded with a
+  shadow and a soft gloss; big text (44 and up) has a soft shadow. Sprites are generated once in `UiStyle`.
+- The tab bar got an icon per tab. Long chapters (more than 5 stages) show no name under the map nodes
+  (the stage card has it), their nodes sit on a snake of four rows and shrink on a short map; locked numbers
+  stay readable. Results stats sit on a card.
+- The palette is unchanged, so the contrast tests (D-044) still hold. Screens are checked with
+  `GreyboxScreenshots` (`Logs/Screenshots/`), which now also captures Chapter 2, the Kingdom and the Commanders.

@@ -18,8 +18,8 @@ namespace PuzzleKingdoms.Views.Menus
     public sealed class CommandersScreen : MonoBehaviour
     {
         private const float CardTop = 0.905f;
-        private const float CardHeight = 0.2f;
-        private const float CardGap = 0.012f;
+        private const float CardHeight = 0.185f;
+        private const float CardGap = 0.01f;
         private static readonly Color CardColor = Palette.Panel;
 
         private GameContent _content;
@@ -53,7 +53,7 @@ namespace PuzzleKingdoms.Views.Menus
             _onChosen = onChosen;
             _commanders = content.CommanderList();
             Transform root = transform;
-            Ui.Box(root, "Background", Palette.Background);
+            Ui.Backdrop(root);
             Ui.Label(root, Loc.T("Commanders"), 48, TextAnchor.MiddleLeft, Palette.Gold, 0.04f, 0.935f, 0.6f, 0.99f);
             Ui.Label(root, Loc.T("Win stages to earn commanders. One leads your army."), 28, TextAnchor.MiddleRight,
                 Palette.Muted, 0.3f, 0.905f, 0.97f, 0.94f);
@@ -130,7 +130,7 @@ namespace PuzzleKingdoms.Views.Menus
             float top = CardTop - index * (CardHeight + CardGap);
             float yMin = top - CardHeight;
 
-            Image card = Ui.Box(_cards, "Card " + (classic ? "classic" : id), leading ? Palette.PanelLight : CardColor,
+            Image card = Ui.Card(_cards, "Card " + (classic ? "classic" : id), leading ? Palette.PanelLight : CardColor,
                 0.03f, yMin, 0.97f, top);
             RectTransform rect = card.rectTransform;
             if (leading)

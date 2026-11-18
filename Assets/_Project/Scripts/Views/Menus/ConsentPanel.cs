@@ -38,7 +38,7 @@ namespace PuzzleKingdoms.Views.Menus
             _errors = answeredBefore && current.crashReports;
             _ads = answeredBefore && current.personalisedAds;
 
-            Transform box = Ui.Box(transform, "Box", Palette.Panel, 0.06f, 0.18f, 0.94f, 0.82f).transform;
+            Transform box = Ui.Card(transform, "Box", Palette.Panel, 0.06f, 0.18f, 0.94f, 0.82f).transform;
             Ui.Label(box, Loc.T("Help us improve the game"), 52, TextAnchor.MiddleLeft, Palette.Text,
                 0.06f, 0.86f, 0.94f, 0.97f);
             Ui.Label(box, Loc.T("We would like to record how you play: which stages you win or lose, your moves and how long they take. Nothing that names you is collected, and you can change this any time in Settings."),

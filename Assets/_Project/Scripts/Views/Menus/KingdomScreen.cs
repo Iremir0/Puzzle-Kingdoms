@@ -63,7 +63,7 @@ namespace PuzzleKingdoms.Views.Menus
             _rules = content.KingdomRules != null ? content.KingdomRules.Rules : new KingdomRules();
             _onUpgraded = onUpgraded;
             Transform root = transform;
-            Ui.Box(root, "Background", Palette.Background);
+            Ui.Backdrop(root);
 
             Ui.Label(root, Loc.T("Kingdom"), 48, TextAnchor.MiddleLeft, Palette.Gold, 0.04f, 0.935f, 0.45f, 0.99f);
             Image coin = Ui.Box(root, "Coin", Palette.Gold, 0.5f, 0.945f, 0.545f, 0.98f);
@@ -134,7 +134,7 @@ namespace PuzzleKingdoms.Views.Menus
             bool maxed = cost < 0;
             bool affordable = !maxed && cost <= _profile.Gold;
 
-            Image card = Ui.Box(_cards, "Card " + building.Id, CardColor, 0.03f, yMin, 0.97f, yMax);
+            Image card = Ui.Card(_cards, "Card " + building.Id, CardColor, 0.03f, yMin, 0.97f, yMax);
             RectTransform rect = card.rectTransform;
 
             // Icon on a round plate: the class silhouette, or a star for the Treasury.

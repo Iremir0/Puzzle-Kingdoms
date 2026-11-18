@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: arrow_rain
   displayName: Arrow Rain
-  description: Volleys fall on the enemy back row: archers, shamans and bombers.
+  description: 'Volleys fall on the enemy back row: archers, shamans and bombers.'
   unlockStageId: stage_2_3
   color: {r: 0.35, g: 0.78, b: 0.54, a: 1}
   kind: 2

@@ -136,12 +136,12 @@ namespace PuzzleKingdoms.Views.Puzzle
             _run = run;
             _onDone = onDone;
             Transform root = transform;
-            Ui.Box(root, "Background", Palette.Background);
+            Ui.Backdrop(root);
 
             Ui.Label(root, Loc.T(_run.Stage.DisplayName), 52, TextAnchor.MiddleLeft, Palette.Text, 0.04f, 0.93f, 0.7f, 0.99f);
             _moves = Ui.Label(root, "", 52, TextAnchor.MiddleRight, Palette.Gold, 0.6f, 0.93f, 0.96f, 0.99f);
 
-            Ui.Box(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);
+            Ui.Card(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);
             Ui.Label(root, Loc.T("Enemy army"), 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);
             StageBadges.AddPanelLine(root, _run.Stage);
             _goal = StageBadges.AddGoalLine(root, _run.Stage, 0);
@@ -179,7 +179,7 @@ namespace PuzzleKingdoms.Views.Puzzle
             {
                 string key = keys[i];
                 float left = 0.03f + i * width;
-                Image bar = Ui.Box(root, "Meter " + key, Palette.Panel, left + 0.01f, 0.68f, left + width - 0.01f, 0.735f);
+                Image bar = Ui.Card(root, "Meter " + key, Palette.Panel, left + 0.01f, 0.68f, left + width - 0.01f, 0.735f);
                 Image fill = Ui.Box(bar.transform, "Fill", Palette.ForGem(key, StageRun.RallyKey), 0, 0, 0, 1);
                 Text label = Ui.Label(bar.transform, "", 36, TextAnchor.MiddleCenter, Palette.Text);
                 _meters.Add((key, fill.rectTransform, label));
@@ -199,7 +199,7 @@ namespace PuzzleKingdoms.Views.Puzzle
             fitter.aspectRatio = (float)board.Width / board.Height;
             // New gems start above the board and fall in: hide them until they enter.
             _board.gameObject.AddComponent<RectMask2D>();
-            Ui.Box(_board, "Board Background", Palette.Panel);
+            Ui.Card(_board, "Board Background", Palette.Panel);
 
             _gems = new Image[board.Width, board.Height];
             _gemAlpha = new CanvasGroup[board.Width, board.Height];

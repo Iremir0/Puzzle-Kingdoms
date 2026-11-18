@@ -92,7 +92,7 @@ namespace PuzzleKingdoms.Views.Battle
             _goal = run.Goal;
             _onFinished = onFinished;
             Transform root = transform;
-            Ui.Box(root, "Background", Palette.Background);
+            Ui.Backdrop(root);
 
             _header = Ui.Label(root, "", 44, TextAnchor.MiddleLeft, Palette.Text, 0.04f, 0.93f, 0.75f, 0.99f);
             _clock = Ui.Label(root, "", 44, TextAnchor.MiddleRight, Palette.Muted, 0.7f, 0.93f, 0.96f, 0.99f);

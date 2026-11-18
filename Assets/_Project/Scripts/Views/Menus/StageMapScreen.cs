@@ -66,17 +66,17 @@ namespace PuzzleKingdoms.Views.Menus
             _profile = profile;
             _onPlay = onPlay;
             Transform root = transform;
-            Ui.Box(root, "Background", Palette.Background);
+            Ui.Backdrop(root);
 
-            _chapterTitle = Ui.Label(root, Loc.T("Chapter 1"), 48, TextAnchor.MiddleLeft, Palette.Gold, 0.04f, 0.935f, 0.5f, 0.99f);
+            _chapterTitle = Ui.Label(root, Loc.T("Chapter 1"), 40, TextAnchor.MiddleLeft, Palette.Gold, 0.04f, 0.935f, 0.56f, 0.99f);
             _chapterTitle.horizontalOverflow = HorizontalWrapMode.Overflow;
-            Ui.Label(root, Loc.F("Gold {0}", profile.Gold), 44, TextAnchor.MiddleCenter, Palette.Text, 0.4f, 0.935f, 0.68f, 0.99f);
+            Ui.Label(root, Loc.F("Gold {0}", profile.Gold), 40, TextAnchor.MiddleCenter, Palette.Text, 0.56f, 0.935f, 0.7f, 0.99f);
             if (onSettings != null)
             {
                 Ui.Button(root, "Settings", Ui.ButtonStyle.Secondary, onSettings, 0.7f, 0.94f, 0.97f, 0.985f, 36);
             }
 
-            _map = Ui.Box(root, "Map", Land, 0.03f, onTab != null ? 0.375f : 0.33f, 0.97f, 0.925f).rectTransform;
+            _map = Ui.Card(root, "Map", Land, 0.03f, onTab != null ? 0.375f : 0.33f, 0.97f, 0.925f).rectTransform;
             _layer = Ui.Rect(_map, "Layer", 0f, 0f, 1f, 1f);
 
             IReadOnlyList<StageDefinition> stages = content.Campaign;
@@ -91,7 +91,7 @@ namespace PuzzleKingdoms.Views.Menus
                 }
             }
 
-            _card = Ui.Box(root, "Stage Card", Palette.Panel, 0.03f, onTab != null ? TabBar.Height + 0.008f : 0.02f, 0.97f, onTab != null ? 0.36f : 0.315f).rectTransform;
+            _card = Ui.Card(root, "Stage Card", Palette.Panel, 0.03f, onTab != null ? TabBar.Height + 0.008f : 0.02f, 0.97f, onTab != null ? 0.36f : 0.315f).rectTransform;
             if (onTab != null)
             {
                 TabBar.Add(root, MainTab.Map, onTab);
@@ -275,10 +275,10 @@ namespace PuzzleKingdoms.Views.Menus
             {
                 Ui.Label(_card, goal, 30, TextAnchor.MiddleLeft, unlocked ? Palette.Gold : Palette.Muted, 0.42f, 0.52f, 0.96f, 0.62f);
             }
-            new FormationGridView(_card, "Enemy Preview", true, false, 0.04f, 0.04f, 0.36f, 0.56f)
+            new FormationGridView(_card, "Enemy Preview", true, false, 0.04f, 0.03f, 0.36f, 0.5f)
                 .Show(Formation.ForStage(def));
             // After the grid, so the grid panel does not cover the tail of the caption.
-            Ui.Label(_card, Loc.T("Enemy army"), 30, TextAnchor.UpperLeft, Palette.Muted, 0.04f, 0.04f, 0.3f, 0.6f);
+            Ui.Label(_card, Loc.T("Enemy army"), 28, TextAnchor.MiddleLeft, Palette.Muted, 0.04f, 0.5f, 0.36f, 0.62f);
             if (unlocked)
             {
                 int play = index;
@@ -318,6 +318,11 @@ namespace PuzzleKingdoms.Views.Menus
             var rect = (RectTransform)node.transform;
             rect.sizeDelta = new Vector2(NodeSize, NodeSize);
             node.image.sprite = GemShapes.Get(GemShape.Circle);
+            Transform gloss = node.transform.Find("Gloss"); // the rectangular button gloss does not suit a round node
+            if (gloss != null)
+            {
+                Destroy(gloss.gameObject);
+            }
             Outline outline = node.gameObject.AddComponent<Outline>();
             outline.effectColor = Color.white;
             outline.effectDistance = new Vector2(5, 5);

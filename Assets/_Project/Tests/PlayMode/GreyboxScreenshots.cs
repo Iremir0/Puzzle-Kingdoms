@@ -6,6 +6,7 @@ using PuzzleKingdoms.Flow;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Localization;
+using PuzzleKingdoms.Logic.Progression;
 using PuzzleKingdoms.Views.Battle;
 using PuzzleKingdoms.Views.Puzzle;
 using UnityEngine;
@@ -74,6 +75,25 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app.UseLanguage(language);
             yield return null;
             yield return Capture(Path.Combine(output, "1-stage-map.png"));
+            // PB-18 / PB-22 / PB-23: the second chapter, the Kingdom and the Commanders, with some gold and two stages won.
+            _app.Profile.Apply("stage_1_3", new StageReward { Stars = 3, VictoryGold = 390 });
+            _app.Profile.Apply("stage_2_1", new StageReward { Stars = 2 });
+            _app.Profile.Apply("stage_2_2", new StageReward { Stars = 3 });
+            _app.Profile.TryUpgradeBuilding(content.KingdomRules.Rules, "barracks");
+            _app.ShowStageSelect();
+            yield return null;
+            ((Views.Menus.StageMapScreen)_app.CurrentScreen).OpenChapter(2);
+            yield return null;
+            yield return Capture(Path.Combine(output, "1-stage-map-chapter2.png"));
+            _app.ShowKingdom();
+            yield return null;
+            yield return Capture(Path.Combine(output, "1-kingdom.png"));
+            _app.ShowCommanders();
+            yield return null;
+            yield return Capture(Path.Combine(output, "1-commanders.png"));
+            _app.Profile.Apply("stage_1_1", new StageReward { Stars = 0 });
+            _app.ShowStageSelect();
+            yield return null;
             var settings = _app.OpenSettings(); // PB-14
             yield return null;
             yield return Capture(Path.Combine(output, "1-settings.png"));

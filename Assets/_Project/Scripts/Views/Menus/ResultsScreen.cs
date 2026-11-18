@@ -31,7 +31,7 @@ namespace PuzzleKingdoms.Views.Menus
             Actions actions, bool won, string goalMissed, string commandersUnlocked)
         {
             Transform root = transform;
-            Ui.Box(root, "Background", Palette.Background);
+            Ui.Backdrop(root);
             Ui.Label(root, Loc.T(stageName), 48, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.84f, 1f, 0.9f);
             Ui.Label(root, won ? Loc.T("Victory!") : Loc.T("Defeat"), 110, TextAnchor.MiddleCenter,
                 won ? Palette.Gold : Palette.Bad, 0f, 0.72f, 1f, 0.84f);
@@ -49,12 +49,13 @@ namespace PuzzleKingdoms.Views.Menus
                 Loc.F("Dismissed units: {0}", reward.DismissGold) + "\n" +
                 Loc.F("Extra Banner points: {0}", reward.OverflowGold) + "\n" +
                 Loc.F("Total: +{0} gold   (you have {1})", reward.TotalGold, totalGold);
+            Ui.Card(root, "Stats Panel", Palette.Panel, 0.05f, 0.285f, 0.95f, 0.625f);
             Ui.Label(root, lines, 44, TextAnchor.UpperCenter, Palette.Text, 0.06f, 0.3f, 0.94f, 0.62f);
             if (!string.IsNullOrEmpty(commandersUnlocked))
             {
                 // PB-23: a stage that unlocks a commander says so.
                 Ui.Label(root, Loc.F("Commander unlocked: {0}", commandersUnlocked), 44, TextAnchor.MiddleCenter, Palette.Good,
-                    0.04f, 0.245f, 0.96f, 0.3f);
+                    0.04f, 0.215f, 0.96f, 0.275f);
             }
 
             float y = 0.2f;
