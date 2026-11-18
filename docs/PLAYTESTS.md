@@ -24,7 +24,7 @@ Targets from D-026 to compare against: 1-1 won almost always, 1-2 mostly,
 
 ## Before the round
 
-- [ ] Builds made from the same `main` commit; write the commit here: `________`
+- [x] Builds made from the same `main` commit; write the commit here: `a8f6c79` (Windows build made 2026-11-18, `Builds/Windows/PuzzleKingdoms-playtest-win.zip`, not in git; the Android build still needs PB-1)
   - Windows: *Puzzle Kingdoms → Build Windows Playtest* (or batch mode
     `-executeMethod PuzzleKingdoms.EditorTools.PlaytestBuild.BuildWindows`),
     then zip `Builds/Windows/PuzzleKingdoms/` and share the zip.
