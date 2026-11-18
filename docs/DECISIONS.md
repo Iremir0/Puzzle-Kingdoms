@@ -627,3 +627,10 @@ edges), chalk marks where the armies meet, a fence along both sides, trees, bush
 far end, a banner at each corner (blue for the player, olive for the goblins), and a soft sun with shadows.
 Low props only at the player's end, so nothing stands in front of the player's units. No art files; the same
 every battle (fixed random seed). Tuned by looking at `GreyboxScreenshots.CaptureChapterTwoBattle`.
+
+## D-056 - Ambient and procedural motion (2026-11-18)
+
+The battlefield and the unrigged goblin models felt lifeless. Trees and bushes sway and banner cloth flutters
+(`SceneryMotion`, play mode only). Models without an Animator breathe, bob and lean while walking and lunge when
+they strike (`UnitActor.AnimateByCode`). Purely visual, nothing in Logic changes. Rigged animation for the four
+Chapter 2 goblins stays an art item (Meshy rig).

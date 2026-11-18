@@ -112,6 +112,17 @@ namespace PuzzleKingdoms.Views.Battle3D
             Part(tree.transform, layer, PrimitiveType.Sphere, new Vector3(0f, 1.35f, 0f) * scale, new Vector3(1.25f, 1f, 1.25f) * scale, leaves);
             Part(tree.transform, layer, PrimitiveType.Sphere, new Vector3(0.05f, 1.95f, 0f) * scale, new Vector3(0.95f, 0.85f, 0.95f) * scale, leavesLight);
             Part(tree.transform, layer, PrimitiveType.Sphere, new Vector3(0f, 2.45f, 0f) * scale, new Vector3(0.6f, 0.6f, 0.6f) * scale, leaves);
+            Sway(tree, 2.2f, 0.7f, 0f);
+        }
+
+        /// <summary>Wind sway on a prop (see <see cref="SceneryMotion"/>); returns it so a caller can adjust.</summary>
+        private static SceneryMotion Sway(GameObject go, float degrees, float speed, float yaw)
+        {
+            var motion = go.AddComponent<SceneryMotion>();
+            motion.Degrees = degrees;
+            motion.Speed = speed;
+            motion.YawDegrees = yaw;
+            return motion;
         }
 
         private static void Bush(Transform root, int layer, Vector3 at, float scale)
@@ -123,6 +134,7 @@ namespace PuzzleKingdoms.Views.Battle3D
                 new Color32(0x2F, 0x6E, 0x34, 0xFF));
             Part(bush.transform, layer, PrimitiveType.Sphere, new Vector3(0.3f, 0.22f, 0.1f) * scale, new Vector3(0.6f, 0.45f, 0.55f) * scale,
                 new Color32(0x3A, 0x80, 0x3C, 0xFF));
+            Sway(bush, 1.2f, 1.1f, 0f);
         }
 
         private static void Rock(Transform root, int layer, Vector3 at, float scale, System.Random random)
@@ -156,7 +168,15 @@ namespace PuzzleKingdoms.Views.Battle3D
             Prepare(banner, root, layer);
             banner.transform.localPosition = at;
             Part(banner.transform, layer, PrimitiveType.Cylinder, new Vector3(0f, 1.0f, 0f), new Vector3(0.06f, 1.0f, 0.06f), new Color32(0x5A, 0x3E, 0x26, 0xFF));
-            Part(banner.transform, layer, PrimitiveType.Cube, new Vector3(0.28f, 1.7f, 0f), new Vector3(0.5f, 0.55f, 0.03f), cloth);
+            // The cloth hangs from a pivot at the pole so it can flutter around it.
+            var pivot = new GameObject("Cloth");
+            Prepare(pivot, banner.transform, layer);
+            pivot.transform.localPosition = new Vector3(0.03f, 0f, 0f);
+            Part(pivot.transform, layer, PrimitiveType.Cube, new Vector3(0.25f, 1.7f, 0f), new Vector3(0.5f, 0.55f, 0.03f), cloth);
+            Sway(pivot, 0f, 0f, 0f).Axis = Vector3.up;
+            SceneryMotion flutter = pivot.GetComponent<SceneryMotion>();
+            flutter.Degrees = 14f;
+            flutter.Speed = 3.2f;
             Part(banner.transform, layer, PrimitiveType.Sphere, new Vector3(0f, 2.05f, 0f), new Vector3(0.12f, 0.12f, 0.12f), new Color32(0xF4, 0xBE, 0x4F, 0xFF));
         }
 
