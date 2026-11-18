@@ -79,9 +79,21 @@ namespace PuzzleKingdoms.Views.Battle3D
             }
             foreach (BattleEvent e in events)
             {
-                if (e.Type == BattleEventType.Died)
+                if (e.Type == BattleEventType.Died && e.SourceId >= 0 && e.SourceId < _actors.Count)
                 {
                     PlaySound(Sfx.Bank?.UnitDied);
+                    UnitActor dead = _actors[e.SourceId];
+                    Vector3 at = dead.Position + Vector3.up * 0.4f;
+                    if (dead.Combatant.Side == Side.Enemy)
+                    {
+                        // Goblin poof: a ring of dusty green-grey puffs, and a coin pops out (visual only).
+                        Burst(at, new Color(0.62f, 0.66f, 0.5f), 10, 0.5f, 0.6f, 1.6f);
+                        Burst(at + Vector3.up * 0.4f, Palette.Gold, 1, 0.32f, 0.9f, 0.5f, coin: true);
+                    }
+                    else
+                    {
+                        Burst(at, new Color(0.7f, 0.7f, 0.72f), 6, 0.4f, 0.5f, 1.1f);
+                    }
                 }
                 if (e.Type == BattleEventType.RallyStarted)
                 {
@@ -98,6 +110,19 @@ namespace PuzzleKingdoms.Views.Battle3D
                 }
                 _actors[e.TargetId].Flash();
                 _actors[e.TargetId].PlayHit();
+                {
+                    // Hit feedback: dust on a melee hit, purple sparks on a magic hit.
+                    UnitActor hitSource = e.SourceId >= 0 && e.SourceId < _actors.Count ? _actors[e.SourceId] : null;
+                    Vector3 hitAt = _actors[e.TargetId].Position + Vector3.up * 0.6f;
+                    if (hitSource != null && hitSource.Combatant.DamageType == DamageType.Magic)
+                    {
+                        Burst(hitAt, new Color(0.66f, 0.48f, 0.91f), 4, 0.18f, 0.35f, 1.2f);
+                    }
+                    else
+                    {
+                        Burst(hitAt, new Color(0.78f, 0.72f, 0.6f), 3, 0.22f, 0.4f, 0.9f);
+                    }
+                }
                 UnitActor source = e.SourceId >= 0 && e.SourceId < _actors.Count ? _actors[e.SourceId] : null;
                 source?.PlayAttack(_sim.Rally.IsActive ? 1f + _sim.Rules.RallyAttackSpeedBonus : 1f);
                 if (source != null)
@@ -111,6 +136,69 @@ namespace PuzzleKingdoms.Views.Battle3D
                 if (source != null && source.Combatant.AttackRange > 2f && _projectiles.Count < 40)
                 {
                     SpawnProjectile(source, _actors[e.TargetId]);
+                }
+            }
+        }
+
+        private sealed class Puff
+        {
+            public GameObject Object;
+            public Vector3 Velocity;
+            public float Age;
+            public float Life;
+            public float Size;
+            public bool Coin;
+        }
+
+        private readonly List<Puff> _puffs = new List<Puff>();
+        private const int MaxPuffs = 70;
+
+        /// <summary>Little transient bits (dust, sparks, the goblin poof, a coin) that fly, shrink and vanish (PB-12).</summary>
+        private void Burst(Vector3 at, Color color, int count, float size, float life, float spread, bool coin = false)
+        {
+            for (int i = 0; i < count && _puffs.Count < MaxPuffs; i++)
+            {
+                GameObject go = GameObject.CreatePrimitive(coin ? PrimitiveType.Cylinder : PrimitiveType.Sphere);
+                go.name = coin ? "Coin" : "Puff";
+                go.transform.SetParent(_root.transform, false);
+                go.GetComponent<Collider>().enabled = false;
+                go.GetComponent<Renderer>().material.color = color;
+                go.layer = Layer;
+                go.transform.localPosition = at;
+                Vector2 dir = UnityEngine.Random.insideUnitCircle * spread;
+                _puffs.Add(new Puff
+                {
+                    Object = go,
+                    Velocity = coin ? new Vector3(dir.x * 0.3f, 2.6f, dir.y * 0.3f) : new Vector3(dir.x, 0.6f + UnityEngine.Random.value * 0.8f, dir.y),
+                    Life = life,
+                    Size = size,
+                    Coin = coin,
+                });
+            }
+        }
+
+        private void RenderPuffs(float deltaTime)
+        {
+            for (int i = _puffs.Count - 1; i >= 0; i--)
+            {
+                Puff p = _puffs[i];
+                p.Age += deltaTime;
+                float t = Mathf.Clamp01(p.Age / p.Life);
+                if (p.Coin)
+                {
+                    p.Velocity.y -= 7f * deltaTime;
+                }
+                p.Object.transform.localPosition += p.Velocity * deltaTime;
+                float scale = p.Coin ? p.Size : p.Size * (1f - t * t);
+                p.Object.transform.localScale = p.Coin ? new Vector3(scale, scale * 0.12f, scale) : Vector3.one * scale;
+                if (p.Coin)
+                {
+                    p.Object.transform.Rotate(0f, 0f, 540f * deltaTime);
+                }
+                if (t >= 1f)
+                {
+                    DestroyObject(p.Object);
+                    _puffs.RemoveAt(i);
                 }
             }
         }
@@ -241,6 +329,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         public void Render(float alpha, float deltaTime)
         {
             RenderRally(deltaTime);
+            RenderPuffs(deltaTime);
             Quaternion cameraRotation = _camera.transform.rotation;
             foreach (UnitActor actor in _actors)
             {
@@ -316,6 +405,11 @@ namespace PuzzleKingdoms.Views.Battle3D
                 DestroyObject(p.Object);
             }
             _projectiles.Clear();
+            foreach (Puff puff in _puffs)
+            {
+                DestroyObject(puff.Object);
+            }
+            _puffs.Clear();
         }
 
         private void BuildGround()

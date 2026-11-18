@@ -20,7 +20,7 @@ namespace PuzzleKingdoms.EditorTools
     {
         private const string ContentPath = "Assets/_Project/Data/GameContent.asset";
         private const string OutputFolder = "Logs/Battle3D";
-        private static readonly int[] CaptureTicks = { 0, 80, 96, 140, 200, 280 };
+        private static readonly int[] CaptureTicks = { 0, 80, 96, 140, 200, 230 };
 
         [MenuItem("Puzzle Kingdoms/Battle 3D Screenshots")]
         public static void Capture()
