@@ -52,7 +52,7 @@ namespace PuzzleKingdoms.Tests.Data
         public void AllUnitsHaveSaneValues()
         {
             List<UnitDefinition> units = AllUnits().ToList();
-            Assert.AreEqual(7, units.Count, "3 player classes + 4 goblins");
+            Assert.AreEqual(11, units.Count, "3 player classes + 4 Chapter 1 goblins + 4 Chapter 2 enemies");
             foreach (UnitDefinition asset in units)
             {
                 UnitDef def = asset.Def;
@@ -132,9 +132,15 @@ namespace PuzzleKingdoms.Tests.Data
             GameContent content = Load<GameContent>("GameContent.asset");
             var ids = new HashSet<string>();
             var positions = new List<UnityEngine.Vector2>();
+            int shownChapter = 0;
             foreach (StageDefinition stage in content.Campaign)
             {
                 UnityEngine.Vector2 at = stage.MapPosition;
+                if (stage.Chapter != shownChapter) // every chapter has its own map
+                {
+                    shownChapter = stage.Chapter;
+                    positions.Clear();
+                }
                 Assert.That(at.x, Is.InRange(0.1f, 0.9f), stage.Id + " map x");
                 Assert.That(at.y, Is.InRange(0.1f, 0.85f), stage.Id + " map y (room for the chapter title)");
                 Assert.IsFalse(positions.Any(p => UnityEngine.Vector2.Distance(p, at) < 0.15f), stage.Id + " overlaps a node");
@@ -153,13 +159,36 @@ namespace PuzzleKingdoms.Tests.Data
             Assert.IsTrue(ids.Contains("1-3.rally"), "Rally timing is taught in 1-3");
         }
 
+        /// <summary>PB-18, D-051: Chapter 2 is ten stages in campaign order, each enemy behaviour appears, the boss stage has a Chief.</summary>
+        [Test]
+        public void ChapterTwoUsesTheFourNewEnemies()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            var chapter2 = content.Campaign.Where(s => s.Chapter == 2).Select(s => s.ToStageDef()).ToList();
+            Assert.AreEqual(10, chapter2.Count);
+            var used = new HashSet<string>(chapter2.SelectMany(s => s.Enemies).Select(e => e.Unit.Id));
+            foreach (string id in new[] { "shield_goblin", "goblin_shaman", "wolf_rider", "goblin_bomber" })
+            {
+                Assert.IsTrue(used.Contains(id), id + " appears in Chapter 2");
+            }
+            Assert.IsTrue(chapter2[chapter2.Count - 1].Enemies.Any(e => e.Unit.Id == "goblin_chief"), "boss stage has the Chief");
+            Assert.Greater(chapter2[chapter2.Count - 1].BossStonesEvery, 0, "the boss throws stones");
+        }
+
         [Test]
         public void GameContentIsComplete()
         {
             GameContent content = Load<GameContent>("GameContent.asset");
             CollectionAssert.AreEqual(new[] { "warrior", "archer", "mage" },
                 content.RecruitableUnits.Select(u => u.Def.Id).ToArray(), "gem order");
-            CollectionAssert.AreEqual(new[] { "stage_1_1", "stage_1_2", "stage_1_3" }, content.CampaignOrder());
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    "stage_1_1", "stage_1_2", "stage_1_3",
+                    "stage_2_1", "stage_2_2", "stage_2_3", "stage_2_4", "stage_2_5",
+                    "stage_2_6", "stage_2_7", "stage_2_8", "stage_2_9", "stage_2_10",
+                },
+                content.CampaignOrder());
             Assert.IsNotNull(content.PuzzleRules);
             Assert.IsNotNull(content.ArmyRules);
             Assert.IsNotNull(content.BattleRules);

@@ -46,5 +46,9 @@ MonoBehaviour:
   covers: []
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.72, y: 0.74}
-  tutorial: []
+  mapPosition: {x: 0.5, y: 0.647}
+  tutorial:
+  - id: 2-8.clock
+    trigger: 0
+    text: 'Win the battle within 30 seconds. Recruit fast and use Rally when the armies meet.'
+    target: 

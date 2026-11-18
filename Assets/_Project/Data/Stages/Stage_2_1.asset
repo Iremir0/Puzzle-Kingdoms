@@ -46,5 +46,9 @@ MonoBehaviour:
   covers: []
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.2, y: 0.1}
-  tutorial: []
+  mapPosition: {x: 0.2, y: 0.180}
+  tutorial:
+  - id: 2-1.shield
+    trigger: 0
+    text: 'Shield Goblins in the front shrug off half of all arrow damage. Warriors and Mages hurt them most.'
+    target: 

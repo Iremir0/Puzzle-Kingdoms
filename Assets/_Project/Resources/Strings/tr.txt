@@ -37,9 +37,9 @@ Sound	Ses
 # ---- Stage map and badges ----
 Chapter 1	Bölüm 1
 Gold {0}	Altın {0}
-Chapter 2: Goblin Fort (coming later)	Bölüm 2: Goblin Kalesi (yakında)
+
 Enemy army	Düşman ordusu
-Locked: win stage {0} first.	Kilitli: önce {0}. seviyeyi kazan.
+Locked: win stage {0} first.	Kilitli: önce {0} seviyesini kazan.
 No stones	Taş yok
 1 stone	1 taş
 {0} stones	{0} taş
@@ -159,3 +159,31 @@ The boss throws stones!	Boss taş atıyor!
 Stones fall in {0}	{0} hamle sonra taş yağacak
 Frozen Gate	Donmuş Kapı
 The Chief's Forge	Şefin Demirhanesi
+
+# ---- Chapter 2: Goblin Fort (PB-18) ----
+Chapter 2: Goblin Fort	Bölüm 2: Goblin Kalesi
+Chapter {0}	Bölüm {0}
+Shield Goblin	Kalkanlı Goblin
+Goblin Shaman	Goblin Şaman
+Wolf Rider	Kurt Binicisi
+Goblin Bomber	Goblin Bombacı
+Shield Wall	Kalkan Duvarı
+Healer's Camp	Şifacı Kampı
+Wolf Pack	Kurt Sürüsü
+Powder Keg	Barut Fıçısı
+Chain Gang	Zincirli Çete
+Stone Pit	Taş Çukuru
+Race the Clock	Zamana Karşı
+Goblin Fort Gate	Goblin Kalesi Kapısı
+
+# ---- Chapter 2 tutorial prompts (PB-18) ----
+Shield Goblins in the front shrug off half of all arrow damage. Warriors and Mages hurt them most.	Öndeki Kalkanlı Goblinler okların yarısını savuşturur. Onlara en çok Savaşçılar ve Büyücüler zarar verir.
+Ice sits on some cells. Every gem cleared on it melts one layer. Melt all the ice, then win.	Bazı hücreler buzlu. Üzerindeki her taş temizlendiğinde bir buz katmanı erir. Bütün buzu erit, sonra kazan.
+Shamans heal the most hurt goblin. Kill them first, with Archers or Mages.	Şamanlar en yaralı goblini iyileştirir. Önce onları indir; Okçular ya da Büyücüler iş görür.
+Wolf Riders race past the front and hit your back row. Keep some tough units back there.	Kurt Binicileri ön safı geçip arka sıraya saldırır. Arkada da dayanıklı birlikler tut.
+Bombers also hurt everyone next to their target. Do not pack your units tightly.	Bombacılar hedeflerinin yanındakilere de zarar verir. Birliklerini sıkış tıkış dizme.
+A chained gem cannot be swapped, but it can be part of a match. The first match breaks the chain.	Zincirli taş yer değiştiremez ama eşleşmeye katılabilir. İlk eşleşme zinciri kırar.
+Break 4 stones to reach the goal: the first match on a stone gem only breaks the stone.	Hedefe ulaşmak için 4 taş kır: taşlı bir gemde ilk eşleşme yalnızca taşı kırar.
+Win the battle within 30 seconds. Recruit fast and use Rally when the armies meet.	Savaşı 30 saniye içinde kazan. Hızlı devşir, ordular karşılaşınca Hücum'u kullan.
+The boss drops stones on your board every few moves. Watch the countdown.	Boss birkaç hamlede bir tahtana taş atar. Geri sayımı izle.
+The Chief's guard heals, bombs and dives. Use Rally when the armies meet.	Şefin muhafızları iyileştirir, bomba atar ve dalar. Ordular karşılaşınca Hücum'u kullan.

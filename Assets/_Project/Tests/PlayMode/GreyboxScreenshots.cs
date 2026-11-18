@@ -180,8 +180,8 @@ namespace PuzzleKingdoms.Tests.PlayMode
         {
 #if UNITY_EDITOR
             var content = UnityEditor.AssetDatabase.LoadAssetAtPath<GameContent>("Assets/_Project/Data/GameContent.asset");
-            var gate = UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinition>("Assets/_Project/Data/Stages/Stage_2_1.asset");
-            var forge = UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinition>("Assets/_Project/Data/Stages/Stage_2_2.asset");
+            var gate = UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinition>("Assets/_Project/Data/Stages/Stage_2_2.asset");
+            var forge = UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinition>("Assets/_Project/Data/Stages/Stage_2_9.asset");
 #else
             GameContent content = null;
             StageDefinition gate = null, forge = null;

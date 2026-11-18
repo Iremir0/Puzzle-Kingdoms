@@ -43,5 +43,9 @@ MonoBehaviour:
   covers: []
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.75, y: 0.36}
-  tutorial: []
+  mapPosition: {x: 0.2, y: 0.380}
+  tutorial:
+  - id: 2-4.wolf
+    trigger: 3
+    text: 'Wolf Riders race past the front and hit your back row. Keep some tough units back there.'
+    target: 

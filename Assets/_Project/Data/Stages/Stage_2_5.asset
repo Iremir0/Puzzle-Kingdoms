@@ -49,5 +49,9 @@ MonoBehaviour:
   covers: []
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.3, y: 0.46}
-  tutorial: []
+  mapPosition: {x: 0.5, y: 0.447}
+  tutorial:
+  - id: 2-5.bomber
+    trigger: 3
+    text: 'Bombers also hurt everyone next to their target. Do not pack your units tightly.'
+    target: 

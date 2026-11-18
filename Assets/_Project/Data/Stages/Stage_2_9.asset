@@ -49,5 +49,9 @@ MonoBehaviour:
   - c....c
   bossStonesEvery: 3
   bossStonesCount: 2
-  mapPosition: {x: 0.35, y: 0.84}
-  tutorial: []
+  mapPosition: {x: 0.8, y: 0.714}
+  tutorial:
+  - id: 2-9.boss
+    trigger: 0
+    text: 'The boss drops stones on your board every few moves. Watch the countdown.'
+    target: Board Area

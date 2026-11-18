@@ -52,5 +52,9 @@ MonoBehaviour:
   - ......
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.6, y: 0.18}
-  tutorial: []
+  mapPosition: {x: 0.5, y: 0.247}
+  tutorial:
+  - id: 2-2.ice
+    trigger: 0
+    text: 'Ice sits on some cells. Every gem cleared on it melts one layer. Melt all the ice, then win.'
+    target: Board Area

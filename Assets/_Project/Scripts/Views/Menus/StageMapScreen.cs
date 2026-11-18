@@ -29,10 +29,16 @@ namespace PuzzleKingdoms.Views.Menus
         private PlayerProfile _profile;
         private Action<int> _onPlay;
         private RectTransform _map;
+        private RectTransform _layer;
+        private Text _chapterTitle;
+        private int _chapter = 1;
         private RectTransform _card;
         private RectTransform _arrow;
         private Vector2 _arrowHome;
         private readonly List<Button> _nodes = new List<Button>();
+
+        /// <summary>Chapter whose map is showing (PB-18).</summary>
+        public int Chapter => _chapter;
 
         /// <summary>Index of the stage to play next (the arrow), or -1 when everything has stars.</summary>
         public int CurrentStage { get; private set; }
@@ -60,7 +66,8 @@ namespace PuzzleKingdoms.Views.Menus
             Transform root = transform;
             Ui.Box(root, "Background", Palette.Background);
 
-            Ui.Label(root, Loc.T("Chapter 1"), 56, TextAnchor.MiddleLeft, Palette.Gold, 0.04f, 0.935f, 0.45f, 0.99f);
+            _chapterTitle = Ui.Label(root, Loc.T("Chapter 1"), 48, TextAnchor.MiddleLeft, Palette.Gold, 0.04f, 0.935f, 0.5f, 0.99f);
+            _chapterTitle.horizontalOverflow = HorizontalWrapMode.Overflow;
             Ui.Label(root, Loc.F("Gold {0}", profile.Gold), 44, TextAnchor.MiddleCenter, Palette.Text, 0.4f, 0.935f, 0.68f, 0.99f);
             if (onSettings != null)
             {
@@ -68,8 +75,7 @@ namespace PuzzleKingdoms.Views.Menus
             }
 
             _map = Ui.Box(root, "Map", Land, 0.03f, 0.33f, 0.97f, 0.925f).rectTransform;
-            Ui.Label(_map, Loc.T("Chapter 2: Goblin Fort (coming later)"), 30, TextAnchor.UpperCenter, Palette.Muted,
-                0f, 0.9f, 1f, 0.98f);
+            _layer = Ui.Rect(_map, "Layer", 0f, 0f, 1f, 1f);
 
             IReadOnlyList<StageDefinition> stages = content.Campaign;
             List<string> order = content.CampaignOrder();
@@ -83,22 +89,97 @@ namespace PuzzleKingdoms.Views.Menus
                 }
             }
 
+            _card = Ui.Box(root, "Stage Card", Palette.Panel, 0.03f, 0.02f, 0.97f, 0.315f).rectTransform;
+            int first = stages.Count == 0 ? -1 : CurrentStage >= 0 ? CurrentStage : LastUnlocked(order);
+            ShowChapter(first >= 0 ? stages[first].Chapter : 1);
+            SelectStage(first);
+        }
+
+        /// <summary>First campaign index of a chapter, or -1 when the campaign has no such chapter.</summary>
+        private int ChapterFirst(int chapter)
+        {
+            IReadOnlyList<StageDefinition> stages = _content.Campaign;
+            for (int i = 0; i < stages.Count; i++)
+            {
+                if (stages[i].Chapter == chapter)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        /// <summary>"2-3": chapter and place in the chapter, as the stage is called on the map and its card.</summary>
+        private string StageLabel(int index)
+        {
+            StageDefinition stage = _content.Campaign[index];
+            return $"{stage.Chapter}-{index - ChapterFirst(stage.Chapter) + 1}";
+        }
+
+        private static string ChapterTitle(int chapter) =>
+            chapter == 1 ? Loc.T("Chapter 1")
+            : chapter == 2 ? Loc.T("Chapter 2: Goblin Fort")
+            : Loc.F("Chapter {0}", chapter);
+
+        /// <summary>Draws the map of one chapter: its path, nodes, arrow and the buttons to the next and previous chapter.</summary>
+        public void ShowChapter(int chapter)
+        {
+            _chapter = chapter;
+            Ui.Clear(_layer);
+            _nodes.Clear();
+            _arrow = null;
+            _chapterTitle.text = ChapterTitle(chapter);
+
+            IReadOnlyList<StageDefinition> stages = _content.Campaign;
+            List<string> order = _content.CampaignOrder();
             for (int i = 0; i + 1 < stages.Count; i++)
             {
-                DrawPath(stages[i].MapPosition, stages[i + 1].MapPosition, profile.IsUnlocked(order, i + 1));
+                if (stages[i].Chapter == chapter && stages[i + 1].Chapter == chapter)
+                {
+                    DrawPath(stages[i].MapPosition, stages[i + 1].MapPosition, _profile.IsUnlocked(order, i + 1));
+                }
             }
             for (int i = 0; i < stages.Count; i++)
             {
-                _nodes.Add(DrawNode(i, stages[i], profile.IsUnlocked(order, i), profile.BestStars(stages[i].Id)));
+                _nodes.Add(stages[i].Chapter != chapter
+                    ? null
+                    : DrawNode(i, stages[i], _profile.IsUnlocked(order, i), _profile.BestStars(stages[i].Id)));
             }
-            if (CurrentStage >= 0)
+            if (CurrentStage >= 0 && stages[CurrentStage].Chapter == chapter)
             {
                 _arrow = DrawArrow(stages[CurrentStage].MapPosition);
             }
 
-            _card = Ui.Box(root, "Stage Card", Palette.Panel, 0.03f, 0.02f, 0.97f, 0.315f).rectTransform;
-            int first = CurrentStage >= 0 ? CurrentStage : LastUnlocked(order);
-            SelectStage(first);
+            if (chapter > 1 && ChapterFirst(chapter - 1) >= 0)
+            {
+                AddChapterButton(chapter - 1, true, 0.02f, 0.4f);
+            }
+            if (ChapterFirst(chapter + 1) >= 0)
+            {
+                AddChapterButton(chapter + 1, _profile.IsUnlocked(order, ChapterFirst(chapter + 1)), 0.44f, 0.98f);
+            }
+        }
+
+        private void AddChapterButton(int chapter, bool open, float xMin, float xMax)
+        {
+            Button button = Ui.Button(_layer, chapter == 1 ? "Chapter 1" : "Chapter 2: Goblin Fort", Ui.ButtonStyle.Secondary,
+                () => OpenChapter(chapter), xMin, 0.9f, xMax, 0.985f, 30);
+            button.gameObject.name = "Chapter Button " + chapter;
+            button.interactable = open;
+        }
+
+        /// <summary>Switches to a chapter's map and opens the card of the stage to play there.</summary>
+        public void OpenChapter(int chapter)
+        {
+            int first = ChapterFirst(chapter);
+            if (first < 0)
+            {
+                return;
+            }
+            ShowChapter(chapter);
+            IReadOnlyList<StageDefinition> stages = _content.Campaign;
+            bool current = CurrentStage >= 0 && stages[CurrentStage].Chapter == chapter;
+            SelectStage(current ? CurrentStage : first);
         }
 
         private int LastUnlocked(List<string> order)
@@ -131,17 +212,23 @@ namespace PuzzleKingdoms.Views.Menus
                 return;
             }
             SelectedStage = index;
+            if (stages[index].Chapter != _chapter)
+            {
+                ShowChapter(stages[index].Chapter);
+            }
             for (int i = 0; i < _nodes.Count; i++)
             {
-                Outline outline = _nodes[i].GetComponent<Outline>();
-                outline.enabled = i == index;
+                if (_nodes[i] != null)
+                {
+                    _nodes[i].GetComponent<Outline>().enabled = i == index;
+                }
             }
 
             Ui.Clear(_card);
             StageDefinition stage = stages[index];
             StageDef def = stage.ToStageDef();
             bool unlocked = _profile.IsUnlocked(_content.CampaignOrder(), index);
-            Ui.Label(_card, $"{index + 1}. {Loc.T(stage.DisplayName)}", 48, TextAnchor.MiddleLeft, Palette.Text,
+            Ui.Label(_card, $"{StageLabel(index)}. {Loc.T(stage.DisplayName)}", 48, TextAnchor.MiddleLeft, Palette.Text,
                 0.04f, 0.8f, 0.7f, 0.97f);
             AddStars(_card, _profile.BestStars(stage.Id), unlocked, 0.72f, 0.82f, 0.96f, 0.96f);
             StageBadges.AddRow(_card, def, !unlocked, 0.04f, 0.64f, 0.96f, 0.78f);
@@ -163,7 +250,7 @@ namespace PuzzleKingdoms.Views.Menus
             }
             else
             {
-                Ui.Label(_card, Loc.F("Locked: win stage {0} first.", index), 38, TextAnchor.MiddleCenter, Palette.Muted,
+                Ui.Label(_card, Loc.F("Locked: win stage {0} first.", StageLabel(index - 1)), 38, TextAnchor.MiddleCenter, Palette.Muted,
                     0.42f, 0.08f, 0.96f, 0.5f);
             }
         }
@@ -171,7 +258,7 @@ namespace PuzzleKingdoms.Views.Menus
         /// <summary>A dotted path between two nodes, drawn as small squares.</summary>
         private void DrawPath(Vector2 from, Vector2 to, bool open)
         {
-            RectTransform path = Ui.Rect(_map, "Path", 0f, 0f, 1f, 1f);
+            RectTransform path = Ui.Rect(_layer, "Path", 0f, 0f, 1f, 1f);
             // Dots only between the nodes' labels: from a bit after one node to a bit before the next.
             const int dots = 6;
             for (int i = 0; i < dots; i++)
@@ -188,7 +275,7 @@ namespace PuzzleKingdoms.Views.Menus
         {
             Vector2 at = stage.MapPosition;
             Color color = !unlocked ? Locked : stars > 0 ? Palette.Primary : Palette.Gold;
-            Button node = Ui.Button(_map, (index + 1).ToString(), color, () => SelectStage(index), at.x, at.y, at.x, at.y, 64);
+            Button node = Ui.Button(_layer, (index - ChapterFirst(stage.Chapter) + 1).ToString(), color, () => SelectStage(index), at.x, at.y, at.x, at.y, 64);
             node.gameObject.name = "Node " + (index + 1);
             var rect = (RectTransform)node.transform;
             rect.sizeDelta = new Vector2(NodeSize, NodeSize);
@@ -203,12 +290,12 @@ namespace PuzzleKingdoms.Views.Menus
             }
 
             // A plate behind name and stars, so the path dots never run through the text.
-            Image plate = Ui.Box(_map, "Label Plate", new Color(0.08f, 0.13f, 0.1f, 0.85f),
+            Image plate = Ui.Box(_layer, "Label Plate", new Color(0.08f, 0.13f, 0.1f, 0.85f),
                 at.x - 0.19f, at.y - 0.135f, at.x + 0.19f, at.y - 0.055f);
             plate.raycastTarget = false;
-            Ui.Label(_map, Loc.T(stage.DisplayName), 34, TextAnchor.UpperCenter, unlocked ? Palette.Text : Palette.Muted,
+            Ui.Label(_layer, Loc.T(stage.DisplayName), 34, TextAnchor.UpperCenter, unlocked ? Palette.Text : Palette.Muted,
                 at.x - 0.2f, at.y - 0.13f, at.x + 0.2f, at.y - 0.085f);
-            AddStars(_map, stars, unlocked, at.x - 0.09f, at.y - 0.085f, at.x + 0.09f, at.y - 0.06f);
+            AddStars(_layer, stars, unlocked, at.x - 0.09f, at.y - 0.085f, at.x + 0.09f, at.y - 0.06f);
             return node;
         }
 
@@ -229,7 +316,7 @@ namespace PuzzleKingdoms.Views.Menus
         /// <summary>A downward triangle above the node to play next; Update bounces it.</summary>
         private RectTransform DrawArrow(Vector2 at)
         {
-            Image arrow = Ui.Box(_map, "Next Arrow", Color.white, at.x, at.y, at.x, at.y);
+            Image arrow = Ui.Box(_layer, "Next Arrow", Color.white, at.x, at.y, at.x, at.y);
             arrow.sprite = GemShapes.Get(GemShape.Triangle);
             arrow.raycastTarget = false;
             RectTransform rect = arrow.rectTransform;

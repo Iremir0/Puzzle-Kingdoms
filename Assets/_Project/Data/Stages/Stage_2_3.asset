@@ -46,5 +46,9 @@ MonoBehaviour:
   covers: []
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.3, y: 0.28}
-  tutorial: []
+  mapPosition: {x: 0.8, y: 0.313}
+  tutorial:
+  - id: 2-3.shaman
+    trigger: 3
+    text: 'Shamans heal the most hurt goblin. Kill them first, with Archers or Mages.'
+    target: 

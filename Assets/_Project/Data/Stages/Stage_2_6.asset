@@ -52,5 +52,9 @@ MonoBehaviour:
   - c....c
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.7, y: 0.55}
-  tutorial: []
+  mapPosition: {x: 0.8, y: 0.513}
+  tutorial:
+  - id: 2-6.chain
+    trigger: 0
+    text: 'A chained gem cannot be swapped, but it can be part of a match. The first match breaks the chain.'
+    target: Board Area
