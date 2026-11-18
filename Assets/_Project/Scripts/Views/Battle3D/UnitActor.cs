@@ -38,6 +38,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         private Animator _animator;
         private Transform _modelHolder;
         private float _attackClipLength = 1f;
+        private int _attackKind;
         private float _hitCooldown;
         private float _smoothSpeed;
 
@@ -139,6 +140,7 @@ namespace PuzzleKingdoms.Views.Battle3D
             }
             float interval = Mathf.Max(0.2f, Combatant.AttackInterval) / Mathf.Max(0.1f, rallyFactor);
             _animator.SetFloat("attackSpeed", Mathf.Clamp(_attackClipLength / (interval * 0.9f), 0.6f, 4f));
+            _animator.SetInteger("attackKind", _attackKind);
             _animator.SetTrigger("attack");
         }
 
@@ -290,9 +292,13 @@ namespace PuzzleKingdoms.Views.Battle3D
                 animator.applyRootMotion = false;
                 animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 _animator = animator;
+                // 0 melee, 1 bow, 2 magic: the shared controller has one attack state per kind (PB-12).
+                UnitDef attacker = Combatant.Unit.Def;
+                _attackKind = attacker.DamageType == DamageType.Magic ? 2 : attacker.AttackRange > 2f ? 1 : 0;
+                string wanted = _attackKind == 2 ? "Charged_Spell_Cast_1" : _attackKind == 1 ? "Archery_Shot" : "Attack";
                 foreach (AnimationClip clip in controller.animationClips)
                 {
-                    if (clip != null && clip.name == "Attack")
+                    if (clip != null && clip.name == wanted)
                     {
                         _attackClipLength = clip.length;
                     }

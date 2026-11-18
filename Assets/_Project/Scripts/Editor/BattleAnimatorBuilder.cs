@@ -28,6 +28,7 @@ namespace PuzzleKingdoms.EditorTools
             AnimatorController controller = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
             controller.AddParameter("speed", AnimatorControllerParameterType.Float);
             controller.AddParameter("attackSpeed", AnimatorControllerParameterType.Float);
+            controller.AddParameter("attackKind", AnimatorControllerParameterType.Int); // 0 melee, 1 bow, 2 magic
             controller.AddParameter("attack", AnimatorControllerParameterType.Trigger);
             controller.AddParameter("hit", AnimatorControllerParameterType.Trigger);
             controller.AddParameter("die", AnimatorControllerParameterType.Trigger);
@@ -43,14 +44,21 @@ namespace PuzzleKingdoms.EditorTools
             }
 
             AnimatorState idle = machine.AddState("Idle", new Vector3(250, 0));
-            idle.motion = Clip("Walking");
-            idle.speed = 0f; // a frozen stride until we have a real idle clip
+            idle.motion = Clip("Idle");
             AnimatorState walk = machine.AddState("Walk", new Vector3(250, 80));
             walk.motion = Clip("Walking");
             AnimatorState attack = machine.AddState("Attack", new Vector3(500, 0));
             attack.motion = Clip("Attack");
             attack.speedParameterActive = true;
             attack.speedParameter = "attackSpeed";
+            AnimatorState attackBow = machine.AddState("AttackBow", new Vector3(500, -80));
+            attackBow.motion = Clip("Archery_Shot");
+            attackBow.speedParameterActive = true;
+            attackBow.speedParameter = "attackSpeed";
+            AnimatorState attackMagic = machine.AddState("AttackMagic", new Vector3(500, -160));
+            attackMagic.motion = Clip("Charged_Spell_Cast_1");
+            attackMagic.speedParameterActive = true;
+            attackMagic.speedParameter = "attackSpeed";
             AnimatorState hit = machine.AddState("Hit", new Vector3(500, 80));
             hit.motion = Clip("Hit_Reaction");
             AnimatorState death = machine.AddState("Death", new Vector3(500, 160));
@@ -60,9 +68,14 @@ namespace PuzzleKingdoms.EditorTools
             Transition(idle, walk, hasExitTime: false).AddCondition(AnimatorConditionMode.Greater, 0.2f, "speed");
             Transition(walk, idle, hasExitTime: false).AddCondition(AnimatorConditionMode.Less, 0.2f, "speed");
 
-            AnimatorStateTransition toAttack = machine.AddAnyStateTransition(attack);
-            Configure(toAttack, hasExitTime: false);
-            toAttack.AddCondition(AnimatorConditionMode.If, 0f, "attack");
+            foreach ((AnimatorState state, int kind) in new[] { (attack, 0), (attackBow, 1), (attackMagic, 2) })
+            {
+                AnimatorStateTransition toKind = machine.AddAnyStateTransition(state);
+                Configure(toKind, hasExitTime: false);
+                toKind.AddCondition(AnimatorConditionMode.If, 0f, "attack");
+                toKind.AddCondition(AnimatorConditionMode.Equals, kind, "attackKind");
+                Transition(state, idle, hasExitTime: true);
+            }
             AnimatorStateTransition toHit = machine.AddAnyStateTransition(hit);
             Configure(toHit, hasExitTime: false);
             toHit.AddCondition(AnimatorConditionMode.If, 0f, "hit");
@@ -71,7 +84,6 @@ namespace PuzzleKingdoms.EditorTools
             toDeath.canTransitionToSelf = false;
             toDeath.AddCondition(AnimatorConditionMode.If, 0f, "die");
 
-            Transition(attack, idle, hasExitTime: true);
             Transition(hit, idle, hasExitTime: true);
 
             EditorUtility.SetDirty(controller);

@@ -146,6 +146,12 @@ namespace PuzzleKingdoms.EditorTools
                 return false;
             }
             ModelImporterClipAnimation[] clips = importer.clipAnimations;
+            // A re-downloaded file can hold other clips than the list frozen in the .meta (new clips would not show).
+            ModelImporterClipAnimation[] inFile = importer.defaultClipAnimations;
+            if (clips.Length != inFile.Length || !clips.Select(c => c.name).OrderBy(n => n).SequenceEqual(inFile.Select(c => c.name).OrderBy(n => n)))
+            {
+                return false;
+            }
             return clips.Length == 0 || clips.All(clip => clip.loopTime == IsLoopingName(clip.name));
         }
 
@@ -162,11 +168,7 @@ namespace PuzzleKingdoms.EditorTools
 
         private static ModelImporterClipAnimation[] LoopedClips(ModelImporter importer)
         {
-            ModelImporterClipAnimation[] clips = importer.clipAnimations;
-            if (clips.Length == 0)
-            {
-                clips = importer.defaultClipAnimations;
-            }
+            ModelImporterClipAnimation[] clips = importer.defaultClipAnimations; // always the clips the file holds now
             foreach (ModelImporterClipAnimation clip in clips)
             {
                 bool loop = IsLoopingName(clip.name);
