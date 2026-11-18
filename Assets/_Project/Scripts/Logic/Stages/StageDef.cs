@@ -30,5 +30,11 @@ namespace PuzzleKingdoms.Logic.Stages
         public float EnemyHpMultiplier = 1f;
         /// <summary>Multiplies the damage of every enemy of the stage (D-033); 1 = as defined.</summary>
         public float EnemyDamageMultiplier = 1f;
+
+        /// <summary>What the stage asks for besides winning (PB-19, D-048); win the battle by default.</summary>
+        public StageGoal Goal = new StageGoal();
+
+        /// <summary>A hand-placed start board (<see cref="Puzzle.BoardLayout"/>); null or empty = random.</summary>
+        public string[] Layout;
     }
 }

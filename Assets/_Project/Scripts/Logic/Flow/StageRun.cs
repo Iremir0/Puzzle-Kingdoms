@@ -75,7 +75,30 @@ namespace PuzzleKingdoms.Logic.Flow
             meters[RallyKey] = new RecruitmentMeter(puzzleRules.PointsPerRallyCharge, puzzleRules.MaxRallyCharges);
 
             var board = new BoardModel(puzzleRules.BoardWidth, puzzleRules.BoardHeight, keys.Count, random);
-            board.Generate();
+            if (BoardLayout.IsEmpty(stage.Layout))
+            {
+                board.Generate();
+            }
+            else
+            {
+                // A hand-placed start board (PB-19): placed gems and stones stay, the rest is random.
+                if (!BoardLayout.TryParse(stage.Layout, board.Width, board.Height, keys.Count,
+                        out int[,] gems, out bool[,] stones, out string error))
+                {
+                    throw new ArgumentException($"Stage '{stage.Id}' layout: {error}");
+                }
+                board.Generate(gems);
+                for (int y = 0; y < board.Height; y++)
+                {
+                    for (int x = 0; x < board.Width; x++)
+                    {
+                        if (stones[x, y])
+                        {
+                            board.SetStone(new GridPos(x, y), true);
+                        }
+                    }
+                }
+            }
             board.PlaceStones(stage.StoneGems);
             Puzzle = new PuzzleSession(board, stage.Moves, keys, meters, puzzleRules.FourMatchBonusPoints);
             Puzzle.RewardsEarned += OnRewardsEarned;
@@ -115,6 +138,16 @@ namespace PuzzleKingdoms.Logic.Flow
             return true;
         }
 
+        /// <summary>The stage's goal (PB-19); a stage without one only asks to win the battle.</summary>
+        public StageGoal Goal => Stage.Goal ?? StageGoal.DefeatArmy();
+
+        /// <summary>
+        /// True once the battle is over, won, and the goal was reached: the stage counts as won.
+        /// A battle won while missing the goal (too few stones, too slow) is a defeat.
+        /// </summary>
+        public bool Won => Battle != null && Battle.IsFinished
+                           && Goal.IsMet(Battle.Result, Puzzle.StonesBroken, _battleRules.TicksPerSecond);
+
         /// <summary>Computes the reward once the battle is over. Returns null before that.</summary>
         public StageReward Finish()
         {
@@ -122,7 +155,8 @@ namespace PuzzleKingdoms.Logic.Flow
             {
                 return null;
             }
-            Reward = StageReward.Compute(Stage, Battle.Result, DismissedUnits, RallyOverflowPoints, _progressionRules);
+            Reward = StageReward.Compute(Stage, Battle.Result, DismissedUnits, RallyOverflowPoints, _progressionRules,
+                goalMet: Won);
             SetPhase(StagePhase.Finished);
             return Reward;
         }

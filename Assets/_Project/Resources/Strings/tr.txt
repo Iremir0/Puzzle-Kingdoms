@@ -142,3 +142,10 @@ Error reports	Hata raporları
 Personalised ads	Kişiselleştirilmiş reklamlar
 Allow all	Hepsine izin ver
 Save my choice	Seçimimi kaydet
+
+# ---- Stage goals (PB-19) ----
+Goal: break {0} stones	Hedef: {0} taş kır
+Goal: win within {0} s	Hedef: {0} sn içinde kazan
+{0:0.0} / {1} s	{0:0.0} / {1} sn
+Goal missed	Hedefe ulaşılamadı
+The Quarry	Taş Ocağı

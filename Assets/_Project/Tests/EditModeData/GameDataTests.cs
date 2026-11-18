@@ -26,6 +26,28 @@ namespace PuzzleKingdoms.Tests.Data
             AssetDatabase.FindAssets("t:UnitDefinition", new[] { Root })
                 .Select(guid => AssetDatabase.LoadAssetAtPath<UnitDefinition>(AssetDatabase.GUIDToAssetPath(guid)));
 
+        /// <summary>PB-19: every stage asset, in the campaign or not, has a usable goal and start board.</summary>
+        [Test]
+        public void EveryStageAssetHasAValidGoalAndStartBoard()
+        {
+            var content = Load<GameContent>("GameContent.asset");
+            int gemTypes = content.RecruitableUnits.Count + 1;
+            string[] guids = AssetDatabase.FindAssets("t:StageDefinition", new[] { Root + "Stages" });
+            Assert.Greater(guids.Length, 2);
+            foreach (string guid in guids)
+            {
+                var stage = AssetDatabase.LoadAssetAtPath<StageDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                StageDef def = stage.ToStageDef();
+                Assert.IsTrue(def.Goal.IsValid, $"{stage.name}: a goal that needs a target has one");
+                if (!Logic.Puzzle.BoardLayout.IsEmpty(def.Layout))
+                {
+                    Assert.IsTrue(Logic.Puzzle.BoardLayout.TryParse(def.Layout, 6, 6, gemTypes, out _, out _, out string error),
+                        $"{stage.name}: {error}");
+                }
+                Assert.DoesNotThrow(() => content.CreateRun(stage, new SeededRandom(7)), stage.name);
+            }
+        }
+
         [Test]
         public void AllUnitsHaveSaneValues()
         {

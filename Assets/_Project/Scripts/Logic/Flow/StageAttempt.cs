@@ -73,7 +73,7 @@ namespace PuzzleKingdoms.Logic.Flow
             return new StageAttempt
             {
                 stage = run.Stage.Id,
-                victory = result.Victory,
+                victory = run.Won, // the stage, not only the battle: a missed goal is a loss (PB-19)
                 timedOut = result.TimedOut,
                 stars = run.Reward.Stars,
                 battleSeconds = (float)result.Ticks / run.Battle.Rules.TicksPerSecond,

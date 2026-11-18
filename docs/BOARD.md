@@ -45,6 +45,8 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-16](cards/PB-16.md) | Final polish and balance | Alican | M6 | M | `feature/PB-16-final-polish` | In `main`: one font (Lilita One), six-step type scale, three button styles, contrast tests (D-044); left: playtest round 2 and the balance pass (need testers, after PB-5) |
 | [PB-17](cards/PB-17.md) | Release build | Alican | M6 | S | `feature/PB-17-release-build` | In `main`: version 0.1.0 (1), `BuildReleaseAab`, placeholder icon and splash, SETUP 4a, release key created outside the repo; left: back the key up in two places, a signed AAB and a phone install |
 | [PB-29](cards/PB-29.md) | Analytics, remote config, crash reports, consent | Alican | M6 | M | `feature/PB-29-analytics` | Growth wave 1 (D-047). Built: consent question (opt-in, asked again from Settings), events and error reports to local files with consent only, remote-config stage overrides, docs/PRIVACY.md; left: an online service and its account (owner's choice) |
+| [PB-19](cards/PB-19.md) | Stage tool and stage goals | Alican | M7 | M | `feature/PB-19-stage-tool` | Growth wave 1 (D-048). Built: goals (break stones, win within), painted start boards, one balance runner, Stage Editor window, The Quarry (1-4, not in the campaign); left: open the window in the editor and play The Quarry by hand |
+
 ## Ready (next up, in priority order)
 
 | ID | Card | Owner | Milestone | Size | In short |

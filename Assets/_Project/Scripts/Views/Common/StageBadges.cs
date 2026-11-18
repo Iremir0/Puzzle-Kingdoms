@@ -22,6 +22,41 @@ namespace PuzzleKingdoms.Views.Common
         public static string Stones(StageDef stage) =>
             stage.StoneGems <= 0 ? Loc.T("No stones") : stage.StoneGems == 1 ? Loc.T("1 stone") : Loc.F("{0} stones", stage.StoneGems);
 
+        /// <summary>
+        /// The stage goal in words (PB-19), empty for "defeat the army"; with <paramref name="stonesBroken"/>
+        /// the progress of a stone goal ("Goal: break 6 stones  2/6").
+        /// </summary>
+        public static string GoalText(StageDef stage, int stonesBroken = -1)
+        {
+            StageGoal goal = stage.Goal;
+            if (goal == null || goal.Kind == StageGoalKind.DefeatArmy)
+            {
+                return "";
+            }
+            if (goal.Kind == StageGoalKind.WinWithin)
+            {
+                return Loc.F("Goal: win within {0} s", goal.Target);
+            }
+            string text = Loc.F("Goal: break {0} stones", goal.Target);
+            return stonesBroken < 0 ? text : $"{text}  {System.Math.Min(stonesBroken, goal.Target)}/{goal.Target}";
+        }
+
+        /// <summary>
+        /// The goal in the top right of the enemy panel that the puzzle screen and the War Camp share; null
+        /// when the stage has no goal beyond winning.
+        /// </summary>
+        public static Text AddGoalLine(Transform root, StageDef stage, int stonesBroken = -1)
+        {
+            string text = GoalText(stage, stonesBroken);
+            if (text.Length == 0)
+            {
+                return null;
+            }
+            Text label = Ui.Label(root, text, 30, TextAnchor.UpperRight, Palette.Gold, 0.66f, 0.76f, 0.95f, 0.915f);
+            label.gameObject.name = "Goal";
+            return label;
+        }
+
         /// <summary>"×1.1" style multiplier text ("×1,1" in Turkish).</summary>
         public static string Times(float multiplier) => "×" + Loc.Number(multiplier, "0.0#");
 

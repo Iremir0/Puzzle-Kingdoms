@@ -20,6 +20,9 @@ namespace PuzzleKingdoms.Logic.Puzzle
         public readonly IReadOnlyDictionary<string, RecruitmentMeter> Meters;
         public int MovesLeft { get; private set; }
 
+        /// <summary>Stones broken so far (each crack frees one gem; PB-19 stone goals count them).</summary>
+        public int StonesBroken { get; private set; }
+
         private readonly int _fourMatchBonusPoints;
 
         /// <param name="fourMatchBonusPoints">Extra points a plain line of 4 adds to its gem's meter (D-028).</param>
@@ -64,6 +67,10 @@ namespace PuzzleKingdoms.Logic.Puzzle
             }
 
             MovesLeft--;
+            foreach (MoveResult.CascadeStep step in result.Steps)
+            {
+                StonesBroken += step.Cracked.Count;
+            }
             // Cleared gems score 1 point each; a plain line of 4 adds a bonus on top.
             var points = new Dictionary<int, int>(result.ClearedByType);
             foreach (KeyValuePair<int, int> four in result.FourMatchesByType)

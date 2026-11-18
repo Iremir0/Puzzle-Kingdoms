@@ -130,7 +130,23 @@ namespace PuzzleKingdoms.Flow
             Ui.EnsureEventSystem();
             _screenRoot = Ui.CreateCanvas("Canvas").transform;
             ShowStageSelect();
+#if UNITY_EDITOR
+            // Stage Editor → Play in editor (PB-19): go straight into that stage, once.
+            string playPath = UnityEditor.SessionState.GetString(PlayStageKey, "");
+            if (playPath.Length > 0)
+            {
+                UnityEditor.SessionState.EraseString(PlayStageKey);
+                var stage = UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinition>(playPath);
+                if (stage != null)
+                {
+                    StartStage(stage);
+                }
+            }
+#endif
         }
+
+        /// <summary>Editor only: the Stage Editor stores a stage asset path here to play it at once (PB-19).</summary>
+        public const string PlayStageKey = "PuzzleKingdoms.PlayStage";
 
         private void OnDestroy()
         {
@@ -325,16 +341,38 @@ namespace PuzzleKingdoms.Flow
         }
 
         /// <summary>Starts a fresh attempt at campaign stage <paramref name="index"/>.</summary>
-        public void StartStage(int index)
+        public void StartStage(int index) => StartStage(content.Campaign[index], index);
+
+        /// <summary>
+        /// Starts a fresh attempt at any stage asset, also one outside the campaign (the Stage Editor's
+        /// "Play in editor", PB-19): such a stage has no "Next stage" and saves its stars like any other.
+        /// </summary>
+        public void StartStage(StageDefinition stage)
+        {
+            int index = -1;
+            for (int i = 0; i < content.Campaign.Count; i++)
+            {
+                if (content.Campaign[i] == stage)
+                {
+                    index = i;
+                }
+            }
+            StartStage(stage, index);
+        }
+
+        private StageDefinition _stageDefinition;
+
+        private void StartStage(StageDefinition stage, int index)
         {
             _stageIndex = index;
+            _stageDefinition = stage;
             if (Run != null)
             {
                 Run.UnitRecruited -= OnUnitRecruited;
             }
-            Run = content.CreateRun(content.Campaign[index], null, _config);
+            Run = content.CreateRun(stage, null, _config);
             Run.UnitRecruited += OnUnitRecruited;
-            _stageSteps = content.Campaign[index].TutorialSteps();
+            _stageSteps = stage.TutorialSteps();
             _puzzleStarted = Time.realtimeSinceStartup;
             _attemptLogged = false;
             _attemptsPerStage.TryGetValue(Run.Stage.Id, out int attempts);
@@ -382,19 +420,24 @@ namespace PuzzleKingdoms.Flow
                 }
             }
 
-            bool hasNext = _stageIndex + 1 < content.Campaign.Count
+            bool hasNext = _stageIndex >= 0 && _stageIndex + 1 < content.Campaign.Count
                            && Profile.IsUnlocked(content.CampaignOrder(), _stageIndex + 1);
             int retryIndex = _stageIndex;
+            StageDefinition retryStage = _stageDefinition;
             var actions = new ResultsScreen.Actions
             {
-                Retry = () => StartStage(retryIndex),
-                Next = Run.Battle.Result.Victory && hasNext ? () => StartStage(retryIndex + 1) : (System.Action)null,
+                Retry = () => StartStage(retryStage, retryIndex),
+                Next = Run.Won && hasNext ? () => StartStage(retryIndex + 1) : (System.Action)null,
                 StageSelect = ShowStageSelect,
             };
             float seconds = (float)Run.Battle.Result.Ticks / Run.Battle.Rules.TicksPerSecond;
+            // PB-19: a battle won while missing the stage goal is a defeat; say which goal.
+            string goalMissed = Run.Battle.Result.Victory && !Run.Won
+                ? Loc.T("Goal missed") + ": " + StageBadges.GoalText(Run.Stage, Run.Puzzle.StonesBroken)
+                : null;
             Show(ResultsScreen.Create(_screenRoot, Run.Stage.DisplayName, Run.Battle.Result, seconds, reward,
-                Profile.Gold, actions));
-            if (!Run.Battle.Result.Victory)
+                Profile.Gold, actions, Run.Won, goalMissed));
+            if (!Run.Won)
             {
                 OnTrigger(TutorialTrigger.BattleLost);
             }

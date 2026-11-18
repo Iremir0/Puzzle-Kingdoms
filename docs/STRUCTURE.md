@@ -16,17 +16,18 @@ puzzle-kingdoms/
 │       ├── Scripts/
 │       │   ├── Logic/            ✅ PuzzleKingdoms.Logic (no engine references)
 │       │   │   ├── Core/         ✅ GridPos, IRandom, SeededRandom (PCG32)
-│       │   │   ├── Puzzle/       ✅ BoardModel, MatchGroup, SpecialKind, MoveResult, MoveReplay, RecruitmentMeter,
+│       │   │   ├── Puzzle/       ✅ BoardModel, BoardLayout (painted start boards), MatchGroup, SpecialKind, MoveResult, MoveReplay, RecruitmentMeter,
 │       │   │   │                    PuzzleSession, PuzzleRules
 │       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster (+ Undo), MergeRules, AutoFormation, BenchGroup
 │       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage,
 │       │   │   │                    Rally, BattleEvent, BattleResult
 │       │   │   ├── Analytics/    ✅ Consent (opt-in, text version), AnalyticsEvent (JSON line), GameEvents, RemoteConfig (PB-29, D-047)
 │       │   │   ├── Localization/ ✅ Language + Languages (codes, phone default), Localizer (English-keyed table, numbers; D-046)
-│       │   │   ├── Stages/       ✅ StageDef, EnemySlot, StageTuning (remote-config overrides)
+│       │   │   ├── Stages/       ✅ StageDef, EnemySlot, StageTuning (remote-config overrides), StageGoal (PB-19)
 │       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot, seen tutorial),
 │       │   │   │                   GameSettings, TutorialStep + TutorialGuide (D-040)
-│       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward; StageAttempt (playtest record)
+│       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward; StageAttempt (playtest record);
+│       │   │                        BalanceRunner (balance bots shared by Tools/Balance and the Stage Editor)
 │       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, UnitLook, StageDefinition, GameContent, SoundBank,
 │       │   │                        Puzzle/Army/Battle/ProgressionRulesAsset (ScriptableObjects)
 │       │   ├── Editor/           ✅ PuzzleKingdoms.Editor: ProjectSetup (player settings + URP asset),
@@ -37,7 +38,8 @@ puzzle-kingdoms/
 │       │   │                        ArtSpike (PB-10: renders models from the git-ignored Sandbox/),
 │       │   │                        BattleModelBuilder + BattleView3DSpike (PB-11: model data, battle frames),
 │       │   │                        MeshyRigImport (PB-12: Humanoid, no finger mapping, looping clips
-│       │   │                        for our Meshy-rigged FBX; D-043)
+│       │   │                        for our Meshy-rigged FBX; D-043),
+│       │   │                        StageEditorWindow (PB-19: paint, goal, test difficulty, play a stage)
 │       │   ├── Flow/             ✅ PuzzleKingdoms.Flow: GameApp (screen flow), ProfileStore (JSON save),
 │       │   │                        SettingsStore (settings.json, D-039), SafeFile (crash-safe writes),
 │       │   │                        PlaytestLog (playtest-log.jsonl, D-037),
@@ -54,7 +56,7 @@ puzzle-kingdoms/
 │       ├── Data/                 ✅ .asset files
 │       │   ├── Units/            Warrior, Archer, Mage
 │       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief
-│       │   ├── Stages/           Stage_1_1 … Stage_1_3 (+ map position, tutorial prompts)
+│       │   ├── Stages/           Stage_1_1 … Stage_1_3 (+ map position, tutorial prompts); Stage_1_4 The Quarry (not in the campaign)
 │       │   ├── GameContent.asset   root: units in gem order, campaign, rules
 │       │   ├── BattleModels.asset  3D battle models per UnitLook (PB-11, built by BattleModelBuilder)
 │       │   ├── PuzzleRules.asset

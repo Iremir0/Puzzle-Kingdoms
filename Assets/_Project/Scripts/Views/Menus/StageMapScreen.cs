@@ -145,6 +145,11 @@ namespace PuzzleKingdoms.Views.Menus
                 0.04f, 0.8f, 0.7f, 0.97f);
             AddStars(_card, _profile.BestStars(stage.Id), unlocked, 0.72f, 0.82f, 0.96f, 0.96f);
             StageBadges.AddRow(_card, def, !unlocked, 0.04f, 0.64f, 0.96f, 0.78f);
+            string goal = StageBadges.GoalText(def); // PB-19
+            if (goal.Length > 0)
+            {
+                Ui.Label(_card, goal, 30, TextAnchor.MiddleLeft, unlocked ? Palette.Gold : Palette.Muted, 0.42f, 0.52f, 0.96f, 0.62f);
+            }
             new FormationGridView(_card, "Enemy Preview", true, false, 0.04f, 0.04f, 0.36f, 0.56f)
                 .Show(Formation.ForStage(def));
             // After the grid, so the grid panel does not cover the tail of the caption.

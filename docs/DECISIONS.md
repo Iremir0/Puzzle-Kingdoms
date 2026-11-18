@@ -488,3 +488,29 @@ everyone again. Without consent an event is dropped, not queued.
   policy URL for Google Play.
 Why: the playtests need numbers per stage, and doing consent right from the first build is cheaper than
 adding it to a released game; keeping the service behind a sink keeps that choice open.
+
+## D-048 Stage goals, hand-painted start boards, one balance runner and a Stage Editor, 2026-11-18
+PB-19.
+- **Goals** (`StageGoal`): *defeat the army* (every stage so far), *break N stones*, *win within N seconds*.
+  A goal always comes on top of winning the battle; missing it is a defeat: no stars, no victory gold
+  (dismissal and Banner overflow gold are still paid, as on any defeat). `StageRun.Won` is the stage
+  result and the playtest record's `victory` now means it. The goal shows in the top right of the enemy
+  panel on the puzzle (with progress, "2/5") and in the War Camp, on the stage card, next to the battle
+  clock ("12.3 / 30 s") and on the results ("Goal missed: …").
+- **Start boards** (`BoardLayout`): six text rows on the stage asset, `.` random, `0`–`9` a gem type,
+  `a`–`j` that type in stone, `x` a random gem in stone. Placed gems may not already match and stones may
+  not touch (as in D-032); random cells are drawn again until no match stands and a move exists. The
+  stage's `stoneGems` still adds random stones on top. Empty = a random board, as before.
+- **One balance runner** (`BalanceRunner` in Logic, bots unchanged from D-026): `Tools/Balance` and the
+  Stage Editor use the same code, so a stage tested in the editor gives the terminal's numbers (1-1 to
+  1-3 unchanged).
+- **Stage Editor** (Puzzle Kingdoms → Stage Editor): stage list (campaign first), numbers, goal and
+  enemies, a board painter, *Test difficulty* (100 runs per bot), *New stage* (a copy without the
+  tutorial, whose ids must stay unique), *Add to / Remove from campaign*, *Play in editor* (straight into
+  the stage; `GameApp.StartStage(StageDefinition)`).
+- **The Quarry** (`stage_1_4`) was made with the tool: a copy of 1-2 with the goal *break 5 stones*, four
+  painted stones and two random ones. With Rally the bots win 66 % (random) and 82 % (greedy) and miss
+  the goal 10 % / 16 % of the time: between 1-2 and 1-3. It is **not in the campaign**: Chapter 1 stays at
+  three stages for the playtests; adding it is one click (owner's call).
+Why: about 40 stages are planned (D-045); a goal changes how a stage is played without new rules, and a
+painted board lets a stage teach one thing on purpose.

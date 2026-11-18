@@ -135,7 +135,15 @@ namespace PuzzleKingdoms.Balance
                 StoneGems = v.TryGetValue("stoneGems", out string stones) ? I(stones) : 0,
                 EnemyHpMultiplier = v.TryGetValue("enemyHpMultiplier", out string hp) ? F(hp) : 1f,
                 EnemyDamageMultiplier = v.TryGetValue("enemyDamageMultiplier", out string dmg) ? F(dmg) : 1f,
+                // PB-19: the goal and the hand-placed board (absent in older stage assets).
+                Goal = new StageGoal
+                {
+                    Kind = v.TryGetValue("goalKind", out string kind) ? (StageGoalKind)I(kind) : StageGoalKind.DefeatArmy,
+                    Target = v.TryGetValue("goalTarget", out string target) ? I(target) : 0,
+                },
             };
+            List<string> layout = ListItems(lines, "layout").Select(r => r.Trim().Trim('\'', '"')).ToList();
+            stage.Layout = layout.Count > 0 ? layout.ToArray() : null;
             int start = Array.IndexOf(lines, "  enemies:");
             EnemySlot slot = null;
             for (int i = start + 1; i < lines.Length && (lines[i].StartsWith("  - ") || lines[i].StartsWith("    ")); i++)

@@ -255,6 +255,45 @@ namespace PuzzleKingdoms.Logic.Puzzle
         }
 
         /// <summary>
+        /// Like <see cref="Generate()"/>, but keeps every cell of <paramref name="placed"/> that is not
+        /// <see cref="BoardLayout.Random"/> (a hand-placed board, PB-19). Random cells are drawn again until
+        /// no match stands and a move exists.
+        /// </summary>
+        public void Generate(int[,] placed)
+        {
+            if (placed == null)
+            {
+                Generate();
+                return;
+            }
+            if (placed.GetLength(0) != Width || placed.GetLength(1) != Height)
+            {
+                throw new ArgumentException("Layout size mismatch");
+            }
+            for (int attempt = 0; attempt < MaxGenerationAttempts; attempt++)
+            {
+                for (int i = 0; i < _specials.Length; i++)
+                {
+                    _specials[i] = SpecialKind.None;
+                    _stones[i] = false;
+                }
+                for (int y = 0; y < Height; y++)
+                {
+                    for (int x = 0; x < Width; x++)
+                    {
+                        int fixedType = placed[x, y];
+                        _cells[y * Width + x] = fixedType >= 0 ? fixedType : PickTypeWithoutMatch(x, y);
+                    }
+                }
+                if (FindMatchGroups().Count == 0 && HasValidMove())
+                {
+                    return;
+                }
+            }
+            throw new InvalidOperationException("Could not fill a board around the placed gems without a match and with a move");
+        }
+
+        /// <summary>
         /// Replaces the board content. rows[y][x] = gem type. For tests, tutorials
         /// and handcrafted boards. Does not resolve existing matches and removes
         /// all special gems (add them back with <see cref="SetSpecial"/>).

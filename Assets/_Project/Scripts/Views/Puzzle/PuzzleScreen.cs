@@ -70,6 +70,7 @@ namespace PuzzleKingdoms.Views.Puzzle
         private SpecialKind[,] _shownSpecials;
         private bool[,] _shownStones;
         private Text _moves;
+        private Text _goal; // PB-19: the stage goal and its progress, null without one
         private Text _status;
         private Text _bonus;
         private Button _continue;
@@ -135,6 +136,7 @@ namespace PuzzleKingdoms.Views.Puzzle
             Ui.Box(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);
             Ui.Label(root, Loc.T("Enemy army"), 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);
             StageBadges.AddPanelLine(root, _run.Stage);
+            _goal = StageBadges.AddGoalLine(root, _run.Stage, 0);
             new FormationGridView(root, "Enemy Formation", true, false, 0.35f, 0.755f, 0.65f, 0.92f)
                 .Show(Formation.ForStage(_run.Stage));
 
@@ -829,6 +831,10 @@ namespace PuzzleKingdoms.Views.Puzzle
         private void RefreshHud()
         {
             _moves.text = Loc.F("Moves: {0}", _run.Puzzle.MovesLeft);
+            if (_goal != null)
+            {
+                _goal.text = StageBadges.GoalText(_run.Stage, _run.Puzzle.StonesBroken);
+            }
             foreach ((string key, RectTransform fill, Text label) in _meters)
             {
                 RecruitmentMeter meter = _run.Puzzle.Meters[key];

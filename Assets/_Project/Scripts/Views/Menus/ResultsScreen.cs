@@ -18,23 +18,28 @@ namespace PuzzleKingdoms.Views.Menus
         }
 
         public static ResultsScreen Create(Transform parent, string stageName, BattleResult result, float battleSeconds,
-            StageReward reward, int totalGold, Actions actions)
+            StageReward reward, int totalGold, Actions actions, bool stageWon = true, string goalMissed = null)
         {
             RectTransform root = Ui.Stretch(parent, "ResultsScreen");
             var screen = root.gameObject.AddComponent<ResultsScreen>();
-            screen.Build(stageName, result, battleSeconds, reward, totalGold, actions);
+            screen.Build(stageName, result, battleSeconds, reward, totalGold, actions, stageWon && result.Victory, goalMissed);
             return screen;
         }
 
         private void Build(string stageName, BattleResult result, float battleSeconds, StageReward reward, int totalGold,
-            Actions actions)
+            Actions actions, bool won, string goalMissed)
         {
             Transform root = transform;
             Ui.Box(root, "Background", Palette.Background);
             Ui.Label(root, Loc.T(stageName), 48, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.84f, 1f, 0.9f);
-            Ui.Label(root, result.Victory ? Loc.T("Victory!") : Loc.T("Defeat"), 110, TextAnchor.MiddleCenter,
-                result.Victory ? Palette.Gold : Palette.Bad, 0f, 0.72f, 1f, 0.84f);
+            Ui.Label(root, won ? Loc.T("Victory!") : Loc.T("Defeat"), 110, TextAnchor.MiddleCenter,
+                won ? Palette.Gold : Palette.Bad, 0f, 0.72f, 1f, 0.84f);
             Ui.Label(root, Stars(reward.Stars), 90, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.63f, 1f, 0.72f);
+            if (!string.IsNullOrEmpty(goalMissed))
+            {
+                // PB-19: the battle was won but the stage goal was not.
+                Ui.Label(root, goalMissed, 38, TextAnchor.MiddleCenter, Palette.Bad, 0.06f, 0.6f, 0.94f, 0.66f);
+            }
 
             string lines =
                 Loc.F("Survivors: {0} / {1}", result.Survivors, result.Deployed) + "\n" +
@@ -53,7 +58,7 @@ namespace PuzzleKingdoms.Views.Menus
             }
             if (actions.Retry != null)
             {
-                Ui.Button(root, "Retry", result.Victory ? Ui.ButtonStyle.Secondary : Ui.ButtonStyle.Primary, actions.Retry,
+                Ui.Button(root, "Retry", won ? Ui.ButtonStyle.Secondary : Ui.ButtonStyle.Primary, actions.Retry,
                     0.15f, y, 0.85f, y + 0.07f, 52);
                 y -= 0.09f;
             }

@@ -86,6 +86,7 @@ namespace PuzzleKingdoms.Views.WarCamp
             Ui.Box(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);
             Ui.Label(root, Loc.T("Enemy army"), 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);
             StageBadges.AddPanelLine(root, _run.Stage);
+            StageBadges.AddGoalLine(root, _run.Stage, _run.Puzzle.StonesBroken);
             new FormationGridView(root, "Enemy Formation", true, false, 0.35f, 0.755f, 0.65f, 0.92f)
                 .Show(Formation.ForStage(_run.Stage));
 

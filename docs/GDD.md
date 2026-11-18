@@ -226,6 +226,15 @@ Each stage raises the difficulty through data (D-032, D-033):
 HP multiplier applies to every enemy of the stage on top of the unit asset and
 the tier.)
 
+**Stage goals and start boards (PB-19, D-048).** A stage may ask for more than winning:
+*break N stones* or *win within N seconds*; missing the goal is a defeat. A stage may also
+start from a hand-painted board (placed gems and stones, the rest random). Made with the
+Stage Editor, not yet in the campaign:
+
+| Stage | Name | Enemies | Goal | Board | Lesson |
+|---|---|---|---|---|---|
+| 1-4 | The Quarry | as 1-2 | break 5 stones | 4 painted + 2 random stones | match next to stones |
+
 Measured difficulty (D-033, 400 runs; random/greedy puzzle bot, auto formation, no merges;
 without / with Rally): 1-1 won 94% / 96% (random) and 100% (greedy), battles 16–22 s
 without Rally; 1-2 won 74% / 81% and 96% / 98%, 23–28 s; 1-3 won 42% / 54% and 81% / 87%,

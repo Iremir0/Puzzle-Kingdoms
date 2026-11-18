@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Combat;
 using PuzzleKingdoms.Logic.Flow;
+using PuzzleKingdoms.Logic.Stages;
 using PuzzleKingdoms.Views.Battle3D;
 using PuzzleKingdoms.Views.Common;
 using UnityEngine;
@@ -43,6 +44,7 @@ namespace PuzzleKingdoms.Views.Battle
         }
 
         private BattleSimulator _sim;
+        private StageGoal _goal; // PB-19: a time goal shows next to the clock
         private Action _onFinished;
         private RectTransform _field;
         private float _spanY;
@@ -87,6 +89,7 @@ namespace PuzzleKingdoms.Views.Battle
         private void Build(StageRun run, Action onFinished)
         {
             _sim = run.Battle;
+            _goal = run.Goal;
             _onFinished = onFinished;
             Transform root = transform;
             Ui.Box(root, "Background", Palette.Background);
@@ -310,7 +313,10 @@ namespace PuzzleKingdoms.Views.Battle
         private void RefreshHud()
         {
             _header.text = Loc.F("Allies {0}  vs  Enemies {1}", _sim.AliveCount(Side.Player), _sim.AliveCount(Side.Enemy));
-            _clock.text = Loc.F("{0:0.0} s", (float)_sim.Tick / _sim.Rules.TicksPerSecond);
+            float seconds = (float)_sim.Tick / _sim.Rules.TicksPerSecond;
+            _clock.text = _goal != null && _goal.Kind == StageGoalKind.WinWithin
+                ? Loc.F("{0:0.0} / {1} s", seconds, _goal.Target)
+                : Loc.F("{0:0.0} s", seconds);
             Rally rally = _sim.Rally;
             Ui.SetCaption(_rally, rally.IsActive
                 ? Loc.F("Rally {0:0.0}s", (float)rally.TicksLeft / _sim.Rules.TicksPerSecond)

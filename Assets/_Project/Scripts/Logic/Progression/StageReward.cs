@@ -22,12 +22,15 @@ namespace PuzzleKingdoms.Logic.Progression
             BattleResult result,
             int dismissedUnits,
             int rallyOverflowPoints,
-            ProgressionRules rules)
+            ProgressionRules rules,
+            bool goalMet = true)
         {
+            // A won battle that missed the stage goal (PB-19) pays like a defeat: no stars, no victory gold.
+            bool won = result.Victory && goalMet;
             return new StageReward
             {
-                Stars = result.Stars,
-                VictoryGold = result.Victory ? stage.GoldReward : 0,
+                Stars = won ? result.Stars : 0,
+                VictoryGold = won ? stage.GoldReward : 0,
                 DismissGold = dismissedUnits * rules.DismissGoldPerUnit,
                 OverflowGold = rallyOverflowPoints * rules.GoldPerOverflowRallyPoint,
             };

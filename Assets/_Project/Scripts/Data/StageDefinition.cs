@@ -34,6 +34,15 @@ namespace PuzzleKingdoms.Data
         [Tooltip("Multiplies the damage of every enemy of this stage (1 = as defined on the unit).")]
         [SerializeField, Min(0.1f)] private float enemyDamageMultiplier = 1f;
 
+        [Header("Goal and start board (PB-19)")]
+        [Tooltip("Besides winning the battle: break stones, or win within a time.")]
+        [SerializeField] private StageGoalKind goalKind = StageGoalKind.DefeatArmy;
+        [Tooltip("Stones to break, or seconds to win in. Ignored for Defeat Army.")]
+        [SerializeField, Min(0)] private int goalTarget;
+        [Tooltip("Hand-placed start board, 6 rows of 6: . random, 0-9 gem type, a-j gem type in stone, x random in stone. " +
+                 "Empty = a random board. Easier to paint in Puzzle Kingdoms → Stage Editor.")]
+        [SerializeField] private List<string> layout = new List<string>();
+
         [Header("Stage map (PB-13)")]
         [Tooltip("Where the node sits on the chapter map: x 0 = left … 1 = right, y 0 = bottom … 1 = top.")]
         [SerializeField] private Vector2 mapPosition = new Vector2(0.5f, 0.5f);
@@ -56,6 +65,9 @@ namespace PuzzleKingdoms.Data
         public string DisplayName => displayName;
         public IReadOnlyList<EnemySlotData> Enemies => enemies;
         public Vector2 MapPosition => mapPosition;
+        public StageGoalKind GoalKind => goalKind;
+        public int GoalTarget => goalTarget;
+        public IReadOnlyList<string> Layout => layout;
 
         public List<TutorialStep> TutorialSteps()
         {
@@ -80,6 +92,8 @@ namespace PuzzleKingdoms.Data
                 StoneGems = stoneGems,
                 EnemyHpMultiplier = enemyHpMultiplier,
                 EnemyDamageMultiplier = enemyDamageMultiplier,
+                Goal = new StageGoal { Kind = goalKind, Target = goalTarget },
+                Layout = layout == null || layout.Count == 0 ? null : layout.ToArray(),
             };
             foreach (EnemySlotData slot in enemies)
             {
