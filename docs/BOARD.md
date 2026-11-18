@@ -55,7 +55,7 @@ Not started. Each card is a milestone slice that ends in something playable.
 | ID | Card | Milestone | Size | In short |
 |---|---|---|---|---|
 | [PB-11](cards/PB-11.md) | 3D battle scene | M4 | L | Isometric orthographic view on the same simulator, placeholder models, HP bars, projectiles, HUD. Mockup inside |
-| [PB-12](cards/PB-12.md) | Battle life: animations and effects | M4 | L | Mixamo idle/walk/attack/hit/death, Rally ring and aura, hit flash, battle sounds |
+| [PB-12](cards/PB-12.md) | Battle life: animations and effects | M4 | L | Meshy-rigged idle/walk/attack/hit/death (D-043), Rally ring and aura, hit flash, battle sounds |
 | [PB-15](cards/PB-15.md) | Phone performance and layout | M6 | L | Profile on 2 phones, fix top 3 hotspots, safe area, 4 aspect ratios |
 | [PB-16](cards/PB-16.md) | Final polish and balance | M6 | M | Font, type and spacing scale, second playtest round, balance pass |
 | [PB-17](cards/PB-17.md) | Release build | M6 | S | Icon, splash, release keystore kept outside the repo, signed AAB command |

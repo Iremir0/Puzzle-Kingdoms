@@ -387,3 +387,20 @@ shipped. Why: one hand-painted style for all seven (KayKit next to the Meshy gob
 two games), at about 53 credits per model. Triangle budget: about 5k per model, Brute 6k, Chief
 8k (36.7k for the seven). Method, prompts and credits in `docs/ART.md` §7. Open: the models have
 no rig (PB-12), and each model adds ~14 MB to the repository (consider Git LFS).
+
+## D-043 Rigs and animation clips come from Meshy, not Mixamo, 2026-11-18
+Alican approved. Meshy's own rigging (character type "Humanoid", skeleton template **Mixamo**)
+rigged all seven models for 0 credits, and Meshy's preset animation library (run, attack
+incl. axe spin, hit reaction, death and more) is free to apply on the Pro plan. Checked: the
+Knight imported into Unity 6000.3 as a valid Humanoid avatar (24 bones mapped, no missing
+bone), with its clip as human motion. Rigging needs the markers (chin, shoulders, elbows,
+wrists, groin, knees, ankles) checked by hand on models with non-human proportions, and the
+body centred on the symmetry line (Offset). Why: no Adobe account, no manual upload, one
+skeleton for every character. Because all rigs are Humanoid, **clips are shared**: the
+animation clips live on one model (the Knight) and are retargeted to every other character in
+Unity (Animator Controller per class on top); the other six models are downloaded rigged
+without clips. Known issues: the Mage's staff bends when the body moves (it is skinned to the
+body, handle in PB-12), and nobody has yet checked whether the preset library has clips made for
+a bow or a staff; until PB-12 does, Archer and Mage reuse the generic attack/hit/death clips.
+PB-12's "Mixamo" step is replaced by this. Rigged FBX files stay in the git-ignored Sandbox
+until PB-12 picks the final set.
