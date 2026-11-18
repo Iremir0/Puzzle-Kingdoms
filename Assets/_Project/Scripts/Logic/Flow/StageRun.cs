@@ -46,6 +46,7 @@ namespace PuzzleKingdoms.Logic.Flow
         private readonly ArmyRules _armyRules;
         private readonly ProgressionRules _progressionRules;
         private readonly KingdomBonuses _bonuses;
+        private readonly RallyVariant _rallyVariant;
 
         public StageRun(
             StageDef stage,
@@ -55,9 +56,11 @@ namespace PuzzleKingdoms.Logic.Flow
             BattleRules battleRules,
             ProgressionRules progressionRules,
             IRandom random,
-            KingdomBonuses bonuses = null)
+            KingdomBonuses bonuses = null,
+            RallyVariant rallyVariant = null)
         {
             _bonuses = bonuses ?? KingdomBonuses.None;
+            _rallyVariant = rallyVariant;
             Stage = stage ?? throw new ArgumentNullException(nameof(stage));
             _armyRules = armyRules;
             _battleRules = battleRules;
@@ -169,7 +172,8 @@ namespace PuzzleKingdoms.Logic.Flow
                 Roster.Formation,
                 Formation.ForStage(Stage),
                 RallyCharges,
-                _bonuses);
+                _bonuses,
+                _rallyVariant);
             SetPhase(StagePhase.Battle);
             return true;
         }

@@ -223,7 +223,7 @@ namespace PuzzleKingdoms.Tests.Progression
             profile.TryUpgradeBuilding(Rules(), "barracks");
             profile.TryUpgradeBuilding(Rules(), "mage_tower");
             PlayerProfile.Snapshot snapshot = profile.ToSnapshot();
-            Assert.AreEqual(3, snapshot.version);
+            Assert.AreEqual(PlayerProfile.CurrentVersion, snapshot.version);
             PlayerProfile loaded = PlayerProfile.FromSnapshot(snapshot);
             Assert.AreEqual(2, loaded.BuildingLevel("barracks"));
             Assert.AreEqual(1, loaded.BuildingLevel("mage_tower"));
@@ -238,7 +238,7 @@ namespace PuzzleKingdoms.Tests.Progression
             PlayerProfile loaded = PlayerProfile.FromSnapshot(old);
             Assert.AreEqual(321, loaded.Gold);
             Assert.AreEqual(0, loaded.BuildingLevel("barracks"));
-            Assert.AreEqual(3, loaded.ToSnapshot().version, "saved as version 3 from now on");
+            Assert.AreEqual(PlayerProfile.CurrentVersion, loaded.ToSnapshot().version, "saved as the current version from now on");
         }
 
         [Test]
@@ -263,7 +263,7 @@ namespace PuzzleKingdoms.Tests.Progression
         public void ANewerSaveStillThrows()
         {
             Assert.Throws<System.InvalidOperationException>(() =>
-                PlayerProfile.FromSnapshot(new PlayerProfile.Snapshot { version = 4 }));
+                PlayerProfile.FromSnapshot(new PlayerProfile.Snapshot { version = PlayerProfile.CurrentVersion + 1 }));
         }
     }
 }

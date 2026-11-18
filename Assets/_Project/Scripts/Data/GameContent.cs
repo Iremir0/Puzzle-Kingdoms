@@ -49,7 +49,8 @@ namespace PuzzleKingdoms.Data
         /// moves and enemy strength (PB-29, <see cref="StageTuning"/>).
         /// </summary>
         public StageRun CreateRun(StageDefinition stage, IRandom random = null, RemoteConfig config = null,
-            Logic.Kingdom.KingdomBonuses bonuses = null)
+            Logic.Kingdom.KingdomBonuses bonuses = null,
+            Logic.Combat.RallyVariant rallyVariant = null)
         {
             StageDef def = stage.ToStageDef();
             StageTuning.Apply(def, config);
@@ -62,7 +63,8 @@ namespace PuzzleKingdoms.Data
                 battleRules.Rules,
                 progressionRules.Rules,
                 random ?? StageRun.CreateRandom(def),
-                bonuses);
+                bonuses,
+                rallyVariant);
         }
     }
 }

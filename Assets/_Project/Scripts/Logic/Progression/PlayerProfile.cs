@@ -25,10 +25,12 @@ namespace PuzzleKingdoms.Logic.Progression
             /// <summary>Version 3 (D-052): building levels, ids and levels side by side.</summary>
             public List<string> buildingIds = new List<string>();
             public List<int> buildingLevels = new List<int>();
+            /// <summary>Version 4 (D-053): the commander chosen to lead; empty = none (the classic Rally).</summary>
+            public string commanderId = "";
         }
 
-        /// <summary>3 = building levels added (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
-        public const int CurrentVersion = 3;
+        /// <summary>4 = chosen commander (D-053), 3 = building levels (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
+        public const int CurrentVersion = 4;
 
         public event Action Changed;
 
@@ -71,6 +73,51 @@ namespace PuzzleKingdoms.Logic.Progression
             _seenSteps.Clear();
             TutorialSkipped = false;
             Changed?.Invoke();
+        }
+
+        /// <summary>Id of the commander chosen to lead, or empty (PB-23).</summary>
+        public string CommanderId { get; private set; } = "";
+
+        /// <summary>A commander is unlocked once its stage has a star.</summary>
+        public bool IsUnlocked(Commander commander) => BestStars(commander.UnlockStageId) > 0;
+
+        /// <summary>Chooses a commander (empty id = none). False for an unknown or still locked commander.</summary>
+        public bool TryChooseCommander(System.Collections.Generic.IReadOnlyList<Commander> commanders, string commanderId)
+        {
+            commanderId = commanderId ?? "";
+            if (commanderId != "")
+            {
+                Commander found = FindCommander(commanders, commanderId);
+                if (found == null || !IsUnlocked(found))
+                {
+                    return false;
+                }
+            }
+            if (CommanderId != commanderId)
+            {
+                CommanderId = commanderId;
+                Changed?.Invoke();
+            }
+            return true;
+        }
+
+        /// <summary>The chosen commander if it is known and unlocked, else null (the classic Rally).</summary>
+        public Commander ChosenCommander(System.Collections.Generic.IReadOnlyList<Commander> commanders)
+        {
+            Commander found = CommanderId == "" ? null : FindCommander(commanders, CommanderId);
+            return found != null && IsUnlocked(found) ? found : null;
+        }
+
+        private static Commander FindCommander(System.Collections.Generic.IReadOnlyList<Commander> commanders, string id)
+        {
+            foreach (Commander commander in commanders)
+            {
+                if (commander.Id == id)
+                {
+                    return commander;
+                }
+            }
+            return null;
         }
 
         public int BuildingLevel(string buildingId) => _buildingLevels.TryGetValue(buildingId, out int level) ? level : 0;
@@ -123,6 +170,7 @@ namespace PuzzleKingdoms.Logic.Progression
                 gold = Gold,
                 seenTutorialSteps = new List<string>(_seenSteps),
                 tutorialSkipped = TutorialSkipped,
+                commanderId = CommanderId,
             };
             foreach (KeyValuePair<string, int> building in _buildingLevels)
             {
@@ -165,6 +213,7 @@ namespace PuzzleKingdoms.Logic.Progression
                 }
             }
             profile.TutorialSkipped = snapshot.tutorialSkipped;
+            profile.CommanderId = snapshot.commanderId ?? "";
             if (snapshot.buildingIds != null && snapshot.buildingLevels != null)
             {
                 int buildings = Math.Min(snapshot.buildingIds.Count, snapshot.buildingLevels.Count);
