@@ -157,11 +157,35 @@ namespace PuzzleKingdoms.Flow
         public void ShowStageSelect()
         {
             Run = null;
-            Show(StageMapScreen.Create(_screenRoot, content, Profile, StartStage, () => OpenSettings()));
+            Show(StageMapScreen.Create(_screenRoot, content, Profile, StartStage, () => OpenSettings(), OnTab));
             if (ConsentEnabled && Consent.NeedsAsking(Settings))
             {
                 AskConsent();
             }
+        }
+
+        /// <summary>The Kingdom: buildings that cost gold and give permanent bonuses (PB-22, D-052).</summary>
+        public void ShowKingdom()
+        {
+            Run = null;
+            Show(KingdomScreen.Create(_screenRoot, content, Profile, OnBuildingUpgraded, OnTab));
+        }
+
+        private void OnTab(MainTab tab)
+        {
+            if (tab == MainTab.Kingdom)
+            {
+                ShowKingdom();
+            }
+            else if (tab == MainTab.Map)
+            {
+                ShowStageSelect();
+            }
+        }
+
+        private void OnBuildingUpgraded(string buildingId)
+        {
+            _store.Save(Profile);
         }
 
         /// <summary>Opens the settings over the stage map (PB-14).</summary>
@@ -370,7 +394,8 @@ namespace PuzzleKingdoms.Flow
             {
                 Run.UnitRecruited -= OnUnitRecruited;
             }
-            Run = content.CreateRun(stage, null, _config);
+            Run = content.CreateRun(stage, null, _config,
+                content.KingdomRules != null ? Profile.Bonuses(content.KingdomRules.Rules) : null);
             Run.UnitRecruited += OnUnitRecruited;
             _stageSteps = stage.TutorialSteps();
             _puzzleStarted = Time.realtimeSinceStartup;

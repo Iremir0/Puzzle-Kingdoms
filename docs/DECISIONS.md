@@ -566,3 +566,23 @@ PB-18 (Alican). Chapter 2 is playable end to end except for the four new models.
   silhouettes of Brute, Archer and Grunt stand in via four new `UnitLook` values.
 Why: data-driven behaviours keep logic free of per-enemy special cases and let PB-21 reuse healing; a
 `chapter` field instead of nested campaigns keeps unlock order and the save format unchanged.
+
+## D-052 Kingdom: four buildings with small bonuses, one cost curve, bonuses applied when the battle is set up, 2026-11-18
+PB-22 (Alican). Gold now has a use and the game a reason to replay.
+- **Buildings are data** (`KingdomRules.asset`, a list): Barracks (Warrior HP), Archer Tower (Archer attack
+  speed), Mage Tower (Mage damage), Treasury (stage victory gold). Id, stat, unit class, bonus per level and
+  cost factor per building; one shared cost curve (`baseCost`, `costGrowth`) and level cap. PB-21 adds
+  Defender and Support buildings by adding entries, not code.
+- **Bonuses in one place:** `KingdomBonuses` is read by the `Combatant` constructor (player side only) and by
+  `StageReward` (victory gold only). Enemies never get them. Rounding: HP and damage to whole numbers
+  (at least 1); attack interval = interval ÷ (1 + bonus).
+- **Save version 3:** `buildingIds` and `buildingLevels` on the profile snapshot, older files load with no
+  buildings (tested for versions 1 and 2); levels are keyed by building id, never renamed once shipped.
+- **Small steps:** +3 % a level (+30 % at level 10) keeps the stages designed against level 0 valid; the
+  Balance tool got `--kingdom N` to check them at any level (numbers in GDD §10).
+- **Tabs:** `TabBar` along the bottom of the map and the Kingdom; Commanders and Shop are greyed until
+  their cards. The map and its stage card sit a little higher to make room.
+- **Art:** buildings are drawn in code for now (class silhouette on a round plate, star for the Treasury);
+  models are optional later (Meshy).
+Why: a long-term sink for gold that stays inside the "no loot boxes, no pay to win" line (D-045) and gives
+replays a purpose; data-driven buildings avoid per-class code before PB-21 adds classes.

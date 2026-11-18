@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Combat;
+using PuzzleKingdoms.Logic.Kingdom;
 using PuzzleKingdoms.Logic.Progression;
 using PuzzleKingdoms.Logic.Puzzle;
 using PuzzleKingdoms.Logic.Stages;
@@ -44,6 +45,7 @@ namespace PuzzleKingdoms.Logic.Flow
         private readonly BattleRules _battleRules;
         private readonly ArmyRules _armyRules;
         private readonly ProgressionRules _progressionRules;
+        private readonly KingdomBonuses _bonuses;
 
         public StageRun(
             StageDef stage,
@@ -52,8 +54,10 @@ namespace PuzzleKingdoms.Logic.Flow
             ArmyRules armyRules,
             BattleRules battleRules,
             ProgressionRules progressionRules,
-            IRandom random)
+            IRandom random,
+            KingdomBonuses bonuses = null)
         {
+            _bonuses = bonuses ?? KingdomBonuses.None;
             Stage = stage ?? throw new ArgumentNullException(nameof(stage));
             _armyRules = armyRules;
             _battleRules = battleRules;
@@ -164,7 +168,8 @@ namespace PuzzleKingdoms.Logic.Flow
                 _armyRules,
                 Roster.Formation,
                 Formation.ForStage(Stage),
-                RallyCharges);
+                RallyCharges,
+                _bonuses);
             SetPhase(StagePhase.Battle);
             return true;
         }
@@ -187,7 +192,7 @@ namespace PuzzleKingdoms.Logic.Flow
                 return null;
             }
             Reward = StageReward.Compute(Stage, Battle.Result, DismissedUnits, RallyOverflowPoints, _progressionRules,
-                goalMet: Won);
+                goalMet: Won, bonuses: _bonuses);
             SetPhase(StagePhase.Finished);
             return Reward;
         }

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Combat;
+using PuzzleKingdoms.Logic.Kingdom;
 using PuzzleKingdoms.Logic.Progression;
 using PuzzleKingdoms.Logic.Puzzle;
 using PuzzleKingdoms.Logic.Stages;
@@ -33,6 +34,7 @@ namespace PuzzleKingdoms.Balance
         public ArmyRules ArmyRules;
         public BattleRules BattleRules;
         public ProgressionRules ProgressionRules;
+        public KingdomRules KingdomRules;
 
         public AssetReader(string dataFolder)
         {
@@ -50,6 +52,7 @@ namespace PuzzleKingdoms.Balance
             ArmyRules = ReadArmyRules(PathOf(GuidIn(refs["armyRules"])));
             BattleRules = ReadBattleRules(PathOf(GuidIn(refs["battleRules"])));
             ProgressionRules = ReadProgressionRules(PathOf(GuidIn(refs["progressionRules"])));
+            KingdomRules = refs.TryGetValue("kingdomRules", out string kingdom) ? ReadKingdomRules(PathOf(GuidIn(kingdom))) : new KingdomRules();
         }
 
         private string PathOf(string guid) =>
@@ -221,6 +224,43 @@ namespace PuzzleKingdoms.Balance
                 RallyAttackSpeedBonus = F(v["rallyAttackSpeedBonus"]),
                 RallyDurationSeconds = F(v["rallyDurationSeconds"]),
             };
+        }
+
+        /// <summary>PB-22: the buildings, one "  - id: ..." block each, their fields indented by four.</summary>
+        private static KingdomRules ReadKingdomRules(string path)
+        {
+            string[] lines = File.ReadAllLines(path);
+            Dictionary<string, string> v = Scalars(lines);
+            var rules = new KingdomRules { MaxLevel = I(v["maxLevel"]), BaseCost = I(v["baseCost"]), CostGrowth = F(v["costGrowth"]) };
+            int start = Array.IndexOf(lines, "  buildings:");
+            BuildingRule building = null;
+            for (int i = start + 1; start >= 0 && i < lines.Length; i++)
+            {
+                string line = lines[i];
+                if (line.StartsWith("  - id: "))
+                {
+                    building = new BuildingRule { Id = line.Substring(8).Trim() };
+                    rules.Buildings.Add(building);
+                }
+                else if (building != null && line.StartsWith("    "))
+                {
+                    string[] parts = line.Trim().Split(new[] { ':' }, 2);
+                    string value = parts.Length > 1 ? parts[1].Trim() : "";
+                    switch (parts[0])
+                    {
+                        case "displayName": building.DisplayName = value; break;
+                        case "stat": building.Stat = (BuildingStat)I(value); break;
+                        case "unitId": building.UnitId = value; break;
+                        case "bonusPerLevel": building.BonusPerLevel = F(value); break;
+                        case "costFactor": building.CostFactor = F(value); break;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return rules;
         }
 
         private static ProgressionRules ReadProgressionRules(string path)

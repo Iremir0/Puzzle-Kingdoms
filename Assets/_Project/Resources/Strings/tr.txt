@@ -187,3 +187,22 @@ Break 4 stones to reach the goal: the first match on a stone gem only breaks the
 Win the battle within 30 seconds. Recruit fast and use Rally when the armies meet.	Savaşı 30 saniye içinde kazan. Hızlı devşir, ordular karşılaşınca Hücum'u kullan.
 The boss drops stones on your board every few moves. Watch the countdown.	Boss birkaç hamlede bir tahtana taş atar. Geri sayımı izle.
 The Chief's guard heals, bombs and dives. Use Rally when the armies meet.	Şefin muhafızları iyileştirir, bomba atar ve dalar. Ordular karşılaşınca Hücum'u kullan.
+
+# ---- Kingdom and tabs (PB-22) ----
+Kingdom	Krallık
+Map	Harita
+Commanders	Komutanlar
+Shop	Dükkan
+Barracks	Kışla
+Archer Tower	Okçu Kulesi
+Mage Tower	Büyücü Kulesi
+Treasury	Hazine
+Level {0}/{1}	Seviye {0}/{1}
+Upgrade	Yükselt
+MAX	MAKS
+{0} HP	{0} canı
+{0} attack speed	{0} saldırı hızı
+{0} damage	{0} hasarı
+Stage gold	Seviye altını
+{0} +{1}%	{0} +%{1}
+{0} +{1}% → +{2}%	{0} +%{1} → +%{2}

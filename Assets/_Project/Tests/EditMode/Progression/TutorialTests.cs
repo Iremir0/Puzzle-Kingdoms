@@ -99,7 +99,7 @@ namespace PuzzleKingdoms.Tests.Progression
             PlayerProfile.Snapshot snapshot = profile.ToSnapshot();
             PlayerProfile restored = PlayerProfile.FromSnapshot(snapshot);
 
-            Assert.AreEqual(2, snapshot.version);
+            Assert.AreEqual(PlayerProfile.CurrentVersion, snapshot.version); // 3 since PB-22
             CollectionAssert.AreEqual(new[] { "1-1.puzzle", "1-2.camp" }, restored.SeenTutorialSteps);
             Assert.IsTrue(restored.TutorialSkipped);
         }

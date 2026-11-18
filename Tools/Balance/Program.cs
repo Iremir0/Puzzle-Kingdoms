@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Flow;
+using PuzzleKingdoms.Logic.Kingdom;
 using PuzzleKingdoms.Logic.Stages;
 
 namespace PuzzleKingdoms.Balance
@@ -18,10 +19,20 @@ namespace PuzzleKingdoms.Balance
     {
         public static int Main(string[] args)
         {
-            int runs = args.Length > 0 ? int.Parse(args[0], CultureInfo.InvariantCulture) : 300;
+            int runs = args.Length > 0 && !args[0].StartsWith("--") ? int.Parse(args[0], CultureInfo.InvariantCulture) : 300;
+            // PB-22: "--kingdom N" gives every building level N, to check a stage at the level a player is expected to have.
+            int kingdomLevel = 0;
+            for (int a = 0; a + 1 < args.Length; a++)
+            {
+                if (args[a] == "--kingdom")
+                {
+                    kingdomLevel = int.Parse(args[a + 1], CultureInfo.InvariantCulture);
+                }
+            }
             string data = FindDataFolder();
             var assets = new AssetReader(data);
-            Console.WriteLine($"Data: {data}   runs per row: {runs}");
+            Console.WriteLine($"Data: {data}   runs per row: {runs}   kingdom level: {kingdomLevel}");
+            KingdomBonuses bonuses = kingdomLevel > 0 ? assets.KingdomRules.BonusesAtLevel(kingdomLevel) : null;
             Console.WriteLine();
             Console.WriteLine("stage      puzzle  rally  win%  time(s) winTime  recruit deploy rally  surv%  stars 0/1/2/3  goal");
             foreach (StageDef stage in assets.Campaign)
@@ -32,7 +43,7 @@ namespace PuzzleKingdoms.Balance
                     {
                         BalanceStats s = BalanceRunner.Run(seed => new StageRun(stage, assets.Recruitable,
                                 assets.PuzzleRules, assets.ArmyRules, assets.BattleRules, assets.ProgressionRules,
-                                new SeededRandom(seed)),
+                                new SeededRandom(seed), bonuses),
                             puzzleBot, rallyBot, runs);
                         string goal = stage.Goal.Kind == StageGoalKind.DefeatArmy
                             ? ""
