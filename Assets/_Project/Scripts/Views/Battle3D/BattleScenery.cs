@@ -19,6 +19,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         private const float PaintedWidth = 10.5f;
         private const float PaintedDepth = 19f;
         private const float GatePaintedWidth = 8.9f;
+        private const float GatePaintedDepth = 19.2f;
         private const float ArenaHalfWidth = 3.0f;
         private const float ArenaHalfDepth = 8.2f;
 
@@ -40,7 +41,7 @@ namespace PuzzleKingdoms.Views.Battle3D
             {
                 // The picture already has the trees, fences and camps, so nothing else is put on it.
                 bool fort = painted.name == "Battle_Gate"; // full-width fort picture: its own side walls show
-                ground.transform.localScale = fort ? new Vector3(GatePaintedWidth, PaintedDepth, 1f) : new Vector3(PaintedWidth, PaintedDepth, 1f);
+                ground.transform.localScale = fort ? new Vector3(GatePaintedWidth, GatePaintedDepth, 1f) : new Vector3(PaintedWidth, PaintedDepth, 1f);
                 groundMaterial.mainTexture = painted;
                 // The picture is bright and the sun adds more: pull it down and a little toward grey so units stand out.
                 groundMaterial.SetColor("_BaseColor", new Color(0.62f, 0.6f, 0.58f, 1f));
