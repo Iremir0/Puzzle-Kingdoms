@@ -16,6 +16,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0948e59e05944d11aa74dbd8fc05ea12, type: 2}
   - {fileID: 11400000, guid: dc58bbfad0514bb8ad47f83d17782247, type: 2}
   - {fileID: 11400000, guid: 72933b41701440aebb60a1d23926b896, type: 2}
+  extraUnits:
+  - {fileID: 11400000, guid: a41f7c2d9e3b4856a0d1c7e2f95b3a68, type: 2}
+  - {fileID: 11400000, guid: c83e1b5a7d2f4094b6a8e0d3f17c9b25, type: 2}
   campaign:
   - {fileID: 11400000, guid: 179fd51987194e5b829ace8e1ff3e120, type: 2}
   - {fileID: 11400000, guid: e7903c40966246d38f80892935d4f106, type: 2}

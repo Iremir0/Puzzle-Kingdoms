@@ -229,3 +229,5 @@ Fireball	Ateş Topu
 Your front row takes half damage for a few seconds.	Ön sıran birkaç saniye boyunca yarı hasar alır.
 Volleys fall on the enemy back row: archers, shamans and bombers.	Düşman arka sırasına ok yağar: okçular, şamanlar ve bombacılar.
 One blast on the densest enemy group, then a short fighting spirit.	En kalabalık düşman grubuna tek patlama, ardından kısa bir savaş ruhu.
+Defender	Savunmacı
+Support	Destek

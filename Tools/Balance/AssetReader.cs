@@ -29,6 +29,11 @@ namespace PuzzleKingdoms.Balance
         private readonly Dictionary<string, UnitDef> _units = new Dictionary<string, UnitDef>();
 
         public readonly List<UnitDef> Recruitable = new List<UnitDef>();
+        private readonly Dictionary<string, List<UnitDef>> _stageUnits = new Dictionary<string, List<UnitDef>>();
+
+        /// <summary>The class set of a stage (PB-21): its own list, or the default recruitable units.</summary>
+        public List<UnitDef> UnitsFor(StageDef stage) =>
+            _stageUnits.TryGetValue(stage.Id, out List<UnitDef> own) && own.Count > 0 ? own : Recruitable;
         public readonly List<StageDef> Campaign = new List<StageDef>();
         public PuzzleRules PuzzleRules;
         public ArmyRules ArmyRules;
@@ -133,6 +138,7 @@ namespace PuzzleKingdoms.Balance
                 TargetsBackRow = v.TryGetValue("targetsBackRow", out string back) && I(back) != 0,
                 SplashRadius = v.TryGetValue("splashRadius", out string radius) ? F(radius) : 0f,
                 SplashFraction = v.TryGetValue("splashFraction", out string fraction) ? F(fraction) : 0.5f,
+                TauntRadius = v.TryGetValue("tauntRadius", out string taunt) ? F(taunt) : 0f,
             };
             _units[guid] = unit;
             return unit;
@@ -187,6 +193,7 @@ namespace PuzzleKingdoms.Balance
                     slot.Cell = new GridPos(I(cell.Groups[1].Value), I(cell.Groups[2].Value));
                 }
             }
+            _stageUnits[stage.Id] = ListGuids(lines, "units").Select(Unit).ToList();
             return stage;
         }
 

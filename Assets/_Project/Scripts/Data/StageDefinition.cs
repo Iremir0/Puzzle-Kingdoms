@@ -53,6 +53,10 @@ namespace PuzzleKingdoms.Data
         [Tooltip("How many stones the boss drops each time.")]
         [SerializeField, Min(0)] private int bossStonesCount;
 
+        [Header("Class set (PB-21)")]
+        [Tooltip("The classes whose gems are on this board, in gem order (at most 4, the Banner gem comes last). Empty = the default Warrior, Archer, Mage.")]
+        [SerializeField] private List<UnitDefinition> units = new List<UnitDefinition>();
+
         [Header("Stage map (PB-13)")]
         [Tooltip("Where the node sits on the chapter map: x 0 = left … 1 = right, y 0 = bottom … 1 = top.")]
         [SerializeField] private Vector2 mapPosition = new Vector2(0.5f, 0.5f);
@@ -76,6 +80,7 @@ namespace PuzzleKingdoms.Data
         public int Chapter => chapter;
         public IReadOnlyList<EnemySlotData> Enemies => enemies;
         public Vector2 MapPosition => mapPosition;
+        public IReadOnlyList<UnitDefinition> Units => units;
         public StageGoalKind GoalKind => goalKind;
         public int GoalTarget => goalTarget;
         public IReadOnlyList<string> Layout => layout;

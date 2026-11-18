@@ -93,6 +93,10 @@ namespace PuzzleKingdoms.Flow
             {
                 Palette.Register(unit);
             }
+            foreach (UnitDefinition unit in content.ExtraUnits)
+            {
+                Palette.Register(unit);
+            }
             foreach (StageDefinition stage in content.Campaign)
             {
                 foreach (StageDefinition.EnemySlotData slot in stage.Enemies)

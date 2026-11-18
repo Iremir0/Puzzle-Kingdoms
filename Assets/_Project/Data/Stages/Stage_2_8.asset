@@ -15,7 +15,12 @@ MonoBehaviour:
   id: stage_2_8
   displayName: Race the Clock
   chapter: 2
-  moves: 12
+  units:
+  - {fileID: 11400000, guid: 0948e59e05944d11aa74dbd8fc05ea12, type: 2}
+  - {fileID: 11400000, guid: dc58bbfad0514bb8ad47f83d17782247, type: 2}
+  - {fileID: 11400000, guid: 72933b41701440aebb60a1d23926b896, type: 2}
+  - {fileID: 11400000, guid: c83e1b5a7d2f4094b6a8e0d3f17c9b25, type: 2}
+  moves: 32
   boardSeed: 0
   enemies:
   - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}

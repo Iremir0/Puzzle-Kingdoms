@@ -35,6 +35,13 @@ namespace PuzzleKingdoms.Views.Common
             GemShape.Square, GemShape.Triangle, GemShape.Diamond, GemShape.Circle,
         };
 
+        /// <summary>Gems with a shape of their own (PB-21): the Defender a shield, the Support a cross.</summary>
+        private static readonly Dictionary<string, GemShape> FixedShapes = new Dictionary<string, GemShape>
+        {
+            { "defender", GemShape.Shield },
+            { "support", GemShape.Cross },
+        };
+
         /// <summary>Remembers each unit's color by id so logic objects (UnitDef) can be drawn.</summary>
         public static void Register(UnitDefinition unit)
         {
@@ -45,6 +52,11 @@ namespace PuzzleKingdoms.Views.Common
                 UnitLooks[unit.Def.Id] = unit.Look;
                 if (!UnitShapes.ContainsKey(unit.Def.Id))
                 {
+                    if (FixedShapes.TryGetValue(unit.Def.Id, out GemShape fixedShape))
+                    {
+                        UnitShapes[unit.Def.Id] = fixedShape;
+                        return;
+                    }
                     UnitShapes[unit.Def.Id] = UnitShapeOrder[UnitShapes.Count % UnitShapeOrder.Length];
                 }
             }

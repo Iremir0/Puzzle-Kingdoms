@@ -38,6 +38,10 @@ namespace PuzzleKingdoms.Data
         [Tooltip("Others this close to the target take splash damage; 0 = none (bomber).")]
         [SerializeField, Min(0f)] private float splashRadius;
         [SerializeField, Range(0f, 1f)] private float splashFraction = 0.5f;
+        [Tooltip("Enemies this close to this unit attack it first (taunt); 0 = none (defender, PB-21).")]
+        [SerializeField, Min(0f)] private float tauntRadius;
+        [Tooltip("Id of the stage whose first win unlocks this class (PB-21); empty = always available.")]
+        [SerializeField] private string unlockStageId = "";
 
         [Header("Look")]
         [Tooltip("Placeholder color for grey-box views.")]
@@ -50,6 +54,8 @@ namespace PuzzleKingdoms.Data
         public Color Color => color;
 
         public UnitLook Look => look;
+
+        public string UnlockStageId => unlockStageId;
 
         /// <summary>Logic definition. Cached so every user shares one instance (merge compares by reference).</summary>
         public UnitDef Def => _def ??= new UnitDef
@@ -71,6 +77,7 @@ namespace PuzzleKingdoms.Data
             TargetsBackRow = targetsBackRow,
             SplashRadius = splashRadius,
             SplashFraction = splashFraction,
+            TauntRadius = tauntRadius,
         };
 
         private void OnValidate() => _def = null;
