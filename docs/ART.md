@@ -267,9 +267,11 @@ Credits left on the Pro plan after Goblin_Chief: 1,118 (the session started at 1
 Still to do: find each new model's `FacingCamera` rotation in `ArtSpike`, then an army render
 with all seven (PB-10).
 
-### Chapter 2 enemies (PB-18, D-051): prompts ready, models not made yet
+### Chapter 2 enemies (PB-18, D-051): made 2026-11-18
 
-Four new models, same method and common start as above. Each costs about 53 credits (18 for the two
+**Made through the Chrome extension on 2026-11-18, one try each, 212 credits (1,218 → 1,006).** Triangles after remesh: Goblin_Shield 5,706, Goblin_Shaman 5,208, Goblin_WolfRider 8,325, Goblin_Bomber 5,712. Static models (no rig yet); in `Assets/_Project/Art/Characters/<Name>/`, linked by *Build Battle Models* (same upright as the Brute and the Chief, checked by rendering with `GreyboxScreenshots.CaptureChapterTwoBattle`). Meshy flags 51 non-manifold edges on the WolfRider: irrelevant for the game, only for 3D printing. Still to do: rigs and animations (PB-12 way), until then they stand still.
+
+The plan was: Four new models, same method and common start as above. Each costs about 53 credits (18 for the two
 images, 35 for model + texture, 0 for the remesh), 212 in all, and needs Alican's go (D-043). Until they
 exist the Brute, Archer and Grunt silhouettes stand in (`UnitLook.ShieldGoblin` and the three after it).
 After import add each to `BattleModelBuilder.Models` (look → folder) and run *Puzzle Kingdoms → Build

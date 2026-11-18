@@ -6,7 +6,7 @@ attribution requirement, and the files it covers.
 
 | Asset / Code | Author | Source | License | Commercial | Attribution | Files |
 |---|---|---|---|---|---|---|
-| Goblin_Grunt, Goblin_Archer, Goblin_Brute, Goblin_Chief, Hero_Knight, Hero_Archer, Hero_Mage (3D characters) | Made by us with Meshy (meshy.ai) on our Pro plan, from our own AI-generated concept images | meshy.ai | Meshy paid-plan terms: private licence, we own the output | yes | no attribution required | `Assets/_Project/Art/Characters/` (D-041) |
+| Goblin_Grunt, Goblin_Archer, Goblin_Brute, Goblin_Chief, Goblin_Shield, Goblin_Shaman, Goblin_WolfRider, Goblin_Bomber, Hero_Knight, Hero_Archer, Hero_Mage (3D characters) | Made by us with Meshy (meshy.ai) on our Pro plan, from our own AI-generated concept images | meshy.ai | Meshy paid-plan terms: private licence, we own the output | yes | no attribution required | `Assets/_Project/Art/Characters/` (D-041) |
 | Lilita One (UI font) | Juan Montoreano | github.com/google/fonts (ofl/lilitaone) | SIL Open Font License 1.1 | yes | no attribution required; the licence text travels with the font | `Assets/_Project/Resources/UiFont.ttf`, `UiFont-OFL.txt` (PB-16) |
 
 Not third-party: the placeholder sounds in `Assets/_Project/Audio/Placeholder/` are

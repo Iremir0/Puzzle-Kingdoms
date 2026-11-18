@@ -236,6 +236,11 @@ namespace PuzzleKingdoms.EditorTools
             { "Goblin_Archer", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
             { "Goblin_Brute", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
             { "Goblin_Chief", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
+            // Chapter 2 models: the same export as the Brute and the Chief; check by rendering (PB-18).
+            { "Goblin_Shield", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
+            { "Goblin_Shaman", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
+            { "Goblin_WolfRider", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
+            { "Goblin_Bomber", Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-90f, 0f, 0f) },
         };
 
         /// <summary>Stands a Meshy model up; players face away from the camera, towards the enemy.</summary>

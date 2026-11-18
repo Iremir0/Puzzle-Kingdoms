@@ -149,6 +149,51 @@ namespace PuzzleKingdoms.Tests.PlayMode
             Debug.Log($"[GreyboxScreenshots] saved to {output}");
         }
 
+        /// <summary>PB-18: the 3D battle of the boss stage, with the four new Chapter 2 models, into <c>Logs/Screenshots/chapter2-battle*.png</c>.</summary>
+        [UnityTest]
+        public IEnumerator CaptureChapterTwoBattle()
+        {
+#if UNITY_EDITOR
+            var content = UnityEditor.AssetDatabase.LoadAssetAtPath<GameContent>("Assets/_Project/Data/GameContent.asset");
+#else
+            GameContent content = null;
+            Assert.Ignore("editor only");
+#endif
+            string output = Path.GetFullPath("Logs/Screenshots");
+            Directory.CreateDirectory(output);
+            _saveFolder = Path.Combine(Path.GetTempPath(), "pk-shots-" + System.Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(_saveFolder);
+            _app = new GameObject("GameApp").AddComponent<GameApp>();
+            _app.SetContent(content);
+            _app.TutorialEnabled = false;
+            _app.ConsentEnabled = false;
+            _app.UseStore(new ProfileStore(_saveFolder));
+            _app.UseLanguage(Language.English);
+            yield return null;
+            _app.StartStage(content.Campaign.Count - 1); // 2-10: Shield, Chief, Wolf, Shaman and Bomber
+            yield return null;
+            var puzzle = (PuzzleScreen)_app.CurrentScreen;
+            Time.timeScale = 8f;
+            while (!_app.Run.Puzzle.IsFinished)
+            {
+                _app.Run.Puzzle.Board.TryFindValidMove(out GridPos a, out GridPos b);
+                puzzle.PlaySwap(a, b);
+                yield return new WaitUntil(() => !puzzle.IsBusy);
+            }
+            Time.timeScale = 1f;
+            _app.ShowWarCamp();
+            yield return null;
+            AutoFormation.Fill(_app.Run.Roster);
+            _app.Run.StartBattle();
+            _app.ShowBattle();
+            var battle = (BattleScreen)_app.CurrentScreen;
+            yield return new WaitForSeconds(0.3f);
+            yield return Capture(Path.Combine(output, "chapter2-battle-start.png"));
+            battle.Simulator.ActivateRally();
+            yield return new WaitForSeconds(5f);
+            yield return Capture(Path.Combine(output, "chapter2-battle.png"));
+        }
+
         /// <summary>The two screens with the most rows, on a shorter phone (1080×1800).</summary>
         [UnityTest]
         public IEnumerator CaptureShortScreen()
