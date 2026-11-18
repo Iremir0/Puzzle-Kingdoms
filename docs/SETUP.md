@@ -103,7 +103,7 @@ identity of the game forever: **lose it and you cannot update the game.** It nev
    puzzlekingdoms-upload.keystore -alias upload -keyalg RSA -keysize 2048 -validity 10000`. Use a long
    password. Keep the file and the passwords in a password manager **and one second backup that both of you
    can reach**. Plan to use Google Play App Signing: the key you create is only the *upload key*, so a lost
-   upload key can be reset with Google.
+   upload key can be reset with Google. A PKCS12 keystore (the default) uses one password for the store and the key, so set `PK_KEYSTORE_PASS` and `PK_KEY_PASS` to the same value.
 2. **Build** with the four variables set in the shell (nothing is read from files in the repo):
 
    ```
