@@ -92,6 +92,39 @@ and `NDK` (r27c). Hub's download cache has the zips.
 
 Do not commit release keystores or passwords.
 
+## 4a. Release build (PB-17)
+
+A store build is a **signed Android App Bundle** (`.aab`), built with one command. The signing key is the
+identity of the game forever: **lose it and you cannot update the game.** It never goes into the repo
+(`.gitignore` already ignores `*.keystore`, `*.jks` and `/Builds/`).
+
+1. **Create the key once** (Alican, on one machine): in Unity *Edit → Project Settings → Player → Publishing
+   Settings → Keystore Manager → Create new*, or with the JDK's `keytool -genkeypair -v -keystore
+   puzzlekingdoms-upload.keystore -alias upload -keyalg RSA -keysize 2048 -validity 10000`. Use a long
+   password. Keep the file and the passwords in a password manager **and one second backup that both of you
+   can reach**. Plan to use Google Play App Signing: the key you create is only the *upload key*, so a lost
+   upload key can be reset with Google.
+2. **Build** with the four variables set in the shell (nothing is read from files in the repo):
+
+   ```
+   set PK_KEYSTORE_PATH=D:\keys\puzzlekingdoms-upload.keystore
+   set PK_KEYSTORE_PASS=...
+   set PK_KEY_ALIAS=upload
+   set PK_KEY_PASS=...
+   "<Unity>/Editor/Unity.exe" -batchmode -quit -projectPath . -executeMethod PuzzleKingdoms.EditorTools.AndroidBuild.BuildReleaseAab -logFile Logs/android-release.log
+   ```
+
+   Output: `Builds/Android/PuzzleKingdoms.aab`. Missing variables stop the build with a clear error. The
+   passwords are cleared from the player settings after the build.
+3. **Version:** `ProjectSetup.Version` ("0.1.0") and `ProjectSetup.VersionCode` (1); bump both, run
+   *Puzzle Kingdoms → Apply Project Settings*, see CONVENTIONS.md.
+4. **Install on a phone:** upload the `.aab` to Play Console *internal testing* (or use `bundletool
+   build-apks` and `install-apks`), then play stage 1-1.
+5. The playtest log (`playtest-log.jsonl`, D-037) is not written in an Android store build; it is written in
+   the editor, in development builds and in the Windows playtest build.
+6. Icon and splash come from `Puzzle Kingdoms → Build App Icon` (a gold crown over a red gem, drawn in code,
+   a placeholder); replace the PNGs in `Assets/_Project/Art/Icon/` when there is a real icon.
+
 ## 5. Optional: smart merge for scenes and prefabs
 
 Unity ships `UnityYAMLMerge`. Add to your global git config (adjust the path

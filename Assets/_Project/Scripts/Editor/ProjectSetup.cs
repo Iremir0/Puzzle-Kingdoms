@@ -17,6 +17,10 @@ namespace PuzzleKingdoms.EditorTools
         public const string CompanyName = "Puzzle Kingdoms Team";
         public const string ProductName = "Puzzle Kingdoms";
         public const string AndroidPackage = "com.puzzlekingdoms.game";
+        /// <summary>Shown to players (semantic version).</summary>
+        public const string Version = "0.1.0";
+        /// <summary>Whole number the store compares; must grow with every upload.</summary>
+        public const int VersionCode = 1;
         private const int MinAndroidApi = 26;
 
         [MenuItem("Puzzle Kingdoms/Apply Project Settings")]
@@ -40,6 +44,10 @@ namespace PuzzleKingdoms.EditorTools
 
             // Logic must stay deterministic and allocation-light; keep the default .NET Standard 2.1 profile.
             PlayerSettings.SetApiCompatibilityLevel(NamedBuildTarget.Android, ApiCompatibilityLevel.NET_Standard);
+
+            // Version (PB-17): bump both for every build that goes to the store, see docs/CONVENTIONS.md.
+            PlayerSettings.bundleVersion = Version;
+            PlayerSettings.Android.bundleVersionCode = VersionCode;
 
             EditorSettings.serializationMode = SerializationMode.ForceText;
             EnsureRenderPipeline();

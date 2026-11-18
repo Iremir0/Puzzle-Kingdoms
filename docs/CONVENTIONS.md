@@ -73,3 +73,10 @@
 - Add a row to `CREDITS.md` before committing any third-party file.
 - Never use assets copied from existing games.
 - Prefer `.fbx`/`.glb` for 3D, `.png` for 2D, `.ogg` for audio.
+
+## Version
+
+Every build that goes to the store gets a new version: `ProjectSetup.Version` (shown to players, semantic:
+`0.1.0`, bump the minor for a feature drop, the patch for a fix) and `ProjectSetup.VersionCode` (a whole
+number that **must grow with every upload**, never reused). Change both in `ProjectSetup.cs`, run *Puzzle
+Kingdoms → Apply Project Settings*, commit, tag `v<version>`.

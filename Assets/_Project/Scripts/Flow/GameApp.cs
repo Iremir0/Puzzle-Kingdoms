@@ -77,7 +77,12 @@ namespace PuzzleKingdoms.Flow
             Sfx.Setup(gameObject, content.Sounds);
             _store ??= new ProfileStore();
             _settingsStore = new SettingsStore(_store.Folder); // settings live next to the profile (D-039)
-            _playtestLog ??= new PlaytestLog();
+            // The playtest log is for testers (Windows playtest build, editor, development builds); a store build
+            // (Android, not a development build) writes none (D-037, PB-17).
+            if (_playtestLog == null && (Debug.isDebugBuild || Application.platform != RuntimePlatform.Android))
+            {
+                _playtestLog = new PlaytestLog();
+            }
             Profile = _store.Load();
             Settings = _settingsStore.Load();
             Sfx.EffectsOn = Settings.sound;
