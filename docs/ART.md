@@ -242,3 +242,26 @@ Common start of every prompt:
 Done so far: Goblin_Grunt, Goblin_Archer (5,213), Hero_Knight, Hero_Archer, Hero_Mage (in `Assets/_Project/Art/Characters/`). Colours: heroes
 red / mint / purple, goblins olive with brown, iron and bone, so no army mixes up with the other.
 Credits used so far: about 425 of the Pro plan's ~1,400.
+
+### All seven models made (2026-11-18)
+
+Goblin_Brute and Goblin_Chief were made the same way as the other three: 2 images, one picked,
+then image → 3D. Cost per model: 18 credits for the 2 images, 35 for model + texture, 0 for the
+remesh (53 in all). Every model is on the Pro plan with a private licence. Checked front / side / back in the Meshy viewer: textures intact,
+no holes, weapons clear of the body, no red or purple on the goblins.
+
+| Model | Triangles (Meshy count) | Remesh target | Credits |
+|---|---|---|---|
+| Hero_Archer | 5,208 | 5,000 | 53 |
+| Hero_Mage | 5,171 | 5,000 | 53 |
+| Goblin_Archer | 5,213 | 5,000 | 53 |
+| Goblin_Brute | 6,228 | 6,000 | 53 |
+| Goblin_Chief | about 8,380 (counter read 8,364 / 8,384; confirm in Unity) | 8,000 | 53 |
+
+Brute and Chief are in the git-ignored `Assets/_Project/Sandbox/Meshy/` and copied (FBX and
+base-colour texture only, like the others) to `Assets/_Project/Art/Characters/<Name>/`, but **not
+yet committed**: Unity must import them once so it writes the `.meta` files, which are committed
+with the assets. Meshy's extra maps (normal, metallic, roughness) stay in the Sandbox only.
+Credits left on the Pro plan after Goblin_Chief: 1,118 (the session started at 1,383, 265 spent).
+Still to do: find each new model's `FacingCamera` rotation in `ArtSpike`, then an army render
+with all seven (PB-10).
