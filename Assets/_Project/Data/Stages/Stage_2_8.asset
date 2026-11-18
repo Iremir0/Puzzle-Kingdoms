@@ -46,7 +46,7 @@ MonoBehaviour:
   covers: []
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.5, y: 0.647}
+  mapPosition: {x: 0.5, y: 0.57}
   tutorial:
   - id: 2-8.clock
     trigger: 0

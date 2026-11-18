@@ -24,6 +24,8 @@ namespace PuzzleKingdoms.Data
         [SerializeField] private BattleRulesAsset battleRules;
         [SerializeField] private ProgressionRulesAsset progressionRules;
         [SerializeField] private KingdomRulesAsset kingdomRules;
+        [Tooltip("The commanders the player can earn (PB-23); the classic Rally is what a player without one has.")]
+        [SerializeField] private List<CommanderDefinition> commanders = new List<CommanderDefinition>();
         [SerializeField] private SoundBank sounds;
         [Tooltip("3D models of the battle view (PB-11); may be empty, units are then drawn as capsules.")]
         [SerializeField] private BattleModelSet battleModels;
@@ -39,6 +41,10 @@ namespace PuzzleKingdoms.Data
         public ProgressionRulesAsset ProgressionRules => progressionRules;
         /// <summary>Buildings and their costs (PB-22).</summary>
         public KingdomRulesAsset KingdomRules => kingdomRules;
+        public IReadOnlyList<CommanderDefinition> Commanders => commanders;
+
+        /// <summary>The logic commanders, in asset order.</summary>
+        public List<Logic.Progression.Commander> CommanderList() => commanders.Select(c => c.Commander).ToList();
         /// <summary>Sound effects and music; may be null (the game then stays silent).</summary>
         public SoundBank Sounds => sounds;
 
@@ -49,7 +55,8 @@ namespace PuzzleKingdoms.Data
         /// moves and enemy strength (PB-29, <see cref="StageTuning"/>).
         /// </summary>
         public StageRun CreateRun(StageDefinition stage, IRandom random = null, RemoteConfig config = null,
-            Logic.Kingdom.KingdomBonuses bonuses = null)
+            Logic.Kingdom.KingdomBonuses bonuses = null,
+            Logic.Combat.RallyVariant rallyVariant = null)
         {
             StageDef def = stage.ToStageDef();
             StageTuning.Apply(def, config);
@@ -62,7 +69,8 @@ namespace PuzzleKingdoms.Data
                 battleRules.Rules,
                 progressionRules.Rules,
                 random ?? StageRun.CreateRandom(def),
-                bonuses);
+                bonuses,
+                rallyVariant);
         }
     }
 }

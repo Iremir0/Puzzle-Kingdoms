@@ -8,6 +8,8 @@ namespace PuzzleKingdoms.Logic.Combat
         Died,
         /// <summary>Source healed target for Amount HP (PB-18 shaman).</summary>
         Heal,
+        /// <summary>A commander's Rally hit TargetId for Amount (Arrow Rain, Fireball); there is no attacker (PB-23).</summary>
+        RallyStrike,
         RallyStarted,
         RallyEnded,
         /// <summary>Battle over; read BattleSimulator.Result.</summary>

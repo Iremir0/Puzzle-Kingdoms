@@ -6,7 +6,7 @@ attribution requirement, and the files it covers.
 
 | Asset / Code | Author | Source | License | Commercial | Attribution | Files |
 |---|---|---|---|---|---|---|
-| Goblin_Grunt, Goblin_Archer, Goblin_Brute, Goblin_Chief, Hero_Knight, Hero_Archer, Hero_Mage (3D characters) | Made by us with Meshy (meshy.ai) on our Pro plan, from our own AI-generated concept images | meshy.ai | Meshy paid-plan terms: private licence, we own the output | yes | no attribution required | `Assets/_Project/Art/Characters/` (D-041) |
+| Goblin_Grunt, Goblin_Archer, Goblin_Brute, Goblin_Chief, Goblin_Shield, Goblin_Shaman, Goblin_WolfRider, Goblin_Bomber, Hero_Knight, Hero_Archer, Hero_Mage (3D characters) | Made by us with Meshy (meshy.ai) on our Pro plan, from our own AI-generated concept images | meshy.ai | Meshy paid-plan terms: private licence, we own the output | yes | no attribution required | `Assets/_Project/Art/Characters/` (D-041) |
 | Lilita One (UI font) | Juan Montoreano | github.com/google/fonts (ofl/lilitaone) | SIL Open Font License 1.1 | yes | no attribution required; the licence text travels with the font | `Assets/_Project/Resources/UiFont.ttf`, `UiFont-OFL.txt` (PB-16) |
 
 Not third-party: the placeholder sounds in `Assets/_Project/Audio/Placeholder/` are
@@ -18,3 +18,12 @@ Candidates reviewed:
   git-ignored `Assets/_Project/Sandbox/` (reviewed 2026-11-17, not committed).
 - Kenney Starter Kit Match-3 — code MIT (keep notice if copied), assets CC0.
   https://github.com/KenneyNL/Starter-Kit-Match-3 (reviewed 2026-11-13, not used yet)
+
+## UI paintings (2026-11-18)
+
+Building pictures (`Assets/_Project/Resources/Art/UI/Building_*.png`) and chapter map paintings
+(`Map_Chapter1.png`, `Map_Chapter2.png`): generated with Meshy AI text-to-image (Nano Banana Pro), Pro plan
+private licence. Magenta background keyed out and resized locally.
+
+Commander portraits (`Commander_*.png`) and battle ground paintings (`Battle_*.png`): generated with ChatGPT
+image generation by the team; keyed/cropped locally. Check the service terms before a commercial release.

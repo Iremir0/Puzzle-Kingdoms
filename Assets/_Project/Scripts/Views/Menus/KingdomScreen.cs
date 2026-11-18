@@ -63,7 +63,7 @@ namespace PuzzleKingdoms.Views.Menus
             _rules = content.KingdomRules != null ? content.KingdomRules.Rules : new KingdomRules();
             _onUpgraded = onUpgraded;
             Transform root = transform;
-            Ui.Box(root, "Background", Palette.Background);
+            Ui.Backdrop(root);
 
             Ui.Label(root, Loc.T("Kingdom"), 48, TextAnchor.MiddleLeft, Palette.Gold, 0.04f, 0.935f, 0.45f, 0.99f);
             Image coin = Ui.Box(root, "Coin", Palette.Gold, 0.5f, 0.945f, 0.545f, 0.98f);
@@ -134,7 +134,7 @@ namespace PuzzleKingdoms.Views.Menus
             bool maxed = cost < 0;
             bool affordable = !maxed && cost <= _profile.Gold;
 
-            Image card = Ui.Box(_cards, "Card " + building.Id, CardColor, 0.03f, yMin, 0.97f, yMax);
+            Image card = Ui.Card(_cards, "Card " + building.Id, CardColor, 0.03f, yMin, 0.97f, yMax);
             RectTransform rect = card.rectTransform;
 
             // Icon on a round plate: the class silhouette, or a star for the Treasury.
@@ -142,7 +142,17 @@ namespace PuzzleKingdoms.Views.Menus
             plate.sprite = GemShapes.Get(GemShape.Circle);
             plate.preserveAspect = true;
             plate.raycastTarget = false;
-            if (building.Stat == BuildingStat.StageGold)
+            Sprite picture = ArtSprites.Building(building.Id);
+            if (picture != null)
+            {
+                // A painted picture of the building, no plate behind it (the plate stays invisible so the pop still works).
+                plate.color = Color.clear;
+                Image art = Ui.Box(plate.rectTransform, "Building Art", Color.white, -0.14f, -0.12f, 1.14f, 1.12f);
+                art.sprite = picture;
+                art.preserveAspect = true;
+                art.raycastTarget = false;
+            }
+            else if (building.Stat == BuildingStat.StageGold)
             {
                 Image star = Ui.Box(plate.rectTransform, "Star", Palette.Gold, 0.2f, 0.2f, 0.8f, 0.8f);
                 star.sprite = GemShapes.Get(GemShape.Star);

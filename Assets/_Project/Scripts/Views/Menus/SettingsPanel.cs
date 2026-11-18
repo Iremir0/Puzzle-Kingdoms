@@ -42,7 +42,7 @@ namespace PuzzleKingdoms.Views.Menus
             _onChanged = onChanged;
             _onResetProgress = onResetProgress;
 
-            Transform box = Ui.Box(transform, "Box", Palette.Panel, 0.06f, 0.2f, 0.94f, 0.83f).transform;
+            Transform box = Ui.Card(transform, "Box", Palette.Panel, 0.06f, 0.2f, 0.94f, 0.83f).transform;
             Ui.Label(box, Loc.T("Settings"), 60, TextAnchor.MiddleLeft, Palette.Text, 0.06f, 0.89f, 0.7f, 0.98f);
             Name(Ui.Button(box, "Close", Ui.ButtonStyle.Secondary, Close, 0.72f, 0.89f, 0.95f, 0.98f, 38), "Close");
 

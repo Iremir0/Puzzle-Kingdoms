@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
+using PuzzleKingdoms.Logic.Combat;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Views.Common;
 using UnityEngine;
@@ -77,13 +78,19 @@ namespace PuzzleKingdoms.Views.WarCamp
             _onFight = onFight;
             _classOrder = run.Puzzle.GemRewardKeys.Where(k => k != StageRun.RallyKey).ToList();
             Transform root = transform;
-            Ui.Box(root, "Background", Palette.Background);
+            Ui.Backdrop(root);
 
             Ui.Label(root, Loc.T("War Camp"), 52, TextAnchor.MiddleLeft, Palette.Text, 0.04f, 0.93f, 0.6f, 0.99f);
             Ui.Label(root, Loc.F("Rally charges: {0}", _run.RallyCharges), 40, TextAnchor.MiddleRight, Palette.Gold,
                 0.5f, 0.93f, 0.96f, 0.99f);
+            if (_run.RallyVariant != null && _run.RallyVariant.Kind != RallyKind.Classic)
+            {
+                // PB-23: the commander leading this army and what its Rally does.
+                Ui.Label(root, Loc.F("Commander: {0}", Loc.T(_run.RallyVariant.DisplayName)), 30, TextAnchor.MiddleRight, Palette.Muted,
+                    0.4f, 0.905f, 0.96f, 0.935f);
+            }
 
-            Ui.Box(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);
+            Ui.Card(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);
             Ui.Label(root, Loc.T("Enemy army"), 36, TextAnchor.UpperLeft, Palette.Muted, 0.06f, 0.75f, 0.4f, 0.915f);
             StageBadges.AddPanelLine(root, _run.Stage);
             StageBadges.AddGoalLine(root, _run.Stage, _run.Puzzle.StonesBroken);
@@ -105,7 +112,7 @@ namespace PuzzleKingdoms.Views.WarCamp
 
             _info = Ui.Label(root, "", 30, TextAnchor.MiddleCenter, Palette.Text, 0.04f, 0.33f, 0.96f, 0.41f);
             Ui.Label(root, Loc.T("Bench"), 32, TextAnchor.MiddleLeft, Palette.Muted, 0.04f, 0.303f, 0.5f, 0.33f);
-            _bench = new BenchView(Ui.Box(root, "Bench", Palette.Panel, 0.03f, 0.165f, 0.97f, 0.303f));
+            _bench = new BenchView(Ui.Card(root, "Bench", Palette.Panel, 0.03f, 0.165f, 0.97f, 0.303f));
 
             const float w = 0.176f;
             const float gap = 0.012f;

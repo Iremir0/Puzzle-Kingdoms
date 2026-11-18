@@ -42,3 +42,19 @@ MonoBehaviour:
     model: {fileID: 919132149155446097, guid: 2c39aaa4b264e624887531649ab9736c, type: 3}
     material: {fileID: 2100000, guid: 3e8394f12af8ec74796efcc3c57ee709, type: 2}
     uprightEuler: {x: 0, y: 0, z: 0}
+  - look: 8
+    model: {fileID: 919132149155446097, guid: d38826d1efc415e4d9983b1c2bde2d37, type: 3}
+    material: {fileID: 2100000, guid: 0e30de489c864ff47bdb4edcfbfd6650, type: 2}
+    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+  - look: 9
+    model: {fileID: 919132149155446097, guid: e9ad4f9df375d6547ad36181e484647a, type: 3}
+    material: {fileID: 2100000, guid: 32b4943cca2679748bb7acb22ddf5335, type: 2}
+    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+  - look: 10
+    model: {fileID: 919132149155446097, guid: 208a1a2dc57cec045b3e1ba4af26f5db, type: 3}
+    material: {fileID: 2100000, guid: a0fedf2be250f6e4fa06cda93cb1df5e, type: 2}
+    uprightEuler: {x: 270, y: 0.000010017912, z: 0}
+  - look: 11
+    model: {fileID: 919132149155446097, guid: 2a2350eef52d95446abecd3c8ababc7a, type: 3}
+    material: {fileID: 2100000, guid: d01a7aebef482544c8e31496aace05d1, type: 2}
+    uprightEuler: {x: 270, y: 0.000010017912, z: 0}

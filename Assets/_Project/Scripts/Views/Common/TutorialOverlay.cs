@@ -81,7 +81,7 @@ namespace PuzzleKingdoms.Views.Common
             Edge(_frame, 0f, 0f, 0f, 1f, new Vector2(FrameWidth, 0f), new Vector2(0f, 0.5f));
             Edge(_frame, 1f, 0f, 1f, 1f, new Vector2(FrameWidth, 0f), new Vector2(1f, 0.5f));
 
-            Image bubble = Ui.Box(_root, "Bubble", Palette.Panel, 0.05f, 0.4f, 0.95f, 0.6f);
+            Image bubble = Ui.Card(_root, "Bubble", Palette.Panel, 0.05f, 0.4f, 0.95f, 0.6f);
             bubble.raycastTarget = false;
             Outline edge = bubble.gameObject.AddComponent<Outline>();
             edge.effectColor = Palette.Gold;

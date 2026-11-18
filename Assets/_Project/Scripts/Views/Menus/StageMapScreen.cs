@@ -32,6 +32,8 @@ namespace PuzzleKingdoms.Views.Menus
         private RectTransform _layer;
         private Text _chapterTitle;
         private int _chapter = 1;
+        private bool _labels = true;
+        private bool _fitted;
         private RectTransform _card;
         private RectTransform _arrow;
         private Vector2 _arrowHome;
@@ -64,17 +66,17 @@ namespace PuzzleKingdoms.Views.Menus
             _profile = profile;
             _onPlay = onPlay;
             Transform root = transform;
-            Ui.Box(root, "Background", Palette.Background);
+            Ui.Backdrop(root);
 
-            _chapterTitle = Ui.Label(root, Loc.T("Chapter 1"), 48, TextAnchor.MiddleLeft, Palette.Gold, 0.04f, 0.935f, 0.5f, 0.99f);
+            _chapterTitle = Ui.Label(root, Loc.T("Chapter 1"), 40, TextAnchor.MiddleLeft, Palette.Gold, 0.04f, 0.935f, 0.56f, 0.99f);
             _chapterTitle.horizontalOverflow = HorizontalWrapMode.Overflow;
-            Ui.Label(root, Loc.F("Gold {0}", profile.Gold), 44, TextAnchor.MiddleCenter, Palette.Text, 0.4f, 0.935f, 0.68f, 0.99f);
+            Ui.Label(root, Loc.F("Gold {0}", profile.Gold), 40, TextAnchor.MiddleCenter, Palette.Text, 0.56f, 0.935f, 0.7f, 0.99f);
             if (onSettings != null)
             {
                 Ui.Button(root, "Settings", Ui.ButtonStyle.Secondary, onSettings, 0.7f, 0.94f, 0.97f, 0.985f, 36);
             }
 
-            _map = Ui.Box(root, "Map", Land, 0.03f, onTab != null ? 0.375f : 0.33f, 0.97f, 0.925f).rectTransform;
+            _map = Ui.Card(root, "Map", Land, 0.03f, onTab != null ? 0.375f : 0.33f, 0.97f, 0.925f).rectTransform;
             _layer = Ui.Rect(_map, "Layer", 0f, 0f, 1f, 1f);
 
             IReadOnlyList<StageDefinition> stages = content.Campaign;
@@ -89,7 +91,7 @@ namespace PuzzleKingdoms.Views.Menus
                 }
             }
 
-            _card = Ui.Box(root, "Stage Card", Palette.Panel, 0.03f, onTab != null ? TabBar.Height + 0.008f : 0.02f, 0.97f, onTab != null ? 0.36f : 0.315f).rectTransform;
+            _card = Ui.Card(root, "Stage Card", Palette.Panel, 0.03f, onTab != null ? TabBar.Height + 0.008f : 0.02f, 0.97f, onTab != null ? 0.36f : 0.315f).rectTransform;
             if (onTab != null)
             {
                 TabBar.Add(root, MainTab.Map, onTab);
@@ -125,6 +127,25 @@ namespace PuzzleKingdoms.Views.Menus
             : chapter == 2 ? Loc.T("Chapter 2: Goblin Fort")
             : Loc.F("Chapter {0}", chapter);
 
+        /// <summary>The chapter's painted ground behind the path and nodes, dimmed a little so the nodes read.</summary>
+        private void AddPainting(int chapter)
+        {
+            Sprite art = ArtSprites.ChapterMap(chapter);
+            if (art == null)
+            {
+                return;
+            }
+            if (_map.GetComponent<Mask>() == null)
+            {
+                _map.gameObject.AddComponent<Mask>().showMaskGraphic = true; // keeps the rounded corners
+            }
+            Image painting = Ui.Box(_layer, "Painting", Color.white);
+            painting.sprite = art;
+            painting.raycastTarget = false;
+            Image dim = Ui.Box(_layer, "Dim", new Color(0f, 0f, 0f, 0.22f));
+            dim.raycastTarget = false;
+        }
+
         /// <summary>Draws the map of one chapter: its path, nodes, arrow and the buttons to the next and previous chapter.</summary>
         public void ShowChapter(int chapter)
         {
@@ -133,6 +154,15 @@ namespace PuzzleKingdoms.Views.Menus
             _nodes.Clear();
             _arrow = null;
             _chapterTitle.text = ChapterTitle(chapter);
+            AddPainting(chapter);
+            _fitted = false;
+            int inChapter = 0;
+            foreach (StageDefinition s in _content.Campaign)
+            {
+                inChapter += s.Chapter == chapter ? 1 : 0;
+            }
+            // A long chapter has no room for a name under every node: the names are on the stage card.
+            _labels = inChapter <= 5;
 
             IReadOnlyList<StageDefinition> stages = _content.Campaign;
             List<string> order = _content.CampaignOrder();
@@ -201,10 +231,34 @@ namespace PuzzleKingdoms.Views.Menus
 
         private void Update()
         {
+            if (!_fitted && _map != null && _map.rect.height > 1f)
+            {
+                FitNodes();
+            }
             if (_arrow != null)
             {
                 _arrow.anchoredPosition = _arrowHome + Vector2.up * Mathf.Abs(Mathf.Sin(Time.unscaledTime * ArrowSpeed)) * ArrowBounce;
             }
+        }
+
+        /// <summary>On a short map (a wide window) the nodes shrink so the rows of a long chapter do not overlap.</summary>
+        private void FitNodes()
+        {
+            _fitted = true;
+            float size = Mathf.Min(NodeSize, _map.rect.height * 0.16f);
+            foreach (Button node in _nodes)
+            {
+                if (node == null)
+                {
+                    continue;
+                }
+                ((RectTransform)node.transform).sizeDelta = new Vector2(size, size);
+                Text number = node.GetComponentInChildren<Text>();
+                number.resizeTextForBestFit = true;
+                number.resizeTextMinSize = 16;
+                number.resizeTextMaxSize = 64;
+            }
+            _arrowHome = new Vector2(0f, size * 0.5f + 0.33f * size);
         }
 
         /// <summary>Opens the card of stage <paramref name="index"/> (also for locked stages: they show why).</summary>
@@ -241,10 +295,10 @@ namespace PuzzleKingdoms.Views.Menus
             {
                 Ui.Label(_card, goal, 30, TextAnchor.MiddleLeft, unlocked ? Palette.Gold : Palette.Muted, 0.42f, 0.52f, 0.96f, 0.62f);
             }
-            new FormationGridView(_card, "Enemy Preview", true, false, 0.04f, 0.04f, 0.36f, 0.56f)
+            new FormationGridView(_card, "Enemy Preview", true, false, 0.04f, 0.03f, 0.36f, 0.5f)
                 .Show(Formation.ForStage(def));
             // After the grid, so the grid panel does not cover the tail of the caption.
-            Ui.Label(_card, Loc.T("Enemy army"), 30, TextAnchor.UpperLeft, Palette.Muted, 0.04f, 0.04f, 0.3f, 0.6f);
+            Ui.Label(_card, Loc.T("Enemy army"), 28, TextAnchor.MiddleLeft, Palette.Muted, 0.04f, 0.5f, 0.36f, 0.62f);
             if (unlocked)
             {
                 int play = index;
@@ -284,13 +338,24 @@ namespace PuzzleKingdoms.Views.Menus
             var rect = (RectTransform)node.transform;
             rect.sizeDelta = new Vector2(NodeSize, NodeSize);
             node.image.sprite = GemShapes.Get(GemShape.Circle);
+            Transform gloss = node.transform.Find("Gloss"); // the rectangular button gloss does not suit a round node
+            if (gloss != null)
+            {
+                Destroy(gloss.gameObject);
+            }
             Outline outline = node.gameObject.AddComponent<Outline>();
             outline.effectColor = Color.white;
             outline.effectDistance = new Vector2(5, 5);
             outline.enabled = false;
             if (!unlocked)
             {
-                node.GetComponentInChildren<Text>().color = Palette.Muted;
+                node.GetComponentInChildren<Text>().color = new Color(1f, 1f, 1f, 0.8f); // locked: dark node, but the number stays readable
+            }
+
+            if (!_labels)
+            {
+                AddStars(_layer, stars, unlocked, at.x - 0.07f, at.y - 0.105f, at.x + 0.07f, at.y - 0.075f);
+                return node;
             }
 
             // A plate behind name and stars, so the path dots never run through the text.

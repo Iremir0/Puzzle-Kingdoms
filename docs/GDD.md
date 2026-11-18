@@ -208,6 +208,24 @@ Enemies use the same rules as player units and their own 4×4 formation.
   the puzzle.
 - Battle ends when one side is wiped out. A 60 s timeout counts as a defeat.
 - Controls: 1×/2× speed, pause.
+
+**Commanders and Rally variants (PB-23, D-053).** A commander leads the army, does not fight, and decides what
+Rally does. A player without one has the classic Rally above. A commander is unlocked by the first win of
+its stage and chosen on the Commanders tab; the choice is saved. Numbers on `Data/Commanders/*.asset`:
+
+| Commander | Unlock | Rally | Numbers |
+|---|---|---|---|
+| Shield Wall | win 1-3 | the front formation row takes less damage | 6 s, 50 % less damage, +15 % damage and speed |
+| Arrow Rain | win 2-3 | volleys on the enemy back row (the back-most row still alive), ignoring armor | 5 s, 5 volleys, 8 % of max HP each, +10 % damage and speed |
+| Fireball | win 2-6 | one blast on the densest enemy group (most units within the radius of one unit; ties go to the lower id) | radius 1.5 cells, 18 % of max HP, then 3 s of +10 % damage and speed |
+
+Strikes (Arrow Rain, Fireball) take a share of max HP, never less than 1, and ignore armor and ward. All variants are
+deterministic, so a battle still replays exactly from the armies, the rules, the variant and the Rally input log.
+Measured (Tools/Balance --commander ID, greedy bot, Rally as early as possible, 150-200 runs; none / Shield Wall / Arrow Rain / Fireball):
+1-3 90 / 90 / 91 / 93 %; 2-3 81 / 81 / 79 / 82 %; 2-6 73 / 67 / 67 / 77 %; 2-9 72 / 72 / 76 / 79 %; 2-10 64 / 66 / 68 / 72 %.
+Every stage stays winnable with each commander and none is a must-have; Fireball ends fights soonest. (A first Fireball with
+35 % and radius 1.8 won 2-10 87 % of the time and was cut.)
+
 - Geometry (start values, `Data/BattleRules.asset`): front rows start 6 cells
   apart, rows 1 cell apart, lanes 1.2 cells apart; allies keep 0.6 cells apart.
 - All hits of a tick land together: a unit killed this tick still strikes. If
@@ -235,7 +253,7 @@ All four to level 5 is about 3,100 gold; a full pass of both chapters pays about
 from replaying. Bonuses apply to the player's units only, when the battle is set up (HP, damage rounded,
 attack interval divided by the speed bonus); the Treasury raises victory gold, not dismissal or Banner gold.
 The save is version 3 (levels by building id); older saves load with no buildings. A bottom tab bar
-(Map Â· Kingdom Â· Commanders Â· Shop) switches screens; Commanders and Shop are greyed until PB-23 and PB-30.
+(Map Â· Kingdom Â· Commanders Â· Shop) switches screens; Shop is greyed until PB-30; Commanders opens from PB-23.
 Measured with `Tools/Balance --kingdom N` (every building at level N, greedy bot, no Rally): 1-3 81% → 91% at
 level 5; 2-1 92% → 96%; 2-5 60% → 77%; 2-10 46% → 61% (68% at level 10). Level 0 stays winnable, level 5 helps
 without making the boss trivial.
@@ -307,7 +325,7 @@ stage asset, its own map. One lesson each; the last is the boss stage. Rally is 
 Enemy HP multipliers 1.35, 1.35, 1.2, 2.4 (damage x1.2), 1.1, 1.45, 1.7, 1.85, 1.05, 1.2; gold 70 to 220.
 Measured (300-400 runs, greedy puzzle bot, auto formation, no merges, without Rally): 2-1 92%, 2-2 89%, 2-3 70%,
 2-4 84%, 2-5 60%, 2-6 62%, 2-7 71%, 2-8 67%, 2-9 51%, 2-10 46%; with Rally 6-20 points higher.
-The random bot wins 13-58%. Nodes sit in a three-column sawtooth on the map (placeholder layout, see PB-18 notes).
+The random bot wins 13-58%. Nodes sit on a snake of four rows (3, 3, 3, 1) on the map; a chapter of more than 5 stages shows no name under the nodes (the stage card has it) and the nodes shrink on a short map.
 
 Measured difficulty (D-033, 400 runs; random/greedy puzzle bot, auto formation, no merges;
 without / with Rally): 1-1 won 94% / 96% (random) and 100% (greedy), battles 16â22 s

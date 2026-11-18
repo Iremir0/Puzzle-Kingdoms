@@ -586,3 +586,66 @@ PB-22 (Alican). Gold now has a use and the game a reason to replay.
   models are optional later (Meshy).
 Why: a long-term sink for gold that stays inside the "no loot boxes, no pay to win" line (D-045) and gives
 replays a purpose; data-driven buildings avoid per-class code before PB-21 adds classes.
+
+## D-053 Commanders change what Rally does; unlocked by stages, chosen once, saved in the profile, 2026-11-18
+PB-23 (Alican). The same stage plays differently with a different commander.
+- **Rally variants are data** (`RallyVariant` on the battle, built from `CommanderDefinition` assets): Classic
+  (the old Rally, from `BattleRules`, also for a player without a commander), Shield Wall, Arrow Rain, Fireball.
+  The simulator reads the fields; there is no class per variant. New `BattleEventType.RallyStrike` for
+  hits with no attacker.
+- **Deterministic:** no randomness anywhere; "back row" is the back-most spawn row still alive, the Fireball
+  centre is the enemy with most enemies within the radius (ties: lower id). The Rally input log still replays a
+  battle exactly (tested for every variant).
+- **Strikes** take a share of max HP (at least 1) and ignore armor and ward: they must not be wasted on
+  armored units or made useless by bosses with big HP pools; the share stays small (8 % a volley, 18 % a blast).
+- **Unlock and choice:** a commander is unlocked once its unlock stage has a star (nothing extra to save);
+  the profile stores only the chosen commander id (save version 4; older saves choose none). A chosen
+  commander that is no longer in the data falls back to the classic Rally. The results screen says when a
+  stage unlocked one.
+- **Balance:** no variant may be a must-have: each stays within about 8 points of the classic Rally on the
+  Chapter 2 stages (GDD §9 table); the first Fireball was cut after measuring.
+- **Art:** the commander crest is drawn in code (a colour and a shape); the three Meshy commander models of
+  the card are not made yet (credits need Alican's go, D-043). In 3D each variant has its own burst colours
+  and the banner and glow take the variant's colour; a dedicated particle effect per variant is left for the art pass.
+Why: Rally is the signature move; variants give replay value without a loot box (GDD pillar 2).
+
+## D-054 One UI look for every screen: gradient backdrop, rounded shadowed cards, glossy buttons, 2026-11-18
+Alican found the flat grey-box screens plain. All of it is code, no art files (D-025 still holds).
+- `Ui.Backdrop` (deep blue gradient with three soft glows) replaces the flat background on every screen;
+  `Ui.Card` (rounded 9-slice with a drop shadow) is the panel, box, bar and card; `Ui.Button` is rounded with a
+  shadow and a soft gloss; big text (44 and up) has a soft shadow. Sprites are generated once in `UiStyle`.
+- The tab bar got an icon per tab. Long chapters (more than 5 stages) show no name under the map nodes
+  (the stage card has it), their nodes sit on a snake of four rows and shrink on a short map; locked numbers
+  stay readable. Results stats sit on a card.
+- The palette is unchanged, so the contrast tests (D-044) still hold. Screens are checked with
+  `GreyboxScreenshots` (`Logs/Screenshots/`), which now also captures Chapter 2, the Kingdom and the Commanders.
+
+## D-055 The battlefield is a place: painted ground, trees, fence, banners, 2026-11-18
+Alican found the flat green battlefield childish. `BattleScenery` (Views/Battle3D) builds it from code: a
+procedural ground texture (mown grass, a trampled dirt arena with a muddy rim, pebbles, shade towards the
+edges), chalk marks where the armies meet, a fence along both sides, trees, bushes and rocks at the sides and the
+far end, a banner at each corner (blue for the player, olive for the goblins), and a soft sun with shadows.
+Low props only at the player's end, so nothing stands in front of the player's units. No art files; the same
+every battle (fixed random seed). Tuned by looking at `GreyboxScreenshots.CaptureChapterTwoBattle`.
+
+## D-056 - Ambient and procedural motion (2026-11-18)
+
+The battlefield and the unrigged goblin models felt lifeless. Trees and bushes sway and banner cloth flutters
+(`SceneryMotion`, play mode only). Models without an Animator breathe, bob and lean while walking and lunge when
+they strike (`UnitActor.AnimateByCode`). Purely visual, nothing in Logic changes. Rigged animation for the four
+Chapter 2 goblins stays an art item (Meshy rig).
+
+## D-057 - Painted art pass for menus and battlefield (2026-11-18)
+
+Building pictures, chapter map paintings (Meshy text-to-image) and commander portraits plus battle ground
+paintings (ChatGPT image generation, supplied by the team) replace the procedural look where a file exists
+(`ArtSprites`, `Resources/Art/UI`). The battle ground picture replaces the procedural ground, trees and fence;
+nothing else is added. The fort-gate picture is used for stage 2-10. Missing files fall
+back to the procedural look. Tab bar and commander emblems are drawn from simple shapes (`TabIcons`).
+
+## D-058 - Liveliness pass (2026-11-18)
+
+Battle: scenery sways (D-056), a camera shake on enemy deaths and Fireball (strength and length per call), impact
+sparks on every hit, a pop of sparks and two coins when an enemy dies. UI: every button squashes while pressed and
+springs back (`PressFeel`), the victory screen pops its title and stars in and throws confetti (`UiJuice`).
+PlayMode tests run with the master volume at zero (`SilentTests`), so they stay quiet; `Sfx` still counts plays.

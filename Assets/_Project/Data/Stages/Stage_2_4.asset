@@ -43,7 +43,7 @@ MonoBehaviour:
   covers: []
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.2, y: 0.380}
+  mapPosition: {x: 0.8, y: 0.355}
   tutorial:
   - id: 2-4.wolf
     trigger: 3

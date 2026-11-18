@@ -35,5 +35,9 @@ MonoBehaviour:
   battleRules: {fileID: 11400000, guid: d75dad277eea405e96ae59a57e35a46a, type: 2}
   progressionRules: {fileID: 11400000, guid: b8a15d65a3c04103add37c8ddeb749ef, type: 2}
   kingdomRules: {fileID: 11400000, guid: 47166f60cfe65e343f5e3ee96258d0e2, type: 2}
+  commanders:
+  - {fileID: 11400000, guid: 8df9ff878a3228f2ccf9e9b453db77db, type: 2}
+  - {fileID: 11400000, guid: 6558c0a6938cb957ad2dca2a33f61c8c, type: 2}
+  - {fileID: 11400000, guid: 73a96e605559b8627e7cc24d3a11af96, type: 2}
   sounds: {fileID: 11400000, guid: 23d4d94169568ab4bb3d44272d09a18b, type: 2}
   battleModels: {fileID: 11400000, guid: 5e2af3946bd71f14bbfb7b9368fb62f8, type: 2}

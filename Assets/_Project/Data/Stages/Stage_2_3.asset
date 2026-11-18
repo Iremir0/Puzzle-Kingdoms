@@ -46,7 +46,7 @@ MonoBehaviour:
   covers: []
   bossStonesEvery: 0
   bossStonesCount: 0
-  mapPosition: {x: 0.8, y: 0.313}
+  mapPosition: {x: 0.8, y: 0.14}
   tutorial:
   - id: 2-3.shaman
     trigger: 3

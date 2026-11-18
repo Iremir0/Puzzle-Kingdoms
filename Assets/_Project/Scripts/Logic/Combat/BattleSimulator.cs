@@ -28,6 +28,8 @@ namespace PuzzleKingdoms.Logic.Combat
         /// <summary>Player units first (front to back, left to right), then enemies.</summary>
         public readonly List<Combatant> Combatants = new List<Combatant>();
         public readonly Rally Rally;
+        /// <summary>What Rally does in this battle (the commander's variant, PB-23).</summary>
+        public readonly RallyVariant Variant;
         /// <summary>Ticks at which the player activated Rally (before that tick's step).</summary>
         public readonly List<int> InputLog = new List<int>();
         /// <summary>Set when the battle is over.</summary>
@@ -40,11 +42,13 @@ namespace PuzzleKingdoms.Logic.Combat
         private readonly List<BattleEvent> _heals = new List<BattleEvent>();
 
         public BattleSimulator(BattleRules rules, ArmyRules armyRules, Formation player, Formation enemy, int rallyCharges,
-            KingdomBonuses bonuses = null)
+            KingdomBonuses bonuses = null,
+            RallyVariant rallyVariant = null)
         {
             Rules = rules ?? throw new ArgumentNullException(nameof(rules));
             _timeoutTicks = rules.SecondsToTicks(rules.TimeoutSeconds);
-            Rally = new Rally(rallyCharges, rules.SecondsToTicks(rules.RallyDurationSeconds));
+            Variant = rallyVariant ?? RallyVariant.Classic(rules);
+            Rally = new Rally(rallyCharges, rules.SecondsToTicks(Variant.DurationSeconds));
             _bonuses = bonuses ?? KingdomBonuses.None;
             SpawnSide(player, Side.Player, armyRules);
             SpawnSide(enemy, Side.Enemy, armyRules);
@@ -111,6 +115,7 @@ namespace PuzzleKingdoms.Logic.Combat
                     Act(c, dt);
                 }
             }
+            RallyEffects();
             SeparateAllies();
 
             var died = new List<Combatant>();
@@ -199,7 +204,7 @@ namespace PuzzleKingdoms.Logic.Combat
 
             if (inRange && c.Cooldown <= Epsilon)
             {
-                float multiplier = 1f + (buffed ? Rules.RallyDamageBonus : 0f);
+                float multiplier = 1f + (buffed ? Variant.DamageBonus : 0f);
                 _hits.Add(HitOn(c, target, multiplier));
                 if (c.Def.SplashRadius > 0f)
                 {
@@ -220,7 +225,7 @@ namespace PuzzleKingdoms.Logic.Combat
                 c.Position += (target.Position - c.Position) / distance * stepLength;
             }
 
-            float speed = 1f + (buffed ? Rules.RallyAttackSpeedBonus : 0f);
+            float speed = 1f + (buffed ? Variant.AttackSpeedBonus : 0f);
             c.Cooldown -= dt * speed;
             if (c.Cooldown < 0f && !inRange)
             {
@@ -236,9 +241,92 @@ namespace PuzzleKingdoms.Logic.Combat
             {
                 multiplier *= 1f - target.Def.RangedDamageReduction;
             }
+            if (Rally.IsActive && Variant.FrontRowDamageReduction > 0f && target.Side == Side.Player && target.Cell.Y == 0)
+            {
+                multiplier *= 1f - Variant.FrontRowDamageReduction; // Shield Wall
+            }
             int amount = Damage.Compute(attacker.Damage, attacker.DamageType, target, multiplier);
             return new BattleEvent(BattleEventType.Attack, Tick, attacker.Id, target.Id, amount);
         }
+
+        /// <summary>Arrow Rain volleys and the Fireball blast, on the ticks of an active Rally (PB-23).</summary>
+        private void RallyEffects()
+        {
+            if (!Rally.IsActive)
+            {
+                return;
+            }
+            int elapsed = Rally.DurationTicks - Rally.TicksLeft;
+            if (Variant.Kind == RallyKind.ArrowRain && Variant.VolleyCount > 0)
+            {
+                int interval = System.Math.Max(1, Rally.DurationTicks / Variant.VolleyCount);
+                if (elapsed % interval == 0 && elapsed / interval < Variant.VolleyCount)
+                {
+                    int backRow = -1;
+                    foreach (Combatant c in Combatants)
+                    {
+                        if (c.Side == Side.Enemy && c.IsAlive)
+                        {
+                            backRow = System.Math.Max(backRow, c.Cell.Y);
+                        }
+                    }
+                    foreach (Combatant c in Combatants)
+                    {
+                        if (c.Side == Side.Enemy && c.IsAlive && c.Cell.Y == backRow)
+                        {
+                            _hits.Add(Strike(c, Variant.VolleyPercentMaxHp));
+                        }
+                    }
+                }
+            }
+            else if (Variant.Kind == RallyKind.Fireball && elapsed == 0)
+            {
+                Combatant centre = null;
+                int best = 0;
+                foreach (Combatant c in Combatants)
+                {
+                    if (c.Side != Side.Enemy || !c.IsAlive)
+                    {
+                        continue;
+                    }
+                    int near = CountEnemiesNear(c.Position, Variant.BlastRadius);
+                    if (near > best)
+                    {
+                        best = near;
+                        centre = c;
+                    }
+                }
+                if (centre != null)
+                {
+                    foreach (Combatant c in Combatants)
+                    {
+                        if (c.Side == Side.Enemy && c.IsAlive
+                            && Vector2.Distance(centre.Position, c.Position) <= Variant.BlastRadius + Epsilon)
+                        {
+                            _hits.Add(Strike(c, Variant.BlastPercentMaxHp));
+                        }
+                    }
+                }
+            }
+        }
+
+        private int CountEnemiesNear(Vector2 position, float radius)
+        {
+            int count = 0;
+            foreach (Combatant c in Combatants)
+            {
+                if (c.Side == Side.Enemy && c.IsAlive && Vector2.Distance(position, c.Position) <= radius + Epsilon)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        /// <summary>A Rally strike takes a share of max HP, ignoring armor and ward; at least 1.</summary>
+        private BattleEvent Strike(Combatant target, float percentMaxHp) =>
+            new BattleEvent(BattleEventType.RallyStrike, Tick, Combatant.NoTarget, target.Id,
+                System.Math.Max(1, (int)System.Math.Round(target.MaxHp * percentMaxHp, System.MidpointRounding.AwayFromZero)));
 
         /// <summary>True when no living ally of <paramref name="c"/> stands nearer the enemy line.</summary>
         private bool IsFrontMost(Combatant c)

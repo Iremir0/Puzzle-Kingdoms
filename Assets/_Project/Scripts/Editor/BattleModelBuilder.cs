@@ -30,6 +30,11 @@ namespace PuzzleKingdoms.EditorTools
             ("Goblin_Archer", UnitLook.GoblinArcher),
             ("Goblin_Brute", UnitLook.GoblinBrute),
             ("Goblin_Chief", UnitLook.GoblinChief),
+            // Chapter 2 (PB-18, D-051): static models for now, rigging comes with the animations.
+            ("Goblin_Shield", UnitLook.ShieldGoblin),
+            ("Goblin_Shaman", UnitLook.GoblinShaman),
+            ("Goblin_WolfRider", UnitLook.WolfRider),
+            ("Goblin_Bomber", UnitLook.GoblinBomber),
         };
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Flow;
+using PuzzleKingdoms.Logic.Combat;
 using PuzzleKingdoms.Logic.Kingdom;
 using PuzzleKingdoms.Logic.Stages;
 
@@ -22,17 +23,28 @@ namespace PuzzleKingdoms.Balance
             int runs = args.Length > 0 && !args[0].StartsWith("--") ? int.Parse(args[0], CultureInfo.InvariantCulture) : 300;
             // PB-22: "--kingdom N" gives every building level N, to check a stage at the level a player is expected to have.
             int kingdomLevel = 0;
+            string commanderId = "";
             for (int a = 0; a + 1 < args.Length; a++)
             {
                 if (args[a] == "--kingdom")
                 {
                     kingdomLevel = int.Parse(args[a + 1], CultureInfo.InvariantCulture);
                 }
+                else if (args[a] == "--commander")
+                {
+                    commanderId = args[a + 1]; // PB-23: lead the army with this commander (every stage, unlocked or not)
+                }
             }
             string data = FindDataFolder();
             var assets = new AssetReader(data);
-            Console.WriteLine($"Data: {data}   runs per row: {runs}   kingdom level: {kingdomLevel}");
+            Console.WriteLine($"Data: {data}   runs per row: {runs}   kingdom level: {kingdomLevel}   commander: {(commanderId == "" ? "none" : commanderId)}");
             KingdomBonuses bonuses = kingdomLevel > 0 ? assets.KingdomRules.BonusesAtLevel(kingdomLevel) : null;
+            RallyVariant variant = commanderId == "" ? null : assets.Commanders.Find(c => c.Id == commanderId)?.Variant;
+            if (commanderId != "" && variant == null)
+            {
+                Console.WriteLine("Unknown commander: " + commanderId);
+                return 1;
+            }
             Console.WriteLine();
             Console.WriteLine("stage      puzzle  rally  win%  time(s) winTime  recruit deploy rally  surv%  stars 0/1/2/3  goal");
             foreach (StageDef stage in assets.Campaign)
@@ -43,7 +55,7 @@ namespace PuzzleKingdoms.Balance
                     {
                         BalanceStats s = BalanceRunner.Run(seed => new StageRun(stage, assets.Recruitable,
                                 assets.PuzzleRules, assets.ArmyRules, assets.BattleRules, assets.ProgressionRules,
-                                new SeededRandom(seed), bonuses),
+                                new SeededRandom(seed), bonuses, variant),
                             puzzleBot, rallyBot, runs);
                         string goal = stage.Goal.Kind == StageGoalKind.DefeatArmy
                             ? ""

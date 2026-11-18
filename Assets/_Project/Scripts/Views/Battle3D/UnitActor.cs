@@ -41,6 +41,8 @@ namespace PuzzleKingdoms.Views.Battle3D
         private int _attackKind;
         private float _hitCooldown;
         private float _smoothSpeed;
+        private float _lunge;
+        private readonly float _bobPhase = Random.value * 6.28f;
 
         /// <summary>A killed unit lies for this long (animated deaths), then sinks into the ground.</summary>
         private const float LieSeconds = 1.5f;
@@ -136,6 +138,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         {
             if (_animator == null)
             {
+                _lunge = 1f; // unrigged model: a code-driven lunge instead (D-056)
                 return;
             }
             float interval = Mathf.Max(0.2f, Combatant.AttackInterval) / Mathf.Max(0.1f, rallyFactor);
@@ -201,6 +204,10 @@ namespace PuzzleKingdoms.Views.Battle3D
                     _animator.Update(deltaTime); // edit mode (the battle screenshots): nothing else ticks it
                 }
             }
+            else if (_modelHolder != null)
+            {
+                AnimateByCode(deltaTime);
+            }
 
             Vector3 toTarget = lookAt.HasValue ? lookAt.Value - Root.transform.localPosition : Vector3.zero;
             float wanted = toTarget.sqrMagnitude > 0.01f
@@ -224,6 +231,26 @@ namespace PuzzleKingdoms.Views.Battle3D
                 _hpFill.localPosition = new Vector3(-(1f - ratio) * HpBarWidth * 0.5f, 0f, -0.01f);
                 _hpRoot.rotation = cameraRotation;
             }
+        }
+
+        /// <summary>
+        /// Models without a rig still move (D-056): they breathe when standing, bob and lean when walking,
+        /// and lunge forward and squash when they strike. Everything is applied to the model holder.
+        /// </summary>
+        private void AnimateByCode(float deltaTime)
+        {
+            float speed = Vector3.Distance(_previous, _current) * _ticksPerSecond;
+            _smoothSpeed = Mathf.MoveTowards(_smoothSpeed, speed, 8f * deltaTime);
+            _lunge = Mathf.MoveTowards(_lunge, 0f, 3.2f * deltaTime);
+            float walk = Mathf.Clamp01(_smoothSpeed / 1.2f);
+            float t = Time.time + _bobPhase;
+
+            float bob = Mathf.Abs(Mathf.Sin(t * 9f)) * 0.09f * walk;
+            float breathe = Mathf.Sin(t * 2.4f) * 0.025f * (1f - walk);
+            float strike = Mathf.Sin(_lunge * Mathf.PI); // 0 -> 1 -> 0 over the lunge
+            _modelHolder.localPosition = new Vector3(0f, bob, strike * 0.28f);
+            _modelHolder.localScale = new Vector3(1f - strike * 0.08f + breathe * 0.4f, 1f + breathe + strike * 0.06f, 1f + strike * 0.1f);
+            _modelHolder.localRotation = Quaternion.Euler(strike * 10f, Mathf.Sin(t * 9f) * 3f * walk, Mathf.Sin(t * 9f) * 4f * walk);
         }
 
         private void RenderDeath(float deltaTime)
