@@ -43,3 +43,7 @@ TestResults/
 # OS
 .DS_Store
 Thumbs.db
+
+# Art spikes (PB-10): downloaded third-party models stay out of git until chosen
+/Assets/_Project/Sandbox/
+/Assets/_Project/Sandbox.meta

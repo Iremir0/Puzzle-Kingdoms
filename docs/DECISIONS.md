@@ -363,3 +363,15 @@ tutorial" turns all prompts off; Settings → Reset tutorial brings them back
 without touching stars or gold; Reset progress resets both. While a prompt is up
 the screen below takes no touches and the battle clock stops. Prompt ids must be
 unique across the game (checked by `GameDataTests`).
+
+## D-041 Art: KayKit (CC0) for our units, AI-made goblins on the free plan, 2026-11-17
+Art budget is zero (Alican). Player units come from KayKit Adventurers (CC0;
+the itch.io version adds a real Ranger for the Archer). The four goblins are made
+by us with Meshy's free plan (prompts and steps in `docs/ART.md` §6). Free-plan
+models are CC BY 4.0: commercial use is allowed but the game must credit Meshy
+on a Credits screen, and each kept model goes into CREDITS.md first. Why: KayKit
+reads well at phone size and already uses our class colours (PB-10 spike), but
+has no goblins; AI keeps the goblins of the GDD at no cost. Fallback if the AI
+goblins do not match the style: KayKit Skeletons as the enemy (CC0), which means
+renaming the enemies in the GDD, data and tutorial texts. Downloaded models stay
+in the git-ignored `Assets/_Project/Sandbox/` until chosen.

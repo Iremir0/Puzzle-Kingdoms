@@ -39,6 +39,7 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-1](cards/PB-1.md) | Run the game on a real phone | Emir | M0 | M | — | Dev APK builds (38 MB, IL2CPP ARM64, 2026-11-14); still to do: install and play on a phone |
 | [PB-7](cards/PB-7.md) | Puzzle feel: input and animations | Emir | M2 | L | `feature/PB-7-puzzle-feel` | Animations, drag-follow swipe and hint pulse built, tested and in `main`; left: feel check on a phone (PB-1 build) |
 | [PB-13](cards/PB-13.md) | Stage map and tutorial | Alican | M5 | M | `feature/PB-13-map-tutorial` | Map with nodes, stars, arrow and stage card; tutorial prompts for 1-1 to 1-3 from the stage assets, skip + reset (D-040); left: a new person plays 1-1 without help |
+| [PB-10](cards/PB-10.md) | Art direction decision | Alican (prepares), both decide | M3 | M | `feature/PB-10-art-direction` | Draft `docs/ART.md`: constraints, options A/B/C, KayKit spike renders; waiting for budget and the goblins-or-skeletons call |
 
 ## Ready (next up, in priority order)
 
@@ -53,7 +54,6 @@ Not started. Each card is a milestone slice that ends in something playable.
 
 | ID | Card | Milestone | Size | In short |
 |---|---|---|---|---|
-| [PB-10](cards/PB-10.md) | Art direction decision | M3 | M | Constraints, 3 options (CC0 / store packs / freelancer), phone spike, `docs/ART.md` |
 | [PB-11](cards/PB-11.md) | 3D battle scene | M4 | L | Isometric orthographic view on the same simulator, placeholder models, HP bars, projectiles, HUD. Mockup inside |
 | [PB-12](cards/PB-12.md) | Battle life: animations and effects | M4 | L | Mixamo idle/walk/attack/hit/death, Rally ring and aura, hit flash, battle sounds |
 | [PB-15](cards/PB-15.md) | Phone performance and layout | M6 | L | Profile on 2 phones, fix top 3 hotspots, safe area, 4 aspect ratios |
