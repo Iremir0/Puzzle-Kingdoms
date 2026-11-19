@@ -277,6 +277,19 @@ namespace PuzzleKingdoms.Tests.Data
             Assert.That(depth / runs, Is.InRange(1.0, rules.Steps - 0.3), "average depth");
         }
 
+        /// <summary>PB-30: the monetization numbers are sane (small rewards, a daily limit).</summary>
+        [Test]
+        public void MonetizationRulesAreSmallAndLimited()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            Assert.IsNotNull(content.Monetization, "GameContent has the monetization numbers");
+            Logic.Progression.MonetizationRules rules = content.Monetization.Rules();
+            Assert.That(rules.ExtraMoves, Is.InRange(1, 10));
+            Assert.That(rules.ExtraRally, Is.InRange(1, 3));
+            Assert.That(rules.GoldAdsPerDay, Is.InRange(1, 10));
+            Assert.LessOrEqual(rules.BonusGold, 300, "an ad is a small gift, not the main income");
+        }
+
         /// <summary>PB-22: the Kingdom asset is valid: unique ids, buildings that exist in the game, small steps, rising costs.</summary>
         [Test]
         public void KingdomRulesAreValid()

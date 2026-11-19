@@ -17,7 +17,7 @@ namespace PuzzleKingdoms.Views.Menus
 
     /// <summary>
     /// Bottom tab bar: Map · Kingdom · Commanders · Quests · Shop. The current tab is blue; tabs whose card has not
-    /// landed yet (Commanders: PB-23, Shop: PB-30) are greyed and do nothing.
+    /// landed yet stay greyed and do nothing.
     /// </summary>
     public static class TabBar
     {
@@ -33,7 +33,7 @@ namespace PuzzleKingdoms.Views.Menus
             (MainTab.Kingdom, "Kingdom", true),
             (MainTab.Commanders, "Commanders", true),
             (MainTab.Quests, "Quests", true),
-            (MainTab.Shop, "Shop", false),
+            (MainTab.Shop, "Shop", true),
         };
 
 
