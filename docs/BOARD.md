@@ -80,7 +80,7 @@ private until shared).
 | [PB-31](cards/PB-31.md) | Cloud save, Google Play Games | 3 | M8 | M | Save follows the player to a new phone, conflict choice |
 | [PB-33](cards/PB-33.md) | Real music and sound | 3 | M8 | M | Music per screen, 15 effects replaced |
 | [PB-27](cards/PB-27.md) | Async PvP: defence armies | 4 | M9 | L | Save a defence, others attack it; server re-runs battles to verify |
-| [PB-28](cards/PB-28.md) | Battle replays and sharing | 4 | M9 | M | Replays from inputs, timeline, share a clip. Built on `feature/PB-28-replays` (D-063); left: sharing a clip (plugin choice), a look on a phone |
+| [PB-28](cards/PB-28.md) | Battle replays and sharing | 4 | M9 | M | Replays from inputs, timeline, share a clip. Merged into `main` 2026-11-19 (D-063); left: sharing a clip (plugin choice), a look on a phone |
 
 ---
 
