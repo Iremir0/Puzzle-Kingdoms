@@ -46,10 +46,16 @@ namespace PuzzleKingdoms.Logic.Progression
             public Flow.ExpeditionSave expedition = new Flow.ExpeditionSave();
             public int bestExpeditionDepth;
             public int expeditionsWon;
+            /// <summary>Version 8 (D-063): saved battle replays, newest first, side by side.</summary>
+            public List<string> replayTitles = new List<string>();
+            public List<string> replayTexts = new List<string>();
+            public List<bool> replayVictory = new List<bool>();
+            public List<int> replayTicks = new List<int>();
+            public List<bool> replayStarred = new List<bool>();
         }
 
-        /// <summary>7 = expedition (D-062), 6 = daily challenge results (D-061), 5 = quests (D-060), 4 = chosen commander (D-053), 3 = building levels (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
-        public const int CurrentVersion = 7;
+        /// <summary>8 = battle replays (D-063), 7 = expedition (D-062), 6 = daily challenge results (D-061), 5 = quests (D-060), 4 = chosen commander (D-053), 3 = building levels (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
+        public const int CurrentVersion = 8;
 
         public event Action Changed;
 
@@ -61,6 +67,9 @@ namespace PuzzleKingdoms.Logic.Progression
 
         /// <summary>Daily quests, achievements and star chests (PB-24).</summary>
         public Quests.QuestLog Quests { get; private set; } = new Quests.QuestLog();
+
+        /// <summary>The saved battle replays (PB-28).</summary>
+        public ReplayLog Replays { get; private set; } = new ReplayLog();
 
         /// <summary>The expedition in progress (PB-26), or null.</summary>
         public Flow.ExpeditionSave ActiveExpedition { get; private set; }
@@ -266,6 +275,14 @@ namespace PuzzleKingdoms.Logic.Progression
                 achievementClaimed = new List<bool>(Quests.AchievementClaimed),
                 chestsClaimed = Quests.ChestsClaimed,
             };
+            foreach (ReplayEntry entry in Replays.Entries)
+            {
+                snapshot.replayTitles.Add(entry.Title);
+                snapshot.replayTexts.Add(entry.Text);
+                snapshot.replayVictory.Add(entry.Victory);
+                snapshot.replayTicks.Add(entry.Ticks);
+                snapshot.replayStarred.Add(entry.Starred);
+            }
             snapshot.expeditionActive = ActiveExpedition != null;
             snapshot.expedition = ActiveExpedition ?? new Flow.ExpeditionSave();
             snapshot.bestExpeditionDepth = BestExpeditionDepth;
@@ -336,6 +353,34 @@ namespace PuzzleKingdoms.Logic.Progression
             return log;
         }
 
+        /// <summary>The replays of a snapshot; lists that do not line up are cut to the shortest.</summary>
+        private static ReplayLog ReplaysFrom(Snapshot snapshot)
+        {
+            var log = new ReplayLog();
+            if (snapshot.replayTexts == null || snapshot.replayTitles == null || snapshot.replayVictory == null
+                || snapshot.replayTicks == null || snapshot.replayStarred == null)
+            {
+                return log;
+            }
+            int count = Math.Min(Math.Min(snapshot.replayTexts.Count, snapshot.replayTitles.Count),
+                Math.Min(snapshot.replayVictory.Count, Math.Min(snapshot.replayTicks.Count, snapshot.replayStarred.Count)));
+            for (int i = 0; i < count; i++)
+            {
+                if (!string.IsNullOrEmpty(snapshot.replayTexts[i]))
+                {
+                    log.Load(new ReplayEntry
+                    {
+                        Title = snapshot.replayTitles[i] ?? "",
+                        Text = snapshot.replayTexts[i],
+                        Victory = snapshot.replayVictory[i],
+                        Ticks = Math.Max(0, snapshot.replayTicks[i]),
+                        Starred = snapshot.replayStarred[i],
+                    });
+                }
+            }
+            return log;
+        }
+
         public static PlayerProfile FromSnapshot(Snapshot snapshot)
         {
             var profile = new PlayerProfile();
@@ -367,6 +412,7 @@ namespace PuzzleKingdoms.Logic.Progression
             profile.CommanderId = snapshot.commanderId ?? "";
             profile.Quests = QuestLogFrom(snapshot);
             profile.Daily = DailyLogFrom(snapshot);
+            profile.Replays = ReplaysFrom(snapshot);
             profile.ActiveExpedition = snapshot.expeditionActive ? snapshot.expedition : null;
             profile.BestExpeditionDepth = Math.Max(0, snapshot.bestExpeditionDepth);
             profile.ExpeditionsWon = Math.Max(0, snapshot.expeditionsWon);
