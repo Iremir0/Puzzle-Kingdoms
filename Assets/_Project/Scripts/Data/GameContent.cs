@@ -28,6 +28,8 @@ namespace PuzzleKingdoms.Data
         [SerializeField] private KingdomRulesAsset kingdomRules;
         [Tooltip("Daily quests, achievements and the star chest (PB-24).")]
         [SerializeField] private QuestRulesAsset quests;
+        [Tooltip("What the daily challenge is built from (PB-25).")]
+        [SerializeField] private DailyChallengeAsset dailyChallenge;
         [Tooltip("The commanders the player can earn (PB-23); the classic Rally is what a player without one has.")]
         [SerializeField] private List<CommanderDefinition> commanders = new List<CommanderDefinition>();
         [SerializeField] private SoundBank sounds;
@@ -48,6 +50,8 @@ namespace PuzzleKingdoms.Data
         public KingdomRulesAsset KingdomRules => kingdomRules;
         /// <summary>The quest pool (PB-24); may be null (no Quests tab content).</summary>
         public QuestRulesAsset Quests => quests;
+        /// <summary>The daily challenge setup (PB-25); may be null (no daily challenge).</summary>
+        public DailyChallengeAsset DailyChallenge => dailyChallenge;
         public IReadOnlyList<CommanderDefinition> Commanders => commanders;
 
         /// <summary>The logic commanders, in asset order.</summary>
@@ -69,6 +73,17 @@ namespace PuzzleKingdoms.Data
             StageTuning.Apply(def, config);
             // PB-21: a stage may choose its own class set (at most 4, in gem order); otherwise the default three.
             List<UnitDef> units = (stage.Units.Count > 0 ? stage.Units : recruitableUnits).Select(u => u.Def).ToList();
+            return CreateRun(def, units, random, bonuses, rallyVariant);
+        }
+
+        /// <summary>Starts an attempt at a stage built in code, such as the day's challenge (PB-25): the default class set.</summary>
+        public StageRun CreateRun(StageDef def, IRandom random = null, Logic.Kingdom.KingdomBonuses bonuses = null,
+            Logic.Combat.RallyVariant rallyVariant = null) =>
+            CreateRun(def, recruitableUnits.Select(u => u.Def).ToList(), random, bonuses, rallyVariant);
+
+        private StageRun CreateRun(StageDef def, List<UnitDef> units, IRandom random, Logic.Kingdom.KingdomBonuses bonuses,
+            Logic.Combat.RallyVariant rallyVariant)
+        {
             return new StageRun(
                 def,
                 units,

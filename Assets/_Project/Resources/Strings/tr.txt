@@ -247,3 +247,17 @@ Fight with a Tier 3 unit {0} times	3. kademe birimle {0} kez savaş
 Defender	Savunmacı
 Support	Destek
 Class unlocked: {0}	Sınıf açıldı: {0}
+Daily Challenge	Günlük Meydan Okuma
+Today's enemy	Bugünün düşmanı
+{0} moves	{0} hamle
+Goal: defeat the army	Hedef: orduyu yen
+Reward on a win: {0} gold	Zaferde ödül: {0} altın
+One attempt a day. Everyone plays the same challenge.	Günde bir deneme. Herkes aynı meydan okumayı oynar.
+Won	Kazandın
+Lost	Kaybettin
+{0}% of the army left	Ordunun %{0}'i kaldı
+{0} s	{0} sn
+Come back tomorrow for a new challenge.	Yeni meydan okuma için yarın tekrar gel.
+Last 7 days	Son 7 gün
+Best: {0}%	En iyi: %{0}
+Back	Geri

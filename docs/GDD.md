@@ -264,7 +264,7 @@ without making the boss trivial.
 
 1. Permanent class levels bought with gold (small % per level).
 2. ~~New classes as chapter rewards: Defender (blue shield), Support (pink cross)~~ done in PB-21 (D-059): a stage picks up to 4 classes plus the Banner gem.
-3. Daily Challenge: fixed seed, same board and enemy for everyone.
+3. Daily Challenge: fixed seed, same board and enemy for everyone (built, see below).
 4. Expedition mode: 3â5 battles in a row with a persistent army (roguelite).
 5. Commander heroes: one special slot with a unique Rally variant.
 
@@ -273,6 +273,11 @@ at midnight local time), one-time achievements, and a star chest for every 30 st
 stages). A quest counts what a finished attempt did: stages won, Rally charges used, units recruited, merges, gold
 earned, battles with a Tier 3 unit. Rewards are gold, paid when the player taps Claim; a red number on the tab
 shows how many rewards wait. The pool and the numbers are in `Data/Quests.asset`.
+
+**Daily Challenge (PB-25, D-061).** A gold button above the stage map opens today's challenge: an enemy army, moves,
+stones and sometimes a stone goal, built from the date so everyone gets the same one. One attempt a day, with no
+commander and no buildings. Better results win more HP left, then speed. The screen shows today's result and the last
+seven days. Setup and numbers: `Data/DailyChallenge.asset`. An online ranking comes after the backend decision.
 
 These are now board cards (PB-22, PB-21, PB-25, PB-26, PB-23) inside the wider growth plan
 of D-045 (16 cards, PB-18 to PB-33, in four waves).

@@ -72,9 +72,9 @@ private until shared).
 
 | ID | Card | Wave | Milestone | Size | In short |
 |---|---|---|---|---|---|
-| [PB-21](cards/PB-21.md) | New classes: Defender and Support | 2 | M7 | L | Tank and healer, their gems, up to 5 gem types per stage |
-| [PB-24](cards/PB-24.md) | Daily quests, achievements, star chests | 3 | M8 | M | 3-4 goals a day, a chest every 30 stars |
-| [PB-25](cards/PB-25.md) | Daily Challenge | 3 | M8 | M | Same seed for everyone, one try a day, local first, online after the backend decision |
+| [PB-21](cards/PB-21.md) | New classes: Defender and Support | 2 | M7 | L | Tank and healer, their gems, up to 5 gem types per stage. Merged into `main` 2026-11-19 (D-059); left: Meshy models for Defender and Support |
+| [PB-24](cards/PB-24.md) | Daily quests, achievements, star chests | 3 | M8 | M | 3-4 goals a day, a chest every 30 stars. Merged into `main` 2026-11-19 (D-060) |
+| [PB-25](cards/PB-25.md) | Daily Challenge | 3 | M8 | M | Same seed for everyone, one try a day, local first, online after the backend decision. Local part merged into `main` 2026-11-19 (D-061); left: online ranking |
 | [PB-26](cards/PB-26.md) | Expedition mode (roguelite) | 3 | M8 | L | 5 battles in a row, army and wounds carry over, reward picks |
 | [PB-30](cards/PB-30.md) | Economy and revenue | 3 | M8 | L | Crowns, rewarded ads, ad-free pack, season pass; power never sold |
 | [PB-31](cards/PB-31.md) | Cloud save, Google Play Games | 3 | M8 | M | Save follows the player to a new phone, conflict choice |
