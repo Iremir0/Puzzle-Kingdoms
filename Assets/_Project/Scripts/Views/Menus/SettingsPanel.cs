@@ -25,19 +25,37 @@ namespace PuzzleKingdoms.Views.Menus
         private Button _turkish;
         private GameObject _confirm;
 
+        /// <summary>The cloud save row of the settings (PB-31): whether a cloud exists here, who is signed in, what the button does.</summary>
+        public sealed class CloudInfo
+        {
+            public bool Available;
+            public bool SignedIn;
+            public string Account = "";
+            public Action Toggle;
+        }
+
+        private Button _cloudButton;
+
+        /// <summary>Updates the cloud button after signing in or out.</summary>
+        public void SetCloud(bool signedIn, string account) =>
+            Ui.SetCaption(_cloudButton, CloudCaption(signedIn, account));
+
+        private static string CloudCaption(bool signedIn, string account) =>
+            signedIn ? (string.IsNullOrEmpty(account) ? Loc.T("Signed in") : account) + " · " + Loc.T("Sign out") : Loc.T("Sign in");
+
         public static SettingsPanel Create(Transform parent, GameSettings settings, string version,
             Action<GameSettings> onChanged, Action onResetProgress, Action onResetTutorial = null, Action onPrivacy = null,
-            Action onReplays = null)
+            Action onReplays = null, CloudInfo cloud = null)
         {
             // A dimmed full-screen layer that swallows taps meant for the screen below.
             Image shade = Ui.Box(parent, "SettingsPanel", new Color(0f, 0f, 0f, 0.6f));
             var panel = shade.gameObject.AddComponent<SettingsPanel>();
-            panel.Build(settings.Copy(), version, onChanged, onResetProgress, onResetTutorial, onPrivacy, onReplays);
+            panel.Build(settings.Copy(), version, onChanged, onResetProgress, onResetTutorial, onPrivacy, onReplays, cloud);
             return panel;
         }
 
         private void Build(GameSettings settings, string version, Action<GameSettings> onChanged, Action onResetProgress,
-            Action onResetTutorial, Action onPrivacy, Action onReplays)
+            Action onResetTutorial, Action onPrivacy, Action onReplays, CloudInfo cloud)
         {
             _settings = settings;
             _onChanged = onChanged;
@@ -53,17 +71,17 @@ namespace PuzzleKingdoms.Views.Menus
 
             Row(box, Loc.T("Sound effects"), 0.76f);
             _sound = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleSound, 0.66f, 0.74f, 0.94f, 0.83f, 40), "Sound Toggle");
-            Row(box, Loc.T("Music"), 0.645f);
-            _music = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleMusic, 0.66f, 0.625f, 0.94f, 0.715f, 40), "Music Toggle");
-            Row(box, Loc.T("Battle speed"), 0.53f);
-            _speed1 = Name(Ui.Button(box, "1x", Ui.ButtonStyle.Secondary, () => SetSpeed(1), 0.66f, 0.51f, 0.79f, 0.6f, 40), "Speed 1x");
-            _speed2 = Name(Ui.Button(box, "2x", Ui.ButtonStyle.Secondary, () => SetSpeed(2), 0.81f, 0.51f, 0.94f, 0.6f, 40), "Speed 2x");
+            Row(box, Loc.T("Music"), 0.66f);
+            _music = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleMusic, 0.66f, 0.64f, 0.94f, 0.725f, 40), "Music Toggle");
+            Row(box, Loc.T("Battle speed"), 0.56f);
+            _speed1 = Name(Ui.Button(box, "1x", Ui.ButtonStyle.Secondary, () => SetSpeed(1), 0.66f, 0.54f, 0.79f, 0.625f, 40), "Speed 1x");
+            _speed2 = Name(Ui.Button(box, "2x", Ui.ButtonStyle.Secondary, () => SetSpeed(2), 0.81f, 0.54f, 0.94f, 0.625f, 40), "Speed 2x");
             // Each language button shows the language's own name, whatever language is on (PB-32).
-            Row(box, Loc.T("Language"), 0.415f);
+            Row(box, Loc.T("Language"), 0.46f);
             _english = Name(Ui.Button(box, Languages.NativeName(Language.English), Ui.ButtonStyle.Secondary,
-                () => SetLanguage(Language.English), 0.5f, 0.395f, 0.71f, 0.485f, 40), "Language en");
+                () => SetLanguage(Language.English), 0.5f, 0.44f, 0.71f, 0.525f, 40), "Language en");
             _turkish = Name(Ui.Button(box, Languages.NativeName(Language.Turkish), Ui.ButtonStyle.Secondary,
-                () => SetLanguage(Language.Turkish), 0.73f, 0.395f, 0.94f, 0.485f, 40), "Language tr");
+                () => SetLanguage(Language.Turkish), 0.73f, 0.44f, 0.94f, 0.525f, 40), "Language tr");
 
             // Reset tutorial and Data and privacy (PB-29) share a row; either takes the whole row alone.
             float split = onResetTutorial != null && onPrivacy != null ? 0.49f : 0.94f;
@@ -75,14 +93,20 @@ namespace PuzzleKingdoms.Views.Menus
                     onResetTutorial();
                     Ui.SetCaption(resetTutorial, "Tips will show again");
                     resetTutorial.interactable = false;
-                }, 0.06f, 0.255f, split, 0.345f, 40), "Reset Tutorial");
+                }, 0.06f, 0.34f, split, 0.425f, 40), "Reset Tutorial");
             }
             if (onPrivacy != null)
             {
                 Name(Ui.Button(box, "Data and privacy", Ui.ButtonStyle.Secondary, onPrivacy,
-                    onResetTutorial != null ? 0.51f : 0.06f, 0.255f, 0.94f, 0.345f, 40), "Privacy");
+                    onResetTutorial != null ? 0.51f : 0.06f, 0.34f, 0.94f, 0.425f, 40), "Privacy");
             }
-            Name(Ui.Button(box, "Reset progress", Ui.ButtonStyle.Danger, AskReset, 0.06f, 0.125f, 0.94f, 0.225f, 40), "Reset Progress");
+            if (cloud != null && cloud.Available)
+            {
+                Row(box, Loc.T("Cloud save"), 0.26f);
+                _cloudButton = Name(Ui.Button(box, CloudCaption(cloud.SignedIn, cloud.Account), Ui.ButtonStyle.Secondary,
+                    cloud.Toggle, 0.5f, 0.24f, 0.94f, 0.325f, 30), "Cloud Button");
+            }
+            Name(Ui.Button(box, "Reset progress", Ui.ButtonStyle.Danger, AskReset, 0.06f, 0.14f, 0.94f, 0.225f, 40), "Reset Progress");
             Ui.Label(box, Loc.F("Version {0}", version), 30, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.02f, 1f, 0.09f);
 
             // Second step of the reset: a box over the settings with Yes / Cancel.

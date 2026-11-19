@@ -90,7 +90,7 @@ namespace PuzzleKingdoms.Flow
             {
                 if (apply())
                 {
-                    _store.Save(Profile);
+                    SaveProfile();
                     granted?.Invoke();
                 }
             }
@@ -172,9 +172,140 @@ namespace PuzzleKingdoms.Flow
             if (owned)
             {
                 Profile.SetSupporter(true);
-                _store.Save(Profile);
+                SaveProfile();
             }
             ShowShop();
+        }
+
+        // ---- Cloud save (PB-31, D-065) ----
+
+        private ICloudSave _cloud;
+        private bool _cloudDirty;
+        private float _lastCloudWrite = -1000f;
+        private const float CloudWriteGapSeconds = 20f;
+
+        /// <summary>Lets tests (or the Play Games plugin) replace the cloud. Releases ship <see cref="NoCloud"/> until then.</summary>
+        public void UseCloud(ICloudSave cloud) => _cloud = cloud;
+
+        public ICloudSave Cloud => _cloud ??= (Application.isEditor || Debug.isDebugBuild ? new TestCloud() : (ICloudSave)new NoCloud());
+
+        /// <summary>The conflict question while it is open (tests answer it).</summary>
+        public CloudConflictPanel ConflictPanel { get; private set; }
+
+        /// <summary>Writes the profile to disk now, and to the cloud soon.</summary>
+        private void SaveProfile()
+        {
+            _store.Save(Profile);
+            _cloudDirty = true;
+        }
+
+        private void Update()
+        {
+            if (_cloudDirty && Time.realtimeSinceStartup - _lastCloudWrite >= CloudWriteGapSeconds)
+            {
+                FlushCloud();
+            }
+        }
+
+        private void OnApplicationPause(bool paused)
+        {
+            if (paused)
+            {
+                FlushCloud();
+            }
+        }
+
+        /// <summary>Uploads the profile if it changed since the last upload (no-op when signed out).</summary>
+        public void FlushCloud()
+        {
+            if (!_cloudDirty || !Cloud.IsSignedIn)
+            {
+                return;
+            }
+            _cloudDirty = false;
+            _lastCloudWrite = Time.realtimeSinceStartup;
+            Cloud.Write(new CloudData { Json = JsonUtility.ToJson(Profile.ToSnapshot()), SavedUtc = System.DateTime.UtcNow }, ok => _cloudDirty |= !ok);
+        }
+
+        private static PlayerProfile.Snapshot ParseSnapshot(string json)
+        {
+            try
+            {
+                return string.IsNullOrEmpty(json) ? null : JsonUtility.FromJson<PlayerProfile.Snapshot>(json);
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Compares this phone's save with the cloud's and acts: keep and upload, take the cloud's, or ask when each
+        /// has progress the other lacks. Called after signing in and when the game starts signed in.
+        /// </summary>
+        public void SyncCloud()
+        {
+            if (!Cloud.IsSignedIn)
+            {
+                return;
+            }
+            Cloud.Read(data =>
+            {
+                PlayerProfile.Snapshot cloud = data != null ? ParseSnapshot(data.Json) : null;
+                System.DateTime localUtc = System.IO.File.Exists(_store.Path) ? System.IO.File.GetLastWriteTimeUtc(_store.Path) : System.DateTime.MinValue;
+                SaveChoice choice = SaveConflict.Resolve(Profile.ToSnapshot(), localUtc, cloud, data != null ? data.SavedUtc : System.DateTime.MinValue);
+                switch (choice)
+                {
+                    case SaveChoice.UseCloud:
+                        TakeCloudSave(cloud);
+                        break;
+                    case SaveChoice.Ask:
+                        ConflictPanel = CloudConflictPanel.Create(_screen.transform, Profile.ToSnapshot(), cloud,
+                            KeepThisPhone, () => TakeCloudSave(cloud));
+                        break;
+                    case SaveChoice.KeepLocal:
+                        _cloudDirty = true;
+                        FlushCloud();
+                        break;
+                }
+            });
+        }
+
+        private void KeepThisPhone()
+        {
+            ConflictPanel = null;
+            _cloudDirty = true;
+            FlushCloud();
+        }
+
+        private void TakeCloudSave(PlayerProfile.Snapshot cloud)
+        {
+            ConflictPanel = null;
+            Profile = PlayerProfile.FromSnapshot(cloud);
+            _quests = null;
+            _expedition = null;
+            _store.Save(Profile);
+            _cloudDirty = false;
+            ShowStageSelect();
+        }
+
+        private void ToggleCloudSignIn(SettingsPanel panel)
+        {
+            if (Cloud.IsSignedIn)
+            {
+                FlushCloud();
+                Cloud.SignOut();
+                panel.SetCloud(false, "");
+                return;
+            }
+            Cloud.SignIn(ok =>
+            {
+                panel.SetCloud(ok, Cloud.AccountName);
+                if (ok)
+                {
+                    SyncCloud();
+                }
+            });
         }
 
         // ---- Battle replays (PB-28, D-063) ----
@@ -186,7 +317,7 @@ namespace PuzzleKingdoms.Flow
             if (replay != null)
             {
                 Profile.Replays.Add(title, replay.ToText(), replay.Victory, replay.Ticks);
-                _store.Save(Profile);
+                SaveProfile();
             }
         }
 
@@ -205,7 +336,7 @@ namespace PuzzleKingdoms.Flow
                 entry =>
                 {
                     Profile.Replays.ToggleStar(entry);
-                    _store.Save(Profile);
+                    SaveProfile();
                     ShowReplays();
                 },
                 ShowStageSelect, content.BattleRules.Rules.TicksPerSecond));
@@ -267,7 +398,7 @@ namespace PuzzleKingdoms.Flow
             {
                 _expedition = new Expedition(rules, (ulong)System.DateTime.UtcNow.Ticks);
                 Profile.SaveExpedition(_expedition.ToSave());
-                _store.Save(Profile);
+                SaveProfile();
             }
             Show(ExpeditionScreen.Create(_screenRoot, _expedition, Profile, new ExpeditionScreen.Actions
             {
@@ -284,7 +415,7 @@ namespace PuzzleKingdoms.Flow
             if (_expedition != null && _expedition.Pick(index))
             {
                 Profile.SaveExpedition(_expedition.ToSave());
-                _store.Save(Profile);
+                SaveProfile();
                 ShowExpedition();
             }
         }
@@ -295,7 +426,7 @@ namespace PuzzleKingdoms.Flow
             {
                 bool won = _expedition.Phase == ExpeditionPhase.Won;
                 Profile.EndExpedition(_expedition.Step, won, _expedition.GoldEarned);
-                _store.Save(Profile);
+                SaveProfile();
                 _expedition = null;
             }
             ShowStageSelect();
@@ -334,7 +465,7 @@ namespace PuzzleKingdoms.Flow
             _expedition.Finish(Run);
             _expeditionBattle = false;
             Profile.SaveExpedition(_expedition.ToSave());
-            _store.Save(Profile);
+            SaveProfile();
             ShowExpedition();
         }
 
@@ -401,7 +532,7 @@ namespace PuzzleKingdoms.Flow
         {
             if (Quests.Refresh(Today))
             {
-                _store.Save(Profile);
+                SaveProfile();
             }
             TabBar.QuestBadge = Quests.ClaimableCount(Profile.TotalStars);
         }
@@ -480,6 +611,7 @@ namespace PuzzleKingdoms.Flow
             Ui.EnsureEventSystem();
             _screenRoot = Ui.CreateCanvas("Canvas").transform;
             ShowStageSelect();
+            SyncCloud();
 #if UNITY_EDITOR
             // Stage Editor → Play in editor (PB-19): go straight into that stage, once.
             string playPath = UnityEditor.SessionState.GetString(PlayStageKey, "");
@@ -500,6 +632,7 @@ namespace PuzzleKingdoms.Flow
 
         private void OnDestroy()
         {
+            FlushCloud();
             Sfx.Changed -= OnSoundSwitched;
             _errors?.Dispose();
         }
@@ -553,13 +686,13 @@ namespace PuzzleKingdoms.Flow
 
         private void OnQuestClaimed()
         {
-            _store.Save(Profile);
+            SaveProfile();
             TabBar.QuestBadge = Quests.ClaimableCount(Profile.TotalStars);
         }
 
         private void OnCommanderChosen(string commanderId)
         {
-            _store.Save(Profile);
+            SaveProfile();
         }
 
         private void OnTab(MainTab tab)
@@ -591,21 +724,30 @@ namespace PuzzleKingdoms.Flow
         {
             Quests.Refresh(Today);
             Quests.Record(attempt.ToQuestEvent());
-            _store.Save(Profile);
+            SaveProfile();
             TabBar.QuestBadge = Quests.ClaimableCount(Profile.TotalStars);
         }
 
         private void OnBuildingUpgraded(string buildingId)
         {
-            _store.Save(Profile);
+            SaveProfile();
         }
 
         /// <summary>Opens the settings over the stage map (PB-14).</summary>
         public SettingsPanel OpenSettings()
         {
             string version = Application.version + (Debug.isDebugBuild ? " (dev)" : "");
-            return SettingsPanel.Create(_screen.transform, Settings, version, ApplySettings, ResetProgress, ResetTutorial,
-                () => AskConsent(), ShowReplays);
+            SettingsPanel panel = null;
+            var cloud = new SettingsPanel.CloudInfo
+            {
+                Available = Cloud.IsAvailable,
+                SignedIn = Cloud.IsSignedIn,
+                Account = Cloud.AccountName,
+                Toggle = () => ToggleCloudSignIn(panel),
+            };
+            panel = SettingsPanel.Create(_screen.transform, Settings, version, ApplySettings, ResetProgress, ResetTutorial,
+                () => AskConsent(), ShowReplays, cloud);
+            return panel;
         }
 
         /// <summary>Shows the consent question (first launch, a new consent text, or Settings → Data and privacy).</summary>
@@ -634,7 +776,7 @@ namespace PuzzleKingdoms.Flow
         public void ResetTutorial()
         {
             Profile.ResetTutorial();
-            _store.Save(Profile);
+            SaveProfile();
         }
 
         // ---- Tutorial (PB-13, D-040) ----
@@ -690,14 +832,14 @@ namespace PuzzleKingdoms.Flow
         private void OnStepShown(TutorialStep step)
         {
             Profile.MarkStepSeen(step.Id);
-            _store.Save(Profile);
+            SaveProfile();
         }
 
         private void OnTutorialSkipped()
         {
             _analytics.Send(GameEvents.TutorialSkipped(Tutorial != null && Tutorial.Current != null ? Tutorial.Current.Id : ""));
             Profile.SkipTutorial();
-            _store.Save(Profile);
+            SaveProfile();
         }
 
         private void OnTutorialClosed()
@@ -772,7 +914,10 @@ namespace PuzzleKingdoms.Flow
         public void ResetProgress()
         {
             Profile = new PlayerProfile();
-            _store.Save(Profile);
+            _quests = null;
+            _expedition = null;
+            SaveProfile();
+            FlushCloud(); // an empty profile must not be brought back by the cloud copy
             ShowStageSelect();
         }
 
@@ -860,7 +1005,7 @@ namespace PuzzleKingdoms.Flow
             {
                 Profile.Apply(Run.Stage.Id, reward);
             }
-            _store.Save(Profile);
+            SaveProfile();
             string unlocked = string.Join(", ", allCommanders.Where(c => lockedBefore.Contains(c.Id) && Profile.IsUnlocked(c)).Select(c => Loc.T(c.DisplayName)));
             // PB-21: a class that unlocks with this first win (Defender, Support).
             string classesUnlocked = firstWin

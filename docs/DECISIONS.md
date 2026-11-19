@@ -719,3 +719,16 @@ is to add them in their own card if this part earns its place. Code: `IAds` and 
 in release builds until the SDKs are added, `TestAds`/`TestBilling` in the editor and dev builds), rewards in
 `StageRun`/`AdLedger`, numbers in `Data/Monetization.asset`, save version 9. The real ad SDK and Google Play Billing, the
 store products and a consent check (PB-29) before personalised ads are the owner's next steps.
+
+## D-065 - Cloud save: conflict rule and the interface (2026-11-19)
+
+Sign-in is optional; playing without it works as before. When this phone and the cloud both hold a save,
+`SaveConflict.Resolve` decides: progress first, then time. Progress is what cannot be bought back (best stars per stage,
+building levels, the expedition record, achievements and chests claimed, the commander, the Supporter pack, daily results);
+gold is not. A save that is ahead somewhere and behind nowhere wins. Saves with the same progress go by the time they were
+written. Saves that are each ahead somewhere make the player choose in a dialog that shows stars, stages and gold of both;
+nothing changes until they pick. A cloud save from a newer game version is left alone. The game uploads after saves (at most
+every 20 seconds, and when it is paused or closed) and when the player resets progress, so a reset is not undone by the old
+cloud copy. The cloud is behind `ICloudSave`; releases ship `NoCloud` (the Settings row stays hidden) until the Google Play
+Games plugin and a Play Console app exist (owner), the editor and dev builds use `TestCloud`. Settings gained a Cloud save
+row; its rows were re-spaced to fit.

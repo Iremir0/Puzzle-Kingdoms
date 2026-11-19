@@ -301,6 +301,10 @@ Supporter pack: every ad reward without watching an ad. No ad and no purchase ma
 `Data/Monetization.asset`.
 ## 11. Stages (MVP)
 
+**Cloud save (PB-31, D-065).** Settings → Cloud save signs in (optional). The save then follows the player to a new
+phone. If both saves have progress the other lacks, the game asks which to keep; otherwise the one that is ahead, or the
+newer one, wins on its own.
+
 | Stage | Name | Enemies | Lesson |
 |---|---|---|---|
 | 1-1 | Border Watch | 6 Grunts | match, recruit, place |
