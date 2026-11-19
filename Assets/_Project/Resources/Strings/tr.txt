@@ -244,3 +244,6 @@ Recruit {0} units	{0} birim topla
 Merge units {0} times	{0} kez birim birleştir
 Earn {0} gold	{0} altın kazan
 Fight with a Tier 3 unit {0} times	3. kademe birimle {0} kez savaş
+Defender	Savunmacı
+Support	Destek
+Class unlocked: {0}	Sınıf açıldı: {0}

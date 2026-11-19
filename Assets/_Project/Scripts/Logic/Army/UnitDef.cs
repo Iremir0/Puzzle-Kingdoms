@@ -48,6 +48,10 @@ namespace PuzzleKingdoms.Logic.Army
         public float SplashRadius;
         /// <summary>Splash damage as a fraction of the main hit.</summary>
         public float SplashFraction = 0.5f;
+        /// <summary>
+        /// Enemies of this unit within this many cells target it before anyone else (taunt). 0 = no taunt. Defender (PB-21).
+        /// </summary>
+        public float TauntRadius;
 
         /// <summary>Attack range above which an attacker counts as ranged.</summary>
         public const float RangedThreshold = 1.5f;
@@ -75,6 +79,7 @@ namespace PuzzleKingdoms.Logic.Army
             TargetsBackRow = TargetsBackRow,
             SplashRadius = SplashRadius,
             SplashFraction = SplashFraction,
+            TauntRadius = TauntRadius,
         };
     }
 }

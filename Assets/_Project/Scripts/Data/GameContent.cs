@@ -18,6 +18,8 @@ namespace PuzzleKingdoms.Data
     {
         [Tooltip("Gem i recruits unit i (Sword, Bow, Staff). The Banner gem comes after them.")]
         [SerializeField] private List<UnitDefinition> recruitableUnits = new List<UnitDefinition>();
+        [Tooltip("The classes beyond the default three (PB-21: Defender, Support). Stages pick their class set from these and the recruitable units.")]
+        [SerializeField] private List<UnitDefinition> extraUnits = new List<UnitDefinition>();
         [SerializeField] private List<StageDefinition> campaign = new List<StageDefinition>();
         [SerializeField] private PuzzleRulesAsset puzzleRules;
         [SerializeField] private ArmyRulesAsset armyRules;
@@ -36,6 +38,7 @@ namespace PuzzleKingdoms.Data
         public BattleModelSet BattleModels => battleModels;
 
         public IReadOnlyList<UnitDefinition> RecruitableUnits => recruitableUnits;
+        public IReadOnlyList<UnitDefinition> ExtraUnits => extraUnits;
         public IReadOnlyList<StageDefinition> Campaign => campaign;
         public PuzzleRulesAsset PuzzleRules => puzzleRules;
         public ArmyRulesAsset ArmyRules => armyRules;
@@ -64,7 +67,8 @@ namespace PuzzleKingdoms.Data
         {
             StageDef def = stage.ToStageDef();
             StageTuning.Apply(def, config);
-            List<UnitDef> units = recruitableUnits.Select(u => u.Def).ToList();
+            // PB-21: a stage may choose its own class set (at most 4, in gem order); otherwise the default three.
+            List<UnitDef> units = (stage.Units.Count > 0 ? stage.Units : recruitableUnits).Select(u => u.Def).ToList();
             return new StageRun(
                 def,
                 units,

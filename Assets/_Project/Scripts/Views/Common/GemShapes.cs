@@ -15,6 +15,10 @@ namespace PuzzleKingdoms.Views.Common
         Ring,
         /// <summary>Four-pointed sparkle: marks a Prism gem.</summary>
         Sparkle,
+        /// <summary>Heater shield: the Defender gem (PB-21).</summary>
+        Shield,
+        /// <summary>Plus sign: the Support gem (PB-21).</summary>
+        Cross,
     }
 
     /// <summary>
@@ -158,6 +162,11 @@ namespace PuzzleKingdoms.Views.Common
                 }
                 case GemShape.Sparkle:
                     return InsidePolygon(SparklePoints, x, y);
+                case GemShape.Shield:
+                    return (Mathf.Abs(x) <= 0.78f && y >= 0.05f && y <= 0.86f)
+                        || (y < 0.05f && y >= -0.92f && Mathf.Abs(x) <= 0.78f * (1f - (0.05f - y) / 0.97f) + 0.02f);
+                case GemShape.Cross:
+                    return (Mathf.Abs(x) <= 0.3f && Mathf.Abs(y) <= 0.9f) || (Mathf.Abs(y) <= 0.3f && Mathf.Abs(x) <= 0.9f);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
             }

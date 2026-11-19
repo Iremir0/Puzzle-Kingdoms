@@ -31,12 +31,12 @@ namespace PuzzleKingdoms.Tests.Data
         public void EveryStageAssetHasAValidGoalAndStartBoard()
         {
             var content = Load<GameContent>("GameContent.asset");
-            int gemTypes = content.RecruitableUnits.Count + 1;
             string[] guids = AssetDatabase.FindAssets("t:StageDefinition", new[] { Root + "Stages" });
             Assert.Greater(guids.Length, 2);
             foreach (string guid in guids)
             {
                 var stage = AssetDatabase.LoadAssetAtPath<StageDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                int gemTypes = (stage.Units.Count > 0 ? stage.Units.Count : content.RecruitableUnits.Count) + 1;
                 StageDef def = stage.ToStageDef();
                 Assert.IsTrue(def.Goal.IsValid, $"{stage.name}: a goal that needs a target has one");
                 if (!Logic.Puzzle.BoardLayout.IsEmpty(def.Layout))
@@ -52,7 +52,7 @@ namespace PuzzleKingdoms.Tests.Data
         public void AllUnitsHaveSaneValues()
         {
             List<UnitDefinition> units = AllUnits().ToList();
-            Assert.AreEqual(11, units.Count, "3 player classes + 4 Chapter 1 goblins + 4 Chapter 2 enemies");
+            Assert.AreEqual(13, units.Count, "3 player classes + Defender and Support + 4 Chapter 1 goblins + 4 Chapter 2 enemies");
             foreach (UnitDefinition asset in units)
             {
                 UnitDef def = asset.Def;
@@ -246,6 +246,37 @@ namespace PuzzleKingdoms.Tests.Data
                     default: Assert.Fail(commander.Id + " must be a variant, not the classic Rally"); break;
                 }
             }
+        }
+
+        /// <summary>PB-21: stages pick their class sets; a new class is only used after the stage that unlocks it.</summary>
+        [Test]
+        public void StageClassSetsAreValidAndRespectUnlocks()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            var known = content.RecruitableUnits.Concat(content.ExtraUnits).ToList();
+            List<string> order = content.CampaignOrder();
+            CollectionAssert.AreEqual(new[] { "defender", "support" }, content.ExtraUnits.Select(u => u.Def.Id).ToArray());
+            foreach (StageDefinition stage in content.Campaign)
+            {
+                if (stage.Units.Count == 0)
+                {
+                    continue;
+                }
+                Assert.LessOrEqual(stage.Units.Count, 4, stage.Id + ": at most 4 classes plus the Banner gem");
+                CollectionAssert.AllItemsAreUnique(stage.Units, stage.Id);
+                foreach (UnitDefinition unit in stage.Units)
+                {
+                    Assert.Contains(unit, known, stage.Id + ": " + unit.name + " is a known class");
+                    if (!string.IsNullOrEmpty(unit.UnlockStageId))
+                    {
+                        int unlockAt = order.IndexOf(unit.UnlockStageId);
+                        Assert.GreaterOrEqual(unlockAt, 0, unit.name + " unlocks at a campaign stage");
+                        Assert.Less(unlockAt, order.IndexOf(stage.Id), stage.Id + " only uses " + unit.name + " after it is unlocked");
+                    }
+                }
+            }
+            Assert.IsTrue(content.Campaign.Any(s => s.Units.Any(u => u.Def.Id == "defender")), "the Defender is used");
+            Assert.IsTrue(content.Campaign.Any(s => s.Units.Any(u => u.Def.Id == "support")), "the Support is used");
         }
 
         [Test]

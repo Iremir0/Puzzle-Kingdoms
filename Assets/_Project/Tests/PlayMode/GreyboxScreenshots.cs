@@ -153,6 +153,44 @@ namespace PuzzleKingdoms.Tests.PlayMode
             Debug.Log($"[GreyboxScreenshots] saved to {output}");
         }
 
+        /// <summary>PB-21: the puzzle and the war camp of a stage with four classes plus the Banner gem, into <c>Logs/Screenshots/classes-*.png</c>.</summary>
+        [UnityTest]
+        public IEnumerator CaptureFourClassStage()
+        {
+#if UNITY_EDITOR
+            var content = UnityEditor.AssetDatabase.LoadAssetAtPath<GameContent>("Assets/_Project/Data/GameContent.asset");
+#else
+            GameContent content = null;
+            Assert.Ignore("editor only");
+#endif
+            string output = Path.GetFullPath("Logs/Screenshots");
+            Directory.CreateDirectory(output);
+            _saveFolder = Path.Combine(Path.GetTempPath(), "pk-shots-" + System.Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(_saveFolder);
+            _app = new GameObject("GameApp").AddComponent<GameApp>();
+            _app.SetContent(content);
+            _app.TutorialEnabled = false;
+            _app.ConsentEnabled = false;
+            _app.UseStore(new ProfileStore(_saveFolder));
+            _app.UseLanguage(Language.English);
+            yield return null;
+            _app.StartStage(11); // 2-9: Warrior, Archer, Mage and Defender
+            yield return null;
+            yield return Capture(Path.Combine(output, "classes-puzzle.png"));
+            var puzzle = (PuzzleScreen)_app.CurrentScreen;
+            Time.timeScale = 8f;
+            while (!_app.Run.Puzzle.IsFinished)
+            {
+                _app.Run.Puzzle.Board.TryFindValidMove(out GridPos a, out GridPos b);
+                puzzle.PlaySwap(a, b);
+                yield return new WaitUntil(() => !puzzle.IsBusy);
+            }
+            Time.timeScale = 1f;
+            _app.ShowWarCamp();
+            yield return null;
+            yield return Capture(Path.Combine(output, "classes-war-camp.png"));
+        }
+
         /// <summary>PB-18: the 3D battle of the boss stage, with the four new Chapter 2 models, into <c>Logs/Screenshots/chapter2-battle*.png</c>.</summary>
         [UnityTest]
         public IEnumerator CaptureChapterTwoBattle()

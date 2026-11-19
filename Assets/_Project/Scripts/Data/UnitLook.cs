@@ -19,5 +19,8 @@ namespace PuzzleKingdoms.Data
         GoblinShaman = 9,
         WolfRider = 10,
         GoblinBomber = 11,
+        // Player classes of PB-21.
+        Defender = 12,
+        Support = 13,
     }
 }

@@ -53,7 +53,7 @@ namespace PuzzleKingdoms.Balance
                 {
                     foreach (RallyBot rallyBot in new[] { RallyBot.None, RallyBot.Eager })
                     {
-                        BalanceStats s = BalanceRunner.Run(seed => new StageRun(stage, assets.Recruitable,
+                        BalanceStats s = BalanceRunner.Run(seed => new StageRun(stage, assets.UnitsFor(stage),
                                 assets.PuzzleRules, assets.ArmyRules, assets.BattleRules, assets.ProgressionRules,
                                 new SeededRandom(seed), bonuses, variant),
                             puzzleBot, rallyBot, runs);

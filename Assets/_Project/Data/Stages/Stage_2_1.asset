@@ -15,7 +15,12 @@ MonoBehaviour:
   id: stage_2_1
   displayName: Shield Wall
   chapter: 2
-  moves: 12
+  units:
+  - {fileID: 11400000, guid: 0948e59e05944d11aa74dbd8fc05ea12, type: 2}
+  - {fileID: 11400000, guid: dc58bbfad0514bb8ad47f83d17782247, type: 2}
+  - {fileID: 11400000, guid: 72933b41701440aebb60a1d23926b896, type: 2}
+  - {fileID: 11400000, guid: a41f7c2d9e3b4856a0d1c7e2f95b3a68, type: 2}
+  moves: 17
   boardSeed: 0
   enemies:
   - unit: {fileID: 11400000, guid: 6a1d3f0c8e2b4c59a7f4d2e8b1c0a3f1, type: 2}
