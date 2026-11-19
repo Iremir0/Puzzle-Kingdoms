@@ -91,6 +91,10 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app.ShowCommanders();
             yield return null;
             yield return Capture(Path.Combine(output, "1-commanders.png"));
+            _app.Quests.Record(new Logic.Quests.QuestEvent { Won = true, RallyUsed = 2, Recruited = 16, Merges = 3, Gold = 100, MaxTier = 2 });
+            _app.ShowQuests();
+            yield return null;
+            yield return Capture(Path.Combine(output, "1-quests.png"));
             _app.Profile.Apply("stage_1_1", new StageReward { Stars = 0 });
             _app.ShowStageSelect();
             yield return null;

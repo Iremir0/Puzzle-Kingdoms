@@ -24,6 +24,8 @@ namespace PuzzleKingdoms.Data
         [SerializeField] private BattleRulesAsset battleRules;
         [SerializeField] private ProgressionRulesAsset progressionRules;
         [SerializeField] private KingdomRulesAsset kingdomRules;
+        [Tooltip("Daily quests, achievements and the star chest (PB-24).")]
+        [SerializeField] private QuestRulesAsset quests;
         [Tooltip("The commanders the player can earn (PB-23); the classic Rally is what a player without one has.")]
         [SerializeField] private List<CommanderDefinition> commanders = new List<CommanderDefinition>();
         [SerializeField] private SoundBank sounds;
@@ -41,6 +43,8 @@ namespace PuzzleKingdoms.Data
         public ProgressionRulesAsset ProgressionRules => progressionRules;
         /// <summary>Buildings and their costs (PB-22).</summary>
         public KingdomRulesAsset KingdomRules => kingdomRules;
+        /// <summary>The quest pool (PB-24); may be null (no Quests tab content).</summary>
+        public QuestRulesAsset Quests => quests;
         public IReadOnlyList<CommanderDefinition> Commanders => commanders;
 
         /// <summary>The logic commanders, in asset order.</summary>

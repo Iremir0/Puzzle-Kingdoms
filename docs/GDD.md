@@ -266,6 +266,12 @@ without making the boss trivial.
 4. Expedition mode: 3â5 battles in a row with a persistent army (roguelite).
 5. Commander heroes: one special slot with a unique Rally variant.
 
+**Quests (PB-24, D-060).** The Quests tab has three daily quests (drawn from a pool by the date, different kinds, reset
+at midnight local time), one-time achievements, and a star chest for every 30 stars (best stars summed over all
+stages). A quest counts what a finished attempt did: stages won, Rally charges used, units recruited, merges, gold
+earned, battles with a Tier 3 unit. Rewards are gold, paid when the player taps Claim; a red number on the tab
+shows how many rewards wait. The pool and the numbers are in `Data/Quests.asset`.
+
 These are now board cards (PB-22, PB-21, PB-25, PB-26, PB-23) inside the wider growth plan
 of D-045 (16 cards, PB-18 to PB-33, in four waves).
 

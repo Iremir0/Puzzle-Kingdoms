@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 708192a3b4c54d162738a0b1c2d3e4f7, type: 3}
+  m_Name: Quests
+  m_EditorClassIdentifier: 
+  dailyCount: 3
+  starsPerChest: 30
+  chestGold: 150
+  daily:
+  - id: win1
+    kind: 0
+    target: 1
+    rewardGold: 50
+  - id: win3
+    kind: 0
+    target: 3
+    rewardGold: 120
+  - id: rally2
+    kind: 1
+    target: 2
+    rewardGold: 60
+  - id: rally5
+    kind: 1
+    target: 5
+    rewardGold: 120
+  - id: recruit15
+    kind: 2
+    target: 15
+    rewardGold: 60
+  - id: recruit30
+    kind: 2
+    target: 30
+    rewardGold: 120
+  - id: merge3
+    kind: 3
+    target: 3
+    rewardGold: 60
+  - id: merge8
+    kind: 3
+    target: 8
+    rewardGold: 120
+  - id: gold150
+    kind: 4
+    target: 150
+    rewardGold: 60
+  - id: gold400
+    kind: 4
+    target: 400
+    rewardGold: 120
+  - id: tier3x1
+    kind: 5
+    target: 1
+    rewardGold: 100
+  achievements:
+  - id: a_win5
+    kind: 0
+    target: 5
+    rewardGold: 150
+  - id: a_win20
+    kind: 0
+    target: 20
+    rewardGold: 400
+  - id: a_rally25
+    kind: 1
+    target: 25
+    rewardGold: 250
+  - id: a_recruit100
+    kind: 2
+    target: 100
+    rewardGold: 250
+  - id: a_merge50
+    kind: 3
+    target: 50
+    rewardGold: 300
+  - id: a_gold2000
+    kind: 4
+    target: 2000
+    rewardGold: 400
+  - id: a_tier5
+    kind: 5
+    target: 5
+    rewardGold: 400

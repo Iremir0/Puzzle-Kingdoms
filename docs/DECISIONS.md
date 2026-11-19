@@ -649,3 +649,12 @@ Battle: scenery sways (D-056), a camera shake on enemy deaths and Fireball (stre
 sparks on every hit, a pop of sparks and two coins when an enemy dies. UI: every button squashes while pressed and
 springs back (`PressFeel`), the victory screen pops its title and stars in and throws confetti (`UiJuice`).
 PlayMode tests run with the master volume at zero (`SilentTests`), so they stay quiet; `Sfx` still counts plays.
+
+## D-060 - Quests, achievements and star chests (2026-11-19)
+
+Logic (`QuestBoard`) has no clock: the game passes the date as text. The day's quests are drawn from a seed made of
+the date, so a restart shows the same ones and a day change redraws them with zero progress. Quests count what a
+finished `StageAttempt` did (`ToQuestEvent`); progress is capped at the target. Achievements keep their progress
+across days and a new one added to the pool appears in old saves. A star chest is earned per 30 stars (sum of the best
+stars per stage) and paid on tap; rewards are gold only (no power for sale, PB-30 decides the rest). Save version 5
+adds the quest state; older saves load with none. The Quests tab is the fifth tab with a count badge.

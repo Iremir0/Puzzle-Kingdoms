@@ -175,6 +175,27 @@ namespace PuzzleKingdoms.Tests.Data
             Assert.Greater(chapter2[chapter2.Count - 1].BossStonesEvery, 0, "the boss throws stones");
         }
 
+        /// <summary>PB-24: the quest pool has unique ids, real targets, enough daily quests of different kinds.</summary>
+        [Test]
+        public void QuestPoolIsValid()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            Assert.IsNotNull(content.Quests, "GameContent has the quest pool");
+            Logic.Quests.QuestRules rules = content.Quests.Rules;
+            var ids = new HashSet<string>();
+            foreach (Logic.Quests.QuestDef quest in rules.Daily.Concat(rules.Achievements))
+            {
+                Assert.IsNotEmpty(quest.Id);
+                Assert.IsTrue(ids.Add(quest.Id), "duplicate quest " + quest.Id);
+                Assert.Greater(quest.Target, 0, quest.Id);
+                Assert.Greater(quest.RewardGold, 0, quest.Id);
+            }
+            Assert.GreaterOrEqual(rules.Daily.Count, rules.DailyCount * 2, "a pool bigger than a day");
+            Assert.GreaterOrEqual(rules.Daily.Select(q => q.Kind).Distinct().Count(), rules.DailyCount, "enough kinds for a day");
+            Assert.GreaterOrEqual(rules.Achievements.Count, 5);
+            Assert.Greater(rules.StarsPerChest, 0);
+        }
+
         /// <summary>PB-22: the Kingdom asset is valid: unique ids, buildings that exist in the game, small steps, rising costs.</summary>
         [Test]
         public void KingdomRulesAreValid()
