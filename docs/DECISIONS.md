@@ -658,3 +658,15 @@ finished `StageAttempt` did (`ToQuestEvent`); progress is capped at the target. 
 across days and a new one added to the pool appears in old saves. A star chest is earned per 30 stars (sum of the best
 stars per stage) and paid on tap; rewards are gold only (no power for sale, PB-30 decides the rest). Save version 5
 adds the quest state; older saves load with none. The Quests tab is the fifth tab with a count badge.
+
+## D-061 - Daily Challenge (2026-11-19)
+
+One challenge a day, the same for everyone: `DailyChallenge.For(date, rules)` builds a `StageDef` (enemy army from a
+pool, formation cells, tiers, moves, stones, an optional break-stones goal and a fixed board seed) from a seed made of
+the date text, so every device gets the same stage. The setup lives in `Data/DailyChallenge.asset`. The attempt uses no
+commander and no building bonuses, so results compare. One attempt a day: the result is saved when the battle ends,
+not when it starts, and a second start the same day does nothing. A result is won/lost, then the share of the army's
+HP left, then the time (`DailyResult.IsBetterThan`). The last 30 days are kept in the profile (save version 6); the
+daily day is not a campaign stage, so it pays its gold but gives no stars and no star-chest progress. The entry is a
+gold button above the stage map. Online ranking waits for the backend decision (PB-25 step 4); the saved result and
+the fixed seed are what a server needs to re-run and verify a battle.

@@ -8,6 +8,7 @@ using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Logic.Localization;
 using PuzzleKingdoms.Logic.Progression;
 using PuzzleKingdoms.Logic.Quests;
+using PuzzleKingdoms.Logic.Stages;
 using PuzzleKingdoms.Views.Battle;
 using PuzzleKingdoms.Views.Battle3D;
 using PuzzleKingdoms.Views.Common;
@@ -62,6 +63,50 @@ namespace PuzzleKingdoms.Flow
         public void UseLanguage(Language language) => _languageOverride = language;
 
         private Language? _languageOverride;
+
+        // ---- Daily challenge (PB-25, D-061) ----
+
+        private string _dailyDay;
+
+        /// <summary>Today's date key, "yyyy-MM-dd".</summary>
+        public string DailyDay => Today;
+
+        /// <summary>True when the daily challenge exists in the content.</summary>
+        public bool HasDaily => content.DailyChallenge != null && content.DailyChallenge.Rules().EnemyPool.Count > 0;
+
+        /// <summary>The challenge of today, the same for everyone who plays it today.</summary>
+        public StageDef TodaysChallenge() => DailyChallenge.For(Today, content.DailyChallenge.Rules());
+
+        public void ShowDaily()
+        {
+            Run = null;
+            RefreshQuests();
+            Show(DailyScreen.Create(_screenRoot, content, Profile, Today, TodaysChallenge(), StartDaily, ShowStageSelect));
+        }
+
+        /// <summary>Starts today's attempt: no commander and no buildings, so results compare. One attempt a day.</summary>
+        public void StartDaily()
+        {
+            if (!HasDaily || Profile.Daily.HasPlayed(Today))
+            {
+                return;
+            }
+            StageDef def = TodaysChallenge();
+            _dailyDay = Today;
+            _stageIndex = -1;
+            _stageDefinition = null;
+            if (Run != null)
+            {
+                Run.UnitRecruited -= OnUnitRecruited;
+            }
+            Run = content.CreateRun(def);
+            Run.UnitRecruited += OnUnitRecruited;
+            _stageSteps = new List<TutorialStep>();
+            _puzzleStarted = Time.realtimeSinceStartup;
+            _attemptLogged = false;
+            _analytics.Send(GameEvents.StageStarted(def.Id, 1));
+            Show(PuzzleScreen.Create(_screenRoot, Run, ShowWarCamp));
+        }
 
         // ---- Quests (PB-24, D-060) ----
 
@@ -184,7 +229,10 @@ namespace PuzzleKingdoms.Flow
         {
             Run = null;
             RefreshQuests();
-            Show(StageMapScreen.Create(_screenRoot, content, Profile, StartStage, () => OpenSettings(), OnTab));
+            DailyResult dailyDone = HasDaily ? Profile.Daily.Result(Today) : null;
+            string dailyCaption = Loc.T("Daily Challenge") + "  ·  " + (dailyDone == null ? Loc.T("Play") : dailyDone.Won ? Loc.T("Won") + " " + dailyDone.HpPercent + "%" : Loc.T("Lost"));
+            Show(StageMapScreen.Create(_screenRoot, content, Profile, StartStage, () => OpenSettings(), OnTab,
+                HasDaily ? ShowDaily : (System.Action)null, dailyCaption));
             if (ConsentEnabled && Consent.NeedsAsking(Settings))
             {
                 AskConsent();
@@ -461,6 +509,7 @@ namespace PuzzleKingdoms.Flow
         private void StartStage(StageDefinition stage, int index)
         {
             _stageIndex = index;
+            _dailyDay = null;
             _stageDefinition = stage;
             if (Run != null)
             {
@@ -503,7 +552,15 @@ namespace PuzzleKingdoms.Flow
             }
             List<Commander> allCommanders = content.CommanderList();
             var lockedBefore = new HashSet<string>(allCommanders.Where(c => !Profile.IsUnlocked(c)).Select(c => c.Id));
-            Profile.Apply(Run.Stage.Id, reward);
+            if (_dailyDay != null)
+            {
+                // The daily challenge is no campaign stage: its result goes in the daily log, no stars.
+                Profile.RecordDaily(DailyResult.From(_dailyDay, Run.Battle, Run.Won), reward.TotalGold);
+            }
+            else
+            {
+                Profile.Apply(Run.Stage.Id, reward);
+            }
             _store.Save(Profile);
             string unlocked = string.Join(", ", allCommanders.Where(c => lockedBefore.Contains(c.Id) && Profile.IsUnlocked(c)).Select(c => Loc.T(c.DisplayName)));
             if (!_attemptLogged)
@@ -528,8 +585,8 @@ namespace PuzzleKingdoms.Flow
             StageDefinition retryStage = _stageDefinition;
             var actions = new ResultsScreen.Actions
             {
-                Retry = () => StartStage(retryStage, retryIndex),
-                Next = Run.Won && hasNext ? () => StartStage(retryIndex + 1) : (System.Action)null,
+                Retry = _dailyDay != null ? (System.Action)null : () => StartStage(retryStage, retryIndex),
+                Next = _dailyDay == null && Run.Won && hasNext ? () => StartStage(retryIndex + 1) : (System.Action)null,
                 StageSelect = ShowStageSelect,
             };
             float seconds = (float)Run.Battle.Result.Ticks / Run.Battle.Rules.TicksPerSecond;

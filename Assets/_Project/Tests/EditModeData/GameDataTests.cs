@@ -5,6 +5,7 @@ using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Combat;
+using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Logic.Stages;
 using UnityEditor;
 
@@ -194,6 +195,31 @@ namespace PuzzleKingdoms.Tests.Data
             Assert.GreaterOrEqual(rules.Daily.Select(q => q.Kind).Distinct().Count(), rules.DailyCount, "enough kinds for a day");
             Assert.GreaterOrEqual(rules.Achievements.Count, 5);
             Assert.Greater(rules.StarsPerChest, 0);
+        }
+
+        /// <summary>PB-25: the daily setup builds valid challenges for many days and they are neither hopeless nor trivial.</summary>
+        [Test]
+        public void DailyChallengesAreValidAndWinnableButNotTrivial()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            Assert.IsNotNull(content.DailyChallenge, "GameContent has the daily challenge");
+            DailyChallengeRules rules = content.DailyChallenge.Rules();
+            Assert.GreaterOrEqual(rules.EnemyPool.Count, 5);
+            Assert.IsFalse(rules.EnemyPool.Any(u => u.Id.Contains("chief")), "no boss in the pool");
+
+            double wins = 0;
+            double runs = 0;
+            for (int d = 1; d <= 20; d++)
+            {
+                StageDef def = DailyChallenge.For("2026-11-" + d.ToString("00"), rules);
+                BalanceStats stats = BalanceRunner.Run(seed => content.CreateRun(def, new SeededRandom(seed)),
+                    PuzzleBot.Greedy, RallyBot.Eager, 10);
+                wins += stats.Wins;
+                runs += stats.Runs;
+            }
+            double rate = wins / runs;
+            UnityEngine.Debug.Log($"Daily challenge: greedy bot wins {100 * rate:0}% over 20 days");
+            Assert.That(rate, Is.InRange(0.1, 0.9), $"win rate {rate:0.00}");
         }
 
         /// <summary>PB-22: the Kingdom asset is valid: unique ids, buildings that exist in the game, small steps, rising costs.</summary>

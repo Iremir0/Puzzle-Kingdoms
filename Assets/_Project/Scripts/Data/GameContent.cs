@@ -26,6 +26,8 @@ namespace PuzzleKingdoms.Data
         [SerializeField] private KingdomRulesAsset kingdomRules;
         [Tooltip("Daily quests, achievements and the star chest (PB-24).")]
         [SerializeField] private QuestRulesAsset quests;
+        [Tooltip("What the daily challenge is built from (PB-25).")]
+        [SerializeField] private DailyChallengeAsset dailyChallenge;
         [Tooltip("The commanders the player can earn (PB-23); the classic Rally is what a player without one has.")]
         [SerializeField] private List<CommanderDefinition> commanders = new List<CommanderDefinition>();
         [SerializeField] private SoundBank sounds;
@@ -45,6 +47,8 @@ namespace PuzzleKingdoms.Data
         public KingdomRulesAsset KingdomRules => kingdomRules;
         /// <summary>The quest pool (PB-24); may be null (no Quests tab content).</summary>
         public QuestRulesAsset Quests => quests;
+        /// <summary>The daily challenge setup (PB-25); may be null (no daily challenge).</summary>
+        public DailyChallengeAsset DailyChallenge => dailyChallenge;
         public IReadOnlyList<CommanderDefinition> Commanders => commanders;
 
         /// <summary>The logic commanders, in asset order.</summary>
@@ -64,6 +68,13 @@ namespace PuzzleKingdoms.Data
         {
             StageDef def = stage.ToStageDef();
             StageTuning.Apply(def, config);
+            return CreateRun(def, random, bonuses, rallyVariant);
+        }
+
+        /// <summary>Starts an attempt at a stage built in code, such as the day's challenge (PB-25).</summary>
+        public StageRun CreateRun(StageDef def, IRandom random = null, Logic.Kingdom.KingdomBonuses bonuses = null,
+            Logic.Combat.RallyVariant rallyVariant = null)
+        {
             List<UnitDef> units = recruitableUnits.Select(u => u.Def).ToList();
             return new StageRun(
                 def,
