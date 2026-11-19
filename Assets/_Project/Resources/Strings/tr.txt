@@ -302,3 +302,14 @@ Not available on this device yet.	Bu cihazda henüz kullanılamıyor.
 Power is never for sale: no ad and no purchase makes your army stronger.	Güç asla satılmaz: hiçbir reklam ya da satın alma ordunu güçlendirmez.
 +{0} moves	+{0} hamle
 +{0} Rally	+{0} Rally
+Cloud save	Bulut kaydı
+Sign in	Giriş yap
+Sign out	Çıkış yap
+Signed in	Giriş yapıldı
+Two saves found	İki kayıt bulundu
+This phone and your cloud save each have progress the other lacks. Which one do you want to keep?	Bu telefonda ve bulut kaydında birbirinde olmayan ilerlemeler var. Hangisini tutmak istersin?
+This phone	Bu telefon
+{0} stars	{0} yıldız
+{0} stages	{0} bölüm
+Keep this phone	Bu telefonu tut
+Use cloud save	Bulut kaydını kullan
