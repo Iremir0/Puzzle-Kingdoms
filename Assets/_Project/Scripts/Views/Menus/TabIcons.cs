@@ -21,7 +21,7 @@ namespace PuzzleKingdoms.Views.Menus
                 return sprite;
             }
             Func<float, float, bool> shape = tab == MainTab.Map ? Flag : tab == MainTab.Kingdom ? Castle
-                : tab == MainTab.Commanders ? Crown : (Func<float, float, bool>)Bag;
+                : tab == MainTab.Commanders ? Crown : tab == MainTab.Quests ? Scroll : (Func<float, float, bool>)Bag;
             sprite = Render(shape, tab.ToString());
             Cache[tab] = sprite;
             return sprite;
@@ -161,6 +161,14 @@ namespace PuzzleKingdoms.Views.Menus
             bool jewels = Circle(x, y, 0.12f, 0.78f, 0.065f) || Circle(x, y, 0.5f, 0.89f, 0.07f) || Circle(x, y, 0.88f, 0.78f, 0.065f);
             bool studs = Circle(x, y, 0.3f, 0.25f, 0.04f) || Circle(x, y, 0.5f, 0.25f, 0.04f) || Circle(x, y, 0.7f, 0.25f, 0.04f);
             return (band || spikes || jewels) && !studs;
+        }
+
+        /// <summary>A quest board: a plank with a clip and three lines of text cut out.</summary>
+        private static bool Scroll(float x, float y)
+        {
+            bool plank = Rect(x, y, 0.18f, 0.06f, 0.82f, 0.86f) || Rect(x, y, 0.36f, 0.82f, 0.64f, 0.96f);
+            bool lines = Rect(x, y, 0.3f, 0.64f, 0.7f, 0.72f) || Rect(x, y, 0.3f, 0.46f, 0.7f, 0.54f) || Rect(x, y, 0.3f, 0.28f, 0.58f, 0.36f);
+            return plank && !lines;
         }
 
         /// <summary>A tied money bag with a coin on its belly.</summary>

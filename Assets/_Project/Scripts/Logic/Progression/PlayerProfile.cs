@@ -27,10 +27,19 @@ namespace PuzzleKingdoms.Logic.Progression
             public List<int> buildingLevels = new List<int>();
             /// <summary>Version 4 (D-053): the commander chosen to lead; empty = none (the classic Rally).</summary>
             public string commanderId = "";
+            /// <summary>Version 5 (D-060): daily quests, achievements and star chests.</summary>
+            public string questDay = "";
+            public List<string> dailyIds = new List<string>();
+            public List<int> dailyProgress = new List<int>();
+            public List<bool> dailyClaimed = new List<bool>();
+            public List<string> achievementIds = new List<string>();
+            public List<int> achievementProgress = new List<int>();
+            public List<bool> achievementClaimed = new List<bool>();
+            public int chestsClaimed;
         }
 
-        /// <summary>4 = chosen commander (D-053), 3 = building levels (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
-        public const int CurrentVersion = 4;
+        /// <summary>5 = quests (D-060), 4 = chosen commander (D-053), 3 = building levels (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
+        public const int CurrentVersion = 5;
 
         public event Action Changed;
 
@@ -39,6 +48,33 @@ namespace PuzzleKingdoms.Logic.Progression
         private readonly Dictionary<string, int> _buildingLevels = new Dictionary<string, int>();
 
         public int Gold { get; private set; }
+
+        /// <summary>Daily quests, achievements and star chests (PB-24).</summary>
+        public Quests.QuestLog Quests { get; private set; } = new Quests.QuestLog();
+
+        /// <summary>Best stars over all stages, for the star chests.</summary>
+        public int TotalStars
+        {
+            get
+            {
+                int total = 0;
+                foreach (int stars in _bestStars.Values)
+                {
+                    total += stars;
+                }
+                return total;
+            }
+        }
+
+        /// <summary>Adds gold from a quest or chest reward.</summary>
+        public void AddGold(int gold)
+        {
+            if (gold > 0)
+            {
+                Gold += gold;
+                Changed?.Invoke();
+            }
+        }
 
         /// <summary>True after "Skip tutorial": no more prompts until the tutorial is reset.</summary>
         public bool TutorialSkipped { get; private set; }
@@ -171,6 +207,14 @@ namespace PuzzleKingdoms.Logic.Progression
                 seenTutorialSteps = new List<string>(_seenSteps),
                 tutorialSkipped = TutorialSkipped,
                 commanderId = CommanderId,
+                questDay = Quests.Day,
+                dailyIds = new List<string>(Quests.DailyIds),
+                dailyProgress = new List<int>(Quests.DailyProgress),
+                dailyClaimed = new List<bool>(Quests.DailyClaimed),
+                achievementIds = new List<string>(Quests.AchievementIds),
+                achievementProgress = new List<int>(Quests.AchievementProgress),
+                achievementClaimed = new List<bool>(Quests.AchievementClaimed),
+                chestsClaimed = Quests.ChestsClaimed,
             };
             foreach (KeyValuePair<string, int> building in _buildingLevels)
             {
@@ -183,6 +227,33 @@ namespace PuzzleKingdoms.Logic.Progression
                 snapshot.stageStars.Add(pair.Value);
             }
             return snapshot;
+        }
+
+        /// <summary>The quest state of a snapshot; lists that do not line up are cut to the shortest (a damaged save loses a day, not the game).</summary>
+        private static Quests.QuestLog QuestLogFrom(Snapshot snapshot)
+        {
+            var log = new Quests.QuestLog { Day = snapshot.questDay ?? "", ChestsClaimed = Math.Max(0, snapshot.chestsClaimed) };
+            if (snapshot.dailyIds != null && snapshot.dailyProgress != null && snapshot.dailyClaimed != null)
+            {
+                int daily = Math.Min(snapshot.dailyIds.Count, Math.Min(snapshot.dailyProgress.Count, snapshot.dailyClaimed.Count));
+                for (int i = 0; i < daily; i++)
+                {
+                    log.DailyIds.Add(snapshot.dailyIds[i]);
+                    log.DailyProgress.Add(Math.Max(0, snapshot.dailyProgress[i]));
+                    log.DailyClaimed.Add(snapshot.dailyClaimed[i]);
+                }
+            }
+            if (snapshot.achievementIds != null && snapshot.achievementProgress != null && snapshot.achievementClaimed != null)
+            {
+                int count = Math.Min(snapshot.achievementIds.Count, Math.Min(snapshot.achievementProgress.Count, snapshot.achievementClaimed.Count));
+                for (int i = 0; i < count; i++)
+                {
+                    log.AchievementIds.Add(snapshot.achievementIds[i]);
+                    log.AchievementProgress.Add(Math.Max(0, snapshot.achievementProgress[i]));
+                    log.AchievementClaimed.Add(snapshot.achievementClaimed[i]);
+                }
+            }
+            return log;
         }
 
         public static PlayerProfile FromSnapshot(Snapshot snapshot)
@@ -214,6 +285,7 @@ namespace PuzzleKingdoms.Logic.Progression
             }
             profile.TutorialSkipped = snapshot.tutorialSkipped;
             profile.CommanderId = snapshot.commanderId ?? "";
+            profile.Quests = QuestLogFrom(snapshot);
             if (snapshot.buildingIds != null && snapshot.buildingLevels != null)
             {
                 int buildings = Math.Min(snapshot.buildingIds.Count, snapshot.buildingLevels.Count);

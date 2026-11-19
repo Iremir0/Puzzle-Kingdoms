@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
 using PuzzleKingdoms.Data;
@@ -6,6 +7,7 @@ using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Logic.Localization;
 using PuzzleKingdoms.Logic.Progression;
+using PuzzleKingdoms.Logic.Quests;
 using PuzzleKingdoms.Views.Battle;
 using PuzzleKingdoms.Views.Battle3D;
 using PuzzleKingdoms.Views.Common;
@@ -60,6 +62,29 @@ namespace PuzzleKingdoms.Flow
         public void UseLanguage(Language language) => _languageOverride = language;
 
         private Language? _languageOverride;
+
+        // ---- Quests (PB-24, D-060) ----
+
+        private System.Func<System.DateTime> _clock = () => System.DateTime.Now;
+        private QuestBoard _quests;
+
+        /// <summary>Lets tests set the date the daily quests are drawn for.</summary>
+        public void UseClock(System.Func<System.DateTime> clock) => _clock = clock;
+
+        /// <summary>Daily quests, achievements and star chests of the player.</summary>
+        public QuestBoard Quests => _quests ??= new QuestBoard(content.Quests != null ? content.Quests.Rules : new QuestRules(), Profile.Quests);
+
+        private string Today => _clock().ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        /// <summary>Draws today's quests if the day changed and updates the badge on the tab bar.</summary>
+        private void RefreshQuests()
+        {
+            if (Quests.Refresh(Today))
+            {
+                _store.Save(Profile);
+            }
+            TabBar.QuestBadge = Quests.ClaimableCount(Profile.TotalStars);
+        }
 
         // ---- Statistics, error reports, remote config (PB-29, D-047) ----
 
@@ -158,6 +183,7 @@ namespace PuzzleKingdoms.Flow
         public void ShowStageSelect()
         {
             Run = null;
+            RefreshQuests();
             Show(StageMapScreen.Create(_screenRoot, content, Profile, StartStage, () => OpenSettings(), OnTab));
             if (ConsentEnabled && Consent.NeedsAsking(Settings))
             {
@@ -169,6 +195,7 @@ namespace PuzzleKingdoms.Flow
         public void ShowKingdom()
         {
             Run = null;
+            RefreshQuests();
             Show(KingdomScreen.Create(_screenRoot, content, Profile, OnBuildingUpgraded, OnTab));
         }
 
@@ -176,7 +203,22 @@ namespace PuzzleKingdoms.Flow
         public void ShowCommanders()
         {
             Run = null;
+            RefreshQuests();
             Show(CommandersScreen.Create(_screenRoot, content, Profile, OnCommanderChosen, OnTab));
+        }
+
+        /// <summary>The quests: daily goals, achievements and the star chest (PB-24, D-060).</summary>
+        public void ShowQuests()
+        {
+            Run = null;
+            RefreshQuests();
+            Show(QuestsScreen.Create(_screenRoot, content, Profile, Quests, OnQuestClaimed, OnTab));
+        }
+
+        private void OnQuestClaimed()
+        {
+            _store.Save(Profile);
+            TabBar.QuestBadge = Quests.ClaimableCount(Profile.TotalStars);
         }
 
         private void OnCommanderChosen(string commanderId)
@@ -194,10 +236,23 @@ namespace PuzzleKingdoms.Flow
             {
                 ShowCommanders();
             }
+            else if (tab == MainTab.Quests)
+            {
+                ShowQuests();
+            }
             else if (tab == MainTab.Map)
             {
                 ShowStageSelect();
             }
+        }
+
+        /// <summary>Counts a finished attempt towards the quests (a new day is drawn first).</summary>
+        private void RecordQuests(StageAttempt attempt)
+        {
+            Quests.Refresh(Today);
+            Quests.Record(attempt.ToQuestEvent());
+            _store.Save(Profile);
+            TabBar.QuestBadge = Quests.ClaimableCount(Profile.TotalStars);
         }
 
         private void OnBuildingUpgraded(string buildingId)
@@ -463,6 +518,7 @@ namespace PuzzleKingdoms.Flow
                     attempt.campSeconds = Mathf.Round(campSeconds * 10f) / 10f;
                     _playtestLog?.Write(attempt, puzzleSeconds, campSeconds);
                     _analytics.Send(GameEvents.StageFinished(attempt));
+                    RecordQuests(attempt);
                 }
             }
 

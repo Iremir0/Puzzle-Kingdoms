@@ -229,3 +229,18 @@ Fireball	Ateş Topu
 Your front row takes half damage for a few seconds.	Ön sıran birkaç saniye boyunca yarı hasar alır.
 Volleys fall on the enemy back row: archers, shamans and bombers.	Düşman arka sırasına ok yağar: okçular, şamanlar ve bombacılar.
 One blast on the densest enemy group, then a short fighting spirit.	En kalabalık düşman grubuna tek patlama, ardından kısa bir savaş ruhu.
+Quests	Görevler
+Daily	Günlük
+Achievements	Başarımlar
+Claim	Al
+Claimed	Alındı
+Star chest	Yıldız sandığı
+Open chest	Sandığı aç
+No quests yet.	Henüz görev yok.
+{0} stars total, {1}/{2} to the next chest	Toplam {0} yıldız, sıradaki sandığa {1}/{2}
+Win {0} stages	{0} bölüm kazan
+Use Rally {0} times	Rally'yi {0} kez kullan
+Recruit {0} units	{0} birim topla
+Merge units {0} times	{0} kez birim birleştir
+Earn {0} gold	{0} altın kazan
+Fight with a Tier 3 unit {0} times	3. kademe birimle {0} kez savaş

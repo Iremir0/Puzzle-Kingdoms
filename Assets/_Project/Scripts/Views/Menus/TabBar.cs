@@ -12,15 +12,19 @@ namespace PuzzleKingdoms.Views.Menus
         Kingdom = 1,
         Commanders = 2,
         Shop = 3,
+        Quests = 4,
     }
 
     /// <summary>
-    /// Bottom tab bar: Map · Kingdom · Commanders · Shop. The current tab is blue; tabs whose card has not
+    /// Bottom tab bar: Map · Kingdom · Commanders · Quests · Shop. The current tab is blue; tabs whose card has not
     /// landed yet (Commanders: PB-23, Shop: PB-30) are greyed and do nothing.
     /// </summary>
     public static class TabBar
     {
         public const float Height = 0.085f;
+
+        /// <summary>Rewards waiting in the Quests tab (PB-24); a red dot with the count shows on the tab while above 0.</summary>
+        public static int QuestBadge { get; set; }
         private static readonly Color Soon = Palette.Hex("323A4E");
 
         private static readonly (MainTab Tab, string Caption, bool Ready)[] Tabs =
@@ -28,6 +32,7 @@ namespace PuzzleKingdoms.Views.Menus
             (MainTab.Map, "Map", true),
             (MainTab.Kingdom, "Kingdom", true),
             (MainTab.Commanders, "Commanders", true),
+            (MainTab.Quests, "Quests", true),
             (MainTab.Shop, "Shop", false),
         };
 
@@ -53,6 +58,14 @@ namespace PuzzleKingdoms.Views.Menus
                 icon.preserveAspect = true;
                 icon.raycastTarget = false;
                 button.gameObject.name = "Tab " + caption;
+                if (tab == MainTab.Quests && QuestBadge > 0)
+                {
+                    Image dot = Ui.Box(button.transform, "Badge", Palette.Bad, 0.62f, 0.62f, 0.9f, 0.98f);
+                    dot.sprite = GemShapes.Get(GemShape.Circle);
+                    dot.preserveAspect = true;
+                    dot.raycastTarget = false;
+                    Ui.Label(dot.transform, QuestBadge.ToString(), 26, TextAnchor.MiddleCenter, Color.white);
+                }
                 button.interactable = ready && !isCurrent;
                 if (isCurrent)
                 {
