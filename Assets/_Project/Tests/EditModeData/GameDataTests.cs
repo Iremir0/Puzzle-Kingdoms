@@ -4,6 +4,7 @@ using NUnit.Framework;
 using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Army;
+using PuzzleKingdoms.Logic.Puzzle;
 using PuzzleKingdoms.Logic.Combat;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Logic.Stages;
@@ -220,6 +221,60 @@ namespace PuzzleKingdoms.Tests.Data
             double rate = wins / runs;
             UnityEngine.Debug.Log($"Daily challenge: greedy bot wins {100 * rate:0}% over 20 days");
             Assert.That(rate, Is.InRange(0.1, 0.9), $"win rate {rate:0.00}");
+        }
+
+        /// <summary>PB-26: the expedition asset is complete, and a simple bot gets part of the way but not always to the end.</summary>
+        [Test]
+        public void ExpeditionIsCompleteAndNeitherHopelessNorTrivial()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            Assert.IsNotNull(content.Expedition, "GameContent has the expedition");
+            ExpeditionRules rules = content.Expedition.Rules();
+            Assert.GreaterOrEqual(rules.EnemyPool.Count, 5);
+            Assert.IsNotNull(rules.Boss);
+            Assert.AreEqual(content.RecruitableUnits.Count, rules.PlayerClasses.Count);
+            Assert.GreaterOrEqual(rules.Steps, 3);
+
+            double depth = 0;
+            int won = 0;
+            const int runs = 20;
+            for (ulong seed = 1; seed <= runs; seed++)
+            {
+                var expedition = new Expedition(rules, seed);
+                while (!expedition.IsOver)
+                {
+                    StageDef stage = expedition.StageForStep();
+                    StageRun run = content.CreateRun(stage, new SeededRandom(seed * 31 + (ulong)expedition.Step), null, null, expedition.Army);
+                    run.BonusRally = expedition.BonusRally;
+                    while (!run.Puzzle.IsFinished)
+                    {
+                        (GridPos a, GridPos b) = BalanceRunner.GreedyMove(run.Puzzle.Board);
+                        run.Puzzle.PlaySwap(a, b);
+                    }
+                    AutoFormation.Fill(run.Roster);
+                    if (!run.StartBattle())
+                    {
+                        break;
+                    }
+                    while (!run.Battle.IsFinished)
+                    {
+                        if (run.Battle.Rally.CanActivate)
+                        {
+                            run.Battle.ActivateRally();
+                        }
+                        run.Battle.Step();
+                    }
+                    expedition.Finish(run);
+                    if (expedition.Phase == ExpeditionPhase.Reward)
+                    {
+                        expedition.Pick(0);
+                    }
+                }
+                depth += expedition.Step;
+                won += expedition.Phase == ExpeditionPhase.Won ? 1 : 0;
+            }
+            UnityEngine.Debug.Log($"Expedition: greedy bot clears {depth / runs:0.0} of {rules.Steps} battles on average, wins {won}/{runs}");
+            Assert.That(depth / runs, Is.InRange(1.0, rules.Steps - 0.3), "average depth");
         }
 
         /// <summary>PB-22: the Kingdom asset is valid: unique ids, buildings that exist in the game, small steps, rising costs.</summary>

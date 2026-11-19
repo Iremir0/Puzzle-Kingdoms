@@ -19,6 +19,8 @@ namespace PuzzleKingdoms.Logic.Flow
         public float EnemyHpGrowth = 0.12f;
         public float EnemyDamageGrowth = 0.08f;
         public int MaxTier = 3;
+        /// <summary>Tier of the boss.</summary>
+        public int BossTier = 2;
         public int RecruitAmount = 3;
         public int RallyAmount = 1;
         public int GoldPerStep = 60;
@@ -144,7 +146,7 @@ namespace PuzzleKingdoms.Logic.Flow
             int placed = 0;
             if (IsBossStep && Rules.Boss != null)
             {
-                stage.Enemies.Add(new EnemySlot { Unit = Rules.Boss, Tier = Rules.MaxTier, Cell = new GridPos(1, 0) });
+                stage.Enemies.Add(new EnemySlot { Unit = Rules.Boss, Tier = Rules.BossTier, Cell = new GridPos(1, 0) });
                 cells.RemoveAll(c => c.X == 1 && c.Y == 0);
                 escorts = 4;
                 tier = Math.Max(1, Rules.MaxTier - 1);

@@ -49,18 +49,18 @@ namespace PuzzleKingdoms.Views.Menus
         public int SelectedStage { get; private set; } = -1;
 
         public static StageMapScreen Create(Transform parent, GameContent content, PlayerProfile profile,
-            Action<int> onPlay, Action onSettings = null, Action<MainTab> onTab = null, Action onDaily = null, string dailyCaption = null)
+            Action<int> onPlay, Action onSettings = null, Action<MainTab> onTab = null, Action onDaily = null, string dailyCaption = null, Action onExpedition = null, string expeditionCaption = null)
         {
             RectTransform root = Ui.Stretch(parent, "StageMapScreen");
             var screen = root.gameObject.AddComponent<StageMapScreen>();
-            screen.Build(content, profile, onPlay, onSettings, onTab, onDaily, dailyCaption);
+            screen.Build(content, profile, onPlay, onSettings, onTab, onDaily, dailyCaption, onExpedition, expeditionCaption);
             return screen;
         }
 
         /// <summary>The tappable node of a stage (tests and the tutorial use it).</summary>
         public RectTransform Node(int index) => (RectTransform)_nodes[index].transform;
 
-        private void Build(GameContent content, PlayerProfile profile, Action<int> onPlay, Action onSettings, Action<MainTab> onTab, Action onDaily, string dailyCaption)
+        private void Build(GameContent content, PlayerProfile profile, Action<int> onPlay, Action onSettings, Action<MainTab> onTab, Action onDaily, string dailyCaption, Action onExpedition, string expeditionCaption)
         {
             _content = content;
             _profile = profile;
@@ -76,12 +76,21 @@ namespace PuzzleKingdoms.Views.Menus
                 Ui.Button(root, "Settings", Ui.ButtonStyle.Secondary, onSettings, 0.7f, 0.94f, 0.97f, 0.985f, 36);
             }
 
-            float mapTop = onDaily != null ? 0.87f : 0.925f;
+            bool banners = onDaily != null || onExpedition != null;
+            float mapTop = banners ? 0.87f : 0.925f;
+            // The two entry buttons share the row above the map (PB-25 Daily, PB-26 Expedition).
+            float dailyRight = onExpedition != null ? 0.49f : 0.97f;
+            float expeditionLeft = onDaily != null ? 0.51f : 0.03f;
             if (onDaily != null)
             {
-                Button daily = Ui.Button(root, dailyCaption ?? Loc.T("Daily Challenge"), Palette.Gold, onDaily, 0.03f, 0.88f, 0.97f, 0.928f, 34);
+                Button daily = Ui.Button(root, dailyCaption ?? Loc.T("Daily Challenge"), Palette.Gold, onDaily, 0.03f, 0.88f, dailyRight, 0.928f, 30);
                 daily.gameObject.name = "Button Daily";
                 daily.GetComponentInChildren<Text>().color = Palette.Background;
+            }
+            if (onExpedition != null)
+            {
+                Button expedition = Ui.Button(root, expeditionCaption ?? Loc.T("Expedition"), Palette.Primary, onExpedition, expeditionLeft, 0.88f, 0.97f, 0.928f, 30);
+                expedition.gameObject.name = "Button Expedition";
             }
             _map = Ui.Card(root, "Map", Land, 0.03f, onTab != null ? 0.375f : 0.33f, 0.97f, mapTop).rectTransform;
             _layer = Ui.Rect(_map, "Layer", 0f, 0f, 1f, 1f);

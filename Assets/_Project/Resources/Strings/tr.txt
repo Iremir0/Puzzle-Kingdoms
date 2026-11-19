@@ -261,3 +261,20 @@ Come back tomorrow for a new challenge.	Yeni meydan okuma için yarın tekrar ge
 Last 7 days	Son 7 gün
 Best: {0}%	En iyi: %{0}
 Back	Geri
+Expedition	Sefer
+Best: {0}	En iyi: {0}
+Army: {0} units	Ordu: {0} birim
+Your army is built in the puzzle before each battle.	Ordun her savaştan önce bulmacada kurulur.
+Start battle	Savaşa başla
+The boss waits at the end of the road.	Boss yolun sonunda bekliyor.
+Battle {0} of {1}: a puzzle first, then the war camp.	Savaş {0}/{1}: önce bulmaca, sonra savaş kampı.
+Give up	Pes et
+Pick a reward	Bir ödül seç
+Expedition complete!	Sefer tamamlandı!
+The expedition ends here.	Sefer burada bitiyor.
+Battles won: {0}	Kazanılan savaş: {0}
+Collect	Topla
+Recruit {0} {1}	{0} {1} topla
+Heal the whole army	Tüm orduyu iyileştir
+Promote your weakest unit	En zayıf birimini yükselt
+{0} extra Rally in the next battle	Sonraki savaşta {0} ek Rally

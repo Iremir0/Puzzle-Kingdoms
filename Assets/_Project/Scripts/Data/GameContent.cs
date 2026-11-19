@@ -28,6 +28,8 @@ namespace PuzzleKingdoms.Data
         [SerializeField] private KingdomRulesAsset kingdomRules;
         [Tooltip("Daily quests, achievements and the star chest (PB-24).")]
         [SerializeField] private QuestRulesAsset quests;
+        [Tooltip("The expedition mode: a run of battles with a carried army (PB-26).")]
+        [SerializeField] private ExpeditionRulesAsset expedition;
         [Tooltip("What the daily challenge is built from (PB-25).")]
         [SerializeField] private DailyChallengeAsset dailyChallenge;
         [Tooltip("The commanders the player can earn (PB-23); the classic Rally is what a player without one has.")]
@@ -52,6 +54,8 @@ namespace PuzzleKingdoms.Data
         public QuestRulesAsset Quests => quests;
         /// <summary>The daily challenge setup (PB-25); may be null (no daily challenge).</summary>
         public DailyChallengeAsset DailyChallenge => dailyChallenge;
+        /// <summary>The expedition setup (PB-26); may be null (no expedition mode).</summary>
+        public ExpeditionRulesAsset Expedition => expedition;
         public IReadOnlyList<CommanderDefinition> Commanders => commanders;
 
         /// <summary>The logic commanders, in asset order.</summary>
@@ -78,11 +82,11 @@ namespace PuzzleKingdoms.Data
 
         /// <summary>Starts an attempt at a stage built in code, such as the day's challenge (PB-25): the default class set.</summary>
         public StageRun CreateRun(StageDef def, IRandom random = null, Logic.Kingdom.KingdomBonuses bonuses = null,
-            Logic.Combat.RallyVariant rallyVariant = null) =>
-            CreateRun(def, recruitableUnits.Select(u => u.Def).ToList(), random, bonuses, rallyVariant);
+            Logic.Combat.RallyVariant rallyVariant = null, IReadOnlyList<ArmyUnit> carried = null) =>
+            CreateRun(def, recruitableUnits.Select(u => u.Def).ToList(), random, bonuses, rallyVariant, carried);
 
         private StageRun CreateRun(StageDef def, List<UnitDef> units, IRandom random, Logic.Kingdom.KingdomBonuses bonuses,
-            Logic.Combat.RallyVariant rallyVariant)
+            Logic.Combat.RallyVariant rallyVariant, IReadOnlyList<ArmyUnit> carried = null)
         {
             return new StageRun(
                 def,
@@ -93,7 +97,8 @@ namespace PuzzleKingdoms.Data
                 progressionRules.Rules,
                 random ?? StageRun.CreateRandom(def),
                 bonuses,
-                rallyVariant);
+                rallyVariant,
+                carried);
         }
     }
 }

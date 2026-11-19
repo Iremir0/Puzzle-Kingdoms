@@ -88,8 +88,9 @@ namespace PuzzleKingdoms.Tests.Flow
 
             Expedition late = At(Rules(), 7, 2);
             StageDef last = late.StageForStep();
+            int expectedBossTier = late.Rules.BossTier;
             Assert.IsTrue(late.IsBossStep);
-            Assert.IsTrue(last.Enemies.Any(e => e.Unit.Id == "goblin_chief" && e.Tier == 3), "the boss, tier 3");
+            Assert.IsTrue(last.Enemies.Any(e => e.Unit.Id == "goblin_chief" && e.Tier == expectedBossTier), "the boss");
             Assert.Greater(last.EnemyHpMultiplier, first.EnemyHpMultiplier);
             Assert.AreEqual(8, last.Moves, "fewer moves after the first battle");
             Assert.AreEqual(last.Enemies.Count, last.Enemies.Select(e => e.Cell.X * Formation.Size + e.Cell.Y).Distinct().Count());
