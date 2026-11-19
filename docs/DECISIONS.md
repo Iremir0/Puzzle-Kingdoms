@@ -705,3 +705,17 @@ battles and up to 10 starred ones (save version 8). The replay player is the nor
 driven by the replay: no Rally button, a timeline with Rally marks, 1x/2x/4x, Restart, and a tap on the timeline
 starts a new screen at that tick (the simulator is advanced without drawing). The list opens from Settings → Replays.
 Sharing a video clip is split off: it needs a recorder plugin and a phone, to be chosen and added to CREDITS.md first.
+
+## D-064 - Business model: free with rewarded ads and a Supporter pack (2026-11-19)
+
+The game is free. Money comes only from ads the player chooses to watch and from one optional purchase; power is never
+sold (pillar 2): no ad and no purchase adds strength, units or stars. There are no forced ads (no interstitials, no banners).
+Rewarded ads give a little time or gold: +5 puzzle moves when the moves run out (once per attempt), one extra Rally
+charge in the War Camp (once per attempt), and 100 gold in the Shop (3 times a day). They are offered only in the
+campaign; the daily challenge and the expedition stay comparable and balanced without them. The Supporter pack
+(about $2.99, one purchase) grants every one of these rewards without watching an ad; it is the "ad-free" product, since there
+are no forced ads to remove. Crowns, a season pass and the second currency of the card are left out for now; the plan
+is to add them in their own card if this part earns its place. Code: `IAds` and `IBilling` interfaces (`NoAds`/`NoBilling`
+in release builds until the SDKs are added, `TestAds`/`TestBilling` in the editor and dev builds), rewards in
+`StageRun`/`AdLedger`, numbers in `Data/Monetization.asset`, save version 9. The real ad SDK and Google Play Billing, the
+store products and a consent check (PB-29) before personalised ads are the owner's next steps.

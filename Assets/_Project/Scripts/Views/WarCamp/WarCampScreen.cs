@@ -34,6 +34,8 @@ namespace PuzzleKingdoms.Views.WarCamp
 
         private StageRun _run;
         private Action _onFight;
+        private AdOffer _extraRally; // PB-30: a rewarded ad for one more Rally charge
+        private Text _rallyLabel;
         private FormationGridView _grid;
         private BenchView _bench;
         private Text _info;
@@ -64,10 +66,11 @@ namespace PuzzleKingdoms.Views.WarCamp
             public RectTransform Ghost;
         }
 
-        public static WarCampScreen Create(Transform parent, StageRun run, Action onFight)
+        public static WarCampScreen Create(Transform parent, StageRun run, Action onFight, AdOffer extraRally = null)
         {
             RectTransform root = Ui.Stretch(parent, "WarCampScreen");
             var screen = root.gameObject.AddComponent<WarCampScreen>();
+            screen._extraRally = extraRally;
             screen.Build(run, onFight);
             return screen;
         }
@@ -81,13 +84,24 @@ namespace PuzzleKingdoms.Views.WarCamp
             Ui.Backdrop(root);
 
             Ui.Label(root, Loc.T("War Camp"), 52, TextAnchor.MiddleLeft, Palette.Text, 0.04f, 0.93f, 0.6f, 0.99f);
-            Ui.Label(root, Loc.F("Rally charges: {0}", _run.RallyCharges), 40, TextAnchor.MiddleRight, Palette.Gold,
+            _rallyLabel = Ui.Label(root, Loc.F("Rally charges: {0}", _run.RallyCharges), 40, TextAnchor.MiddleRight, Palette.Gold,
                 0.5f, 0.93f, 0.96f, 0.99f);
             if (_run.RallyVariant != null && _run.RallyVariant.Kind != RallyKind.Classic)
             {
                 // PB-23: the commander leading this army and what its Rally does.
                 Ui.Label(root, Loc.F("Commander: {0}", Loc.T(_run.RallyVariant.DisplayName)), 30, TextAnchor.MiddleRight, Palette.Muted,
                     0.4f, 0.905f, 0.96f, 0.935f);
+            }
+            if (_extraRally != null && _extraRally.Available())
+            {
+                Button ad = null;
+                ad = Ui.Button(root, _extraRally.Caption, Palette.Gold, () => _extraRally.Request(() =>
+                {
+                    ad.gameObject.SetActive(false);
+                    _rallyLabel.text = Loc.F("Rally charges: {0}", _run.RallyCharges + _run.BonusRally);
+                }), 0.25f, 0.935f, 0.5f, 0.99f, 26);
+                ad.gameObject.name = "Button Extra Rally";
+                ad.GetComponentInChildren<Text>().color = Palette.Background;
             }
 
             Ui.Card(root, "Enemy Panel", Palette.Panel, 0.03f, 0.75f, 0.97f, 0.925f);

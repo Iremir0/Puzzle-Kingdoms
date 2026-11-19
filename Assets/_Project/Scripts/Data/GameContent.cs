@@ -28,6 +28,8 @@ namespace PuzzleKingdoms.Data
         [SerializeField] private KingdomRulesAsset kingdomRules;
         [Tooltip("Daily quests, achievements and the star chest (PB-24).")]
         [SerializeField] private QuestRulesAsset quests;
+        [Tooltip("What rewarded ads give (PB-30).")]
+        [SerializeField] private MonetizationRulesAsset monetization;
         [Tooltip("The expedition mode: a run of battles with a carried army (PB-26).")]
         [SerializeField] private ExpeditionRulesAsset expedition;
         [Tooltip("What the daily challenge is built from (PB-25).")]
@@ -56,6 +58,8 @@ namespace PuzzleKingdoms.Data
         public DailyChallengeAsset DailyChallenge => dailyChallenge;
         /// <summary>The expedition setup (PB-26); may be null (no expedition mode).</summary>
         public ExpeditionRulesAsset Expedition => expedition;
+        /// <summary>Rewarded ad numbers (PB-30); may be null (the defaults apply).</summary>
+        public MonetizationRulesAsset Monetization => monetization;
         public IReadOnlyList<CommanderDefinition> Commanders => commanders;
 
         /// <summary>The logic commanders, in asset order.</summary>

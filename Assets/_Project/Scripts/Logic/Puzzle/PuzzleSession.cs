@@ -53,6 +53,20 @@ namespace PuzzleKingdoms.Logic.Puzzle
 
         public bool IsFinished => MovesLeft <= 0;
 
+        /// <summary>
+        /// Gives more moves, also after the puzzle ended (a rewarded ad, PB-30). Fires <see cref="MovesChanged"/>;
+        /// <see cref="Finished"/> fires again when the new moves run out.
+        /// </summary>
+        public void AddMoves(int moves)
+        {
+            if (moves <= 0)
+            {
+                return;
+            }
+            MovesLeft += moves;
+            MovesChanged?.Invoke(MovesLeft);
+        }
+
         // ---- Boss board effect and ice (PB-20, D-050) ----
 
         /// <summary>The boss drops stones every this many moves; 0 = no boss effect.</summary>

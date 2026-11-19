@@ -293,6 +293,12 @@ Restart, and a tap on the timeline jumps there. A replay made before a rules cha
 cannot be watched. Sharing a clip is not built yet.
 of D-045 (16 cards, PB-18 to PB-33, in four waves).
 
+
+**Shop and ads (PB-30, D-064).** The game is free. The Shop tab gives 100 gold for watching an ad, three times a day.
+When the puzzle moves run out in a campaign stage, an ad adds 5 moves (once per attempt); in the War Camp an ad adds one
+Rally charge (once per attempt). The daily challenge and the expedition have no ad offers. The one purchase is the
+Supporter pack: every ad reward without watching an ad. No ad and no purchase makes the army stronger. Numbers:
+`Data/Monetization.asset`.
 ## 11. Stages (MVP)
 
 | Stage | Name | Enemies | Lesson |

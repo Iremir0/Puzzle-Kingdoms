@@ -74,7 +74,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             yield return null;
             Assert.IsInstanceOf<KingdomScreen>(_app.CurrentScreen);
             Assert.IsTrue(FindButton(_app.CurrentScreen, "Tab Commanders").interactable, "Commanders opens since PB-23");
-            Assert.IsFalse(FindButton(_app.CurrentScreen, "Tab Shop").interactable, "the Shop is not built yet");
+            Assert.IsTrue(FindButton(_app.CurrentScreen, "Tab Shop").interactable, "the Shop is open (PB-30)");
             FindButton(_app.CurrentScreen, "Tab Map").onClick.Invoke();
             yield return null;
             Assert.IsInstanceOf<StageMapScreen>(_app.CurrentScreen);

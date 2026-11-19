@@ -82,6 +82,8 @@ namespace PuzzleKingdoms.Views.Puzzle
         private Text _status;
         private Text _bonus;
         private Button _continue;
+        private Button _adMoves;
+        private AdOffer _extraMoves; // PB-30: a rewarded ad for more moves when the puzzle has ended
         private readonly List<(string key, RectTransform fill, Text label)> _meters =
             new List<(string, RectTransform, Text)>();
         private GridPos? _selected;
@@ -123,10 +125,11 @@ namespace PuzzleKingdoms.Views.Puzzle
             }
         }
 
-        public static PuzzleScreen Create(Transform parent, StageRun run, Action onDone)
+        public static PuzzleScreen Create(Transform parent, StageRun run, Action onDone, AdOffer extraMoves = null)
         {
             RectTransform root = Ui.Stretch(parent, "PuzzleScreen");
             var screen = root.gameObject.AddComponent<PuzzleScreen>();
+            screen._extraMoves = extraMoves;
             screen.Build(run, onDone);
             return screen;
         }
@@ -912,6 +915,32 @@ namespace PuzzleKingdoms.Views.Puzzle
             _status.rectTransform.anchorMin = new Vector2(0.04f, 0.095f);
             _status.rectTransform.anchorMax = new Vector2(0.96f, 0.155f);
             _continue.gameObject.SetActive(true);
+            bool offer = _extraMoves != null && _extraMoves.Available();
+            Ui.SetAnchors(_continue.GetComponent<RectTransform>(), offer ? 0.03f : 0.2f, 0.02f, offer ? 0.5f : 0.8f, 0.09f);
+            if (offer)
+            {
+                if (_adMoves == null)
+                {
+                    _adMoves = Ui.Button(transform, _extraMoves.Caption, Palette.Gold, TakeExtraMoves, 0.52f, 0.02f, 0.97f, 0.09f, 30);
+                    _adMoves.gameObject.name = "Button Extra moves";
+                    _adMoves.GetComponentInChildren<Text>().color = Palette.Background;
+                }
+                _adMoves.gameObject.SetActive(true);
+            }
+        }
+
+        private void TakeExtraMoves()
+        {
+            _extraMoves.Request(() =>
+            {
+                // The run is back in the puzzle phase with more moves: hide the buttons and play on.
+                _adMoves.gameObject.SetActive(false);
+                _continue.gameObject.SetActive(false);
+                _status.text = Loc.T("Swap two neighbouring gems. Tap or swipe.");
+                _status.rectTransform.anchorMin = new Vector2(0.04f, 0.02f);
+                _status.rectTransform.anchorMax = new Vector2(0.82f, 0.1f);
+                RefreshHud();
+            });
         }
     }
 }

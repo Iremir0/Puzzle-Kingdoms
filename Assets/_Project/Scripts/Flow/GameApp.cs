@@ -65,6 +65,118 @@ namespace PuzzleKingdoms.Flow
 
         private Language? _languageOverride;
 
+        // ---- Rewarded ads and the Shop (PB-30, D-064) ----
+
+        private IAds _ads;
+        private IBilling _billing;
+
+        /// <summary>Lets tests (or a real SDK) replace the ads. Without an ad SDK the game ships with <see cref="NoAds"/>.</summary>
+        public void UseAds(IAds ads) => _ads = ads;
+
+        public void UseBilling(IBilling billing) => _billing = billing;
+
+        public IAds Ads => _ads ??= (Application.isEditor || Debug.isDebugBuild ? new TestAds() : (IAds)new NoAds());
+
+        public IBilling Billing => _billing ??= (Application.isEditor || Debug.isDebugBuild ? new TestBilling() : (IBilling)new NoBilling());
+
+        public MonetizationRules AdRules => content.Monetization != null ? content.Monetization.Rules() : new MonetizationRules();
+
+        private bool CanRewardNow => Profile.AdLedger.Supporter || Ads.IsReady;
+
+        /// <summary>Gives a reward after an ad (or at once for a Supporter). <paramref name="apply"/> must return true when granted.</summary>
+        private void Reward(System.Func<bool> apply, System.Action granted)
+        {
+            void Grant()
+            {
+                if (apply())
+                {
+                    _store.Save(Profile);
+                    granted?.Invoke();
+                }
+            }
+            if (Profile.AdLedger.Supporter)
+            {
+                Grant();
+            }
+            else
+            {
+                Ads.ShowRewarded(ok =>
+                {
+                    if (ok)
+                    {
+                        Grant();
+                    }
+                });
+            }
+        }
+
+        private string AdCaption(string text) => Profile.AdLedger.Supporter ? text : Loc.T("Ad") + ": " + text;
+
+        /// <summary>The extra-moves offer of a campaign attempt, or null (the daily challenge and the expedition have none).</summary>
+        private AdOffer ExtraMovesOffer()
+        {
+            if (_dailyDay != null || _expeditionBattle)
+            {
+                return null;
+            }
+            MonetizationRules rules = AdRules;
+            return new AdOffer
+            {
+                Available = () => Run != null && Run.CanGrantExtraMoves && CanRewardNow,
+                Caption = AdCaption(Loc.F("+{0} moves", rules.ExtraMoves)),
+                Request = granted => Reward(() => Run.TryGrantExtraMoves(rules.ExtraMoves), granted),
+            };
+        }
+
+        private AdOffer ExtraRallyOffer()
+        {
+            if (_dailyDay != null || _expeditionBattle)
+            {
+                return null;
+            }
+            MonetizationRules rules = AdRules;
+            return new AdOffer
+            {
+                Available = () => Run != null && Run.CanGrantExtraRally && CanRewardNow,
+                Caption = AdCaption(Loc.F("+{0} Rally", rules.ExtraRally)),
+                Request = granted => Reward(() => Run.TryGrantExtraRally(rules.ExtraRally), granted),
+            };
+        }
+
+        /// <summary>The Shop tab.</summary>
+        public void ShowShop()
+        {
+            Run = null;
+            RefreshQuests();
+            MonetizationRules rules = AdRules;
+            var info = new ShopScreen.Info
+            {
+                Gold = Profile.Gold,
+                Supporter = Profile.AdLedger.Supporter,
+                GoldAdsLeft = Profile.AdLedger.GoldAdsLeft(Today, rules),
+                GoldPerAd = rules.BonusGold,
+                AdsReady = Ads.IsReady,
+                BillingAvailable = Billing.IsAvailable,
+                Price = Billing.SupporterPrice,
+            };
+            Show(ShopScreen.Create(_screenRoot, info, new ShopScreen.Actions
+            {
+                WatchGold = () => Reward(() => Profile.TakeGoldAd(Today, rules), ShowShop),
+                BuySupporter = () => Billing.BuySupporter(ok => OnSupporterResult(ok)),
+                Restore = () => Billing.RestoreSupporter(ok => OnSupporterResult(ok)),
+            }, OnTab));
+        }
+
+        private void OnSupporterResult(bool owned)
+        {
+            if (owned)
+            {
+                Profile.SetSupporter(true);
+                _store.Save(Profile);
+            }
+            ShowShop();
+        }
+
         // ---- Battle replays (PB-28, D-063) ----
 
         /// <summary>Keeps the battle that just ended as a replay.</summary>
@@ -464,6 +576,10 @@ namespace PuzzleKingdoms.Flow
             {
                 ShowQuests();
             }
+            else if (tab == MainTab.Shop)
+            {
+                ShowShop();
+            }
             else if (tab == MainTab.Map)
             {
                 ShowStageSelect();
@@ -702,14 +818,14 @@ namespace PuzzleKingdoms.Flow
             _attemptsPerStage.TryGetValue(Run.Stage.Id, out int attempts);
             _attemptsPerStage[Run.Stage.Id] = ++attempts;
             _analytics.Send(GameEvents.StageStarted(Run.Stage.Id, attempts));
-            Show(PuzzleScreen.Create(_screenRoot, Run, ShowWarCamp));
+            Show(PuzzleScreen.Create(_screenRoot, Run, ShowWarCamp, ExtraMovesOffer()));
             OnTrigger(TutorialTrigger.PuzzleStarted);
         }
 
         public void ShowWarCamp()
         {
             _campStarted = Time.realtimeSinceStartup;
-            Show(WarCampScreen.Create(_screenRoot, Run, ShowBattle));
+            Show(WarCampScreen.Create(_screenRoot, Run, ShowBattle, ExtraRallyOffer()));
             OnTrigger(TutorialTrigger.WarCampOpened);
         }
 

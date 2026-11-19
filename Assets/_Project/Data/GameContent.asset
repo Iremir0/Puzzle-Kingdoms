@@ -41,6 +41,7 @@ MonoBehaviour:
   quests: {fileID: 11400000, guid: 8192a3b4c5d64e273849b1c2d3e4f5a8, type: 2}
   dailyChallenge: {fileID: 11400000, guid: 0667b04ce74a163e5e1a8d9b4845d879, type: 2}
   expedition: {fileID: 11400000, guid: b6e64f34aa017ba1f93a4cde692cddd8, type: 2}
+  monetization: {fileID: 11400000, guid: a33765774a8911a15e2c52302a4838cc, type: 2}
   commanders:
   - {fileID: 11400000, guid: 8df9ff878a3228f2ccf9e9b453db77db, type: 2}
   - {fileID: 11400000, guid: 6558c0a6938cb957ad2dca2a33f61c8c, type: 2}

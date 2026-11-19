@@ -286,3 +286,19 @@ Kept	Saklandı
 Watch	İzle
 Replays	Tekrarlar
 Restart	Baştan
+Ad	Reklam
+Take	Al
+Restore	Geri yükle
+Watch an ad	Reklam izle
+Free gold: +{0}	Ücretsiz altın: +{0}
+{0} left today	Bugün {0} hakkın var
+Come back tomorrow	Yarın tekrar gel
+No ad available right now	Şu an gösterilecek reklam yok
+Supporter pack	Destekçi paketi
+Every ad reward comes without watching an ad. It helps us make the game. Nothing else changes.	Her reklam ödülü reklam izlemeden gelir. Oyunu yapmamıza yardım eder. Başka hiçbir şey değişmez.
+Thank you! You are a Supporter.	Teşekkürler! Artık bir Destekçisin.
+Buy {0}	Satın al {0}
+Not available on this device yet.	Bu cihazda henüz kullanılamıyor.
+Power is never for sale: no ad and no purchase makes your army stronger.	Güç asla satılmaz: hiçbir reklam ya da satın alma ordunu güçlendirmez.
++{0} moves	+{0} hamle
++{0} Rally	+{0} Rally
