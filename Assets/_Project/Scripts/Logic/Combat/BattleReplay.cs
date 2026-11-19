@@ -32,6 +32,9 @@ namespace PuzzleKingdoms.Logic.Combat
         }
 
         public string Title = "";
+        /// <summary>Which stage the battle was in, for the arena picture.</summary>
+        public string StageId = "";
+        public int Chapter = 1;
         public string Stamp = "";
         public int RallyCharges;
         public RallyVariant Variant;
@@ -59,6 +62,8 @@ namespace PuzzleKingdoms.Logic.Combat
             var replay = new BattleReplay
             {
                 Title = title ?? "",
+                StageId = run.Stage.Id,
+                Chapter = run.Stage.Chapter,
                 RallyCharges = run.RallyCharges + run.BonusRally,
                 Variant = battle.Variant,
                 EnemyHp = run.Stage.EnemyHpMultiplier,
@@ -235,6 +240,7 @@ namespace PuzzleKingdoms.Logic.Combat
             text.Append(Header).Append(' ').Append(FormatVersion).Append('\n');
             text.Append("title=").Append(Title.Replace('\n', ' ')).Append('\n');
             text.Append("stamp=").Append(Stamp).Append('\n');
+            text.Append("stage=").Append(StageId).Append('|').Append(Chapter).Append('\n');
             text.Append("rally=").Append(RallyCharges).Append('\n');
             RallyVariant v = Variant ?? new RallyVariant();
             text.Append("variant=").Append(v.Id).Append('|').Append((int)v.Kind).Append('|').Append(F(v.DurationSeconds)).Append('|')
@@ -298,6 +304,7 @@ namespace PuzzleKingdoms.Logic.Combat
                     {
                         case "title": replay.Title = value; break;
                         case "stamp": replay.Stamp = value; break;
+                        case "stage": replay.StageId = p[0]; replay.Chapter = p.Length > 1 ? Int(p[1]) : 1; break;
                         case "rally": replay.RallyCharges = Int(value); break;
                         case "variant":
                             replay.Variant = new RallyVariant

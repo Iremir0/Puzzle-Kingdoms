@@ -692,3 +692,16 @@ The same seed gives the same enemies, boards and offers. The player's buildings 
 daily challenge. The run is saved after every battle and every pick (save version 7) and resumes from the map button.
 Numbers: `Data/ExpeditionRules.asset`. A simple bot that never merges clears 3.9 of 5 battles and wins 2 of 20 runs;
 a player who merges should do clearly better. Meta rewards beyond gold and leaderboards stay out of this card.
+
+## D-063 - Battle replays (2026-11-19)
+
+A battle is saved as a small text (`BattleReplay`, format version 1): both armies at the first tick (class, tier, cell,
+wounds), the stage's enemy strength, the Rally variant and the building bonuses, and the ticks where Rally was
+pressed. The simulator is deterministic, so playing it again from that text gives the same battle tick for tick (tested:
+same ticks, same HP of every unit, same Rally ticks). A `Stamp`, a hash of the battle and army rules and of the numbers of
+every unit in the battle, tells whether the game still plays the battle as it was fought; a replay with an old stamp is
+listed as "Older version" and cannot be watched (it would play out differently). The profile keeps the last 5
+battles and up to 10 starred ones (save version 8). The replay player is the normal battle screen with the simulator
+driven by the replay: no Rally button, a timeline with Rally marks, 1x/2x/4x, Restart, and a tap on the timeline
+starts a new screen at that tick (the simulator is advanced without drawing). The list opens from Settings → Replays.
+Sharing a video clip is split off: it needs a recorder plugin and a phone, to be chosen and added to CREDITS.md first.

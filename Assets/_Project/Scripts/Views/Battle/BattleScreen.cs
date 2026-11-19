@@ -69,6 +69,46 @@ namespace PuzzleKingdoms.Views.Battle
         private readonly List<GameObject> _flat = new List<GameObject>();
 
         public BattleSimulator Simulator => _sim;
+        // PB-28: replay mode plays a saved battle: no Rally button, a timeline, close and restart.
+        private BattleReplay _replay;
+        private Action _onClose;
+        private Action<int> _onSeek;
+        private ReplayTimeline _timeline;
+
+        /// <summary>True when the screen plays a saved replay.</summary>
+        public bool IsReplay => _replay != null;
+
+        /// <summary>The timeline of a replay (tests read its fill); null otherwise.</summary>
+        public ReplayTimeline Timeline => _timeline;
+
+        /// <summary>
+        /// Plays a saved battle (PB-28). <paramref name="sim"/> comes from <see cref="BattleReplay.Rebuild"/>, possibly
+        /// already advanced to a tick; <paramref name="onSeek"/> is asked for a new screen at a tick (0 = restart).
+        /// </summary>
+        public static BattleScreen CreateReplay(Transform parent, BattleSimulator sim, BattleReplay replay, Action onClose,
+            Action<int> onSeek, int startSpeed = 1)
+        {
+            RectTransform root = Ui.Stretch(parent, "BattleScreen");
+            var screen = root.gameObject.AddComponent<BattleScreen>();
+            screen._speedFactor = startSpeed == 2 || startSpeed == 4 ? startSpeed : 1;
+            screen._replay = replay;
+            screen._onClose = onClose;
+            screen._onSeek = onSeek;
+            screen.Build(sim, null, ArtSprites.Arena(replay.StageId, replay.Chapter), null);
+            return screen;
+        }
+
+        private void BuildReplayControls(Transform root)
+        {
+            _rally.gameObject.SetActive(false);
+            Button close = Ui.Button(root, "Close", Ui.ButtonStyle.Secondary, () => _onClose?.Invoke(), 0.03f, 0.02f, 0.27f, 0.12f, 40);
+            close.gameObject.name = "Replay Close";
+            Button restart = Ui.Button(root, "Restart", Ui.ButtonStyle.Secondary, () => _onSeek?.Invoke(0), 0.29f, 0.02f, 0.5f, 0.12f, 34);
+            restart.gameObject.name = "Replay Restart";
+            _timeline = ReplayTimeline.Create(root, _replay, _sim.Rules, tick => _onSeek?.Invoke(tick));
+            _world.SnapToSimulator();
+        }
+
 
         /// <summary>True while the 3D view is shown (PB-11); false for the grey-box 2D debug view.</summary>
         public bool Is3D => _show3D;
@@ -79,17 +119,17 @@ namespace PuzzleKingdoms.Views.Battle
             RectTransform root = Ui.Stretch(parent, "BattleScreen");
             var screen = root.gameObject.AddComponent<BattleScreen>();
             screen._speedFactor = startSpeed == 2 ? 2 : 1;
-            screen.Build(run, onFinished);
+            screen.Build(run.Battle, run.Goal, ArtSprites.Arena(run.Stage.Id, run.Stage.Chapter), onFinished);
             return screen;
         }
 
         /// <summary>Current speed multiplier (1 or 2).</summary>
         public int SpeedFactor => _speedFactor;
 
-        private void Build(StageRun run, Action onFinished)
+        private void Build(BattleSimulator sim, StageGoal goal, Texture2D arena, Action onFinished)
         {
-            _sim = run.Battle;
-            _goal = run.Goal;
+            _sim = sim;
+            _goal = goal;
             _onFinished = onFinished;
             Transform root = transform;
             Ui.Backdrop(root);
@@ -106,7 +146,7 @@ namespace PuzzleKingdoms.Views.Battle
             _flat.Add(ground);
 
             // PB-11: the 3D battlefield is drawn by its own camera into a texture shown here, below the glow.
-            _world = BattleWorld3D.Create(_sim, arena: ArtSprites.Arena(run.Stage.Id, run.Stage.Chapter));
+            _world = BattleWorld3D.Create(_sim, arena: arena);
             RectTransform view3D = Ui.Stretch(_field, "View 3D");
             var picture = view3D.gameObject.AddComponent<RawImage>();
             picture.texture = _world.Texture;
@@ -137,6 +177,10 @@ namespace PuzzleKingdoms.Views.Battle
             _speed = Ui.Button(root, $"{_speedFactor}x", Ui.ButtonStyle.Secondary, OnSpeed, 0.52f, 0.02f, 0.67f, 0.12f);
             _pause = Ui.Button(root, "Pause", Ui.ButtonStyle.Secondary, OnPause, 0.69f, 0.02f, 0.84f, 0.12f, 38);
             Ui.Button(root, "Skip", Ui.ButtonStyle.Secondary, OnSkip, 0.86f, 0.02f, 0.97f, 0.12f, 38);
+            if (_replay != null)
+            {
+                BuildReplayControls(root);
+            }
             RefreshHud();
         }
 
@@ -187,7 +231,7 @@ namespace PuzzleKingdoms.Views.Battle
                 while (_accumulator >= tick && !_sim.IsFinished && steps++ < MaxTicksPerFrame)
                 {
                     _accumulator -= tick;
-                    List<BattleEvent> events = _sim.Step();
+                    List<BattleEvent> events = _replay != null ? _replay.Advance(_sim) : _sim.Step();
                     Play(events);
                     _world.OnStep(events);
                 }
@@ -324,6 +368,7 @@ namespace PuzzleKingdoms.Views.Battle
         private void RefreshHud()
         {
             _header.text = Loc.F("Allies {0}  vs  Enemies {1}", _sim.AliveCount(Side.Player), _sim.AliveCount(Side.Enemy));
+            _timeline?.SetTick(_sim.Tick);
             float seconds = (float)_sim.Tick / _sim.Rules.TicksPerSecond;
             _clock.text = _goal != null && _goal.Kind == StageGoalKind.WinWithin
                 ? Loc.F("{0:0.0} / {1} s", seconds, _goal.Target)
@@ -349,7 +394,7 @@ namespace PuzzleKingdoms.Views.Battle
 
         private void OnRally()
         {
-            if (_sim.ActivateRally())
+            if (_replay == null && _sim.ActivateRally())
             {
                 RefreshHud();
             }
@@ -357,7 +402,7 @@ namespace PuzzleKingdoms.Views.Battle
 
         private void OnSpeed()
         {
-            _speedFactor = _speedFactor == 1 ? 2 : 1;
+            _speedFactor = _replay != null ? (_speedFactor == 1 ? 2 : _speedFactor == 2 ? 4 : 1) : (_speedFactor == 1 ? 2 : 1);
             Ui.SetCaption(_speed, $"{_speedFactor}x");
         }
 
@@ -379,7 +424,7 @@ namespace PuzzleKingdoms.Views.Battle
         {
             while (!_sim.IsFinished)
             {
-                _sim.Step();
+                if (_replay != null) { _replay.Advance(_sim); } else { _sim.Step(); }
             }
             _world.SnapToSimulator();
             RefreshHud();
@@ -396,7 +441,7 @@ namespace PuzzleKingdoms.Views.Battle
             BattleResult result = _sim.Result;
             _banner.text = result.Victory ? Loc.T("Victory!") : (result.TimedOut ? Loc.T("Time up") : Loc.T("Defeat"));
             _banner.color = result.Victory ? Palette.Gold : Palette.Bad;
-            _endTimer = EndDelaySeconds;
+            _endTimer = _replay != null ? float.MaxValue : EndDelaySeconds; // a replay waits for the player
         }
     }
 }

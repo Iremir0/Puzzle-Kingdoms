@@ -278,3 +278,11 @@ Recruit {0} {1}	{0} {1} topla
 Heal the whole army	Tüm orduyu iyileştir
 Promote your weakest unit	En zayıf birimini yükselt
 {0} extra Rally in the next battle	Sonraki savaşta {0} ek Rally
+Battle replays	Savaş tekrarları
+No replays yet. Every battle you fight is saved here.	Henüz tekrar yok. Yaptığın her savaş burada saklanır.
+Older version	Eski sürüm
+Keep	Sakla
+Kept	Saklandı
+Watch	İzle
+Replays	Tekrarlar
+Restart	Baştan
