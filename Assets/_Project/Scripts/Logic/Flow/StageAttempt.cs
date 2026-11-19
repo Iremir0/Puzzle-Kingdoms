@@ -48,6 +48,8 @@ namespace PuzzleKingdoms.Logic.Flow
         /// </summary>
         public string formation = "";
         public int gold;
+        /// <summary>The highest unit tier in the formation (PB-24 quests).</summary>
+        public int maxTier;
 
         /// <summary>The record of a finished run, or null if the battle is not over yet.</summary>
         public static StageAttempt From(StageRun run)
@@ -88,7 +90,22 @@ namespace PuzzleKingdoms.Logic.Flow
                 rallyUsed = run.RallyCharges - run.Battle.Rally.Charges,
                 formation = Describe(run.Roster.Formation),
                 gold = run.Reward.TotalGold,
+                maxTier = HighestTier(run.Roster.Formation),
             };
+        }
+
+        private static int HighestTier(Formation formation)
+        {
+            int best = 0;
+            for (int y = 0; y < Formation.Size; y++)
+            {
+                for (int x = 0; x < Formation.Size; x++)
+                {
+                    ArmyUnit unit = formation.GetUnit(new GridPos(x, y));
+                    best = unit == null ? best : Math.Max(best, unit.Tier);
+                }
+            }
+            return best;
         }
 
         /// <summary>Rows front to back, see <see cref="formation"/>.</summary>
@@ -118,5 +135,16 @@ namespace PuzzleKingdoms.Logic.Flow
             char letter = string.IsNullOrEmpty(id) ? '?' : char.ToUpperInvariant(id.First());
             return letter + unit.Tier.ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
+
+        /// <summary>What this attempt is worth to the quests (PB-24).</summary>
+        public Quests.QuestEvent ToQuestEvent() => new Quests.QuestEvent
+        {
+            Won = victory,
+            RallyUsed = rallyUsed,
+            Recruited = recruited,
+            Merges = merges,
+            Gold = gold,
+            MaxTier = maxTier,
+        };
     }
 }
