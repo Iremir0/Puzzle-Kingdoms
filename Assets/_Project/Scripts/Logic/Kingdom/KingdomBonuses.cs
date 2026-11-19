@@ -36,6 +36,17 @@ namespace PuzzleKingdoms.Logic.Kingdom
         private static float Multiplier(Dictionary<string, float> map, string unitId) =>
             1f + (map.TryGetValue(unitId ?? "", out float bonus) ? bonus : 0f);
 
+        /// <summary>Every bonus added so far, for saving a replay (PB-28).</summary>
+        public System.Collections.Generic.List<(BuildingStat stat, string unitId, float bonus)> Entries()
+        {
+            var list = new System.Collections.Generic.List<(BuildingStat, string, float)>();
+            foreach (var pair in _hp) { list.Add((BuildingStat.UnitHp, pair.Key, pair.Value)); }
+            foreach (var pair in _attackSpeed) { list.Add((BuildingStat.UnitAttackSpeed, pair.Key, pair.Value)); }
+            foreach (var pair in _damage) { list.Add((BuildingStat.UnitDamage, pair.Key, pair.Value)); }
+            if (_gold != 0f) { list.Add((BuildingStat.StageGold, "", _gold)); }
+            return list;
+        }
+
         public float HpMultiplier(string unitId) => Multiplier(_hp, unitId);
 
         public float DamageMultiplier(string unitId) => Multiplier(_damage, unitId);
