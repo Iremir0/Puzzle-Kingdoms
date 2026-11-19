@@ -1,7 +1,8 @@
 # Team Board
 
 Two developers: **Alican** and **Emir**. This file is the single task board;
-the long-term plan stays in [ROADMAP.md](ROADMAP.md).
+the long-term plan stays in [ROADMAP.md](ROADMAP.md). What is left for the owners (phone,
+accounts, files, decisions) is collected in [OWNER-TASKS.md](OWNER-TASKS.md).
 
 Every card has a detail file in [cards/](cards/): why it matters, what exists
 today (with links to the code), the steps, a mockup and free prototype assets,
