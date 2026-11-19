@@ -78,7 +78,7 @@ private until shared).
 | [PB-26](cards/PB-26.md) | Expedition mode (roguelite) | 3 | M8 | L |  5 battles in a row, army and wounds carry over, reward picks. Merged into `main` 2026-11-19 (D-062); left: a look on a phone, art for the road, wounds in the War Camp |
 | [PB-30](cards/PB-30.md) | Economy and revenue | 3 | M8 | L | Crowns, rewarded ads, ad-free pack, season pass; power never sold. Model decided (D-064): free with rewarded ads + Supporter pack. Merged into `main` 2026-11-19 (Logic and screens); left: ad SDK, Google Play Billing, store products, crowns and season pass (later) |
 | [PB-31](cards/PB-31.md) | Cloud save, Google Play Games | 3 | M8 | M | Save follows the player to a new phone, conflict choice. Conflict rule, upload flow, Settings row and dialog merged into `main` 2026-11-19 (D-065); left (owner): Play Games plugin, Play Console app, a second phone |
-| [PB-33](cards/PB-33.md) | Real music and sound | 3 | M8 | M | Music per screen, 15 effects replaced |
+| [PB-33](cards/PB-33.md) | Real music and sound | 3 | M8 | M | Music per screen, 15 effects replaced. Code, import rules and method built on `feature/PB-33-audio` (D-066, docs/AUDIO.md); left: the real files (owner) |
 | [PB-27](cards/PB-27.md) | Async PvP: defence armies | 4 | M9 | L | Save a defence, others attack it; server re-runs battles to verify |
 | [PB-28](cards/PB-28.md) | Battle replays and sharing | 4 | M9 | M | Replays from inputs, timeline, share a clip. Merged into `main` 2026-11-19 (D-063); left: sharing a clip (plugin choice), a look on a phone |
 
