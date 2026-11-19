@@ -142,7 +142,7 @@ namespace PuzzleKingdoms.Logic.Flow
         }
 
         /// <summary>Picks the swap that clears the most gems right away (cascades ignored).</summary>
-        private static (GridPos, GridPos) GreedyMove(BoardModel board)
+        public static (GridPos, GridPos) GreedyMove(BoardModel board)
         {
             int[,] grid = board.ToGrid();
             SpecialKind[,] specials = board.ToSpecialGrid();

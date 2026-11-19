@@ -59,7 +59,8 @@ namespace PuzzleKingdoms.Logic.Flow
             ProgressionRules progressionRules,
             IRandom random,
             KingdomBonuses bonuses = null,
-            RallyVariant rallyVariant = null)
+            RallyVariant rallyVariant = null,
+            IReadOnlyList<ArmyUnit> carried = null)
         {
             _bonuses = bonuses ?? KingdomBonuses.None;
             _rallyVariant = rallyVariant;
@@ -91,6 +92,13 @@ namespace PuzzleKingdoms.Logic.Flow
             Puzzle.RewardsEarned += OnRewardsEarned;
             Puzzle.Finished += () => SetPhase(StagePhase.WarCamp);
             Roster = new Roster(armyRules);
+            if (carried != null)
+            {
+                foreach (ArmyUnit unit in carried)
+                {
+                    Roster.Adopt(unit.Def, unit.Tier, unit.HpFraction);
+                }
+            }
         }
 
         private const int MaxBoardAttempts = 30;
@@ -152,6 +160,9 @@ namespace PuzzleKingdoms.Logic.Flow
 
         public int RallyCharges => Puzzle.RewardCount(RallyKey);
 
+        /// <summary>Extra Rally charges for the battle on top of the puzzle's (PB-26 expedition rewards).</summary>
+        public int BonusRally { get; set; }
+
         public int RallyOverflowPoints => Puzzle.Meters[RallyKey].OverflowPoints;
 
         public bool CanStartBattle => Phase == StagePhase.WarCamp && Roster.Formation.Count > 0;
@@ -173,7 +184,7 @@ namespace PuzzleKingdoms.Logic.Flow
                 _armyRules,
                 Roster.Formation,
                 Formation.ForStage(Stage),
-                RallyCharges,
+                RallyCharges + BonusRally,
                 _bonuses,
                 _rallyVariant);
             SetPhase(StagePhase.Battle);

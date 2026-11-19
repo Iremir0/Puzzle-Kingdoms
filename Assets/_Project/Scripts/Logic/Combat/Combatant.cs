@@ -54,7 +54,7 @@ namespace PuzzleKingdoms.Logic.Combat
             HealCooldown = def.HealInterval;
             KingdomBonuses kingdom = side == Side.Player ? bonuses ?? KingdomBonuses.None : KingdomBonuses.None; // PB-22: the player's buildings
             MaxHp = ScaleInt(unit.MaxHp(armyRules), kingdom.HpMultiplier(def.Id));
-            Hp = MaxHp;
+            Hp = side == Side.Player && unit.HpFraction < 1f ? System.Math.Max(1, (int)System.Math.Round(MaxHp * System.Math.Max(0f, unit.HpFraction), System.MidpointRounding.AwayFromZero)) : MaxHp;
             Damage = ScaleInt(unit.Damage(armyRules), kingdom.DamageMultiplier(def.Id));
             DamageType = def.DamageType;
             AttackInterval = def.AttackInterval / kingdom.AttackSpeedMultiplier(def.Id);

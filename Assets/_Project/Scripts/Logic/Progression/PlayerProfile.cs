@@ -41,10 +41,15 @@ namespace PuzzleKingdoms.Logic.Progression
             public List<bool> dailyWon = new List<bool>();
             public List<int> dailyHp = new List<int>();
             public List<int> dailyTicks = new List<int>();
+            /// <summary>Version 7 (D-062): the running expedition, if any, and the records.</summary>
+            public bool expeditionActive;
+            public Flow.ExpeditionSave expedition = new Flow.ExpeditionSave();
+            public int bestExpeditionDepth;
+            public int expeditionsWon;
         }
 
-        /// <summary>6 = daily challenge results (D-061), 5 = quests (D-060), 4 = chosen commander (D-053), 3 = building levels (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
-        public const int CurrentVersion = 6;
+        /// <summary>7 = expedition (D-062), 6 = daily challenge results (D-061), 5 = quests (D-060), 4 = chosen commander (D-053), 3 = building levels (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
+        public const int CurrentVersion = 7;
 
         public event Action Changed;
 
@@ -56,6 +61,31 @@ namespace PuzzleKingdoms.Logic.Progression
 
         /// <summary>Daily quests, achievements and star chests (PB-24).</summary>
         public Quests.QuestLog Quests { get; private set; } = new Quests.QuestLog();
+
+        /// <summary>The expedition in progress (PB-26), or null.</summary>
+        public Flow.ExpeditionSave ActiveExpedition { get; private set; }
+
+        /// <summary>Most battles won in one expedition.</summary>
+        public int BestExpeditionDepth { get; private set; }
+
+        public int ExpeditionsWon { get; private set; }
+
+        /// <summary>Keeps the run in progress so it survives closing the game.</summary>
+        public void SaveExpedition(Flow.ExpeditionSave save)
+        {
+            ActiveExpedition = save;
+            Changed?.Invoke();
+        }
+
+        /// <summary>Ends the run: records how deep it got, pays the gold and forgets the run.</summary>
+        public void EndExpedition(int depth, bool won, int gold)
+        {
+            BestExpeditionDepth = Math.Max(BestExpeditionDepth, depth);
+            ExpeditionsWon += won ? 1 : 0;
+            Gold += Math.Max(0, gold);
+            ActiveExpedition = null;
+            Changed?.Invoke();
+        }
 
         /// <summary>Daily challenge results, one per day (PB-25).</summary>
         public Stages.DailyLog Daily { get; private set; } = new Stages.DailyLog();
@@ -236,6 +266,10 @@ namespace PuzzleKingdoms.Logic.Progression
                 achievementClaimed = new List<bool>(Quests.AchievementClaimed),
                 chestsClaimed = Quests.ChestsClaimed,
             };
+            snapshot.expeditionActive = ActiveExpedition != null;
+            snapshot.expedition = ActiveExpedition ?? new Flow.ExpeditionSave();
+            snapshot.bestExpeditionDepth = BestExpeditionDepth;
+            snapshot.expeditionsWon = ExpeditionsWon;
             snapshot.dailyDays = new List<string>(Daily.Days);
             snapshot.dailyWon = new List<bool>(Daily.Won);
             snapshot.dailyHp = new List<int>(Daily.HpPercent);
@@ -333,6 +367,9 @@ namespace PuzzleKingdoms.Logic.Progression
             profile.CommanderId = snapshot.commanderId ?? "";
             profile.Quests = QuestLogFrom(snapshot);
             profile.Daily = DailyLogFrom(snapshot);
+            profile.ActiveExpedition = snapshot.expeditionActive ? snapshot.expedition : null;
+            profile.BestExpeditionDepth = Math.Max(0, snapshot.bestExpeditionDepth);
+            profile.ExpeditionsWon = Math.Max(0, snapshot.expeditionsWon);
             if (snapshot.buildingIds != null && snapshot.buildingLevels != null)
             {
                 int buildings = Math.Min(snapshot.buildingIds.Count, snapshot.buildingLevels.Count);

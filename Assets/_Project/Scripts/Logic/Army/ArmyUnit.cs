@@ -14,6 +14,8 @@ namespace PuzzleKingdoms.Logic.Army
         public readonly int Tier;
         /// <summary>Unique within a Roster; lets views track a unit across moves and merges.</summary>
         public readonly int Uid;
+        /// <summary>Share of its HP the unit starts a battle with, 0..1 (PB-26: wounds carry over in an expedition).</summary>
+        public float HpFraction = 1f;
 
         public ArmyUnit(UnitDef def, int tier = 1, int uid = NoUid)
         {

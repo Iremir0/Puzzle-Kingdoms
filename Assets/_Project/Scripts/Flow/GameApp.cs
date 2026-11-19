@@ -64,6 +64,116 @@ namespace PuzzleKingdoms.Flow
 
         private Language? _languageOverride;
 
+        // ---- Expedition (PB-26, D-062) ----
+
+        private Expedition _expedition;
+        private bool _expeditionBattle;
+
+        /// <summary>True when the expedition exists in the content.</summary>
+        public bool HasExpedition
+        {
+            get
+            {
+                if (content.Expedition == null)
+                {
+                    return false;
+                }
+                ExpeditionRules rules = content.Expedition.Rules();
+                return rules.EnemyPool.Count > 0 && rules.PlayerClasses.Count > 0;
+            }
+        }
+
+        /// <summary>The run in progress or a fresh one; null if the expedition does not exist.</summary>
+        public Expedition CurrentExpedition => _expedition;
+
+        /// <summary>Opens the expedition: the saved run if there is one, otherwise a new run.</summary>
+        public void ShowExpedition()
+        {
+            if (!HasExpedition)
+            {
+                return;
+            }
+            Run = null;
+            _expeditionBattle = false;
+            ExpeditionRules rules = content.Expedition.Rules();
+            if (_expedition == null)
+            {
+                _expedition = Profile.ActiveExpedition != null ? Expedition.FromSave(Profile.ActiveExpedition, rules) : null;
+            }
+            if (_expedition == null)
+            {
+                _expedition = new Expedition(rules, (ulong)System.DateTime.UtcNow.Ticks);
+                Profile.SaveExpedition(_expedition.ToSave());
+                _store.Save(Profile);
+            }
+            Show(ExpeditionScreen.Create(_screenRoot, _expedition, Profile, new ExpeditionScreen.Actions
+            {
+                Start = StartExpeditionBattle,
+                Pick = PickExpeditionReward,
+                GiveUp = () => EndExpedition(),
+                Collect = () => EndExpedition(),
+                Back = ShowStageSelect,
+            }));
+        }
+
+        private void PickExpeditionReward(int index)
+        {
+            if (_expedition != null && _expedition.Pick(index))
+            {
+                Profile.SaveExpedition(_expedition.ToSave());
+                _store.Save(Profile);
+                ShowExpedition();
+            }
+        }
+
+        private void EndExpedition()
+        {
+            if (_expedition != null)
+            {
+                bool won = _expedition.Phase == ExpeditionPhase.Won;
+                Profile.EndExpedition(_expedition.Step, won, _expedition.GoldEarned);
+                _store.Save(Profile);
+                _expedition = null;
+            }
+            ShowStageSelect();
+        }
+
+        private void StartExpeditionBattle()
+        {
+            if (_expedition == null || _expedition.Phase != ExpeditionPhase.Battle)
+            {
+                return;
+            }
+            StageDef def = _expedition.StageForStep();
+            _dailyDay = null;
+            _stageIndex = -1;
+            _stageDefinition = null;
+            _expeditionBattle = true;
+            if (Run != null)
+            {
+                Run.UnitRecruited -= OnUnitRecruited;
+            }
+            Run = content.CreateRun(def, new PuzzleKingdoms.Logic.SeededRandom(def.BoardSeed), null, null, _expedition.Army);
+            Run.BonusRally = _expedition.BonusRally;
+            Run.UnitRecruited += OnUnitRecruited;
+            _stageSteps = new List<TutorialStep>();
+            _puzzleStarted = Time.realtimeSinceStartup;
+            _attemptLogged = false;
+            _analytics.Send(GameEvents.StageStarted(def.Id, 1));
+            Show(PuzzleScreen.Create(_screenRoot, Run, ShowWarCamp));
+        }
+
+        /// <summary>After an expedition battle: carry the army on and show the road again.</summary>
+        private void FinishExpeditionBattle()
+        {
+            Run.Finish();
+            _expedition.Finish(Run);
+            _expeditionBattle = false;
+            Profile.SaveExpedition(_expedition.ToSave());
+            _store.Save(Profile);
+            ShowExpedition();
+        }
+
         // ---- Daily challenge (PB-25, D-061) ----
 
         private string _dailyDay;
@@ -93,6 +203,7 @@ namespace PuzzleKingdoms.Flow
             }
             StageDef def = TodaysChallenge();
             _dailyDay = Today;
+            _expeditionBattle = false;
             _stageIndex = -1;
             _stageDefinition = null;
             if (Run != null)
@@ -235,8 +346,17 @@ namespace PuzzleKingdoms.Flow
             RefreshQuests();
             DailyResult dailyDone = HasDaily ? Profile.Daily.Result(Today) : null;
             string dailyCaption = Loc.T("Daily Challenge") + "  ·  " + (dailyDone == null ? Loc.T("Play") : dailyDone.Won ? Loc.T("Won") + " " + dailyDone.HpPercent + "%" : Loc.T("Lost"));
+            string expeditionCaption = null;
+            if (HasExpedition)
+            {
+                ExpeditionSave active = Profile.ActiveExpedition;
+                expeditionCaption = Loc.T("Expedition") + "  ·  " + (active != null
+                    ? active.step + "/" + content.Expedition.Rules().Steps
+                    : Loc.F("Best: {0}", Profile.BestExpeditionDepth));
+            }
             Show(StageMapScreen.Create(_screenRoot, content, Profile, StartStage, () => OpenSettings(), OnTab,
-                HasDaily ? ShowDaily : (System.Action)null, dailyCaption));
+                HasDaily ? ShowDaily : (System.Action)null, dailyCaption,
+                HasExpedition ? ShowExpedition : (System.Action)null, expeditionCaption));
             if (ConsentEnabled && Consent.NeedsAsking(Settings))
             {
                 AskConsent();
@@ -514,6 +634,7 @@ namespace PuzzleKingdoms.Flow
         {
             _stageIndex = index;
             _dailyDay = null;
+            _expeditionBattle = false;
             _stageDefinition = stage;
             if (Run != null)
             {
@@ -549,6 +670,11 @@ namespace PuzzleKingdoms.Flow
 
         public void ShowResults()
         {
+            if (_expeditionBattle && _expedition != null)
+            {
+                FinishExpeditionBattle();
+                return;
+            }
             StageReward reward = Run.Finish() ?? Run.Reward;
             if (reward == null)
             {

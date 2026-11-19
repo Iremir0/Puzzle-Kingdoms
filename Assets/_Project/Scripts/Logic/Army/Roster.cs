@@ -41,6 +41,16 @@ namespace PuzzleKingdoms.Logic.Army
             return added;
         }
 
+        /// <summary>Puts a unit carried over from an earlier battle on the bench, wounds included (PB-26).</summary>
+        public ArmyUnit Adopt(UnitDef def, int tier, float hpFraction)
+        {
+            ArmyUnit unit = NewUnit(def, tier);
+            unit.HpFraction = hpFraction < 0f ? 0f : hpFraction > 1f ? 1f : hpFraction;
+            _bench.Add(unit);
+            Changed?.Invoke();
+            return unit;
+        }
+
         public List<ArmyUnit> AllUnits()
         {
             List<ArmyUnit> result = Formation.Units();

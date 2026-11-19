@@ -679,3 +679,16 @@ HP left, then the time (`DailyResult.IsBetterThan`). The last 30 days are kept i
 daily day is not a campaign stage, so it pays its gold but gives no stars and no star-chest progress. The entry is a
 gold button above the stage map. Online ranking waits for the backend decision (PB-25 step 4); the saved result and
 the fixed seed are what a server needs to re-run and verify a battle.
+
+## D-062 - Expedition mode (2026-11-19)
+
+A run of 5 battles (the last is a boss) where the army and its wounds carry over. `Expedition` (Logic) holds only what
+lasts between battles: the step, the army (class, tier, `ArmyUnit.HpFraction`), the offers and a Rally bonus. Each battle
+is an ordinary `StageRun`: a short puzzle (12 moves, then 8) adds recruits to the carried army, the War Camp deploys,
+the battle plays. Survivors and the bench go on and regain 40 % HP; the dead are gone; merging gives a fresh unit. After
+a win the player picks one of three rewards (recruit 3 of a class, heal everyone, promote the weakest unit, one extra
+Rally); a loss ends the run, and gold (60 per battle, 250 for winning) is paid when the run is collected or given up.
+The same seed gives the same enemies, boards and offers. The player's buildings and commander are not used, as in the
+daily challenge. The run is saved after every battle and every pick (save version 7) and resumes from the map button.
+Numbers: `Data/ExpeditionRules.asset`. A simple bot that never merges clears 3.9 of 5 battles and wins 2 of 20 runs;
+a player who merges should do clearly better. Meta rewards beyond gold and leaderboards stay out of this card.
