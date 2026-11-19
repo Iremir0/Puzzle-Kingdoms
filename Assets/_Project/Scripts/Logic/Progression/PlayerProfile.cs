@@ -52,10 +52,14 @@ namespace PuzzleKingdoms.Logic.Progression
             public List<bool> replayVictory = new List<bool>();
             public List<int> replayTicks = new List<int>();
             public List<bool> replayStarred = new List<bool>();
+            /// <summary>Version 9 (D-064): rewarded gold ads taken today and the Supporter pack.</summary>
+            public string adGoldDay = "";
+            public int adGoldCount;
+            public bool supporter;
         }
 
-        /// <summary>8 = battle replays (D-063), 7 = expedition (D-062), 6 = daily challenge results (D-061), 5 = quests (D-060), 4 = chosen commander (D-053), 3 = building levels (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
-        public const int CurrentVersion = 8;
+        /// <summary>9 = ad ledger and Supporter (D-064), 8 = battle replays (D-063), 7 = expedition (D-062), 6 = daily challenge results (D-061), 5 = quests (D-060), 4 = chosen commander (D-053), 3 = building levels (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
+        public const int CurrentVersion = 9;
 
         public event Action Changed;
 
@@ -67,6 +71,31 @@ namespace PuzzleKingdoms.Logic.Progression
 
         /// <summary>Daily quests, achievements and star chests (PB-24).</summary>
         public Quests.QuestLog Quests { get; private set; } = new Quests.QuestLog();
+
+        /// <summary>Rewarded gold ads of today and the Supporter pack (PB-30).</summary>
+        public AdLedger AdLedger { get; private set; } = new AdLedger();
+
+        /// <summary>Takes one rewarded gold ad of the day and pays it. False when the limit is reached.</summary>
+        public bool TakeGoldAd(string today, MonetizationRules rules)
+        {
+            if (!AdLedger.TryTakeGold(today, rules))
+            {
+                return false;
+            }
+            Gold += Math.Max(0, rules.BonusGold);
+            Changed?.Invoke();
+            return true;
+        }
+
+        /// <summary>Marks the Supporter pack as bought (or restored).</summary>
+        public void SetSupporter(bool owned)
+        {
+            if (AdLedger.Supporter != owned)
+            {
+                AdLedger.Supporter = owned;
+                Changed?.Invoke();
+            }
+        }
 
         /// <summary>The saved battle replays (PB-28).</summary>
         public ReplayLog Replays { get; private set; } = new ReplayLog();
@@ -275,6 +304,9 @@ namespace PuzzleKingdoms.Logic.Progression
                 achievementClaimed = new List<bool>(Quests.AchievementClaimed),
                 chestsClaimed = Quests.ChestsClaimed,
             };
+            snapshot.adGoldDay = AdLedger.GoldDay;
+            snapshot.adGoldCount = AdLedger.GoldCount;
+            snapshot.supporter = AdLedger.Supporter;
             foreach (ReplayEntry entry in Replays.Entries)
             {
                 snapshot.replayTitles.Add(entry.Title);
@@ -413,6 +445,7 @@ namespace PuzzleKingdoms.Logic.Progression
             profile.Quests = QuestLogFrom(snapshot);
             profile.Daily = DailyLogFrom(snapshot);
             profile.Replays = ReplaysFrom(snapshot);
+            profile.AdLedger = new AdLedger { GoldDay = snapshot.adGoldDay ?? "", GoldCount = Math.Max(0, snapshot.adGoldCount), Supporter = snapshot.supporter };
             profile.ActiveExpedition = snapshot.expeditionActive ? snapshot.expedition : null;
             profile.BestExpeditionDepth = Math.Max(0, snapshot.bestExpeditionDepth);
             profile.ExpeditionsWon = Math.Max(0, snapshot.expeditionsWon);

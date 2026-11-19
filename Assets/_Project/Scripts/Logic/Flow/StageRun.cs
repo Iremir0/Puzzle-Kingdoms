@@ -166,6 +166,42 @@ namespace PuzzleKingdoms.Logic.Flow
         /// <summary>Extra Rally charges for the battle on top of the puzzle's (PB-26 expedition rewards).</summary>
         public int BonusRally { get; set; }
 
+        // ---- rewarded ads (PB-30, D-064): one extra-moves grant and one extra-Rally grant per attempt ----
+
+        public bool ExtraMovesUsed { get; private set; }
+        public bool ExtraRallyUsed { get; private set; }
+
+        /// <summary>True when the puzzle has just ended and the extra moves of this attempt are still unused.</summary>
+        public bool CanGrantExtraMoves => Phase == StagePhase.WarCamp && Puzzle.IsFinished && !ExtraMovesUsed && Battle == null;
+
+        /// <summary>True in the War Camp before the battle while the extra Rally of this attempt is unused.</summary>
+        public bool CanGrantExtraRally => Phase == StagePhase.WarCamp && !ExtraRallyUsed && Battle == null;
+
+        /// <summary>Back to the puzzle with more moves. False when it is not allowed (once per attempt).</summary>
+        public bool TryGrantExtraMoves(int moves)
+        {
+            if (!CanGrantExtraMoves || moves <= 0)
+            {
+                return false;
+            }
+            ExtraMovesUsed = true;
+            Puzzle.AddMoves(moves);
+            SetPhase(StagePhase.Puzzle);
+            return true;
+        }
+
+        /// <summary>One more Rally charge in this battle. False when it is not allowed (once per attempt).</summary>
+        public bool TryGrantExtraRally(int charges)
+        {
+            if (!CanGrantExtraRally || charges <= 0)
+            {
+                return false;
+            }
+            ExtraRallyUsed = true;
+            BonusRally += charges;
+            return true;
+        }
+
         public int RallyOverflowPoints => Puzzle.Meters[RallyKey].OverflowPoints;
 
         public bool CanStartBattle => Phase == StagePhase.WarCamp && Roster.Formation.Count > 0;
