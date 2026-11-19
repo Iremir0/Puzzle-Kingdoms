@@ -65,6 +65,62 @@ namespace PuzzleKingdoms.Data
 
         public List<string> CampaignOrder() => campaign.Select(s => s.Id).ToList();
 
+        [System.NonSerialized] private Dictionary<string, UnitDef> _unitsById;
+
+        /// <summary>
+        /// Any unit of the game by its id: the classes, the extra classes, every enemy of the campaign, the daily
+        /// challenge and the expedition. Replays use it to rebuild their armies (PB-28). Null for an unknown id.
+        /// </summary>
+        public UnitDef FindUnit(string id)
+        {
+            if (_unitsById == null)
+            {
+                _unitsById = new Dictionary<string, UnitDef>();
+                void Add(UnitDefinition unit)
+                {
+                    if (unit != null)
+                    {
+                        _unitsById[unit.Def.Id] = unit.Def;
+                    }
+                }
+                foreach (UnitDefinition unit in recruitableUnits)
+                {
+                    Add(unit);
+                }
+                foreach (UnitDefinition unit in extraUnits)
+                {
+                    Add(unit);
+                }
+                foreach (StageDefinition stage in campaign)
+                {
+                    foreach (StageDefinition.EnemySlotData slot in stage.Enemies)
+                    {
+                        Add(slot.unit);
+                    }
+                }
+                if (dailyChallenge != null)
+                {
+                    foreach (UnitDef unit in dailyChallenge.Rules().EnemyPool)
+                    {
+                        _unitsById[unit.Id] = unit;
+                    }
+                }
+                if (expedition != null)
+                {
+                    ExpeditionRules rules = expedition.Rules();
+                    foreach (UnitDef unit in rules.EnemyPool)
+                    {
+                        _unitsById[unit.Id] = unit;
+                    }
+                    if (rules.Boss != null)
+                    {
+                        _unitsById[rules.Boss.Id] = rules.Boss;
+                    }
+                }
+            }
+            return id != null && _unitsById.TryGetValue(id, out UnitDef def) ? def : null;
+        }
+
         /// <summary>
         /// Starts a new attempt at a campaign stage; <paramref name="config"/> may override the stage's
         /// moves and enemy strength (PB-29, <see cref="StageTuning"/>).

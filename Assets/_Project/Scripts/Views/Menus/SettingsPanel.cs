@@ -26,17 +26,18 @@ namespace PuzzleKingdoms.Views.Menus
         private GameObject _confirm;
 
         public static SettingsPanel Create(Transform parent, GameSettings settings, string version,
-            Action<GameSettings> onChanged, Action onResetProgress, Action onResetTutorial = null, Action onPrivacy = null)
+            Action<GameSettings> onChanged, Action onResetProgress, Action onResetTutorial = null, Action onPrivacy = null,
+            Action onReplays = null)
         {
             // A dimmed full-screen layer that swallows taps meant for the screen below.
             Image shade = Ui.Box(parent, "SettingsPanel", new Color(0f, 0f, 0f, 0.6f));
             var panel = shade.gameObject.AddComponent<SettingsPanel>();
-            panel.Build(settings.Copy(), version, onChanged, onResetProgress, onResetTutorial, onPrivacy);
+            panel.Build(settings.Copy(), version, onChanged, onResetProgress, onResetTutorial, onPrivacy, onReplays);
             return panel;
         }
 
         private void Build(GameSettings settings, string version, Action<GameSettings> onChanged, Action onResetProgress,
-            Action onResetTutorial, Action onPrivacy)
+            Action onResetTutorial, Action onPrivacy, Action onReplays)
         {
             _settings = settings;
             _onChanged = onChanged;
@@ -45,6 +46,10 @@ namespace PuzzleKingdoms.Views.Menus
             Transform box = Ui.Card(transform, "Box", Palette.Panel, 0.06f, 0.2f, 0.94f, 0.83f).transform;
             Ui.Label(box, Loc.T("Settings"), 60, TextAnchor.MiddleLeft, Palette.Text, 0.06f, 0.89f, 0.7f, 0.98f);
             Name(Ui.Button(box, "Close", Ui.ButtonStyle.Secondary, Close, 0.72f, 0.89f, 0.95f, 0.98f, 38), "Close");
+            if (onReplays != null)
+            {
+                Name(Ui.Button(box, "Replays", Ui.ButtonStyle.Secondary, onReplays, 0.4f, 0.89f, 0.7f, 0.98f, 34), "Replays");
+            }
 
             Row(box, Loc.T("Sound effects"), 0.76f);
             _sound = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleSound, 0.66f, 0.74f, 0.94f, 0.83f, 40), "Sound Toggle");

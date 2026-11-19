@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using PuzzleKingdoms.Data;
 using PuzzleKingdoms.Logic.Analytics;
 using PuzzleKingdoms.Logic.Army;
+using PuzzleKingdoms.Logic.Combat;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Logic.Localization;
 using PuzzleKingdoms.Logic.Progression;
@@ -63,6 +64,56 @@ namespace PuzzleKingdoms.Flow
         public void UseLanguage(Language language) => _languageOverride = language;
 
         private Language? _languageOverride;
+
+        // ---- Battle replays (PB-28, D-063) ----
+
+        /// <summary>Keeps the battle that just ended as a replay.</summary>
+        private void SaveReplay(string title)
+        {
+            BattleReplay replay = BattleReplay.From(Run, title);
+            if (replay != null)
+            {
+                Profile.Replays.Add(title, replay.ToText(), replay.Victory, replay.Ticks);
+                _store.Save(Profile);
+            }
+        }
+
+        private bool IsReplayPlayable(ReplayEntry entry)
+        {
+            BattleReplay replay = BattleReplay.Parse(entry.Text, out _);
+            return replay != null && replay.IsCurrent(content.BattleRules.Rules, content.ArmyRules.Rules, content.FindUnit)
+                   && replay.Rebuild(content.BattleRules.Rules, content.ArmyRules.Rules, content.FindUnit) != null;
+        }
+
+        /// <summary>The list of saved replays.</summary>
+        public void ShowReplays()
+        {
+            Run = null;
+            Show(ReplaysScreen.Create(_screenRoot, Profile.Replays, IsReplayPlayable, entry => PlayReplay(entry, 0),
+                entry =>
+                {
+                    Profile.Replays.ToggleStar(entry);
+                    _store.Save(Profile);
+                    ShowReplays();
+                },
+                ShowStageSelect, content.BattleRules.Rules.TicksPerSecond));
+        }
+
+        /// <summary>Plays a saved battle from <paramref name="startTick"/> (0 = from the start).</summary>
+        public void PlayReplay(ReplayEntry entry, int startTick)
+        {
+            BattleReplay replay = BattleReplay.Parse(entry.Text, out _);
+            BattleSimulator sim = replay?.Rebuild(content.BattleRules.Rules, content.ArmyRules.Rules, content.FindUnit);
+            if (sim == null)
+            {
+                return;
+            }
+            while (!sim.IsFinished && sim.Tick < startTick)
+            {
+                replay.Advance(sim);
+            }
+            Show(BattleScreen.CreateReplay(_screenRoot, sim, replay, ShowReplays, tick => PlayReplay(entry, tick), Settings.BattleSpeed));
+        }
 
         // ---- Expedition (PB-26, D-062) ----
 
@@ -167,6 +218,7 @@ namespace PuzzleKingdoms.Flow
         private void FinishExpeditionBattle()
         {
             Run.Finish();
+            SaveReplay("Expedition " + (_expedition.Step + 1));
             _expedition.Finish(Run);
             _expeditionBattle = false;
             Profile.SaveExpedition(_expedition.ToSave());
@@ -437,7 +489,7 @@ namespace PuzzleKingdoms.Flow
         {
             string version = Application.version + (Debug.isDebugBuild ? " (dev)" : "");
             return SettingsPanel.Create(_screen.transform, Settings, version, ApplySettings, ResetProgress, ResetTutorial,
-                () => AskConsent());
+                () => AskConsent(), ShowReplays);
         }
 
         /// <summary>Shows the consent question (first launch, a new consent text, or Settings → Data and privacy).</summary>
@@ -701,6 +753,7 @@ namespace PuzzleKingdoms.Flow
             if (!_attemptLogged)
             {
                 _attemptLogged = true;
+                SaveReplay(_dailyDay != null ? "Daily Challenge" : Run.Stage.DisplayName);
                 StageAttempt attempt = StageAttempt.From(Run);
                 if (attempt != null)
                 {

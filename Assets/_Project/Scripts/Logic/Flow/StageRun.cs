@@ -46,6 +46,9 @@ namespace PuzzleKingdoms.Logic.Flow
         private readonly Dictionary<string, UnitDef> _unitsByKey = new Dictionary<string, UnitDef>();
         private readonly BattleRules _battleRules;
         private readonly ArmyRules _armyRules;
+        /// <summary>The rules the run was made with, for replays (PB-28).</summary>
+        public ArmyRules ArmyRules => _armyRules;
+        public KingdomBonuses Bonuses => _bonuses;
         private readonly ProgressionRules _progressionRules;
         private readonly KingdomBonuses _bonuses;
         private readonly RallyVariant _rallyVariant;

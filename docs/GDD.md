@@ -286,6 +286,11 @@ short puzzle for new recruits, after each win a pick of three rewards (recruits,
 battle is a boss. Losing ends the run; gold is paid when it ends. A run is saved and can be resumed. Numbers:
 `Data/ExpeditionRules.asset`.
 These are now board cards (PB-22, PB-21, PB-25, PB-26, PB-23) inside the wider growth plan
+
+**Battle replays (PB-28, D-063).** Every battle is saved as a replay (the last five, plus starred ones). Settings →
+Replays lists them; Watch plays the battle again with a timeline that marks where Rally was used, speeds up to 4x,
+Restart, and a tap on the timeline jumps there. A replay made before a rules change is marked as an older version and
+cannot be watched. Sharing a clip is not built yet.
 of D-045 (16 cards, PB-18 to PB-33, in four waves).
 
 ## 11. Stages (MVP)
