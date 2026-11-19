@@ -732,3 +732,16 @@ every 20 seconds, and when it is paused or closed) and when the player resets pr
 cloud copy. The cloud is behind `ICloudSave`; releases ship `NoCloud` (the Settings row stays hidden) until the Google Play
 Games plugin and a Play Console app exist (owner), the editor and dev builds use `TestCloud`. Settings gained a Cloud save
 row; its rows were re-spaced to fit.
+
+## D-066 - Audio method: themes, cross-fade, import rules, free sources (2026-11-19)
+
+Music has a theme per kind of screen (map and menus, puzzle and War Camp, battle, results) in the `SoundBank`; an empty
+theme falls back to the default loop, so the game works with one track or five. Changing screens cross-fades with two
+music players (1.2 s), so at most two streams play. Files in `Audio/Music` import as streamed stereo Vorbis, files in
+`Audio/Sfx` as mono Vorbis decoded on load (`AudioImportRules`), which is the cheap setup on a phone; the whole audio
+folder stays under 20 MB. Sources, in order of preference: CC0 packs (Kenney) for the effects, free music with a clear
+commercial licence (Pixabay), and AI generated with Stable Audio 3.0 open weights run on our own computer (Stability AI
+Community Licence: outputs are ours, free while the organisation earns under $1M a year; the licence text of the
+downloaded version is to be read before use). Free tiers of AI music websites are not used for the store build: they
+are non-commercial. Every file is in CREDITS.md before it is committed, with tool, model and prompt for AI files.
+The method is in `docs/AUDIO.md`. The real files are still to be made or downloaded (owner).

@@ -1052,8 +1052,16 @@ namespace PuzzleKingdoms.Flow
             }
         }
 
+        /// <summary>The music theme of a screen (PB-33): puzzle and War Camp, battle, results, and everything else is the map.</summary>
+        public static MusicTheme ThemeFor(Component screen) =>
+            screen is PuzzleScreen || screen is WarCampScreen ? MusicTheme.Puzzle
+            : screen is BattleScreen ? MusicTheme.Battle
+            : screen is ResultsScreen ? MusicTheme.Results
+            : MusicTheme.Map;
+
         private void Show(Component screen)
         {
+            Sfx.PlayTheme(ThemeFor(screen));
             if (Tutorial != null)
             {
                 // A new screen: prompts for the old one no longer make sense (unseen ones come back later).

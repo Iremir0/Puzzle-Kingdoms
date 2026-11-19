@@ -112,7 +112,8 @@ namespace PuzzleKingdoms.Tests.PlayMode
             {
                 battle.Simulator.ActivateRally();
             }
-            float deadline = Time.realtimeSinceStartup + 60f;
+            battle.OnSkip(); // resolve the rest at once: a long battle must not decide the test (the screen waits a moment, then leaves)
+            float deadline = Time.realtimeSinceStartup + 20f;
             yield return new WaitUntil(() => _app.CurrentScreen is ExpeditionScreen || Time.realtimeSinceStartup > deadline);
 
             Assert.IsInstanceOf<ExpeditionScreen>(_app.CurrentScreen, "the road again after the battle");
