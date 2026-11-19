@@ -36,10 +36,15 @@ namespace PuzzleKingdoms.Logic.Progression
             public List<int> achievementProgress = new List<int>();
             public List<bool> achievementClaimed = new List<bool>();
             public int chestsClaimed;
+            /// <summary>Version 6 (D-061): daily challenge results, one entry per day played.</summary>
+            public List<string> dailyDays = new List<string>();
+            public List<bool> dailyWon = new List<bool>();
+            public List<int> dailyHp = new List<int>();
+            public List<int> dailyTicks = new List<int>();
         }
 
-        /// <summary>5 = quests (D-060), 4 = chosen commander (D-053), 3 = building levels (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
-        public const int CurrentVersion = 5;
+        /// <summary>6 = daily challenge results (D-061), 5 = quests (D-060), 4 = chosen commander (D-053), 3 = building levels (D-052), 2 = tutorial progress (D-040); older files load with none.</summary>
+        public const int CurrentVersion = 6;
 
         public event Action Changed;
 
@@ -51,6 +56,21 @@ namespace PuzzleKingdoms.Logic.Progression
 
         /// <summary>Daily quests, achievements and star chests (PB-24).</summary>
         public Quests.QuestLog Quests { get; private set; } = new Quests.QuestLog();
+
+        /// <summary>Daily challenge results, one per day (PB-25).</summary>
+        public Stages.DailyLog Daily { get; private set; } = new Stages.DailyLog();
+
+        /// <summary>Saves a daily result and pays its gold. False if that day was already played.</summary>
+        public bool RecordDaily(Stages.DailyResult result, int gold)
+        {
+            if (!Daily.Record(result))
+            {
+                return false;
+            }
+            Gold += Math.Max(0, gold);
+            Changed?.Invoke();
+            return true;
+        }
 
         /// <summary>Best stars over all stages, for the star chests.</summary>
         public int TotalStars
@@ -216,6 +236,10 @@ namespace PuzzleKingdoms.Logic.Progression
                 achievementClaimed = new List<bool>(Quests.AchievementClaimed),
                 chestsClaimed = Quests.ChestsClaimed,
             };
+            snapshot.dailyDays = new List<string>(Daily.Days);
+            snapshot.dailyWon = new List<bool>(Daily.Won);
+            snapshot.dailyHp = new List<int>(Daily.HpPercent);
+            snapshot.dailyTicks = new List<int>(Daily.Ticks);
             foreach (KeyValuePair<string, int> building in _buildingLevels)
             {
                 snapshot.buildingIds.Add(building.Key);
@@ -256,6 +280,28 @@ namespace PuzzleKingdoms.Logic.Progression
             return log;
         }
 
+        /// <summary>The daily results of a snapshot; lists that do not line up are cut to the shortest.</summary>
+        private static Stages.DailyLog DailyLogFrom(Snapshot snapshot)
+        {
+            var log = new Stages.DailyLog();
+            if (snapshot.dailyDays == null || snapshot.dailyWon == null || snapshot.dailyHp == null || snapshot.dailyTicks == null)
+            {
+                return log;
+            }
+            int count = Math.Min(Math.Min(snapshot.dailyDays.Count, snapshot.dailyWon.Count), Math.Min(snapshot.dailyHp.Count, snapshot.dailyTicks.Count));
+            for (int i = 0; i < count; i++)
+            {
+                log.Record(new Stages.DailyResult
+                {
+                    Day = snapshot.dailyDays[i],
+                    Won = snapshot.dailyWon[i],
+                    HpPercent = Math.Max(0, Math.Min(100, snapshot.dailyHp[i])),
+                    Ticks = Math.Max(0, snapshot.dailyTicks[i]),
+                });
+            }
+            return log;
+        }
+
         public static PlayerProfile FromSnapshot(Snapshot snapshot)
         {
             var profile = new PlayerProfile();
@@ -286,6 +332,7 @@ namespace PuzzleKingdoms.Logic.Progression
             profile.TutorialSkipped = snapshot.tutorialSkipped;
             profile.CommanderId = snapshot.commanderId ?? "";
             profile.Quests = QuestLogFrom(snapshot);
+            profile.Daily = DailyLogFrom(snapshot);
             if (snapshot.buildingIds != null && snapshot.buildingLevels != null)
             {
                 int buildings = Math.Min(snapshot.buildingIds.Count, snapshot.buildingLevels.Count);
