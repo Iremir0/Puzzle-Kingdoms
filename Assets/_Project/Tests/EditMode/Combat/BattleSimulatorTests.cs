@@ -203,6 +203,33 @@ namespace PuzzleKingdoms.Tests.Combat
         }
 
         [Test]
+        public void StepIntoABufferGivesTheSameEventsAsStep()
+        {
+            UnitDef warrior = ArmyFixtures.UnitDef("warrior", 120, 12, 1f, 1f, 1.2f);
+            UnitDef grunt = ArmyFixtures.UnitDef("grunt", 150, 10, 1f, 1f, 1.2f);
+            BattleSimulator fresh = Sim(CombatFixtures.Rules(), CombatFixtures.Single(warrior), CombatFixtures.Single(grunt), 1);
+            BattleSimulator buffered = Sim(CombatFixtures.Rules(), CombatFixtures.Single(warrior), CombatFixtures.Single(grunt), 1);
+            var buffer = new List<BattleEvent> { new BattleEvent(BattleEventType.Heal, -1) }; // stale content is dropped
+            var expected = new List<BattleEvent>();
+            var actual = new List<BattleEvent>();
+            while (!fresh.IsFinished)
+            {
+                if (fresh.Tick == 40)
+                {
+                    fresh.ActivateRally();
+                    buffered.ActivateRally();
+                }
+                expected.AddRange(fresh.Step());
+                buffered.Step(buffer);
+                actual.AddRange(buffer);
+            }
+            Assert.IsTrue(buffered.IsFinished);
+            Assert.AreEqual(string.Join(",", expected), string.Join(",", actual));
+            buffered.Step(buffer);
+            Assert.IsEmpty(buffer, "a finished battle clears the buffer");
+        }
+
+        [Test]
         public void ReplayFromInputLogReproducesTheBattle()
         {
             UnitDef warrior = ArmyFixtures.UnitDef("warrior", 120, 12, 1f, 1f, 1.2f);

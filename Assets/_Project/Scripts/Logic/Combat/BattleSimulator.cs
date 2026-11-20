@@ -40,6 +40,7 @@ namespace PuzzleKingdoms.Logic.Combat
         private readonly List<BattleEvent> _pendingEvents = new List<BattleEvent>();
         private readonly List<BattleEvent> _hits = new List<BattleEvent>();
         private readonly List<BattleEvent> _heals = new List<BattleEvent>();
+        private readonly List<Combatant> _died = new List<Combatant>();
 
         public BattleSimulator(BattleRules rules, ArmyRules armyRules, Formation player, Formation enemy, int rallyCharges,
             KingdomBonuses bonuses = null,
@@ -96,9 +97,20 @@ namespace PuzzleKingdoms.Logic.Combat
         public List<BattleEvent> Step()
         {
             var events = new List<BattleEvent>();
+            Step(events);
+            return events;
+        }
+
+        /// <summary>
+        /// Advances one tick and fills <paramref name="events"/> (cleared first) with what happened, in playback order.
+        /// The battle screen reuses one list so a battle allocates nothing per tick (PB-15).
+        /// </summary>
+        public void Step(List<BattleEvent> events)
+        {
+            events.Clear();
             if (IsFinished)
             {
-                return events;
+                return;
             }
             events.AddRange(_pendingEvents);
             _pendingEvents.Clear();
@@ -118,7 +130,8 @@ namespace PuzzleKingdoms.Logic.Combat
             RallyEffects();
             SeparateAllies();
 
-            var died = new List<Combatant>();
+            List<Combatant> died = _died;
+            died.Clear();
             foreach (BattleEvent hit in _hits)
             {
                 Combatant target = Combatants[hit.TargetId];
@@ -154,7 +167,6 @@ namespace PuzzleKingdoms.Logic.Combat
                 events.Add(new BattleEvent(BattleEventType.RallyEnded, Tick));
             }
             CheckFinished(events);
-            return events;
         }
 
         /// <summary>Runs the battle to its end. <paramref name="rallyTicks"/> replays recorded Rally input.</summary>
