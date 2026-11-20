@@ -54,8 +54,16 @@ is a piece of the game you can play or show, not a single code change.
 
 ## Ready (next up, in priority order)
 
+PB-34 to PB-39 come from the 2026-11-21 review (merge, tempo, measuring, onboarding, rewards) and are worked in that order.
+
 | ID | Card | Owner | Milestone | Size | In short |
 |---|---|---|---|---|---|
+| [PB-34](cards/PB-34.md) | Make merging worth it | Emir | M6 | M | Merge all today cuts wins by 30-60 points; new multipliers, balance tool can merge |
+| [PB-35](cards/PB-35.md) | Battle tempo and fair stages | Emir | M6 | M | Chapter 2 battles 25-35 s, time-out by HP, 2-2 ice, 2-8 rally, 2-9/2-10, defeat hint |
+| [PB-36](cards/PB-36.md) | Measure the first session | Emir | M6 | S | Tutorial funnel and feature events for the closed test, docs/ANALYTICS.md |
+| [PB-37](cards/PB-37.md) | Unlock systems step by step | Emir | M6 | M | Tabs and modes unlock by stage with one intro each; 1-4 teaches Blast and Prism |
+| [PB-38](cards/PB-38.md) | Rewards worth chasing | Emir | M6 | M | First-clear gold, chest every 12 stars, star shapes, haptics, +5 moves for an ad |
+| [PB-39](cards/PB-39.md) | Expedition perk draft | Emir | M8 | M | Pick one of three perks after each battle; Defender and Support in the pool |
 | [PB-2](cards/PB-2.md) | Play the new rules in Unity and close the review | Emir | M1 | S | Merge into `main` and the Test Runner (with Data tests) are done; left: the play checklist for 1-1 to 1-3 (4×4 grid, stone gems, Merge all, enemy strength, PB-7 feel, PB-8 sound) |
 | [PB-6](cards/PB-6.md) | Go / pivot decision | both | M1 | S | Owner gave "go" before the playtests (D-049): wave 2 runs; the pillar scores are still to do from the first five PB-5 sessions; a pivot then stops wave 2 |
 
