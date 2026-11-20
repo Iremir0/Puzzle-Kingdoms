@@ -26,6 +26,9 @@ namespace PuzzleKingdoms.Balance
             string commanderId = "";
             MergeBot mergeBot = MergeBot.None;
             float[] tiers = null;
+            float damageScale = 0f;
+            string only = null;
+            var sets = new System.Collections.Generic.List<string>();
             for (int a = 0; a + 1 < args.Length; a++)
             {
                 if (args[a] == "--kingdom")
@@ -40,6 +43,18 @@ namespace PuzzleKingdoms.Balance
                 {
                     mergeBot = args[a + 1] == "all" ? MergeBot.All : MergeBot.None; // PB-34: "Merge all" before the formation
                 }
+                else if (args[a] == "--damage")
+                {
+                    damageScale = float.Parse(args[a + 1], CultureInfo.InvariantCulture); // PB-35: try a battle pace
+                }
+                else if (args[a] == "--only")
+                {
+                    only = "," + args[a + 1] + ","; // PB-35: just these stages, e.g. "--only stage_2_2,stage_2_8"
+                }
+                else if (args[a] == "--set")
+                {
+                    sets.Add(args[a + 1]); // PB-35: try a stage value, e.g. "--set stage_2_3.hp=1.6" (hp, damage, moves, goal)
+                }
                 else if (args[a] == "--tiers")
                 {
                     // PB-34: try other tier multipliers without editing the asset, e.g. "--tiers 1,3.5,11"
@@ -52,7 +67,27 @@ namespace PuzzleKingdoms.Balance
             {
                 assets.ArmyRules.TierMultipliers = tiers;
             }
-            Console.WriteLine($"Data: {data}   runs per row: {runs}   kingdom level: {kingdomLevel}   commander: {(commanderId == "" ? "none" : commanderId)}   merge: {mergeBot}   tiers: {string.Join("/", assets.ArmyRules.TierMultipliers)}");
+            if (damageScale > 0f)
+            {
+                assets.BattleRules.DamageScale = damageScale;
+            }
+            Console.WriteLine($"Data: {data}   runs per row: {runs}   kingdom level: {kingdomLevel}   commander: {(commanderId == "" ? "none" : commanderId)}   merge: {mergeBot}   damage: {assets.BattleRules.DamageScale}   tiers: {string.Join("/", assets.ArmyRules.TierMultipliers)}");
+            foreach (string set in sets)
+            {
+                string[] sides = set.Split('=');
+                string[] key = sides[0].Split('.');
+                StageDef target = assets.Campaign.Find(st => st.Id == key[0]);
+                float value = float.Parse(sides[1], CultureInfo.InvariantCulture);
+                switch (key[1])
+                {
+                    case "hp": target.EnemyHpMultiplier = value; break;
+                    case "damage": target.EnemyDamageMultiplier = value; break;
+                    case "moves": target.Moves = (int)value; break;
+                    case "goal": target.Goal.Target = (int)value; break;
+                    default: throw new ArgumentException("Unknown stage value: " + set);
+                }
+                Console.WriteLine("set " + set);
+            }
             KingdomBonuses bonuses = kingdomLevel > 0 ? assets.KingdomRules.BonusesAtLevel(kingdomLevel) : null;
             RallyVariant variant = commanderId == "" ? null : assets.Commanders.Find(c => c.Id == commanderId)?.Variant;
             if (commanderId != "" && variant == null)
@@ -64,6 +99,10 @@ namespace PuzzleKingdoms.Balance
             Console.WriteLine("stage      puzzle  rally  win%  time(s) winTime  recruit deploy rally  surv%  stars 0/1/2/3  goal");
             foreach (StageDef stage in assets.Campaign)
             {
+                if (only != null && !only.Contains("," + stage.Id + ","))
+                {
+                    continue;
+                }
                 foreach (PuzzleBot puzzleBot in new[] { PuzzleBot.Random, PuzzleBot.Greedy })
                 {
                     foreach (RallyBot rallyBot in new[] { RallyBot.None, RallyBot.Eager })

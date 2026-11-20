@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ticksPerSecond: 20
   timeoutSeconds: 60
+  damageScale: 1.6
   frontGap: 6
   rowSpacing: 1
   laneSpacing: 1.2
