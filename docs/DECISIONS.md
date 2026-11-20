@@ -786,3 +786,38 @@ Enemy units keep ×1 / ×1.8 / ×3.2 (`ArmyRules.EnemyTierMultipliers`): they ar
 Expedition and Daily Challenge, which field tier 2 and 3 enemies, were tuned with that curve. Merged armies also win faster (2-10: 49 s to 41 s). 2-8 becomes too easy with merging; stage difficulty, battle
 length and Rally weight are PB-35. `--tiers 1,4,13` lets the balance tool try other multipliers without editing
 the asset. Alican reviews the branch (rules and data are his area).
+
+## D-069 - Battle pace, the time-out rule, stage tuning and the defeat hint (2026-11-21)
+
+Chapter 2 wins took 38-49 s (target 20-40 s) and a battle still running at 60 s was a defeat, however far ahead the
+player was. Now:
+- **Pace:** every hit and heal of both sides is multiplied by `BattleRules.DamageScale` (1.6 in the asset). One knob
+  keeps the matchups as they were and only shortens battles. Rally strikes (a share of max HP) are not scaled.
+- **Time-out:** at 60 s the side with the larger share of its HP left wins; a tie is a defeat; a win on time is one
+  star (`BattleResult.Stars`).
+- **Stages** (tuned with the merge-all bot, since merging is now the taught play, D-068): 2-2 has 26 moves (the ice
+  goal was missed 15% by bots that do not aim at ice; 8% now, a human who aims does better); enemy HP and damage
+  re-set on 2-3 to 2-10 so the merge-all bot goes from about 95% down to 69% at 2-10; 2-8 is "win within 20 s" with
+  enemy HP x1.9, so it is no longer decided by Rally (82% without Rally for a player who does not merge, 100% for
+  one who does). Players who never merge find 2-9 and 2-10 hard (33% and 24%): that is the lesson those stages teach.
+- **Defeat hint:** `BattleResult.Reason` (time up, Rally unused, outnumbered, overpowered) gives one line on the
+  results screen.
+
+Greedy bot, no Rally, 200 runs; "before" is the table of the 2026-11-21 review:
+
+| Stage | Before: no merge | Now: no merge | Now: merge all | Win time, merge all |
+|---|---|---|---|---|
+| 1-3 | 86% | 88% | 93% | 19 s |
+| 2-1 | 88% | 96% | 97% | 26 s |
+| 2-2 | 86% | 92% | 92% | 14 s |
+| 2-3 | 75% | 82% | 95% | 33 s |
+| 2-4 | 81% | 84% | 93% | 26 s |
+| 2-5 | 72% | 70% | 86% | 28 s |
+| 2-6 | 70% | 80% | 88% | 30 s |
+| 2-7 | 76% | 87% | 84% | 34 s |
+| 2-8 | 59% | 82% | 100% | 13 s |
+| 2-9 | 63% | 33% | 83% | 35 s |
+| 2-10 | 47% | 24% | 69% | 38 s |
+
+`Tools/Balance` gained `--damage`, `--only` and `--set stage_2_3.hp=1.6` (hp, damage, moves, goal) to try values
+without editing assets. Alican reviews the branch (rules and data are his area).

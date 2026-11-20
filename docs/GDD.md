@@ -212,7 +212,9 @@ Enemies use the same rules as player units and their own 4×4 formation.
 - **Rally:** the player taps the Rally button: all allies gain +35% damage and
   +35% attack speed for 5 seconds. One activation at a time; charges come from
   the puzzle.
-- Battle ends when one side is wiped out. A 60 s timeout counts as a defeat.
+- Battle ends when one side is wiped out. At the 60 s timeout the side with the larger share of
+  its HP left wins (a tie is a defeat); a win on time is one star (D-069). Every hit and heal is
+  multiplied by the battle rules' damage scale (1.6), the one knob for battle length.
 - Controls: 1×/2× speed, pause.
 
 **Commanders and Rally variants (PB-23, D-053).** A commander leads the army, does not fight, and decides what

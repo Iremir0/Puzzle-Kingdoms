@@ -10,6 +10,8 @@ namespace PuzzleKingdoms.Data
     {
         [SerializeField, Min(1)] private int ticksPerSecond = 20;
         [SerializeField, Min(1f)] private float timeoutSeconds = 60f;
+        [Tooltip("Every hit and heal of both sides is multiplied by this: the knob for battle length (D-069).")]
+        [SerializeField, Min(0.1f)] private float damageScale = 1f;
         [SerializeField, Min(0f)] private float frontGap = 6f;
         [SerializeField, Min(0f)] private float rowSpacing = 1f;
         [SerializeField, Min(0f)] private float laneSpacing = 1.2f;
@@ -25,6 +27,7 @@ namespace PuzzleKingdoms.Data
         {
             TicksPerSecond = ticksPerSecond,
             TimeoutSeconds = timeoutSeconds,
+            DamageScale = damageScale,
             FrontGap = frontGap,
             RowSpacing = rowSpacing,
             LaneSpacing = laneSpacing,

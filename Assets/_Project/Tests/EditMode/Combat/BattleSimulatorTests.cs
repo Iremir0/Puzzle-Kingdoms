@@ -106,7 +106,7 @@ namespace PuzzleKingdoms.Tests.Combat
         }
 
         [Test]
-        public void TimeoutIsADefeat()
+        public void TimeoutWithEqualHpIsADefeat()
         {
             BattleRules rules = CombatFixtures.Rules();
             rules.TimeoutSeconds = 2f;

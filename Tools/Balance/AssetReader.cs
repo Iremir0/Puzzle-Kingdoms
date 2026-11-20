@@ -229,6 +229,7 @@ namespace PuzzleKingdoms.Balance
             {
                 TicksPerSecond = I(v["ticksPerSecond"]),
                 TimeoutSeconds = F(v["timeoutSeconds"]),
+                DamageScale = v.TryGetValue("damageScale", out string scale) ? F(scale) : 1f,
                 FrontGap = F(v["frontGap"]),
                 RowSpacing = F(v["rowSpacing"]),
                 LaneSpacing = F(v["laneSpacing"]),

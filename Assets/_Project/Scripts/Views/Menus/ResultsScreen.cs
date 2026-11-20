@@ -28,6 +28,22 @@ namespace PuzzleKingdoms.Views.Menus
             return screen;
         }
 
+        /// <summary>The hint for a lost battle (PB-35, D-069).</summary>
+        public static string DefeatHint(DefeatReason reason)
+        {
+            switch (reason)
+            {
+                case DefeatReason.TimeUp:
+                    return Loc.T("Time ran out. Merge units for a stronger, faster army.");
+                case DefeatReason.RallyUnused:
+                    return Loc.T("Tip: tap Rally during the battle to power up your army.");
+                case DefeatReason.Outnumbered:
+                    return Loc.T("Outnumbered. Make more matches to recruit more soldiers.");
+                default:
+                    return Loc.T("Their army was stronger. Merge three of a kind in the War Camp.");
+            }
+        }
+
         private void Build(string stageName, BattleResult result, float battleSeconds, StageReward reward, int totalGold,
             Actions actions, bool won, string goalMissed, string commandersUnlocked, string classesUnlocked)
         {
@@ -70,6 +86,12 @@ namespace PuzzleKingdoms.Views.Menus
             if (unlockLine.Length > 0)
             {
                 Ui.Label(root, unlockLine, 38, TextAnchor.MiddleCenter, Palette.Good, 0.04f, 0.215f, 0.96f, 0.275f);
+            }
+            else if (!won && string.IsNullOrEmpty(goalMissed) && result.Reason != DefeatReason.None)
+            {
+                // PB-35: one line on what would help next time.
+                Text hint = Ui.Label(root, DefeatHint(result.Reason), 36, TextAnchor.MiddleCenter, Palette.Gold, 0.04f, 0.215f, 0.96f, 0.275f);
+                hint.gameObject.name = "Defeat Hint";
             }
 
             float y = 0.2f;

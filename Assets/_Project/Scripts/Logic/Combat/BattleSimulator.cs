@@ -257,7 +257,7 @@ namespace PuzzleKingdoms.Logic.Combat
             {
                 multiplier *= 1f - Variant.FrontRowDamageReduction; // Shield Wall
             }
-            int amount = Damage.Compute(attacker.Damage, attacker.DamageType, target, multiplier);
+            int amount = Damage.Compute(attacker.Damage, attacker.DamageType, target, multiplier * Rules.DamageScale);
             return new BattleEvent(BattleEventType.Attack, Tick, attacker.Id, target.Id, amount);
         }
 
@@ -384,7 +384,8 @@ namespace PuzzleKingdoms.Logic.Combat
             }
             if (best != null)
             {
-                _heals.Add(new BattleEvent(BattleEventType.Heal, Tick, c.Id, best.Id, c.Def.HealAmount));
+                int amount = Math.Max(1, (int)Math.Round(c.Def.HealAmount * Rules.DamageScale, MidpointRounding.AwayFromZero));
+                _heals.Add(new BattleEvent(BattleEventType.Heal, Tick, c.Id, best.Id, amount));
                 c.HealCooldown = c.Def.HealInterval;
             }
         }
@@ -431,6 +432,40 @@ namespace PuzzleKingdoms.Logic.Combat
             }
         }
 
+        /// <summary>HP left of one side as a share of its full HP (0 to 1).</summary>
+        public double HpShare(Side side)
+        {
+            long hp = 0;
+            long max = 0;
+            foreach (Combatant c in Combatants)
+            {
+                if (c.Side == side)
+                {
+                    hp += Math.Max(0, c.Hp);
+                    max += c.MaxHp;
+                }
+            }
+            return max == 0 ? 0 : (double)hp / max;
+        }
+
+        /// <summary>The hint for a lost battle, most useful first (PB-35).</summary>
+        private DefeatReason ReasonForDefeat(bool onTime, int deployed, int enemies)
+        {
+            if (onTime)
+            {
+                return DefeatReason.TimeUp;
+            }
+            if (Rally.Charges > 0)
+            {
+                return DefeatReason.RallyUnused;
+            }
+            if (enemies * 2 > deployed * 3)
+            {
+                return DefeatReason.Outnumbered;
+            }
+            return DefeatReason.Overpowered;
+        }
+
         private void CheckFinished(List<BattleEvent> events)
         {
             int playerAlive = AliveCount(Side.Player);
@@ -440,20 +475,28 @@ namespace PuzzleKingdoms.Logic.Combat
             {
                 return;
             }
+            bool onTime = timedOut && playerAlive > 0 && enemyAlive > 0;
             var result = new BattleResult
             {
-                Victory = enemyAlive == 0 && playerAlive > 0,
-                TimedOut = timedOut && playerAlive > 0 && enemyAlive > 0,
+                // D-069: on time, the side with the larger share of its HP left wins; a tie is a defeat.
+                Victory = onTime ? HpShare(Side.Player) > HpShare(Side.Enemy) : enemyAlive == 0 && playerAlive > 0,
+                TimedOut = onTime,
                 Ticks = Tick,
                 Survivors = playerAlive,
             };
+            int enemies = 0;
             foreach (Combatant c in Combatants)
             {
                 if (c.Side == Side.Player)
                 {
                     result.Deployed++;
                 }
+                else
+                {
+                    enemies++;
+                }
             }
+            result.Reason = result.Victory ? DefeatReason.None : ReasonForDefeat(onTime, result.Deployed, enemies);
             Result = result;
             events.Add(new BattleEvent(BattleEventType.Finished, Tick));
         }
