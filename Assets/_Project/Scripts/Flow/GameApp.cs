@@ -609,7 +609,7 @@ namespace PuzzleKingdoms.Flow
             _analytics.Send(GameEvents.AppStarted(Application.version, Languages.Code(Loc.Language)));
 
             Ui.EnsureEventSystem();
-            _screenRoot = Ui.CreateCanvas("Canvas").transform;
+            _screenRoot = Ui.CreateSafeArea(Ui.CreateCanvas("Canvas"));
             ShowStageSelect();
             SyncCloud();
 #if UNITY_EDITOR

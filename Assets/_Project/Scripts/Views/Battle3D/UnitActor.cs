@@ -32,6 +32,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         private Vector3 _previous;
         private Vector3 _current;
         private float _flashLeft;
+        private bool _flashShown;
         private float _deathAge = -1f;
         private float _heading;
         private readonly int _ticksPerSecond;
@@ -120,6 +121,34 @@ namespace PuzzleKingdoms.Views.Battle3D
         public bool IsDead => _deathAge >= 0f;
 
         public void Flash() => _flashLeft = FlashSeconds;
+
+        /// <summary>
+        /// Frees the material copies this unit made (body colours, glow, HP bar) (PB-15). Destroying the GameObjects
+        /// does not free them, so every battle used to leave about a hundred behind. Shared asset materials are kept:
+        /// only copies, which Unity names "... (Instance)", are destroyed.
+        /// </summary>
+        public void ReleaseMaterials()
+        {
+            if (Root == null)
+            {
+                return;
+            }
+            foreach (Renderer renderer in Root.GetComponentsInChildren<Renderer>(true))
+            {
+                Material material = renderer.sharedMaterial;
+                if (material != null && material.name.EndsWith(" (Instance)"))
+                {
+                    if (Application.isPlaying)
+                    {
+                        Object.Destroy(material);
+                    }
+                    else
+                    {
+                        Object.DestroyImmediate(material);
+                    }
+                }
+            }
+        }
 
         /// <summary>Rally aura: a gold glow on the body while Rally lasts (PB-12).</summary>
         public void SetAura(bool on)
@@ -217,9 +246,15 @@ namespace PuzzleKingdoms.Views.Battle3D
             Root.transform.rotation = Quaternion.Euler(0f, _heading, 0f);
 
             _flashLeft -= deltaTime;
-            for (int i = 0; i < _bodyRenderers.Length; i++)
+            bool flashing = _flashLeft > 0f;
+            if (flashing != _flashShown)
             {
-                _bodyRenderers[i].material.color = _flashLeft > 0f ? _flashColors[i] : _baseColors[i];
+                // Only on a change (PB-15): writing every body colour every frame cost CPU on 32 units for nothing.
+                _flashShown = flashing;
+                for (int i = 0; i < _bodyRenderers.Length; i++)
+                {
+                    _bodyRenderers[i].material.color = flashing ? _flashColors[i] : _baseColors[i];
+                }
             }
 
             bool hurt = Combatant.Hp < Combatant.MaxHp;

@@ -32,6 +32,13 @@ Without Unity (fast, logic only):
 dotnet test Tools/LogicTests
 ```
 
+If it says "No .NET SDKs were found", the SDK is installed for your user only
+(`%USERPROFILE%\.dotnet`), not machine-wide. Point `dotnet` at it first (PowerShell):
+
+```powershell
+$env:DOTNET_ROOT = "$env:USERPROFILE\.dotnet"; $env:PATH = "$env:DOTNET_ROOT;$env:PATH"
+```
+
 GitHub runs the same command on every push (*Actions* tab on GitHub,
 `.github/workflows/logic-tests.yml`), so a forgotten local run is caught there.
 

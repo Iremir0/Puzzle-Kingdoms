@@ -269,10 +269,17 @@ namespace PuzzleKingdoms.Views.Puzzle
                 return;
             }
             _idleSeconds += Time.deltaTime;
-            if (_hint == null && _idleSeconds >= HintDelaySeconds
-                && _run.Puzzle.Board.TryFindValidMove(out GridPos a, out GridPos b))
+            if (_hint == null && _idleSeconds >= HintDelaySeconds)
             {
-                _hint = (a, b);
+                if (_run.Puzzle.Board.TryFindValidMove(out GridPos a, out GridPos b))
+                {
+                    _hint = (a, b);
+                }
+                else
+                {
+                    // No move to show: look again in a second instead of scanning the whole board every frame (PB-15).
+                    _idleSeconds = HintDelaySeconds - 1f;
+                }
             }
             if (_hint != null)
             {

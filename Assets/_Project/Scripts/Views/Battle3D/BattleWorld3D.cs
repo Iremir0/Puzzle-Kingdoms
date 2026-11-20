@@ -28,6 +28,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         private sealed class Projectile
         {
             public GameObject Object;
+            public PrimitiveType Shape;
             public Vector3 From;
             public Vector3 To;
             public float Age;
@@ -166,6 +167,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         private sealed class Puff
         {
             public GameObject Object;
+            public PrimitiveType Shape;
             public Vector3 Velocity;
             public float Age;
             public float Life;
@@ -181,17 +183,15 @@ namespace PuzzleKingdoms.Views.Battle3D
         {
             for (int i = 0; i < count && _puffs.Count < MaxPuffs; i++)
             {
-                GameObject go = GameObject.CreatePrimitive(coin ? PrimitiveType.Cylinder : PrimitiveType.Sphere);
-                go.name = coin ? "Coin" : "Puff";
-                go.transform.SetParent(_root.transform, false);
-                go.GetComponent<Collider>().enabled = false;
-                go.GetComponent<Renderer>().material.color = color;
-                go.layer = Layer;
+                PrimitiveType shape = coin ? PrimitiveType.Cylinder : PrimitiveType.Sphere;
+                GameObject go = TakeBit(shape, coin ? "Coin" : "Puff", color);
                 go.transform.localPosition = at;
+                go.transform.localRotation = Quaternion.identity;
                 Vector2 dir = UnityEngine.Random.insideUnitCircle * spread;
                 _puffs.Add(new Puff
                 {
                     Object = go,
+                    Shape = shape,
                     Velocity = coin ? new Vector3(dir.x * 0.3f, 2.6f, dir.y * 0.3f) : new Vector3(dir.x, 0.6f + UnityEngine.Random.value * 0.8f, dir.y),
                     Life = life,
                     Size = size,
@@ -220,7 +220,7 @@ namespace PuzzleKingdoms.Views.Battle3D
                 }
                 if (t >= 1f)
                 {
-                    DestroyObject(p.Object);
+                    ReturnBit(p.Shape, p.Object);
                     _puffs.RemoveAt(i);
                 }
             }
@@ -250,6 +250,7 @@ namespace PuzzleKingdoms.Views.Battle3D
         private const float RingSeconds = 0.9f;
         private const float ShakeSeconds = 0.2f;
         private GameObject _rallyRing;
+        private Material _ringMaterial;
         private float _ringAge = -1f;
         private float _shakeLeft;
         private float _shakeTotal = ShakeSeconds;
@@ -290,7 +291,8 @@ namespace PuzzleKingdoms.Views.Battle3D
                 line.widthMultiplier = 0.22f;
                 line.alignment = LineAlignment.TransformZ;
                 line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                line.material = new Material(Shader.Find("Sprites/Default"));
+                _ringMaterial = new Material(Shader.Find("Sprites/Default"));
+                line.sharedMaterial = _ringMaterial;
                 line.startColor = line.endColor = Palette.Gold;
             }
             _rallyRing.transform.localPosition = new Vector3(centre.x, 0.03f, centre.z);
@@ -389,7 +391,7 @@ namespace PuzzleKingdoms.Views.Battle3D
                 p.Object.transform.localPosition = Vector3.Lerp(p.From, p.To, t) + Vector3.up * Mathf.Sin(t * Mathf.PI) * 0.4f;
                 if (t >= 1f)
                 {
-                    DestroyObject(p.Object);
+                    ReturnBit(p.Shape, p.Object);
                     _projectiles.RemoveAt(i);
                 }
             }
@@ -414,19 +416,80 @@ namespace PuzzleKingdoms.Views.Battle3D
                 _camera.targetTexture.Release();
                 DestroyObject(_camera.targetTexture);
             }
-            DestroyObject(_root);
+            foreach (UnitActor actor in _actors)
+            {
+                actor.ReleaseMaterials();
+            }
+            DestroyObject(_root); // the pooled bits are children of the root
+            foreach (Material material in _tints.Values)
+            {
+                DestroyObject(material);
+            }
+            _tints.Clear();
+            DestroyObject(_ringMaterial);
+        }
+
+        private static readonly Color ArrowColor = new Color(0.9f, 0.85f, 0.6f);
+
+        // Effect bits (puffs, coins, arrows, orbs) are pooled and share one material per colour (PB-15). Before, every
+        // bit was a new primitive with its own material copy, made and destroyed dozens of times a second in a battle,
+        // and the material copies were never freed.
+        private readonly Dictionary<PrimitiveType, Stack<GameObject>> _bitPool = new Dictionary<PrimitiveType, Stack<GameObject>>();
+        private readonly Dictionary<Color, Material> _tints = new Dictionary<Color, Material>();
+
+        private GameObject TakeBit(PrimitiveType shape, string name, Color color)
+        {
+            GameObject go;
+            if (_bitPool.TryGetValue(shape, out Stack<GameObject> pool) && pool.Count > 0)
+            {
+                go = pool.Pop();
+                go.SetActive(true);
+            }
+            else
+            {
+                go = GameObject.CreatePrimitive(shape);
+                go.transform.SetParent(_root.transform, false);
+                go.GetComponent<Collider>().enabled = false;
+                go.layer = Layer;
+            }
+            go.name = name;
+            Renderer renderer = go.GetComponent<Renderer>();
+            renderer.sharedMaterial = Tint(color, renderer);
+            return go;
+        }
+
+        private void ReturnBit(PrimitiveType shape, GameObject go)
+        {
+            if (go == null)
+            {
+                return;
+            }
+            go.SetActive(false);
+            if (!_bitPool.TryGetValue(shape, out Stack<GameObject> pool))
+            {
+                pool = new Stack<GameObject>();
+                _bitPool.Add(shape, pool);
+            }
+            pool.Push(go);
+        }
+
+        private Material Tint(Color color, Renderer template)
+        {
+            if (!_tints.TryGetValue(color, out Material material))
+            {
+                material = new Material(template.sharedMaterial) { name = "Bit", color = color };
+                _tints.Add(color, material);
+            }
+            return material;
         }
 
         private void SpawnProjectile(UnitActor from, UnitActor to)
         {
             bool magic = from.Combatant.DamageType == DamageType.Magic;
-            GameObject go = GameObject.CreatePrimitive(magic ? PrimitiveType.Sphere : PrimitiveType.Cube);
-            go.name = magic ? "Orb" : "Arrow";
-            go.transform.SetParent(_root.transform, false);
-            go.GetComponent<Collider>().enabled = false;
-            go.GetComponent<Renderer>().material.color = magic ? Palette.Rally : new Color(0.9f, 0.85f, 0.6f);
+            PrimitiveType shape = magic ? PrimitiveType.Sphere : PrimitiveType.Cube;
+            GameObject go = TakeBit(shape, magic ? "Orb" : "Arrow", magic ? Palette.Rally : ArrowColor);
             go.transform.localScale = magic ? Vector3.one * 0.25f : new Vector3(0.05f, 0.05f, 0.5f);
-            go.layer = Layer;
+            go.transform.localRotation = Quaternion.identity;
             Vector3 start = from.Position + Vector3.up * 0.8f;
             Vector3 end = to.Position + Vector3.up * 0.8f;
             if (!magic)
@@ -434,7 +497,7 @@ namespace PuzzleKingdoms.Views.Battle3D
                 go.transform.rotation = Quaternion.LookRotation(end - start);
             }
             float distance = Vector3.Distance(start, end);
-            _projectiles.Add(new Projectile { Object = go, From = start, To = end, Duration = Mathf.Max(0.12f, distance / 16f) });
+            _projectiles.Add(new Projectile { Object = go, Shape = shape, From = start, To = end, Duration = Mathf.Max(0.12f, distance / 16f) });
         }
 
         private void ClearProjectiles()

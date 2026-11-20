@@ -44,6 +44,7 @@ namespace PuzzleKingdoms.Views.Battle
         }
 
         private BattleSimulator _sim;
+        private readonly List<BattleEvent> _events = new List<BattleEvent>(); // reused every tick (PB-15)
         private StageGoal _goal; // PB-19: a time goal shows next to the clock
         private Action _onFinished;
         private RectTransform _field;
@@ -231,9 +232,9 @@ namespace PuzzleKingdoms.Views.Battle
                 while (_accumulator >= tick && !_sim.IsFinished && steps++ < MaxTicksPerFrame)
                 {
                     _accumulator -= tick;
-                    List<BattleEvent> events = _replay != null ? _replay.Advance(_sim) : _sim.Step();
-                    Play(events);
-                    _world.OnStep(events);
+                    if (_replay != null) { _replay.Advance(_sim, _events); } else { _sim.Step(_events); }
+                    Play(_events);
+                    _world.OnStep(_events);
                 }
                 if (_sim.IsFinished)
                 {
@@ -424,7 +425,7 @@ namespace PuzzleKingdoms.Views.Battle
         {
             while (!_sim.IsFinished)
             {
-                if (_replay != null) { _replay.Advance(_sim); } else { _sim.Step(); }
+                if (_replay != null) { _replay.Advance(_sim, _events); } else { _sim.Step(_events); }
             }
             _world.SnapToSimulator();
             RefreshHud();

@@ -48,7 +48,7 @@ namespace PuzzleKingdoms.Views.Menus
             Action onReplays = null, CloudInfo cloud = null)
         {
             // A dimmed full-screen layer that swallows taps meant for the screen below.
-            Image shade = Ui.Box(parent, "SettingsPanel", new Color(0f, 0f, 0f, 0.6f));
+            Image shade = Ui.Shade(parent, "SettingsPanel", 0.6f);
             var panel = shade.gameObject.AddComponent<SettingsPanel>();
             panel.Build(settings.Copy(), version, onChanged, onResetProgress, onResetTutorial, onPrivacy, onReplays, cloud);
             return panel;
