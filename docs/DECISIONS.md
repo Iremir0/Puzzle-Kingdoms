@@ -346,7 +346,8 @@ apart.
 - **Bad or newer files:** a profile that cannot be read, or one with a newer save
   version (after installing an older build), is copied to `profile.json.bak` and a
   fresh profile starts. The game never refuses to start over a save file; the
-  `.bak` lets us recover progress by hand.
+  `.bak` lets us recover progress by hand. (A newer file is now also never written
+  over, see D-067.)
 - **Reset progress** asks twice and saves an empty profile right away.
 Why: losing progress loses players (PB-14), and testers share PCs (PB-5).
 
@@ -745,3 +746,16 @@ Community Licence: outputs are ours, free while the organisation earns under $1M
 downloaded version is to be read before use). Free tiers of AI music websites are not used for the store build: they
 are non-commercial. Every file is in CREDITS.md before it is committed, with tool, model and prompt for AI files.
 The method is in `docs/AUDIO.md`. The real files are still to be made or downloaded (owner).
+
+## D-067 - A save from a newer version is locked, not replaced (2026-11-20)
+
+Installing an older build over a newer one (a tester's old APK, a store rollback) used to set the newer save aside as
+`profile.json.bak`, start a fresh profile and then save that over `profile.json`; updating again found only the fresh
+profile. Now `ProfileStore` still copies the file to `.bak`, but marks itself `Locked`: the game plays on a fresh
+profile and writes nothing, to the phone or to the cloud (no upload, no cloud sync), and a "Update the game" notice
+says so at start. Updating brings the save back as it was. Resetting progress does nothing while locked; that is
+rare enough to leave. Backups no longer replace each other: a second bad file goes to `.bak2`, `.bak3` ...; the same
+file seen again at the next start is not copied twice. Older save versions keep loading: tests read save files with
+only the version 1, 2 and 4 fields, and a snapshot with every later field missing (`SaveVersionTests`,
+`SaveFileTests`). Why: a tester who installs an old APK must not lose their progress (PB-15, package A of the
+2026-11-20 review).

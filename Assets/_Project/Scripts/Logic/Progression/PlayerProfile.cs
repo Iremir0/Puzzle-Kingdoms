@@ -413,6 +413,9 @@ namespace PuzzleKingdoms.Logic.Progression
             return log;
         }
 
+        /// <summary>True when the save was written by a newer version of the game, so this one cannot read it (D-067).</summary>
+        public static bool IsTooNew(Snapshot snapshot) => snapshot != null && snapshot.version > CurrentVersion;
+
         public static PlayerProfile FromSnapshot(Snapshot snapshot)
         {
             var profile = new PlayerProfile();
@@ -420,7 +423,7 @@ namespace PuzzleKingdoms.Logic.Progression
             {
                 return profile;
             }
-            if (snapshot.version > CurrentVersion)
+            if (IsTooNew(snapshot))
             {
                 throw new InvalidOperationException($"Save version {snapshot.version} is newer than {CurrentVersion}");
             }

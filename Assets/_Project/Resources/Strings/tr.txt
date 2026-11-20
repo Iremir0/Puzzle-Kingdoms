@@ -313,3 +313,5 @@ This phone	Bu telefon
 {0} stages	{0} bölüm
 Keep this phone	Bu telefonu tut
 Use cloud save	Bulut kaydını kullan
+Update the game	Oyunu güncelle
+Your save comes from a newer version of Puzzle Kingdoms. Update the game to continue it. Until then, nothing you play here is saved.	Kaydın Puzzle Kingdoms'un daha yeni bir sürümünden. Devam etmek için oyunu güncelle. O zamana kadar burada oynadıkların kaydedilmez.

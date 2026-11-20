@@ -30,7 +30,7 @@ namespace PuzzleKingdoms.Logic.Progression
             {
                 return SaveChoice.KeepLocal;
             }
-            if (cloud.version > PlayerProfile.CurrentVersion)
+            if (PlayerProfile.IsTooNew(cloud))
             {
                 return SaveChoice.CloudTooNew;
             }

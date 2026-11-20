@@ -51,7 +51,7 @@ puzzle-kingdoms/
 │       │                            Puzzle (+ BoardEffects), WarCamp (+ BenchView, DraggableUnit), Battle,
 │       │                            Battle3D (PB-11: BattleWorld3D camera + ground + actors drawn into a texture,
 │       │                            UnitActor capsule stand-in; BattleScreen shows it, 2D behind a toggle),
-│       │                            Menus (StageMapScreen, SettingsPanel, ResultsScreen, ConsentPanel);
+│       │                            Menus (StageMapScreen, SettingsPanel, ResultsScreen, ConsentPanel, NoticePanel);
 │       │                            Common/Loc: the current language for every screen (PB-32)
 │       ├── Resources/            ✅ UiFont.ttf (Lilita One, D-044); Strings/tr.txt: Turkish texts (PB-32, D-046)
 │       ├── Data/                 ✅ .asset files
