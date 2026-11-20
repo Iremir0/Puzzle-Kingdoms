@@ -24,6 +24,15 @@ namespace PuzzleKingdoms.Logic.Flow
         Eager,
     }
 
+    /// <summary>What the balance bot does in the War Camp before the formation is filled (PB-34).</summary>
+    public enum MergeBot
+    {
+        /// <summary>Never merges: every recruit is its own unit.</summary>
+        None,
+        /// <summary>Presses "Merge all" first, like a player following the 1-2 tutorial.</summary>
+        All,
+    }
+
     /// <summary>Totals of many bot runs of one stage.</summary>
     public sealed class BalanceStats
     {
@@ -51,15 +60,16 @@ namespace PuzzleKingdoms.Logic.Flow
     /// <summary>
     /// Plays a stage many times with simple bots and adds up the outcome (D-026, PB-19). Shared by
     /// <c>Tools/Balance</c> (all stages from a terminal) and the Stage Editor's "Test difficulty".
-    /// The bots: a random or greedy puzzle player, <see cref="AutoFormation"/> in the War Camp (no
-    /// merges), Rally never or as soon as possible. Same seeds, same numbers.
+    /// The bots: a random or greedy puzzle player, <see cref="AutoFormation"/> in the War Camp (with or
+    /// without "Merge all" first, PB-34), Rally never or as soon as possible. Same seeds, same numbers.
     /// </summary>
     public static class BalanceRunner
     {
         public const ulong FirstSeed = 1000;
 
         /// <param name="createRun">Makes the run for one seed (the stage and rules are the caller's).</param>
-        public static BalanceStats Run(Func<ulong, StageRun> createRun, PuzzleBot puzzleBot, RallyBot rallyBot, int runs)
+        public static BalanceStats Run(Func<ulong, StageRun> createRun, PuzzleBot puzzleBot, RallyBot rallyBot, int runs,
+            MergeBot mergeBot = MergeBot.None)
         {
             var stats = new BalanceStats();
             for (int i = 0; i < runs; i++)
@@ -75,6 +85,10 @@ namespace PuzzleKingdoms.Logic.Flow
                     run.Puzzle.PlaySwap(a, b);
                 }
                 int recruited = run.Roster.Bench.Count;
+                if (mergeBot == MergeBot.All)
+                {
+                    run.Roster.MergeAll();
+                }
                 AutoFormation.Fill(run.Roster);
                 stats.Runs++;
                 stats.Recruited += recruited;

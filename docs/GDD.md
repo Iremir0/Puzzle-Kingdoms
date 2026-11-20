@@ -131,10 +131,14 @@ Post-MVP: more special gems, stage objectives, boss board modifiers.
 | Tier | HP & damage multiplier | Visual |
 |---|---|---|
 | 1 | ×1.0 | base |
-| 2 | ×1.8 | larger, trim color |
-| 3 | ×3.2 | larger, glow |
+| 2 | ×4 | larger, trim color |
+| 3 | ×13 | larger, glow |
 
-Intent: one merged unit is slightly stronger than three separate ones in raw
+Intent (D-068, PB-34): one merged unit is clearly stronger than the three it was
+made from (×4 against ×3, ×13 against ×12), so merging is the right call unless
+the formation has gaps to fill. The old ×1.8 / ×3.2 made "Merge all" cost 30-60
+points of win rate. Old note, kept for history: one merged unit was slightly
+stronger than three separate ones in raw
 numbers but occupies one slot. With â¤ 16 units, spreading is usually better; with
 more, merging is. Verified by headless simulation.
 

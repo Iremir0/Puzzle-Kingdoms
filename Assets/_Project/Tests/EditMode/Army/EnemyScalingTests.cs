@@ -85,7 +85,7 @@ namespace PuzzleKingdoms.Tests.Army
             var stage = new StageDef { Id = "t", EnemyHpMultiplier = 2f };
             stage.Enemies.Add(new EnemySlot { Unit = Grunt, Tier = 2, Cell = new GridPos(0, 0) });
             ArmyUnit unit = Formation.ForStage(stage).GetUnit(new GridPos(0, 0));
-            Assert.AreEqual(360, unit.MaxHp(new ArmyRules()), "100 x 2 (stage) x 1.8 (tier 2)");
+            Assert.AreEqual(360, unit.MaxHp(new ArmyRules().ForEnemies()), "100 x 2 (stage) x 1.8 (enemy tier 2, D-068)");
         }
 
         [Test]

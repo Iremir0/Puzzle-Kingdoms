@@ -217,6 +217,7 @@ namespace PuzzleKingdoms.Balance
             return new ArmyRules
             {
                 TierMultipliers = ListItems(lines, "tierMultipliers").Select(F).ToArray(),
+                EnemyTierMultipliers = ListItems(lines, "enemyTierMultipliers").Select(F).ToArray(),
                 MergeCount = I(Scalars(lines)["mergeCount"]),
             };
         }
