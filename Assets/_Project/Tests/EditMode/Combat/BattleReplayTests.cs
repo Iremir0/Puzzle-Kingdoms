@@ -92,6 +92,28 @@ namespace PuzzleKingdoms.Tests.Combat
         }
 
         [Test]
+        public void AdvanceIntoABufferPlaysTheSameBattle()
+        {
+            StageRun run = FinishedRun();
+            BattleReplay saved = BattleReplay.From(run, "Buffer test");
+            BattleSimulator again = saved.Rebuild(run.Battle.Rules, run.ArmyRules, Find);
+            var buffer = new List<BattleEvent>();
+            int events = 0;
+            int guard = 0;
+            while (!again.IsFinished && guard++ < 5000)
+            {
+                saved.Advance(again, buffer);
+                events += buffer.Count;
+            }
+            Assert.Greater(events, 0);
+            Assert.AreEqual(run.Battle.Result.Ticks, again.Result.Ticks);
+            CollectionAssert.AreEqual(Final(run.Battle), Final(again));
+            CollectionAssert.AreEqual(run.Battle.InputLog, again.InputLog);
+            saved.Advance(again, buffer);
+            Assert.IsEmpty(buffer, "a finished battle clears the buffer");
+        }
+
+        [Test]
         public void ACommanderVariantIsKept()
         {
             var variant = new RallyVariant

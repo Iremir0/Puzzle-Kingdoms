@@ -70,6 +70,25 @@ namespace PuzzleKingdoms.Views.Common
             return canvas;
         }
 
+        /// <summary>
+        /// The rect inside <paramref name="canvas"/> that keeps clear of notches and the gesture bar (PB-15): build
+        /// screens under it. Backgrounds and full-screen shades still reach the screen edges through <see cref="FullBleed"/>.
+        /// </summary>
+        public static RectTransform CreateSafeArea(Canvas canvas)
+        {
+            RectTransform safe = Stretch(canvas.transform, "SafeArea");
+            safe.gameObject.AddComponent<SafeArea>();
+            return safe;
+        }
+
+        /// <summary>A full-screen dimmed layer that swallows taps (pop-ups); it covers the notch strips too.</summary>
+        public static Image Shade(Transform parent, string name, float alpha)
+        {
+            Image shade = Box(parent, name, new Color(0f, 0f, 0f, alpha));
+            shade.gameObject.AddComponent<FullBleed>();
+            return shade;
+        }
+
         /// <summary>Creates an EventSystem if the scene has none (needed for clicks).</summary>
         public static void EnsureEventSystem()
         {
@@ -124,6 +143,7 @@ namespace PuzzleKingdoms.Views.Common
         public static Image Backdrop(Transform parent)
         {
             Image background = Box(parent, "Background", Color.white);
+            background.gameObject.AddComponent<FullBleed>();
             background.sprite = UiStyle.Gradient(Palette.Hex("2E3860"), Palette.Hex("11141E"));
             AddGlow(background.transform, 0.12f, 0.88f, 1100f, new Color(0.24f, 0.48f, 0.85f, 0.30f));
             AddGlow(background.transform, 0.95f, 0.5f, 1000f, new Color(0.55f, 0.32f, 0.85f, 0.22f));

@@ -192,6 +192,15 @@ namespace PuzzleKingdoms.Flow
         /// <summary>The conflict question while it is open (tests answer it).</summary>
         public CloudConflictPanel ConflictPanel { get; private set; }
 
+        /// <summary>
+        /// The save on this phone comes from a newer version of the game: play goes on with a fresh profile, but
+        /// nothing is written to the phone or the cloud, so updating the game brings the progress back (D-067).
+        /// </summary>
+        public bool SaveLocked => _store != null && _store.Locked;
+
+        /// <summary>The "update the game" message while it is open (tests close it).</summary>
+        public NoticePanel SaveNotice { get; private set; }
+
         /// <summary>Writes the profile to disk now, and to the cloud soon.</summary>
         private void SaveProfile()
         {
@@ -218,7 +227,7 @@ namespace PuzzleKingdoms.Flow
         /// <summary>Uploads the profile if it changed since the last upload (no-op when signed out).</summary>
         public void FlushCloud()
         {
-            if (!_cloudDirty || !Cloud.IsSignedIn)
+            if (!_cloudDirty || !Cloud.IsSignedIn || SaveLocked)
             {
                 return;
             }
@@ -245,7 +254,7 @@ namespace PuzzleKingdoms.Flow
         /// </summary>
         public void SyncCloud()
         {
-            if (!Cloud.IsSignedIn)
+            if (!Cloud.IsSignedIn || SaveLocked)
             {
                 return;
             }
@@ -609,8 +618,14 @@ namespace PuzzleKingdoms.Flow
             _analytics.Send(GameEvents.AppStarted(Application.version, Languages.Code(Loc.Language)));
 
             Ui.EnsureEventSystem();
-            _screenRoot = Ui.CreateCanvas("Canvas").transform;
+            _screenRoot = Ui.CreateSafeArea(Ui.CreateCanvas("Canvas"));
             ShowStageSelect();
+            if (SaveLocked)
+            {
+                SaveNotice = NoticePanel.Create(_screen.transform, Loc.T("Update the game"),
+                    Loc.T("Your save comes from a newer version of Puzzle Kingdoms. Update the game to continue it. Until then, nothing you play here is saved."),
+                    () => SaveNotice = null);
+            }
             SyncCloud();
 #if UNITY_EDITOR
             // Stage Editor → Play in editor (PB-19): go straight into that stage, once.

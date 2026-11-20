@@ -25,7 +25,7 @@ namespace PuzzleKingdoms.Views.Menus
         public static ConsentPanel Create(Transform parent, GameSettings current, bool answeredBefore,
             Action<bool, bool, bool> onAnswer)
         {
-            Image shade = Ui.Box(parent, "ConsentPanel", new Color(0f, 0f, 0f, 0.7f));
+            Image shade = Ui.Shade(parent, "ConsentPanel", 0.7f);
             var panel = shade.gameObject.AddComponent<ConsentPanel>();
             panel.Build(current, answeredBefore, onAnswer);
             return panel;

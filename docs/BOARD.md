@@ -49,6 +49,7 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-19](cards/PB-19.md) | Stage tool and stage goals | Alican | M7 | M | `feature/PB-19-stage-tool` | Growth wave 1 (D-048). In `main`: goals (break stones, win within), painted start boards, one balance runner, Stage Editor window, The Quarry (1-4, not in the campaign); left: open the window in the editor and play The Quarry by hand |
 | [PB-18](cards/PB-18.md) | Chapter 2: Goblin Fort | Alican | M7 | L | `feature/PB-18-chapter-2` | Wave 2 (D-045). Merged into `main` 2026-11-18. Built (D-051): 4 enemy behaviours, stages 2-1 to 2-10 balanced, chapter map; models in the 3D battle (static); left: rigs and animations for the 4 models, a phone playthrough |
 | [PB-22](cards/PB-22.md) | Kingdom and buildings | Alican | M7 | L | `feature/PB-22-kingdom` | Wave 2 (D-052). Merged into `main` 2026-11-18. Built: 4 buildings as data, bonuses in battle and gold, save v3, Kingdom screen, tab bar, Balance `--kingdom N`; left: look at the screens on a phone shape, Commanders and Shop tabs wait for PB-23 and PB-30 |
+| [PB-15](cards/PB-15.md) | Phone performance and layout | Emir | M6 | L | `feature/PB-15-phone-perf-layout` | Third card for Emir (PB-1 and PB-7 only wait for a phone). Done without a phone: safe area (`SafeArea`, `FullBleed`), battle effects pooled with shared materials, no per-tick event list, hint scan throttled, a save from a newer build is locked instead of replaced (D-067); left: profile on 2 phones, 4 aspect ratios in the Device Simulator |
 | [PB-23](cards/PB-23.md) | Commander heroes | Alican | M7 | L | `feature/PB-23-commanders` | Wave 2 (D-053). Merged into `main` 2026-11-18. Built: Shield Wall, Arrow Rain, Fireball as Rally variants, commanders unlocked by stages and chosen on the Commanders tab, save v4, balance per commander; left: 3 Meshy commander models, real 3D effects, a look at the screens |
 
 ## Ready (next up, in priority order)
@@ -64,7 +65,6 @@ Not started. Each card is a milestone slice that ends in something playable.
 
 | ID | Card | Milestone | Size | In short |
 |---|---|---|---|---|
-| [PB-15](cards/PB-15.md) | Phone performance and layout | M6 | L | Profile on 2 phones, fix top 3 hotspots, safe area, 4 aspect ratios |
 
 ### Growth (D-045): wave 2 started on the owner's go (D-049): PB-20 → PB-18 → PB-22 → PB-23 → PB-21
 Waves 2-4 of the growth plan; wave 1 (PB-29, PB-32, PB-19) is above. Mockups of every

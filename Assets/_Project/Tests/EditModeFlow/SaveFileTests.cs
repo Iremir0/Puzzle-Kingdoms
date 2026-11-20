@@ -107,6 +107,74 @@ namespace PuzzleKingdoms.Tests.Flow
         }
 
         [Test]
+        public void NewerSaveIsNeverWrittenOver()
+        {
+            // D-067: an older build plays on, but its saves must not replace the newer file.
+            string newer = "{\"version\": " + (PlayerProfile.CurrentVersion + 1) + ", \"gold\": 500}";
+            File.WriteAllText(_store.Path, newer);
+
+            _store.Load();
+            _store.Save(SomeProgress());
+
+            Assert.IsTrue(_store.Locked);
+            Assert.AreEqual(newer, File.ReadAllText(_store.Path));
+        }
+
+        [Test]
+        public void NewerSaveSeenAtEveryStartKeepsOneBackup()
+        {
+            string newer = "{\"version\": " + (PlayerProfile.CurrentVersion + 1) + ", \"gold\": 500}";
+            File.WriteAllText(_store.Path, newer);
+
+            _store.Load();
+            new ProfileStore(_folder).Load();
+
+            Assert.AreEqual(newer, File.ReadAllText(Bak));
+            Assert.IsFalse(File.Exists(Bak + "2"));
+        }
+
+        [Test]
+        public void ReadableSaveIsNotLocked()
+        {
+            _store.Save(SomeProgress());
+
+            _store.Load();
+
+            Assert.IsFalse(_store.Locked);
+        }
+
+        [Test]
+        public void SecondBadFileDoesNotReplaceTheFirstBackup()
+        {
+            File.WriteAllText(_store.Path, "first {{{");
+            _store.Load();
+            _store.Save(new PlayerProfile());
+            File.WriteAllText(_store.Path, "second {{{");
+
+            new ProfileStore(_folder).Load();
+
+            Assert.AreEqual("first {{{", File.ReadAllText(Bak));
+            Assert.AreEqual("second {{{", File.ReadAllText(Bak + "2"));
+        }
+
+        [TestCase("{\"version\": 1, \"gold\": 120, \"stageIds\": [\"stage_1_1\", \"stage_1_2\"], \"stageStars\": [3, 2]}")]
+        [TestCase("{\"version\": 2, \"gold\": 120, \"stageIds\": [\"stage_1_1\", \"stage_1_2\"], \"stageStars\": [3, 2], \"seenTutorialSteps\": [\"t1\"], \"tutorialSkipped\": false}")]
+        [TestCase("{\"version\": 4, \"gold\": 120, \"stageIds\": [\"stage_1_1\", \"stage_1_2\"], \"stageStars\": [3, 2], \"buildingIds\": [\"barracks\"], \"buildingLevels\": [2], \"commanderId\": \"\"}")]
+        public void OlderSaveFilesLoad(string json)
+        {
+            // What older builds wrote: only the fields of their version (D-067).
+            File.WriteAllText(_store.Path, json);
+
+            PlayerProfile profile = _store.Load();
+
+            Assert.IsFalse(_store.Locked);
+            Assert.IsFalse(File.Exists(Bak), "an older save is read, not set aside");
+            Assert.AreEqual(120, profile.Gold);
+            Assert.AreEqual(3, profile.BestStars("stage_1_1"));
+            Assert.AreEqual(2, profile.BestStars("stage_1_2"));
+        }
+
+        [Test]
         public void LeftoverTempFileDoesNotBreakSaveOrLoad()
         {
             PlayerProfile saved = SomeProgress();

@@ -15,7 +15,7 @@ namespace PuzzleKingdoms.Views.Menus
         public static CloudConflictPanel Create(Transform parent, PlayerProfile.Snapshot local, PlayerProfile.Snapshot cloud,
             Action onKeepLocal, Action onUseCloud)
         {
-            Image shade = Ui.Box(parent, "CloudConflictPanel", new Color(0f, 0f, 0f, 0.7f));
+            Image shade = Ui.Shade(parent, "CloudConflictPanel", 0.7f);
             var panel = shade.gameObject.AddComponent<CloudConflictPanel>();
             panel.Build(local, cloud, onKeepLocal, onUseCloud);
             return panel;

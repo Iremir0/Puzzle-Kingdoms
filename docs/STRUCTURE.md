@@ -46,11 +46,12 @@ puzzle-kingdoms/
 │       │   │                        AnalyticsHub + IAnalyticsSink + LocalEventLog, ErrorReporter,
 │       │   │                        RemoteConfigFile (PB-29: consent-gated statistics, D-047)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
-│       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes, StageBadges, Tween, Sfx, TutorialOverlay),
+│       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes, StageBadges, Tween, Sfx, TutorialOverlay,
+│       │                            SafeArea + FullBleed: screens keep clear of the notch, backgrounds reach the edges, PB-15),
 │       │                            Puzzle (+ BoardEffects), WarCamp (+ BenchView, DraggableUnit), Battle,
 │       │                            Battle3D (PB-11: BattleWorld3D camera + ground + actors drawn into a texture,
 │       │                            UnitActor capsule stand-in; BattleScreen shows it, 2D behind a toggle),
-│       │                            Menus (StageMapScreen, SettingsPanel, ResultsScreen, ConsentPanel);
+│       │                            Menus (StageMapScreen, SettingsPanel, ResultsScreen, ConsentPanel, NoticePanel);
 │       │                            Common/Loc: the current language for every screen (PB-32)
 │       ├── Resources/            ✅ UiFont.ttf (Lilita One, D-044); Strings/tr.txt: Turkish texts (PB-32, D-046)
 │       ├── Data/                 ✅ .asset files

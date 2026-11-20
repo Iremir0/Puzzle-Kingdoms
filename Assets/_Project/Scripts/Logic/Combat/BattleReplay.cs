@@ -156,15 +156,24 @@ namespace PuzzleKingdoms.Logic.Combat
         /// <summary>Plays one tick of the replay: presses Rally if it was pressed now, then steps.</summary>
         public List<BattleEvent> Advance(BattleSimulator sim)
         {
+            var events = new List<BattleEvent>();
+            Advance(sim, events);
+            return events;
+        }
+
+        /// <summary>As <see cref="Advance(BattleSimulator)"/>, filling a reused list (cleared first) (PB-15).</summary>
+        public void Advance(BattleSimulator sim, List<BattleEvent> events)
+        {
             if (sim.IsFinished)
             {
-                return new List<BattleEvent>();
+                events.Clear();
+                return;
             }
             if (RallyTicks.Contains(sim.Tick))
             {
                 sim.ActivateRally();
             }
-            return sim.Step();
+            sim.Step(events);
         }
 
         /// <summary>True when the rules and unit numbers are the ones the battle was fought with.</summary>
