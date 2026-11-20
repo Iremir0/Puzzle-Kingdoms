@@ -51,7 +51,7 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-22](cards/PB-22.md) | Kingdom and buildings | Alican | M7 | L | `feature/PB-22-kingdom` | Wave 2 (D-052). Merged into `main` 2026-11-18. Built: 4 buildings as data, bonuses in battle and gold, save v3, Kingdom screen, tab bar, Balance `--kingdom N`; left: look at the screens on a phone shape, Commanders and Shop tabs wait for PB-23 and PB-30 |
 | [PB-15](cards/PB-15.md) | Phone performance and layout | Emir | M6 | L | `feature/PB-15-phone-perf-layout` | Third card for Emir (PB-1 and PB-7 only wait for a phone). In `main` 2026-11-20, done without a phone: safe area (`SafeArea`, `FullBleed`), battle effects pooled with shared materials, no per-tick event list, hint scan throttled, a save from a newer build is locked instead of replaced (D-067); left: profile on 2 phones, 4 aspect ratios in the Device Simulator |
 | [PB-23](cards/PB-23.md) | Commander heroes | Alican | M7 | L | `feature/PB-23-commanders` | Wave 2 (D-053). Merged into `main` 2026-11-18. Built: Shield Wall, Arrow Rain, Fireball as Rally variants, commanders unlocked by stages and chosen on the Commanders tab, save v4, balance per commander; left: 3 Meshy commander models, real 3D effects, a look at the screens |
-| [PB-35](cards/PB-35.md) | Battle tempo and fair stages | Emir | M6 | M | `feature/PB-35-tempo-fair-stages` | Chapter 2 battles 25-35 s, time-out by HP, 2-2 ice, 2-8 rally, 2-9/2-10, defeat hint |
+| [PB-36](cards/PB-36.md) | Measure the first session | Emir | M6 | S | `feature/PB-36-analytics-funnel` | Tutorial funnel and feature events for the closed test, docs/ANALYTICS.md |
 
 ## Ready (next up, in priority order)
 
@@ -59,7 +59,6 @@ PB-34 to PB-39 come from the 2026-11-21 review (merge, tempo, measuring, onboard
 
 | ID | Card | Owner | Milestone | Size | In short |
 |---|---|---|---|---|---|
-| [PB-36](cards/PB-36.md) | Measure the first session | Emir | M6 | S | Tutorial funnel and feature events for the closed test, docs/ANALYTICS.md |
 | [PB-37](cards/PB-37.md) | Unlock systems step by step | Emir | M6 | M | Tabs and modes unlock by stage with one intro each; 1-4 teaches Blast and Prism |
 | [PB-38](cards/PB-38.md) | Rewards worth chasing | Emir | M6 | M | First-clear gold, chest every 12 stars, star shapes, haptics, +5 moves for an ad |
 | [PB-39](cards/PB-39.md) | Expedition perk draft | Emir | M8 | M | Pick one of three perks after each battle; Defender and Support in the pool |
@@ -116,6 +115,7 @@ private until shared).
 | [PB-32](cards/PB-32.md) | Turkish and English: one table `Resources/Strings/tr.txt`, Settings → Language, phone language by default, coverage tests (D-046) (2026-11-18) |
 | [PB-20](cards/PB-20.md) | New gems and obstacles: chains, ice, special combos, boss stones, Stage Editor covers, drafts 2-1 and 2-2 (D-050) (2026-11-18) |
 | [PB-34](cards/PB-34.md) | Merging pays: tiers x1/x4/x13, enemy tiers keep x1.8/x3.2, balance tool --merge and --tiers (D-068, 2026-11-21; Alican to read the branch) |
+| [PB-35](cards/PB-35.md) | Battles 13-38 s (damage scale 1.6), time-out by HP share, Chapter 2 re-tuned, defeat hint (D-069, 2026-11-21; Alican to read the branch) |
 
 ---
 
