@@ -24,6 +24,8 @@ namespace PuzzleKingdoms.Balance
             // PB-22: "--kingdom N" gives every building level N, to check a stage at the level a player is expected to have.
             int kingdomLevel = 0;
             string commanderId = "";
+            MergeBot mergeBot = MergeBot.None;
+            float[] tiers = null;
             for (int a = 0; a + 1 < args.Length; a++)
             {
                 if (args[a] == "--kingdom")
@@ -34,10 +36,23 @@ namespace PuzzleKingdoms.Balance
                 {
                     commanderId = args[a + 1]; // PB-23: lead the army with this commander (every stage, unlocked or not)
                 }
+                else if (args[a] == "--merge")
+                {
+                    mergeBot = args[a + 1] == "all" ? MergeBot.All : MergeBot.None; // PB-34: "Merge all" before the formation
+                }
+                else if (args[a] == "--tiers")
+                {
+                    // PB-34: try other tier multipliers without editing the asset, e.g. "--tiers 1,3.5,11"
+                    tiers = Array.ConvertAll(args[a + 1].Split(','), t => float.Parse(t, CultureInfo.InvariantCulture));
+                }
             }
             string data = FindDataFolder();
             var assets = new AssetReader(data);
-            Console.WriteLine($"Data: {data}   runs per row: {runs}   kingdom level: {kingdomLevel}   commander: {(commanderId == "" ? "none" : commanderId)}");
+            if (tiers != null)
+            {
+                assets.ArmyRules.TierMultipliers = tiers;
+            }
+            Console.WriteLine($"Data: {data}   runs per row: {runs}   kingdom level: {kingdomLevel}   commander: {(commanderId == "" ? "none" : commanderId)}   merge: {mergeBot}   tiers: {string.Join("/", assets.ArmyRules.TierMultipliers)}");
             KingdomBonuses bonuses = kingdomLevel > 0 ? assets.KingdomRules.BonusesAtLevel(kingdomLevel) : null;
             RallyVariant variant = commanderId == "" ? null : assets.Commanders.Find(c => c.Id == commanderId)?.Variant;
             if (commanderId != "" && variant == null)
@@ -56,7 +71,7 @@ namespace PuzzleKingdoms.Balance
                         BalanceStats s = BalanceRunner.Run(seed => new StageRun(stage, assets.UnitsFor(stage),
                                 assets.PuzzleRules, assets.ArmyRules, assets.BattleRules, assets.ProgressionRules,
                                 new SeededRandom(seed), bonuses, variant),
-                            puzzleBot, rallyBot, runs);
+                            puzzleBot, rallyBot, runs, mergeBot);
                         string goal = stage.Goal.Kind == StageGoalKind.DefeatArmy
                             ? ""
                             : $"{stage.Goal.Kind} {stage.Goal.Target}: missed {100.0 * s.GoalMissed / s.Runs:0}%";

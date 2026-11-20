@@ -86,8 +86,9 @@ namespace PuzzleKingdoms.Tests.Data
             ArmyRules rules = Load<ArmyRulesAsset>("ArmyRules.asset").Rules;
             Assert.AreEqual(3, rules.MaxTier);
             Assert.AreEqual(3, rules.MergeCount);
-            Assert.AreEqual(1.8f, rules.TierMultiplier(2), 0.0001f);
-            Assert.AreEqual(3.2f, rules.TierMultiplier(3), 0.0001f);
+            Assert.AreEqual(4f, rules.TierMultiplier(2), 0.0001f); // PB-34, D-068
+            Assert.AreEqual(13f, rules.TierMultiplier(3), 0.0001f);
+            Assert.AreEqual(3.2f, rules.ForEnemies().TierMultiplier(3), 0.0001f, "enemies keep their curve (D-068)");
         }
 
         [TestCase("Stages/Stage_1_1.asset", "goblin_grunt:6")]

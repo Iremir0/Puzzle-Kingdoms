@@ -53,6 +53,10 @@ namespace PuzzleKingdoms.Logic.Combat
             Def = def;
             HealCooldown = def.HealInterval;
             KingdomBonuses kingdom = side == Side.Player ? bonuses ?? KingdomBonuses.None : KingdomBonuses.None; // PB-22: the player's buildings
+            if (side == Side.Enemy)
+            {
+                armyRules = armyRules.ForEnemies(); // D-068: enemy tiers keep their own curve
+            }
             MaxHp = ScaleInt(unit.MaxHp(armyRules), kingdom.HpMultiplier(def.Id));
             Hp = side == Side.Player && unit.HpFraction < 1f ? System.Math.Max(1, (int)System.Math.Round(MaxHp * System.Math.Max(0f, unit.HpFraction), System.MidpointRounding.AwayFromZero)) : MaxHp;
             Damage = ScaleInt(unit.Damage(armyRules), kingdom.DamageMultiplier(def.Id));

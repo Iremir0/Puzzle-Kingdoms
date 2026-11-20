@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tierMultipliers:
   - 1
+  - 4
+  - 13
+  enemyTierMultipliers:
+  - 1
   - 1.8
   - 3.2
   mergeCount: 3

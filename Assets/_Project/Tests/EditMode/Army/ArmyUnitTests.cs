@@ -11,8 +11,8 @@ namespace PuzzleKingdoms.Tests.Army
             ArmyRules rules = ArmyFixtures.Rules();
             UnitDef def = ArmyFixtures.UnitDef("warrior", 120, 12);
             Assert.AreEqual(new[] { 120, 12 }, Stats(new ArmyUnit(def, 1), rules), "tier 1");
-            Assert.AreEqual(new[] { 216, 22 }, Stats(new ArmyUnit(def, 2), rules), "tier 2 (x1.8, rounded)");
-            Assert.AreEqual(new[] { 384, 38 }, Stats(new ArmyUnit(def, 3), rules), "tier 3 (x3.2, rounded)");
+            Assert.AreEqual(new[] { 480, 48 }, Stats(new ArmyUnit(def, 2), rules), "tier 2 (x4)");
+            Assert.AreEqual(new[] { 1560, 156 }, Stats(new ArmyUnit(def, 3), rules), "tier 3 (x13)");
         }
 
         [Test]

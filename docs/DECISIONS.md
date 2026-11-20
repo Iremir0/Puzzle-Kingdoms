@@ -759,3 +759,30 @@ file seen again at the next start is not copied twice. Older save versions keep 
 only the version 1, 2 and 4 fields, and a snapshot with every later field missing (`SaveVersionTests`,
 `SaveFileTests`). Why: a tester who installs an old APK must not lose their progress (PB-15, package A of the
 2026-11-20 review).
+
+## D-068 - Merged units are worth more than their parts: tiers ×1 / ×4 / ×13 (2026-11-21)
+
+With ×1.8 for tier 2 and ×3.2 for tier 3, three units became one that had less HP and damage than the three
+together, and with 16 slots and 10-21 recruits space never runs out. The balance bots showed it once they could
+merge (`Tools/Balance --merge all`): "Merge all" cut stage wins by 30-60 points, while the 1-2 tutorial and the
+quests ask the player to merge. Now a tier 2 is ×4 and a tier 3 ×13: each tier beats the three units it is made of
+in raw numbers and in a straight fight (`MergeValueTests`). No-merge play is unchanged (it never meets a tier above
+1), so this only rewards merging. Greedy bot, no Rally, 200 runs:
+
+| Stage | No merge | Merge all, old ×1.8/×3.2 | Merge all, ×4/×13 |
+|---|---|---|---|
+| 1-3 | 86% | 55% | 92% |
+| 2-1 | 88% | 64% | 91% |
+| 2-3 | 75% | 14% | 87% |
+| 2-4 | 81% | 31% | 93% |
+| 2-5 | 72% | 26% | 86% |
+| 2-6 | 70% | 18% | 77% |
+| 2-7 | 76% | 30% | 77% |
+| 2-8 | 59% | 73% | 100% |
+| 2-9 | 63% | 27% | 88% |
+| 2-10 | 47% | 9% | 76% |
+
+Enemy units keep ×1 / ×1.8 / ×3.2 (`ArmyRules.EnemyTierMultipliers`): they are not made by merging, and the
+Expedition and Daily Challenge, which field tier 2 and 3 enemies, were tuned with that curve. Merged armies also win faster (2-10: 49 s to 41 s). 2-8 becomes too easy with merging; stage difficulty, battle
+length and Rally weight are PB-35. `--tiers 1,4,13` lets the balance tool try other multipliers without editing
+the asset. Alican reviews the branch (rules and data are his area).
