@@ -141,6 +141,7 @@ namespace PuzzleKingdoms.Views.Menus
         private static string ChapterTitle(int chapter) =>
             chapter == 1 ? Loc.T("Chapter 1")
             : chapter == 2 ? Loc.T("Chapter 2: Goblin Fort")
+            : chapter == 3 ? Loc.T("Chapter 3: Troll Marsh")
             : Loc.F("Chapter {0}", chapter);
 
         /// <summary>The chapter's painted ground behind the path and nodes, dimmed a little so the nodes read.</summary>

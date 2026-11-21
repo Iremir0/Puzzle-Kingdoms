@@ -106,6 +106,11 @@ namespace PuzzleKingdoms.Balance
                 Console.WriteLine("Unknown commander: " + commanderId);
                 return 1;
             }
+            int generate = Array.IndexOf(args, "--generate");
+            if (generate >= 0)
+            {
+                return Generate.Run(args[generate + 1], data, assets, runs); // PB-42: stages from a blueprint file
+            }
             if (tuneMin >= 0)
             {
                 return Tune(assets, runs, tuneMin, tuneMax, only, bonuses, variant, write);

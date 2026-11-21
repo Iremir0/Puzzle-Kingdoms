@@ -388,6 +388,29 @@ Measured (300-400 runs, greedy puzzle bot, auto formation, no merges, without Ra
 2-4 84%, 2-5 60%, 2-6 62%, 2-7 71%, 2-8 67%, 2-9 51%, 2-10 46%; with Rally 6-20 points higher.
 The random bot wins 13-58%. Nodes sit on a snake of four rows (3, 3, 3, 1) on the map; a chapter of more than 5 stages shows no name under the nodes (the stage card has it) and the nodes shrink on a short map.
 
+**Chapter 3: Troll Marsh (PB-42, D-073, D-074).** Ten stages after 2-10, `chapter: 3`. They were made with the
+stage generator from `Tools/Balance/Plans/chapter3.json` and tuned by the bot (`--generate`, 150 runs a try, 6
+candidates a stage); a designer still has to play each one. Enemy armies include tier 2 enemies for the first time.
+
+| Stage | Name | Enemies (generated) | Goal / board | Lesson | Band | Win% merge / no merge | Win time |
+|---|---|---|---|---|---|---|---|
+| 3-1 | Bog Edge | 2 Trolls, 2 Grunts, 2 Archers | win | trolls regenerate: hit hard | 88-95 | 91 / 73 | 29 s |
+| 3-2 | Frozen Mire | Troll, Shield, Grunt, 3 Archers | break all the ice (26-28 moves) | aim, then merge | 84-93 | 92 / 15 | 35 s |
+| 3-3 | Berserk Camp | 3 Berserkers, 3 Shamans | break 3 of 5 stones | finish them quickly | 84-93 | 88 / 81 | 16 s |
+| 3-4 | Hold the Line | 2 Berserkers (one tier 2), 2 Wolves, Grunt, Archer | win | Defender in front, Support behind | 82-92 | 89 / 85 | 35 s |
+| 3-5 | Sapper Run | 3 Sappers, 2 Grunts, Archer | win | shoot sappers from afar | 82-92 | 90 / 92 | 35 s |
+| 3-6 | Chained Bog | 2 Sappers, Troll, 3 Shamans | 4 chained corners | free the chains, shoot sappers | 80-90 | 85 / 39 | 33 s |
+| 3-7 | Veterans | 2 Shields, 2 Brutes, 3 Archers (2 tier 2) | break 4 of 6 stones | tier 2 enemies: merge to match | 80-90 | 92 / 77 | 27 s |
+| 3-8 | Race the Mire | 2 Berserkers, 2 Sappers, Wolf, Grunt | win within 35 s | Rally early | 78-88 | 83 / 48 | 25 s |
+| 3-9 | Troll Den | 2 Trolls, 2 Berserkers, Bomber, Shaman (tier 2) | boss stones (2 every 4 moves) | Mages and merges beat healing | 76-86 | 81 / 22 | 26 s |
+| 3-10 | Troll King | Troll King, Troll, Berserker, Sapper, Shaman, Shield | boss stones (2 every 3 moves) | everything at once | 70-80 | 78 / 40 | 34 s |
+
+"Win%" is the greedy puzzle bot without Rally, 200 runs, with and without "Merge all"; with Rally it is 2-15 points
+higher (3-8: 95%). The random bot wins 44-94% with merges. Enemy HP multipliers 1.19-5.76, damage 1.2-2.0, gold 230
+to 330, so the chapter pays about 2,700 gold on first wins and adds 30 stars (three more star chests). Not merging is
+punished hard from 3-2 on: by design, since merging is the core lesson (D-068), but the first playtests should check
+that players have learnt it by then.
+
 Measured difficulty (D-033, 400 runs; random/greedy puzzle bot, auto formation, no merges;
 without / with Rally): 1-1 won 94% / 96% (random) and 100% (greedy), battles 16â22 s
 without Rally; 1-2 won 74% / 81% and 96% / 98%, 23â28 s; 1-3 won 42% / 54% and 81% / 87%,
