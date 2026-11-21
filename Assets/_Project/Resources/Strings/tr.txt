@@ -314,6 +314,10 @@ This phone	Bu telefon
 Keep this phone	Bu telefonu tut
 Use cloud save	Bulut kaydını kullan
 Update the game	Oyunu güncelle
+{0} +{1}% HP	{0} +%{1} can
+{0} +{1}% damage	{0} +%{1} hasar
+{0} +{1}% attack speed	{0} +%{1} saldırı hızı
+Perk:	Avantaj:
 (replay: half gold)	(tekrar: yarım altın)
 Vibration	Titreşim
 Stage {0}	Bölüm {0}

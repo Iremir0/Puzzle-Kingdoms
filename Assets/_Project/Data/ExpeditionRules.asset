@@ -23,6 +23,7 @@ MonoBehaviour:
   rallyAmount: 1
   goldPerStep: 60
   goldForWinning: 250
+  perkPercent: 20
   enemyPool:
   - {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
   - {fileID: 11400000, guid: 98f5e48e1c474660a13cfd557ca4f5dd, type: 2}

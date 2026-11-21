@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using PuzzleKingdoms.Logic.Army;
 using PuzzleKingdoms.Logic.Combat;
+using PuzzleKingdoms.Logic.Kingdom;
 using PuzzleKingdoms.Logic.Stages;
 
 namespace PuzzleKingdoms.Logic.Flow
@@ -25,6 +26,8 @@ namespace PuzzleKingdoms.Logic.Flow
         public int RallyAmount = 1;
         public int GoldPerStep = 60;
         public int GoldForWinning = 250;
+        /// <summary>Percent a perk adds to one class's HP, damage or attack speed for the rest of the run (PB-39, D-072).</summary>
+        public int PerkPercent = 20;
         public readonly List<UnitDef> EnemyPool = new List<UnitDef>();
         public UnitDef Boss;
         /// <summary>The classes a Recruit reward can offer.</summary>
@@ -41,14 +44,24 @@ namespace PuzzleKingdoms.Logic.Flow
         Promote = 2,
         /// <summary>Extra Rally charges in the next battle.</summary>
         Rally = 3,
+        /// <summary>Perk: one class has more HP for the rest of the run (PB-39).</summary>
+        PerkHp = 4,
+        /// <summary>Perk: one class hits harder for the rest of the run.</summary>
+        PerkDamage = 5,
+        /// <summary>Perk: one class attacks faster for the rest of the run.</summary>
+        PerkSpeed = 6,
     }
 
     public sealed class ExpeditionReward
     {
         public ExpeditionRewardKind Kind;
-        /// <summary>The class of a Recruit reward.</summary>
+        /// <summary>The class of a Recruit reward or a perk.</summary>
         public string UnitId = "";
+        /// <summary>Units recruited, Rally charges, or a perk's percent.</summary>
         public int Amount;
+
+        /// <summary>A lasting bonus for the rest of the run rather than a one-off reward (PB-39).</summary>
+        public bool IsPerk => Kind == ExpeditionRewardKind.PerkHp || Kind == ExpeditionRewardKind.PerkDamage || Kind == ExpeditionRewardKind.PerkSpeed;
     }
 
     public enum ExpeditionPhase
@@ -77,6 +90,10 @@ namespace PuzzleKingdoms.Logic.Flow
         public List<int> offerKinds = new List<int>();
         public List<string> offerUnits = new List<string>();
         public List<int> offerAmounts = new List<int>();
+        /// <summary>Perks taken so far (PB-39); a new field, older saves load with none.</summary>
+        public List<int> perkKinds = new List<int>();
+        public List<string> perkUnits = new List<string>();
+        public List<int> perkAmounts = new List<int>();
     }
 
     /// <summary>
@@ -97,6 +114,8 @@ namespace PuzzleKingdoms.Logic.Flow
         /// <summary>The units that go on: class, tier and how hurt they are.</summary>
         public readonly List<ArmyUnit> Army = new List<ArmyUnit>();
         public readonly List<ExpeditionReward> Offers = new List<ExpeditionReward>();
+        /// <summary>Perks picked so far; they last until the run ends (PB-39, D-072).</summary>
+        public readonly List<ExpeditionReward> Perks = new List<ExpeditionReward>();
 
         public Expedition(ExpeditionRules rules, ulong seed)
         {
@@ -107,6 +126,23 @@ namespace PuzzleKingdoms.Logic.Flow
         public bool IsOver => Phase == ExpeditionPhase.Won || Phase == ExpeditionPhase.Lost;
 
         public bool IsBossStep => Step == Rules.Steps - 1;
+
+        /// <summary>The perks as battle bonuses for the player's units (the same mechanism as Kingdom buildings).</summary>
+        public KingdomBonuses Bonuses()
+        {
+            var bonuses = new KingdomBonuses();
+            foreach (ExpeditionReward perk in Perks)
+            {
+                float share = perk.Amount / 100f;
+                switch (perk.Kind)
+                {
+                    case ExpeditionRewardKind.PerkHp: bonuses.Add(BuildingStat.UnitHp, perk.UnitId, share); break;
+                    case ExpeditionRewardKind.PerkDamage: bonuses.Add(BuildingStat.UnitDamage, perk.UnitId, share); break;
+                    case ExpeditionRewardKind.PerkSpeed: bonuses.Add(BuildingStat.UnitAttackSpeed, perk.UnitId, share); break;
+                }
+            }
+            return bonuses;
+        }
 
         /// <summary>The enemy and puzzle of the battle to fight now.</summary>
         public StageDef StageForStep()
@@ -255,6 +291,12 @@ namespace PuzzleKingdoms.Logic.Flow
                 case ExpeditionRewardKind.Rally:
                     BonusRally += reward.Amount;
                     break;
+                default:
+                    if (reward.IsPerk)
+                    {
+                        Perks.Add(reward);
+                    }
+                    break;
             }
         }
 
@@ -288,13 +330,43 @@ namespace PuzzleKingdoms.Logic.Flow
             }
             pool.Add(new ExpeditionReward { Kind = ExpeditionRewardKind.Rally, Amount = Rules.RallyAmount });
 
+            // PB-39: one of the three is always a perk for a class in the army, the other two come from the pool.
+            var perks = new List<ExpeditionReward>();
+            var inArmy = new List<string>();
+            foreach (ArmyUnit unit in Army)
+            {
+                if (!inArmy.Contains(unit.Def.Id))
+                {
+                    inArmy.Add(unit.Def.Id);
+                }
+            }
+            foreach (string unitId in inArmy)
+            {
+                foreach (ExpeditionRewardKind kind in new[] { ExpeditionRewardKind.PerkHp, ExpeditionRewardKind.PerkDamage, ExpeditionRewardKind.PerkSpeed })
+                {
+                    perks.Add(new ExpeditionReward { Kind = kind, UnitId = unitId, Amount = Rules.PerkPercent });
+                }
+            }
+
             var random = new SeededRandom(Mix(Seed, 5000UL + (ulong)Step));
             var offers = new List<ExpeditionReward>();
+            if (perks.Count > 0 && Rules.PerkPercent > 0)
+            {
+                offers.Add(perks[random.Range(0, perks.Count)]);
+            }
             while (offers.Count < 3 && pool.Count > 0)
             {
                 int at = random.Range(0, pool.Count);
                 offers.Add(pool[at]);
                 pool.RemoveAt(at);
+            }
+            if (offers.Count > 1)
+            {
+                // The perk is not always first.
+                int to = random.Range(0, offers.Count);
+                ExpeditionReward first = offers[0];
+                offers[0] = offers[to];
+                offers[to] = first;
             }
             return offers;
         }
@@ -322,6 +394,12 @@ namespace PuzzleKingdoms.Logic.Flow
                 save.offerKinds.Add((int)offer.Kind);
                 save.offerUnits.Add(offer.UnitId ?? "");
                 save.offerAmounts.Add(offer.Amount);
+            }
+            foreach (ExpeditionReward perk in Perks)
+            {
+                save.perkKinds.Add((int)perk.Kind);
+                save.perkUnits.Add(perk.UnitId ?? "");
+                save.perkAmounts.Add(perk.Amount);
             }
             return save;
         }
@@ -362,6 +440,20 @@ namespace PuzzleKingdoms.Logic.Flow
                     UnitId = save.offerUnits[i],
                     Amount = save.offerAmounts[i],
                 });
+            }
+            int perkCount = Math.Min(save.perkKinds?.Count ?? 0, Math.Min(save.perkUnits?.Count ?? 0, save.perkAmounts?.Count ?? 0));
+            for (int i = 0; i < perkCount; i++)
+            {
+                var perk = new ExpeditionReward
+                {
+                    Kind = (ExpeditionRewardKind)save.perkKinds[i],
+                    UnitId = save.perkUnits[i] ?? "",
+                    Amount = Math.Max(0, Math.Min(100, save.perkAmounts[i])),
+                };
+                if (perk.IsPerk)
+                {
+                    expedition.Perks.Add(perk);
+                }
             }
             if (expedition.Phase == ExpeditionPhase.Reward && expedition.Offers.Count == 0)
             {
