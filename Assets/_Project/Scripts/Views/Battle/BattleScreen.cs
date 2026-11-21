@@ -127,8 +127,12 @@ namespace PuzzleKingdoms.Views.Battle
         /// <summary>Current speed multiplier (1 or 2).</summary>
         public int SpeedFactor => _speedFactor;
 
+        /// <summary>Time.frameCount when the screen was built: the next frame does not advance the battle.</summary>
+        private int _builtFrame = -10;
+
         private void Build(BattleSimulator sim, StageGoal goal, Texture2D arena, Action onFinished)
         {
+            _builtFrame = Time.frameCount;
             _sim = sim;
             _goal = goal;
             _onFinished = onFinished;
@@ -227,7 +231,8 @@ namespace PuzzleKingdoms.Views.Battle
             else if (!_paused && !_sim.IsFinished)
             {
                 float tick = 1f / _sim.Rules.TicksPerSecond;
-                _accumulator += Time.deltaTime * _speedFactor;
+                // The frame that built this screen can be long (models, textures); its time is not battle time.
+                _accumulator += _builtFrame == Time.frameCount - 1 ? 0f : Time.deltaTime * _speedFactor;
                 int steps = 0;
                 while (_accumulator >= tick && !_sim.IsFinished && steps++ < MaxTicksPerFrame)
                 {
@@ -279,6 +284,13 @@ namespace PuzzleKingdoms.Views.Battle
                         break;
                     case BattleEventType.Heal:
                         SpawnFloating(_units[e.TargetId], "+" + e.Amount);
+                        break;
+                    case BattleEventType.Exploded: // PB-41 sapper blast
+                        _units[e.TargetId].FlashLeft = FlashSeconds;
+                        SpawnFloating(_units[e.TargetId], e.Amount.ToString());
+                        break;
+                    case BattleEventType.Enraged: // PB-41 berserker
+                        SpawnFloating(_units[e.SourceId], "!!");
                         break;
                     case BattleEventType.RallyStrike:
                         if (e.TargetId >= 0 && e.TargetId < _units.Count)

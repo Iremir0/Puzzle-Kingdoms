@@ -38,6 +38,10 @@ namespace PuzzleKingdoms.Logic.Combat
         public int Hp;
         /// <summary>Seconds until the next heal is ready (healers only).</summary>
         public float HealCooldown;
+        /// <summary>Seconds until the next regeneration (PB-41, regenerating units only).</summary>
+        public float RegenCooldown = 1f;
+        /// <summary>True once the unit fell to <see cref="UnitDef.EnrageBelow"/> of its HP (PB-41); it stays so.</summary>
+        public bool Enraged;
         public Vector2 Position;
         public int TargetId = NoTarget;
         /// <summary>Seconds until the next attack is ready; may carry a small negative rest.</summary>

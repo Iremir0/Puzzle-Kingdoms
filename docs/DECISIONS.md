@@ -888,3 +888,15 @@ terminal and writes the new multiplier into the asset. Generated stages are data
 reads and plays each one, and the generator never runs in the game. Why: the review found content (about one hour)
 the biggest gap, and puzzle games of this kind reach launch with many more stages by generating candidates and
 keeping those a bot finds fair (2026-11-21 research).
+
+## D-074 - Chapter 3 enemies: regeneration, enrage, death blast (2026-11-21)
+
+Chapter 3 adds three behaviours as data on `UnitDef` (all off by default, so older units are unchanged): **regeneration**
+(`RegenPercent` of max HP every second, as a heal event from the unit to itself), **enrage** (`EnrageBelow` share of HP
+or less: attacks `EnrageSpeed` times as fast, once and for good, with an `Enraged` event) and a **death blast**
+(`DeathBurstRadius`, `DeathBurstDamage` times its own damage to every living enemy nearby, armor applies, `Exploded`
+events after its `Died`; a unit the blast kills dies in the same tick). The new event types are added after
+`Finished`, so the old values stay. Four enemies use them: Bog Troll, Goblin Berserker, Marsh Sapper and the Troll
+King boss. Each has one lesson the earlier chapters did not teach (put damage together, finish what you start, kill
+from range). Their looks borrow older models and silhouettes (`UnitModels.StandIn`) until Meshy models exist. Why:
+a new chapter needs new problems, not only bigger numbers (2026-11-21 review).

@@ -111,6 +111,9 @@ namespace PuzzleKingdoms.Balance
         private static IEnumerable<string> ListGuids(string[] lines, string key) =>
             ListItems(lines, key).Select(GuidIn);
 
+        /// <summary>PB-42: a unit or enemy asset by its guid (cached, the same object the campaign uses).</summary>
+        public UnitDef UnitByGuid(string guid) => Unit(guid);
+
         private UnitDef Unit(string guid)
         {
             if (_units.TryGetValue(guid, out UnitDef cached))
@@ -139,6 +142,12 @@ namespace PuzzleKingdoms.Balance
                 SplashRadius = v.TryGetValue("splashRadius", out string radius) ? F(radius) : 0f,
                 SplashFraction = v.TryGetValue("splashFraction", out string fraction) ? F(fraction) : 0.5f,
                 TauntRadius = v.TryGetValue("tauntRadius", out string taunt) ? F(taunt) : 0f,
+                // PB-41 behaviours (absent in older unit assets).
+                RegenPercent = v.TryGetValue("regenPercent", out string regen) ? F(regen) : 0f,
+                EnrageBelow = v.TryGetValue("enrageBelow", out string enrage) ? F(enrage) : 0f,
+                EnrageSpeed = v.TryGetValue("enrageSpeed", out string enrageSpeed) ? F(enrageSpeed) : 2f,
+                DeathBurstRadius = v.TryGetValue("deathBurstRadius", out string burst) ? F(burst) : 0f,
+                DeathBurstDamage = v.TryGetValue("deathBurstDamage", out string burstDamage) ? F(burstDamage) : 3f,
             };
             _units[guid] = unit;
             return unit;

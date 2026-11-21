@@ -124,6 +124,7 @@ namespace PuzzleKingdoms.Logic.Combat
                 if (c.IsAlive)
                 {
                     Heal(c, dt);
+                    Regenerate(c, dt);
                     Act(c, dt);
                 }
             }
@@ -156,10 +157,21 @@ namespace PuzzleKingdoms.Logic.Combat
                     events.Add(new BattleEvent(BattleEventType.Heal, Tick, heal.SourceId, heal.TargetId, restored));
                 }
             }
-            foreach (Combatant c in died)
+            // A death burst can kill others, whose own bursts go off in the same tick (the list grows as we go).
+            for (int i = 0; i < died.Count; i++)
             {
+                Combatant c = died[i];
                 c.Hp = 0;
                 events.Add(new BattleEvent(BattleEventType.Died, Tick, c.Id));
+                Explode(c, died, events);
+            }
+            foreach (Combatant c in Combatants)
+            {
+                if (c.IsAlive && !c.Enraged && c.Def.EnrageBelow > 0f && c.Hp <= c.MaxHp * c.Def.EnrageBelow)
+                {
+                    c.Enraged = true;
+                    events.Add(new BattleEvent(BattleEventType.Enraged, Tick, c.Id));
+                }
             }
 
             if (Rally.Tick())
@@ -237,7 +249,7 @@ namespace PuzzleKingdoms.Logic.Combat
                 c.Position += (target.Position - c.Position) / distance * stepLength;
             }
 
-            float speed = 1f + (buffed ? Variant.AttackSpeedBonus : 0f);
+            float speed = (1f + (buffed ? Variant.AttackSpeedBonus : 0f)) * (c.Enraged ? c.Def.EnrageSpeed : 1f);
             c.Cooldown -= dt * speed;
             if (c.Cooldown < 0f && !inRange)
             {
@@ -387,6 +399,48 @@ namespace PuzzleKingdoms.Logic.Combat
                 int amount = Math.Max(1, (int)Math.Round(c.Def.HealAmount * Rules.DamageScale, MidpointRounding.AwayFromZero));
                 _heals.Add(new BattleEvent(BattleEventType.Heal, Tick, c.Id, best.Id, amount));
                 c.HealCooldown = c.Def.HealInterval;
+            }
+        }
+
+        /// <summary>Bog troll (PB-41): every second the unit restores a share of its max HP; lands with the heals.</summary>
+        private void Regenerate(Combatant c, float dt)
+        {
+            if (c.Def.RegenPercent <= 0f || c.Hp >= c.MaxHp)
+            {
+                c.RegenCooldown = 1f;
+                return;
+            }
+            c.RegenCooldown -= dt;
+            if (c.RegenCooldown > Epsilon)
+            {
+                return;
+            }
+            c.RegenCooldown += 1f;
+            int amount = Math.Max(1, (int)Math.Round(c.MaxHp * c.Def.RegenPercent * Rules.DamageScale, MidpointRounding.AwayFromZero));
+            _heals.Add(new BattleEvent(BattleEventType.Heal, Tick, c.Id, c.Id, amount));
+        }
+
+        /// <summary>Sapper (PB-41): a dead unit with a death burst hurts every living enemy near where it fell.</summary>
+        private void Explode(Combatant c, List<Combatant> died, List<BattleEvent> events)
+        {
+            if (c.Def.DeathBurstRadius <= 0f)
+            {
+                return;
+            }
+            foreach (Combatant other in Combatants)
+            {
+                if (!other.IsAlive || !c.IsEnemyOf(other)
+                    || Vector2.Distance(c.Position, other.Position) > c.Def.DeathBurstRadius + Epsilon)
+                {
+                    continue;
+                }
+                int amount = Damage.Compute(c.Damage, DamageType.Physical, other, c.Def.DeathBurstDamage * Rules.DamageScale);
+                other.Hp -= amount;
+                events.Add(new BattleEvent(BattleEventType.Exploded, Tick, c.Id, other.Id, amount));
+                if (!other.IsAlive)
+                {
+                    died.Add(other);
+                }
             }
         }
 

@@ -14,6 +14,10 @@ namespace PuzzleKingdoms.Logic.Combat
         RallyEnded,
         /// <summary>Battle over; read BattleSimulator.Result.</summary>
         Finished,
+        /// <summary>Source fell to its enrage share of HP and now attacks faster (PB-41 berserker).</summary>
+        Enraged,
+        /// <summary>Source died and its blast hit TargetId for Amount (PB-41 sapper); comes after Source's Died.</summary>
+        Exploded,
     }
 
     /// <summary>Something that happened during one simulator tick, for views to play back.</summary>
