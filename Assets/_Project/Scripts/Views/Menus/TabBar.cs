@@ -23,6 +23,12 @@ namespace PuzzleKingdoms.Views.Menus
     {
         public const float Height = 0.085f;
 
+        /// <summary>
+        /// PB-37: for a tab that is still locked, the stage that opens it ("1-2"); "" or null when open. Set by the
+        /// game; a locked tab is greyed, says which stage opens it and does nothing.
+        /// </summary>
+        public static Func<MainTab, string> LockedBy { get; set; }
+
         /// <summary>Rewards waiting in the Quests tab (PB-24); a red dot with the count shows on the tab while above 0.</summary>
         public static int QuestBadge { get; set; }
         private static readonly Color Soon = Palette.Hex("323A4E");
@@ -45,7 +51,14 @@ namespace PuzzleKingdoms.Views.Menus
             for (int i = 0; i < Tabs.Length; i++)
             {
                 (MainTab tab, string caption, bool ready) = Tabs[i];
+                string name = "Tab " + caption;
                 bool isCurrent = tab == current;
+                string lockedBy = isCurrent ? "" : LockedBy?.Invoke(tab) ?? "";
+                if (lockedBy.Length > 0)
+                {
+                    ready = false;
+                    caption = Loc.F("Stage {0}", lockedBy);
+                }
                 Color color = isCurrent ? Palette.Primary : ready ? Palette.Button : Soon;
                 MainTab target = tab;
                 Button button = Ui.Button(bar, caption, color, () => onSelect?.Invoke(target),
@@ -57,7 +70,7 @@ namespace PuzzleKingdoms.Views.Menus
                 icon.sprite = TabIcons.Get(tab);
                 icon.preserveAspect = true;
                 icon.raycastTarget = false;
-                button.gameObject.name = "Tab " + caption;
+                button.gameObject.name = name;
                 if (tab == MainTab.Quests && QuestBadge > 0)
                 {
                     Image dot = Ui.Box(button.transform, "Badge", Palette.Bad, 0.62f, 0.62f, 0.9f, 0.98f);

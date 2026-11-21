@@ -66,9 +66,54 @@ namespace PuzzleKingdoms.Tests.PlayMode
             return null;
         }
 
+        /// <summary>Wins the stages that open every system and marks their intros as seen (PB-37).</summary>
+        private void OpenEverything()
+        {
+            foreach (string stage in new[] { "stage_1_1", "stage_1_2", "stage_1_3", "stage_1_4", "stage_2_1", "stage_2_2", "stage_2_3" })
+            {
+                _app.Profile.Apply(stage, new StageReward { Stars = 1, VictoryGold = 0 });
+            }
+            foreach (Feature feature in System.Enum.GetValues(typeof(Feature)))
+            {
+                _app.Profile.MarkStepSeen(FeatureUnlockRules.IntroId(feature));
+            }
+            _app.ShowStageSelect();
+        }
+
+        [UnityTest]
+        public IEnumerator ANewPlayerSeesLockedTabsThenOneIntroPerSystem()
+        {
+            // PB-37 (D-070): nothing but the map is open at first; each system opens after its stage, with an intro.
+            Assert.IsFalse(FindButton(_app.CurrentScreen, "Tab Kingdom").interactable);
+            StringAssert.Contains("1-2", FindButton(_app.CurrentScreen, "Tab Kingdom").GetComponentInChildren<Text>().text);
+            Assert.IsNull(_app.IntroPanel);
+
+            _app.Profile.Apply("stage_1_1", new StageReward { Stars = 1, VictoryGold = 10 });
+            _app.Profile.Apply("stage_1_2", new StageReward { Stars = 1, VictoryGold = 10 });
+            _app.ShowStageSelect();
+            yield return null;
+            Assert.IsNotNull(_app.IntroPanel, "Quests opened");
+            Assert.AreEqual("Intro Quests", _app.IntroPanel.gameObject.name);
+            FindButton(_app.IntroPanel, "Close").onClick.Invoke();
+            yield return null;
+            Assert.IsNotNull(_app.IntroPanel, "then the Kingdom");
+            Assert.AreEqual("Intro Kingdom", _app.IntroPanel.gameObject.name);
+            FindButton(_app.IntroPanel, "Close").onClick.Invoke();
+            yield return null;
+            Assert.IsNull(_app.IntroPanel);
+            Assert.IsTrue(FindButton(_app.CurrentScreen, "Tab Kingdom").interactable);
+            Assert.IsFalse(FindButton(_app.CurrentScreen, "Tab Shop").interactable, "the Shop opens after 2-1");
+
+            _app.ShowStageSelect();
+            yield return null;
+            Assert.IsNull(_app.IntroPanel, "an intro is shown once");
+        }
+
         [UnityTest]
         public IEnumerator TheTabBarOpensTheKingdomAndGoesBack()
         {
+            OpenEverything();
+            yield return null;
             Assert.IsInstanceOf<StageMapScreen>(_app.CurrentScreen);
             FindButton(_app.CurrentScreen, "Tab Kingdom").onClick.Invoke();
             yield return null;

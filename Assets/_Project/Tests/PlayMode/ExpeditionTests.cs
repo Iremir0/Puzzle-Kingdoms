@@ -71,6 +71,12 @@ namespace PuzzleKingdoms.Tests.PlayMode
         [UnityTest]
         public IEnumerator TheMapHasAnExpeditionButtonThatOpensTheRoad()
         {
+            // PB-37: the button shows once its stage is won (Daily after 1-4, Expedition after 2-3).
+            foreach (string stage in new[] { "stage_1_1", "stage_1_2", "stage_1_3", "stage_1_4", "stage_2_1", "stage_2_2", "stage_2_3" })
+            {
+                _app.Profile.Apply(stage, new PuzzleKingdoms.Logic.Progression.StageReward { Stars = 1 });
+            }
+            _app.ShowStageSelect();
             Button button = FindButton(_app.CurrentScreen, "Button Expedition");
             Assert.IsNotNull(button, "the map has the Expedition button");
             button.onClick.Invoke();

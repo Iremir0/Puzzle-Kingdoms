@@ -314,6 +314,22 @@ This phone	Bu telefon
 Keep this phone	Bu telefonu tut
 Use cloud save	Bulut kaydını kullan
 Update the game	Oyunu güncelle
+Stage {0}	Bölüm {0}
+Quests are open!	Görevler açıldı!
+Three new goals every day, achievements for the long run, and a chest for every 30 stars. Tap the Quests tab to claim gold.	Her gün üç yeni hedef, uzun vadeli başarımlar ve her 30 yıldızda bir sandık. Altınını almak için Görevler sekmesine dokun.
+Your Kingdom is open!	Krallığın açıldı!
+Spend gold on buildings. Each level makes one class stronger in every battle, or brings more gold.	Altınını binalara harca. Her seviye bir sınıfı her savaşta güçlendirir ya da daha çok altın getirir.
+Your first commander!	İlk komutanın!
+A commander leads your army and changes what Rally does. Choose one in the Commanders tab.	Komutan ordunu yönetir ve Hücum'un etkisini değiştirir. Komutanlar sekmesinden birini seç.
+Daily Challenge is open!	Günlük Meydan Okuma açıldı!
+One new battle a day, the same for everyone, one try. Find it at the top of the map.	Her gün herkes için aynı, tek denemelik yeni bir savaş. Haritanın üstünde bulabilirsin.
+The Shop is open!	Dükkan açıldı!
+Watch an ad for gold a few times a day, or support the game with the Supporter pack.	Günde birkaç kez reklam izleyip altın kazan ya da Destekçi paketiyle oyuna destek ol.
+Expedition is open!	Sefer açıldı!
+Five battles in a row with one army: wounds stay, rewards grow. Find it at the top of the map.	Tek orduyla arka arkaya beş savaş: yaralar kalır, ödüller büyür. Haritanın üstünde bulabilirsin.
+A 2x2 square of gems makes a Blast. Slide the purple gem left, then match the Blast: it clears all around it.	2x2'lik bir kare Patlama taşı yapar. Mor taşı sola kaydır, sonra Patlama taşını eşleştir: çevresindeki her şeyi temizler.
+Five in a row make a Prism. Drop the green gem down, then swap the Prism with a gem to clear that whole colour.	Yan yana beş taş bir Prizma yapar. Yeşil taşı aşağı indir, sonra Prizmayı bir taşla yer değiştirerek o rengin tamamını temizle.
+Tip: swap two special gems into each other for a combo. Blast + Blast clears a 5x5 square.	İpucu: iki özel taşı birbiriyle yer değiştirerek kombo yap. Patlama + Patlama 5x5'lik bir alanı temizler.
 Time ran out. Merge units for a stronger, faster army.	Süre doldu. Daha güçlü ve hızlı bir ordu için birimleri birleştir.
 Tip: tap Rally during the battle to power up your army.	İpucu: savaş sırasında Hücum'a dokunarak ordunu güçlendir.
 Outnumbered. Make more matches to recruit more soldiers.	Sayıca azdın. Daha çok asker toplamak için daha çok eşleştirme yap.

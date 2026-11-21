@@ -383,7 +383,7 @@ namespace PuzzleKingdoms.Tests.Data
             CollectionAssert.AreEqual(
                 new[]
                 {
-                    "stage_1_1", "stage_1_2", "stage_1_3",
+                    "stage_1_1", "stage_1_2", "stage_1_3", "stage_1_4",
                     "stage_2_1", "stage_2_2", "stage_2_3", "stage_2_4", "stage_2_5",
                     "stage_2_6", "stage_2_7", "stage_2_8", "stage_2_9", "stage_2_10",
                 },
@@ -458,6 +458,40 @@ namespace PuzzleKingdoms.Tests.Data
                 Formation.FromEnemySlots(stage.Enemies),
                 0);
             Assert.IsTrue(sim.RunToEnd().Victory);
+        }
+        /// <summary>PB-37 (D-070): 1-4 is in the campaign and its painted board teaches Blast, then Prism, on any seed.</summary>
+        [Test]
+        public void TheQuarryTeachesBlastAndPrism()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            StageDefinition quarry = Load<StageDefinition>("Stages/Stage_1_4.asset");
+            List<string> order = content.CampaignOrder();
+            Assert.AreEqual(order.IndexOf("stage_1_3") + 1, order.IndexOf("stage_1_4"), "1-4 follows 1-3");
+            for (ulong seed = 1; seed <= 5; seed++)
+            {
+                StageRun run = content.CreateRun(quarry, new SeededRandom(seed));
+                BoardModel board = run.Puzzle.Board;
+                Assert.IsTrue(board.WouldSwapMatch(new GridPos(3, 2), new GridPos(2, 2)), $"seed {seed}: the square move");
+                Assert.IsTrue(board.WouldSwapMatch(new GridPos(2, 4), new GridPos(2, 5)), $"seed {seed}: the five-in-a-row move");
+                MoveResult square = run.Puzzle.PlaySwap(new GridPos(3, 2), new GridPos(2, 2));
+                Assert.IsTrue(square.Steps[0].Created.Any(c => c.Kind == SpecialKind.Blast), $"seed {seed}: the square makes a Blast");
+                StageRun prism = content.CreateRun(quarry, new SeededRandom(seed));
+                MoveResult five = prism.Puzzle.PlaySwap(new GridPos(2, 4), new GridPos(2, 5));
+                Assert.IsTrue(five.Steps[0].Created.Any(c => c.Kind == SpecialKind.Prism), $"seed {seed}: five in a row make a Prism");
+            }
+        }
+
+        [Test]
+        public void EveryUnlockStageIsInTheCampaign()
+        {
+            GameContent content = Load<GameContent>("GameContent.asset");
+            List<string> order = content.CampaignOrder();
+            Logic.Progression.FeatureUnlockRules unlocks = content.ProgressionRules.Rules.Unlocks;
+            Assert.AreEqual(6, unlocks.Unlocks.Count);
+            foreach (Logic.Progression.FeatureUnlock unlock in unlocks.Unlocks)
+            {
+                CollectionAssert.Contains(order, unlock.StageId, unlock.Feature.ToString());
+            }
         }
     }
 }

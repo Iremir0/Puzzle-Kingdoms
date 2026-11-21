@@ -338,15 +338,15 @@ the tier.)
 **Stage goals and start boards (PB-19, D-048).** A stage may ask for more than winning:
 *break N stones* or *win within N seconds*; missing the goal is a defeat. A stage may also
 start from a hand-painted board (placed gems and stones, the rest random). Made with the
-Stage Editor, not yet in the campaign:
+Stage Editor; 1-4 joined the campaign in PB-37 (D-070), the drafts below did not:
 
 | Stage | Name | Enemies | Goal | Board | Lesson |
 |---|---|---|---|---|---|
-| 1-4 | The Quarry | as 1-2 | break 5 stones | 4 painted + 2 random stones | match next to stones |
+| 1-4 | The Quarry | as 1-2 | break 4 stones, 14 moves | a 2×2 square and a five-in-a-row one swap away; 4 painted + 2 random stones | Blast, Prism and combos (D-070) |
 | 2-1 | Frozen Gate (draft) | as 1-2 | break all the ice | 14 ice layers in the middle, 12 moves | aim your matches |
 | 2-2 | The Chief's Forge (draft) | as 1-3 | defeat the army | 4 chained corner gems; boss drops 2 stones every 3 moves | play around the boss |
 
-**Chapter 2: Goblin Fort (PB-18, D-051).** Ten stages, campaign order after 1-3, `chapter: 2` on the
+**Chapter 2: Goblin Fort (PB-18, D-051).** Ten stages, campaign order after 1-4, `chapter: 2` on the
 stage asset, its own map. One lesson each; the last is the boss stage. Rally is taught again in 2-8 and 2-10.
 
 | Stage | Name | Enemies | Goal / board | Lesson |
