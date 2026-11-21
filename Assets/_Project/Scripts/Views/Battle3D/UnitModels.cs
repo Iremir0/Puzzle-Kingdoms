@@ -26,7 +26,7 @@ namespace PuzzleKingdoms.Views.Battle3D
             return false;
         }
 
-        /// <summary>The model a look borrows until it has its own (PB-41, Chapter 3); itself when there is none.</summary>
+        /// <summary>The model a look borrows until it has its own (PB-41 Chapter 3 enemies, PB-21 classes); itself when there is none.</summary>
         public static UnitLook StandIn(UnitLook look)
         {
             switch (look)
@@ -35,6 +35,8 @@ namespace PuzzleKingdoms.Views.Battle3D
                 case UnitLook.GoblinBerserker: return UnitLook.GoblinGrunt;
                 case UnitLook.MarshSapper: return UnitLook.GoblinBomber;
                 case UnitLook.TrollKing: return UnitLook.GoblinChief;
+                case UnitLook.Defender: return UnitLook.Warrior; // PB-21 classes, until their models exist
+                case UnitLook.Support: return UnitLook.Mage;
                 default: return look;
             }
         }
