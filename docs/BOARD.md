@@ -51,7 +51,7 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-22](cards/PB-22.md) | Kingdom and buildings | Alican | M7 | L | `feature/PB-22-kingdom` | Wave 2 (D-052). Merged into `main` 2026-11-18. Built: 4 buildings as data, bonuses in battle and gold, save v3, Kingdom screen, tab bar, Balance `--kingdom N`; left: look at the screens on a phone shape, Commanders and Shop tabs wait for PB-23 and PB-30 |
 | [PB-15](cards/PB-15.md) | Phone performance and layout | Emir | M6 | L | `feature/PB-15-phone-perf-layout` | Third card for Emir (PB-1 and PB-7 only wait for a phone). In `main` 2026-11-20, done without a phone: safe area (`SafeArea`, `FullBleed`), battle effects pooled with shared materials, no per-tick event list, hint scan throttled, a save from a newer build is locked instead of replaced (D-067); left: profile on 2 phones, 4 aspect ratios in the Device Simulator |
 | [PB-23](cards/PB-23.md) | Commander heroes | Alican | M7 | L | `feature/PB-23-commanders` | Wave 2 (D-053). Merged into `main` 2026-11-18. Built: Shield Wall, Arrow Rain, Fireball as Rally variants, commanders unlocked by stages and chosen on the Commanders tab, save v4, balance per commander; left: 3 Meshy commander models, real 3D effects, a look at the screens |
-| [PB-40](cards/PB-40.md) | Stage generator and tuning bot | Emir | M8 | M | `feature/PB-40-stage-generator` | Seeded stages from a blueprint, a bot that tunes enemy HP to a win-rate band, `--tune` in the balance tool |
+| [PB-41](cards/PB-41.md) | Chapter 3 enemies | Emir | M8 | M | `feature/PB-41-chapter-3-enemies` | Bog Troll (regenerates), Berserker (faster when hurt), Sapper (explodes), Troll King boss |
 
 ## Ready (next up, in priority order)
 
@@ -59,7 +59,6 @@ PB-34 to PB-39 come from the 2026-11-21 review (merge, tempo, measuring, onboard
 
 | ID | Card | Owner | Milestone | Size | In short |
 |---|---|---|---|---|---|
-| [PB-41](cards/PB-41.md) | Chapter 3 enemies | Emir | M8 | M | Bog Troll (regenerates), Berserker (faster when hurt), Sapper (explodes), Troll King boss |
 | [PB-42](cards/PB-42.md) | Chapter 3: Troll Marsh | Emir | M8 | L | Ten stages made with PB-40 and the PB-41 enemies, tier 2 enemies, map and prompts |
 | [PB-2](cards/PB-2.md) | Play the new rules in Unity and close the review | Emir | M1 | S | Merge into `main` and the Test Runner (with Data tests) are done; left: the play checklist for 1-1 to 1-3 (4×4 grid, stone gems, Merge all, enemy strength, PB-7 feel, PB-8 sound) |
 | [PB-6](cards/PB-6.md) | Go / pivot decision | both | M1 | S | Owner gave "go" before the playtests (D-049): wave 2 runs; the pillar scores are still to do from the first five PB-5 sessions; a pivot then stops wave 2 |
@@ -119,6 +118,7 @@ private until shared).
 | [PB-37](cards/PB-37.md) | One system per stage with an intro card, 1-4 The Quarry in the campaign teaching Blast and Prism (D-070, 2026-11-21) |
 | [PB-38](cards/PB-38.md) | Replays pay half, chest every 12 stars, star shapes on results, vibration with a switch (D-071, 2026-11-21; feel on a phone not checked) |
 | [PB-39](cards/PB-39.md) | Expedition perks: one lasting +20% bonus offered after every win, unlocked classes join (D-072, 2026-11-21) |
+| [PB-40](cards/PB-40.md) | Stage generator from blueprints and a bot that tunes enemy HP to a win-rate band, balance --tune/--write (D-073, 2026-11-21) |
 
 ---
 
