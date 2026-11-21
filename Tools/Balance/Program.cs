@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using PuzzleKingdoms.Logic;
 using PuzzleKingdoms.Logic.Flow;
 using PuzzleKingdoms.Logic.Combat;
@@ -29,6 +30,9 @@ namespace PuzzleKingdoms.Balance
             float damageScale = 0f;
             string only = null;
             var sets = new System.Collections.Generic.List<string>();
+            double tuneMin = -1;
+            double tuneMax = -1;
+            bool write = args.Contains("--write");
             for (int a = 0; a + 1 < args.Length; a++)
             {
                 if (args[a] == "--kingdom")
@@ -54,6 +58,13 @@ namespace PuzzleKingdoms.Balance
                 else if (args[a] == "--set")
                 {
                     sets.Add(args[a + 1]); // PB-35: try a stage value, e.g. "--set stage_2_3.hp=1.6" (hp, damage, moves, goal)
+                }
+                else if (args[a] == "--tune")
+                {
+                    // PB-40: find the enemy HP for a win-rate band of the greedy Merge-all bot, e.g. "--tune 80-92"
+                    string[] band = args[a + 1].Split('-');
+                    tuneMin = double.Parse(band[0], CultureInfo.InvariantCulture) / 100.0;
+                    tuneMax = double.Parse(band[1], CultureInfo.InvariantCulture) / 100.0;
                 }
                 else if (args[a] == "--tiers")
                 {
@@ -95,6 +106,10 @@ namespace PuzzleKingdoms.Balance
                 Console.WriteLine("Unknown commander: " + commanderId);
                 return 1;
             }
+            if (tuneMin >= 0)
+            {
+                return Tune(assets, runs, tuneMin, tuneMax, only, bonuses, variant, write);
+            }
             Console.WriteLine();
             Console.WriteLine("stage      puzzle  rally  win%  time(s) winTime  recruit deploy rally  surv%  stars 0/1/2/3  goal");
             foreach (StageDef stage in assets.Campaign)
@@ -123,6 +138,49 @@ namespace PuzzleKingdoms.Balance
                 }
             }
             return 0;
+        }
+
+        /// <summary>
+        /// PB-40 (D-073): tunes each stage's enemy HP until the greedy bot that presses Merge all wins inside the band,
+        /// prints the old and new multiplier and, with <c>--write</c>, writes the new one into the stage asset.
+        /// </summary>
+        private static int Tune(AssetReader assets, int runs, double min, double max, string only, KingdomBonuses bonuses,
+            RallyVariant variant, bool write)
+        {
+            Console.WriteLine($"Tuning to {100 * min:0}-{100 * max:0}% (greedy puzzle, Merge all, no Rally){(write ? ", writing assets" : "")}");
+            Console.WriteLine();
+            Console.WriteLine("stage       hp before  hp after  win%  winTime  goal missed  tries  reached");
+            int missed = 0;
+            foreach (StageDef stage in assets.Campaign)
+            {
+                if (only != null && !only.Contains("," + stage.Id + ","))
+                {
+                    continue;
+                }
+                float before = stage.EnemyHpMultiplier;
+                TuneResult result = StageTuner.Tune(stage, seed => new StageRun(stage, assets.UnitsFor(stage), assets.PuzzleRules,
+                        assets.ArmyRules, assets.BattleRules, assets.ProgressionRules, new SeededRandom(seed), bonuses, variant),
+                    min, max, runs);
+                BalanceStats s = result.Stats;
+                Console.WriteLine($"{stage.Id,-11} {before,9:0.00}  {result.HpMultiplier,8:0.00}  {100 * s.WinRate,4:0}  " +
+                    $"{(s.Wins > 0 ? s.WinSeconds / s.Wins : 0),7:0.0}  {100.0 * s.GoalMissed / s.Runs,10:0}%  {result.Tries,5}  {(result.Reached ? "yes" : "NO")}");
+                missed += result.Reached ? 0 : 1;
+                if (write && result.Reached && Math.Abs(before - result.HpMultiplier) > 0.001f)
+                {
+                    WriteHpMultiplier(assets.StagePaths[stage.Id], result.HpMultiplier);
+                }
+            }
+            return missed == 0 ? 0 : 2;
+        }
+
+        /// <summary>Changes the one <c>enemyHpMultiplier:</c> line of a stage asset and leaves every other byte alone.</summary>
+        private static void WriteHpMultiplier(string path, float value)
+        {
+            string text = File.ReadAllText(path);
+            string updated = System.Text.RegularExpressions.Regex.Replace(text, @"(?m)^(  enemyHpMultiplier: )[^
+]*",
+                "${1}" + value.ToString("0.##", CultureInfo.InvariantCulture));
+            File.WriteAllText(path, updated, new System.Text.UTF8Encoding(false));
         }
 
         private static string FindDataFolder()

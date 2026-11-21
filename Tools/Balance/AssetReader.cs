@@ -144,10 +144,14 @@ namespace PuzzleKingdoms.Balance
             return unit;
         }
 
+        /// <summary>PB-40: the .asset file of each campaign stage, by stage id, so <c>--tune --write</c> can change it.</summary>
+        public readonly Dictionary<string, string> StagePaths = new Dictionary<string, string>();
+
         private StageDef Stage(string path)
         {
             string[] lines = File.ReadAllLines(path);
             Dictionary<string, string> v = Scalars(lines);
+            StagePaths[v["id"]] = path;
             var stage = new StageDef
             {
                 Id = v["id"],
