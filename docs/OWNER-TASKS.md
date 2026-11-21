@@ -45,7 +45,7 @@ Only you can create these. Each one unlocks a card that is otherwise finished in
   the Supporter product ("about $2.99") in the Play Console, connect them behind `IAds` and `IBilling`. Personalised
   ads only after the consent question (PB-29).
 - [ ] **Analytics and crash reports online (PB-29):** pick a service and open its account. Events and errors go to local
-  files only until then.
+  files only until then. The options and what we will read: [ANALYTICS.md](ANALYTICS.md) (PB-36).
 - [ ] **A backend, if you want online features:** needed for the Daily Challenge ranking (PB-25 step 4) and async PvP
   (PB-27, not started). Decide, then cards can be split.
 

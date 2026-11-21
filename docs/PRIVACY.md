@@ -23,6 +23,15 @@ new event.
 | `stage_won` / `stage_lost` | an attempt ends | stage id, stars, timed out, seconds on puzzle / War Camp / battle, units recruited, merges, deployed, survivors, Rally earned / used, gold |
 | `tutorial_skipped` | "Skip tutorial" | the prompt id |
 | `setting_changed` | sound, music, battle speed or language changes | setting name, new value |
+| `tutorial_step` | a tutorial prompt is shown | the prompt id |
+| `screen_opened` | a main tab is opened | the screen name |
+| `feature_unlocked` | a game system opens for the first time | the system name |
+| `building_upgraded` | a Kingdom building goes up a level | building id, new level, gold left |
+| `quest_claimed` | a quest, achievement or star chest is claimed | gold after it, total stars |
+| `commander_chosen` | the leading commander changes | commander id |
+| `expedition_ended` | an Expedition run ends | battles reached, won or not, gold earned |
+| `ad_requested` / `ad_rewarded` | a rewarded-ad button is pressed / its reward is given | where the offer was, Supporter or not |
+| `session_paused` | the game goes to the background | seconds played since it opened or came back, last stage won |
 
 Built in `Logic/Analytics/GameEvents.cs` (tested).
 
