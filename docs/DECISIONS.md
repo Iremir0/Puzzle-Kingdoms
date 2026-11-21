@@ -111,7 +111,7 @@ Dismissal gold (5 per bench unit) and Banner overflow gold (1 per point) are
 earned during the attempt and paid even on defeat; the stage's gold reward and
 stars only on victory, every time it is won. Next stage unlocks with 1 star.
 Open question: repeat wins pay full gold; revisit (first-clear bonus) once
-upgrades make gold matter.
+upgrades make gold matter. (Closed by D-071: replays pay half the stage gold.)
 
 ## D-023 StageRun is logic, screens only drive it
 The whole attempt (puzzle → war camp → battle → reward) is one engine-free
@@ -846,3 +846,20 @@ Players who already passed those stages get the intros once on their next visit 
 The Quarry (1-4, D-048) joins the campaign between 1-3 and 2-1 as the lesson for special gems: its board has a 2×2
 square and a five-in-a-row one swap away on every seed (`TheQuarryTeachesBlastAndPrism`), with three prompts (Blast,
 Prism, combos). Goal eased to 4 stones in 14 moves (bots miss it 5%, was 17%). The campaign has 14 stages, 42 stars.
+
+## D-071 - Rewards worth chasing: replays pay half, a chest every 12 stars, star shapes, vibration (2026-11-21)
+
+The review found that farming old stages was the main loop (replays paid full gold) and that the whole campaign had
+one star chest (every 30 of 39 stars). Now:
+- **Replays pay half:** a stage won before pays `ProgressionRules.ReplayGoldShare` (0.5) of its gold reward; the first
+  win pays it all. Dismissal and Banner gold are paid in full; stars are not cut. The results screen says
+  "(replay: half gold)". Closes the open question of D-022. Half, not less, because buildings still cost 19,690 gold
+  to max and the other gold sources (quests, chests, Daily, Expedition) are small; revisit with playtest data.
+- **Star chest every 12 stars** (was 30): three chests in the 14-stage, 42-star campaign.
+- **Results screen:** three star shapes (`GemShapes` star) that pop in one by one instead of the `* * -` text.
+- **Vibration:** short Android one-shot pulses on a merge (15 ms), Rally (30 ms) and a victory (60 ms), with a
+  Vibration switch in Settings (`GameSettings.haptics`, on by default; older files load it on). Research: few, crisp
+  pulses tied to the player's success; nothing on every gem match. `Haptics` keeps a never-called
+  `Handheld.Vibrate()` so Unity adds the VIBRATE permission.
+- **"+moves for an ad"** was already there (`ExtraMovesOffer`, D-064); nothing to add.
+Settings rows were re-spaced (0.09 apart) to fit Vibration.

@@ -11,6 +11,8 @@ namespace PuzzleKingdoms.Data
     {
         [SerializeField, Min(0)] private int dismissGoldPerUnit = 5;
         [SerializeField, Min(0)] private int goldPerOverflowRallyPoint = 1;
+        [Tooltip("Share of a stage's gold paid when it was already won before (PB-38, D-071).")]
+        [SerializeField, Range(0f, 1f)] private float replayGoldShare = 0.5f;
         [Tooltip("Which campaign stage opens which game system; a system not listed is open from the start (PB-37, D-070).")]
         [SerializeField] private List<FeatureUnlock> featureUnlocks = FeatureUnlockRules.Default().Unlocks;
 
@@ -29,6 +31,7 @@ namespace PuzzleKingdoms.Data
             {
                 DismissGoldPerUnit = dismissGoldPerUnit,
                 GoldPerOverflowRallyPoint = goldPerOverflowRallyPoint,
+                ReplayGoldShare = replayGoldShare,
                 Unlocks = unlocks,
             };
         }

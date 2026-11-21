@@ -19,6 +19,7 @@ namespace PuzzleKingdoms.Views.Menus
         private Action _onResetProgress;
         private Button _sound;
         private Button _music;
+        private Button _haptics;
         private Button _speed1;
         private Button _speed2;
         private Button _english;
@@ -69,19 +70,22 @@ namespace PuzzleKingdoms.Views.Menus
                 Name(Ui.Button(box, "Replays", Ui.ButtonStyle.Secondary, onReplays, 0.4f, 0.89f, 0.7f, 0.98f, 34), "Replays");
             }
 
-            Row(box, Loc.T("Sound effects"), 0.76f);
-            _sound = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleSound, 0.66f, 0.74f, 0.94f, 0.83f, 40), "Sound Toggle");
-            Row(box, Loc.T("Music"), 0.66f);
-            _music = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleMusic, 0.66f, 0.64f, 0.94f, 0.725f, 40), "Music Toggle");
-            Row(box, Loc.T("Battle speed"), 0.56f);
-            _speed1 = Name(Ui.Button(box, "1x", Ui.ButtonStyle.Secondary, () => SetSpeed(1), 0.66f, 0.54f, 0.79f, 0.625f, 40), "Speed 1x");
-            _speed2 = Name(Ui.Button(box, "2x", Ui.ButtonStyle.Secondary, () => SetSpeed(2), 0.81f, 0.54f, 0.94f, 0.625f, 40), "Speed 2x");
+            // Rows 0.09 apart since PB-38 added Vibration.
+            Row(box, Loc.T("Sound effects"), 0.79f);
+            _sound = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleSound, 0.66f, 0.77f, 0.94f, 0.855f, 40), "Sound Toggle");
+            Row(box, Loc.T("Music"), 0.7f);
+            _music = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleMusic, 0.66f, 0.68f, 0.94f, 0.765f, 40), "Music Toggle");
+            Row(box, Loc.T("Vibration"), 0.61f);
+            _haptics = Name(Ui.Button(box, "", Ui.ButtonStyle.Secondary, ToggleHaptics, 0.66f, 0.59f, 0.94f, 0.675f, 40), "Vibration Toggle");
+            Row(box, Loc.T("Battle speed"), 0.52f);
+            _speed1 = Name(Ui.Button(box, "1x", Ui.ButtonStyle.Secondary, () => SetSpeed(1), 0.66f, 0.5f, 0.79f, 0.585f, 40), "Speed 1x");
+            _speed2 = Name(Ui.Button(box, "2x", Ui.ButtonStyle.Secondary, () => SetSpeed(2), 0.81f, 0.5f, 0.94f, 0.585f, 40), "Speed 2x");
             // Each language button shows the language's own name, whatever language is on (PB-32).
-            Row(box, Loc.T("Language"), 0.46f);
+            Row(box, Loc.T("Language"), 0.43f);
             _english = Name(Ui.Button(box, Languages.NativeName(Language.English), Ui.ButtonStyle.Secondary,
-                () => SetLanguage(Language.English), 0.5f, 0.44f, 0.71f, 0.525f, 40), "Language en");
+                () => SetLanguage(Language.English), 0.5f, 0.41f, 0.71f, 0.495f, 40), "Language en");
             _turkish = Name(Ui.Button(box, Languages.NativeName(Language.Turkish), Ui.ButtonStyle.Secondary,
-                () => SetLanguage(Language.Turkish), 0.73f, 0.44f, 0.94f, 0.525f, 40), "Language tr");
+                () => SetLanguage(Language.Turkish), 0.73f, 0.41f, 0.94f, 0.495f, 40), "Language tr");
 
             // Reset tutorial and Data and privacy (PB-29) share a row; either takes the whole row alone.
             float split = onResetTutorial != null && onPrivacy != null ? 0.49f : 0.94f;
@@ -93,20 +97,20 @@ namespace PuzzleKingdoms.Views.Menus
                     onResetTutorial();
                     Ui.SetCaption(resetTutorial, "Tips will show again");
                     resetTutorial.interactable = false;
-                }, 0.06f, 0.34f, split, 0.425f, 40), "Reset Tutorial");
+                }, 0.06f, 0.315f, split, 0.39f, 40), "Reset Tutorial");
             }
             if (onPrivacy != null)
             {
                 Name(Ui.Button(box, "Data and privacy", Ui.ButtonStyle.Secondary, onPrivacy,
-                    onResetTutorial != null ? 0.51f : 0.06f, 0.34f, 0.94f, 0.425f, 40), "Privacy");
+                    onResetTutorial != null ? 0.51f : 0.06f, 0.315f, 0.94f, 0.39f, 40), "Privacy");
             }
             if (cloud != null && cloud.Available)
             {
-                Row(box, Loc.T("Cloud save"), 0.26f);
+                Row(box, Loc.T("Cloud save"), 0.235f);
                 _cloudButton = Name(Ui.Button(box, CloudCaption(cloud.SignedIn, cloud.Account), Ui.ButtonStyle.Secondary,
-                    cloud.Toggle, 0.5f, 0.24f, 0.94f, 0.325f, 30), "Cloud Button");
+                    cloud.Toggle, 0.5f, 0.22f, 0.94f, 0.295f, 30), "Cloud Button");
             }
-            Name(Ui.Button(box, "Reset progress", Ui.ButtonStyle.Danger, AskReset, 0.06f, 0.14f, 0.94f, 0.225f, 40), "Reset Progress");
+            Name(Ui.Button(box, "Reset progress", Ui.ButtonStyle.Danger, AskReset, 0.06f, 0.12f, 0.94f, 0.195f, 40), "Reset Progress");
             Ui.Label(box, Loc.F("Version {0}", version), 30, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.02f, 1f, 0.09f);
 
             // Second step of the reset: a box over the settings with Yes / Cancel.
@@ -137,6 +141,12 @@ namespace PuzzleKingdoms.Views.Menus
         private void ToggleSound()
         {
             _settings.sound = !_settings.sound;
+            Changed();
+        }
+
+        private void ToggleHaptics()
+        {
+            _settings.haptics = !_settings.haptics;
             Changed();
         }
 
@@ -180,6 +190,7 @@ namespace PuzzleKingdoms.Views.Menus
         {
             SetToggle(_sound, _settings.sound);
             SetToggle(_music, _settings.music);
+            SetToggle(_haptics, _settings.haptics);
             _speed1.image.color = _settings.BattleSpeed == 1 ? Palette.Primary : Palette.Button;
             _speed2.image.color = _settings.BattleSpeed == 2 ? Palette.Primary : Palette.Button;
             Language shown = _settings.LanguageFor(Loc.SystemIsTurkish);

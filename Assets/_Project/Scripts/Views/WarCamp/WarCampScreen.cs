@@ -319,6 +319,7 @@ namespace PuzzleKingdoms.Views.WarCamp
                 return;
             }
             Select(merged);
+            Haptics.Light(); // PB-38
             PlayMerges(before, new List<ArmyUnit> { merged });
         }
 
@@ -332,6 +333,10 @@ namespace PuzzleKingdoms.Views.WarCamp
             Select(null);
             Dictionary<ArmyUnit, Vector2> before = UnitPositions();
             List<ArmyUnit> created = Roster.MergeAll();
+            if (created.Count > 0)
+            {
+                Haptics.Light(); // PB-38
+            }
             PlayMerges(before, created);
         }
 

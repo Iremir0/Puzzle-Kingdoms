@@ -240,6 +240,9 @@ namespace PuzzleKingdoms.Logic.Flow
         public bool Won => Battle != null && Battle.IsFinished
                            && Goal.IsMet(Battle.Result, Puzzle.StonesBroken, _battleRules.TicksPerSecond, Puzzle.Board.IceLeft);
 
+        /// <summary>The stage was already won before this attempt: victory gold is the replay share (PB-38, D-071).</summary>
+        public bool Replay { get; set; }
+
         /// <summary>Computes the reward once the battle is over. Returns null before that.</summary>
         public StageReward Finish()
         {
@@ -248,7 +251,7 @@ namespace PuzzleKingdoms.Logic.Flow
                 return null;
             }
             Reward = StageReward.Compute(Stage, Battle.Result, DismissedUnits, RallyOverflowPoints, _progressionRules,
-                goalMet: Won, bonuses: _bonuses);
+                goalMet: Won, bonuses: _bonuses, replay: Replay);
             SetPhase(StagePhase.Finished);
             return Reward;
         }

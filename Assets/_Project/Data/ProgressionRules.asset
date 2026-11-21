@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dismissGoldPerUnit: 5
   goldPerOverflowRallyPoint: 1
+  replayGoldShare: 0.5
   featureUnlocks:
   - Feature: 1
     StageId: stage_1_1
