@@ -386,6 +386,7 @@ namespace PuzzleKingdoms.Tests.Data
                     "stage_1_1", "stage_1_2", "stage_1_3", "stage_1_4",
                     "stage_2_1", "stage_2_2", "stage_2_3", "stage_2_4", "stage_2_5",
                     "stage_2_6", "stage_2_7", "stage_2_8", "stage_2_9", "stage_2_10",
+                    "stage_3_1", "stage_3_2", "stage_3_3", "stage_3_4", "stage_3_5", "stage_3_6", "stage_3_7", "stage_3_8", "stage_3_9", "stage_3_10",
                 },
                 content.CampaignOrder());
             Assert.IsNotNull(content.PuzzleRules);

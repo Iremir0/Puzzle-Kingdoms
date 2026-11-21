@@ -1,0 +1,89 @@
+{
+  "chapter": 3,
+  "candidates": 6,
+  "stages": [
+    {
+      "id": "stage_3_1", "name": "Bog Edge", "file": "Stage_3_1",
+      "units": ["warrior", "archer", "mage", "defender"],
+      "required": ["bog_troll", "bog_troll"], "pool": ["goblin_grunt", "goblin_archer"],
+      "enemies": [5, 6], "tier2": [0, 0], "moves": [21, 23], "stones": 2,
+      "gold": 230, "damage": 1.2, "band": [88, 95], "map": [0.2, 0.14],
+      "tutorial": [{ "id": "3-1.troll", "trigger": 2, "text": "Bog Trolls heal themselves every second. Merge your units and hit one troll hard and fast." }]
+    },
+    {
+      "id": "stage_3_2", "name": "Frozen Mire", "file": "Stage_3_2",
+      "units": ["warrior", "archer", "mage", "defender"],
+      "required": ["bog_troll"], "pool": ["shield_goblin", "goblin_archer", "goblin_grunt"],
+      "enemies": [5, 6], "tier2": [0, 0], "moves": [26, 28], "goalKind": 3,
+      "covers": ["......", "..ii..", ".iIIi.", ".i..i.", "......", "......"],
+      "gold": 235, "damage": 2.0, "band": [84, 93], "map": [0.5, 0.14],
+      "tutorial": [{ "id": "3-2.ice", "trigger": 0, "text": "The ice is back. Melt every layer, then bring merged units for the troll." }]
+    },
+    {
+      "id": "stage_3_3", "name": "Berserk Camp", "file": "Stage_3_3",
+      "units": ["warrior", "archer", "mage", "defender"],
+      "required": ["goblin_berserker", "goblin_berserker", "goblin_berserker"], "pool": ["goblin_grunt", "goblin_shaman"],
+      "enemies": [5, 6], "tier2": [0, 0], "moves": [23, 25], "stones": 5, "goalKind": 1, "goalTarget": 3,
+      "gold": 240, "damage": 1.25, "band": [84, 93], "map": [0.8, 0.14],
+      "tutorial": [{ "id": "3-3.berserker", "trigger": 2, "text": "Berserkers attack twice as fast once half their HP is gone. Finish them quickly." }]
+    },
+    {
+      "id": "stage_3_4", "name": "Hold the Line", "file": "Stage_3_4",
+      "units": ["warrior", "archer", "defender", "support"],
+      "required": ["goblin_berserker", "goblin_berserker", "wolf_rider", "wolf_rider"], "pool": ["goblin_grunt", "goblin_archer"],
+      "enemies": [6, 7], "tier2": [1, 1], "moves": [21, 23],
+      "gold": 250, "damage": 1.45, "band": [82, 92], "map": [0.8, 0.355],
+      "tutorial": [{ "id": "3-4.line", "trigger": 2, "text": "Berserkers and Wolf Riders dive hard. A Defender in front and Support behind keep your line alive." }]
+    },
+    {
+      "id": "stage_3_5", "name": "Sapper Run", "file": "Stage_3_5",
+      "units": ["warrior", "archer", "mage", "support"],
+      "required": ["marsh_sapper", "marsh_sapper", "marsh_sapper"], "pool": ["goblin_grunt", "goblin_archer"],
+      "enemies": [6, 7], "tier2": [0, 0], "moves": [21, 23], "stones": 2,
+      "gold": 255, "damage": 1.3, "band": [82, 92], "map": [0.5, 0.355],
+      "tutorial": [{ "id": "3-5.sapper", "trigger": 2, "text": "Sappers explode when they fall and hurt everyone nearby. Shoot them from afar." }]
+    },
+    {
+      "id": "stage_3_6", "name": "Chained Bog", "file": "Stage_3_6",
+      "units": ["warrior", "archer", "mage", "defender"],
+      "required": ["marsh_sapper", "marsh_sapper", "bog_troll"], "pool": ["goblin_shaman", "shield_goblin"],
+      "enemies": [6, 6], "tier2": [0, 0], "moves": [22, 24],
+      "covers": ["c....c", "......", "......", "......", "......", "c....c"],
+      "gold": 265, "damage": 1.35, "band": [80, 90], "map": [0.2, 0.355],
+      "tutorial": [{ "id": "3-6.chains", "trigger": 0, "text": "Free the chained corners, then shoot the Sappers before they reach your melee units." }]
+    },
+    {
+      "id": "stage_3_7", "name": "Veterans", "file": "Stage_3_7",
+      "units": ["warrior", "archer", "mage", "defender"],
+      "required": [], "pool": ["goblin_grunt", "goblin_archer", "goblin_brute", "shield_goblin", "wolf_rider"],
+      "enemies": [6, 7], "tier2": [2, 3], "moves": [24, 26], "stones": 6, "goalKind": 1, "goalTarget": 4,
+      "gold": 275, "damage": 1.35, "band": [80, 90], "map": [0.2, 0.57],
+      "tutorial": [{ "id": "3-7.veterans", "trigger": 2, "text": "Some enemies here are tier 2 and much tougher. Merge your own units to match them." }]
+    },
+    {
+      "id": "stage_3_8", "name": "Race the Mire", "file": "Stage_3_8",
+      "units": ["warrior", "archer", "mage", "support"],
+      "required": ["goblin_berserker", "goblin_berserker", "marsh_sapper", "marsh_sapper"], "pool": ["wolf_rider", "goblin_grunt"],
+      "enemies": [5, 6], "tier2": [0, 0], "moves": [21, 23], "goalKind": 2, "goalTarget": 35,
+      "gold": 285, "damage": 1.4, "band": [78, 88], "winSeconds": 24, "map": [0.5, 0.57],
+      "tutorial": [{ "id": "3-8.race", "trigger": 3, "text": "Win within 35 seconds. Use Rally early: hit together and the enemies fall fast." }]
+    },
+    {
+      "id": "stage_3_9", "name": "Troll Den", "file": "Stage_3_9",
+      "units": ["warrior", "archer", "mage", "defender"],
+      "required": ["bog_troll", "bog_troll", "goblin_shaman", "goblin_bomber"], "pool": ["goblin_berserker", "goblin_grunt"],
+      "enemies": [6, 6], "tier2": [1, 1], "moves": [22, 24], "bossStonesEvery": 4, "bossStonesCount": 2,
+      "gold": 300, "damage": 1.45, "band": [76, 86], "map": [0.8, 0.57],
+      "tutorial": [{ "id": "3-9.den", "trigger": 2, "text": "Two trolls and a healer. Bring Mages and merge: slow damage never beats their healing." }]
+    },
+    {
+      "id": "stage_3_10", "name": "Troll King", "file": "Stage_3_10",
+      "units": ["warrior", "archer", "mage", "defender"],
+      "boss": "troll_king",
+      "required": ["bog_troll", "goblin_berserker", "marsh_sapper", "goblin_shaman", "shield_goblin"], "pool": ["goblin_grunt", "goblin_archer"],
+      "enemies": [5, 6], "tier2": [0, 1], "moves": [23, 25], "bossStonesEvery": 3, "bossStonesCount": 2,
+      "gold": 330, "damage": 1.5, "band": [70, 80], "winSeconds": 32, "map": [0.5, 0.785],
+      "tutorial": [{ "id": "3-10.king", "trigger": 3, "text": "The Troll King heals and rages at low HP. Save Rally to finish him." }]
+    }
+  ]
+}

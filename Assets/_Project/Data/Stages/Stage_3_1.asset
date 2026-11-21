@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae7d63e5b21a4772a577bc78c74fe2b9, type: 3}
+  m_Name: Stage_3_1
+  m_EditorClassIdentifier: 
+  id: stage_3_1
+  displayName: Bog Edge
+  chapter: 3
+  units:
+  - {fileID: 11400000, guid: 0948e59e05944d11aa74dbd8fc05ea12, type: 2}
+  - {fileID: 11400000, guid: dc58bbfad0514bb8ad47f83d17782247, type: 2}
+  - {fileID: 11400000, guid: 72933b41701440aebb60a1d23926b896, type: 2}
+  - {fileID: 11400000, guid: a41f7c2d9e3b4856a0d1c7e2f95b3a68, type: 2}
+  moves: 22
+  boardSeed: 0
+  enemies:
+  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
+    tier: 1
+    cell: {x: 3, y: 0}
+  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
+    tier: 1
+    cell: {x: 1, y: 0}
+  - unit: {fileID: 11400000, guid: 3f8a1c6e2b7d4e59a0c4d1b8e7f2a6c1, type: 2}
+    tier: 1
+    cell: {x: 0, y: 0}
+  - unit: {fileID: 11400000, guid: 3f8a1c6e2b7d4e59a0c4d1b8e7f2a6c1, type: 2}
+    tier: 1
+    cell: {x: 2, y: 0}
+  - unit: {fileID: 11400000, guid: 98f5e48e1c474660a13cfd557ca4f5dd, type: 2}
+    tier: 1
+    cell: {x: 1, y: 1}
+  - unit: {fileID: 11400000, guid: 98f5e48e1c474660a13cfd557ca4f5dd, type: 2}
+    tier: 1
+    cell: {x: 2, y: 1}
+  goldReward: 230
+  stoneGems: 2
+  enemyHpMultiplier: 2.03
+  enemyDamageMultiplier: 1.2
+  goalKind: 0
+  goalTarget: 0
+  layout: []
+  covers: []
+  bossStonesEvery: 0
+  bossStonesCount: 0
+  mapPosition: {x: 0.2, y: 0.14}
+  tutorial:
+  - id: 3-1.troll
+    trigger: 2
+    text: 'Bog Trolls heal themselves every second. Merge your units and hit one troll hard and fast.'
+    target: 

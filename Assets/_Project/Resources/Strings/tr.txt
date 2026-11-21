@@ -162,6 +162,7 @@ The Chief's Forge	Şefin Demirhanesi
 
 # ---- Chapter 2: Goblin Fort (PB-18) ----
 Chapter 2: Goblin Fort	Bölüm 2: Goblin Kalesi
+Chapter 3: Troll Marsh	Bölüm 3: Trol Bataklığı
 Chapter {0}	Bölüm {0}
 Shield Goblin	Kalkanlı Goblin
 Goblin Shaman	Goblin Şaman
@@ -345,3 +346,24 @@ Tip: tap Rally during the battle to power up your army.	İpucu: savaş sırasın
 Outnumbered. Make more matches to recruit more soldiers.	Sayıca azdın. Daha çok asker toplamak için daha çok eşleştirme yap.
 Their army was stronger. Merge three of a kind in the War Camp.	Onların ordusu daha güçlüydü. Savaş Kampında aynı türden üç birimi birleştir.
 Your save comes from a newer version of Puzzle Kingdoms. Update the game to continue it. Until then, nothing you play here is saved.	Kaydın Puzzle Kingdoms'un daha yeni bir sürümünden. Devam etmek için oyunu güncelle. O zamana kadar burada oynadıkların kaydedilmez.
+
+# ---- Chapter 3: Troll Marsh (PB-42) ----
+Bog Edge	Bataklık Kıyısı
+Frozen Mire	Donmuş Bataklık
+Berserk Camp	Çılgınlar Kampı
+Hold the Line	Hattı Tut
+Sapper Run	Lağımcı Akını
+Chained Bog	Zincirli Bataklık
+Veterans	Kıdemliler
+Race the Mire	Bataklıkta Yarış
+Troll Den	Trol İni
+Bog Trolls heal themselves every second. Merge your units and hit one troll hard and fast.	Bataklık Trolleri her saniye kendini iyileştirir. Birliklerini birleştir, bir trole hızlı ve sert vur.
+Berserkers attack twice as fast once half their HP is gone. Finish them quickly.	Çılgın Goblinler canlarının yarısı gidince iki kat hızlı saldırır. Onları çabuk bitir.
+Sappers explode when they fall and hurt everyone nearby. Shoot them from afar.	Lağımcılar düşünce patlar ve yakındaki herkese zarar verir. Onları uzaktan vur.
+Some enemies here are tier 2 and much tougher. Merge your own units to match them.	Buradaki bazı düşmanlar 2. seviye ve çok daha dayanıklı. Onlara yetişmek için kendi birliklerini birleştir.
+The Troll King heals and rages at low HP. Save Rally to finish him.	Trol Kral kendini iyileştirir ve canı azalınca öfkelenir. Onu bitirmek için Hücum'u sakla.
+The ice is back. Melt every layer, then bring merged units for the troll.	Buz geri döndü. Her katmanı erit, sonra trol için birleştirilmiş birlikler getir.
+Berserkers and Wolf Riders dive hard. A Defender in front and Support behind keep your line alive.	Çılgın Goblinler ve Kurt Binicileri sert dalar. Önde bir Savunucu, arkada bir Destek hattını ayakta tutar.
+Free the chained corners, then shoot the Sappers before they reach your melee units.	Zincirli köşeleri kurtar, sonra Lağımcıları yakın dövüşçülerine ulaşmadan vur.
+Win within 35 seconds. Use Rally early: hit together and the enemies fall fast.	35 saniye içinde kazan. Hücum'u erken kullan: birlikte vurursan düşmanlar çabuk düşer.
+Two trolls and a healer. Bring Mages and merge: slow damage never beats their healing.	İki trol ve bir şifacı. Büyücü getir ve birleştir: yavaş hasar onların iyileşmesini asla geçemez.
