@@ -646,6 +646,7 @@ namespace PuzzleKingdoms.Flow
             _analytics.Send(GameEvents.AppStarted(Application.version, Languages.Code(Loc.Language)));
 
             Ui.EnsureEventSystem();
+            TabBar.LockedBy = LockedTab; // PB-37
             _screenRoot = Ui.CreateSafeArea(Ui.CreateCanvas("Canvas"));
             ShowStageSelect();
             if (SaveLocked)
@@ -695,11 +696,85 @@ namespace PuzzleKingdoms.Flow
                     : Loc.F("Best: {0}", Profile.BestExpeditionDepth));
             }
             Show(StageMapScreen.Create(_screenRoot, content, Profile, StartStage, () => OpenSettings(), OnTab,
-                HasDaily ? ShowDaily : (System.Action)null, dailyCaption,
-                HasExpedition ? ShowExpedition : (System.Action)null, expeditionCaption));
+                HasDaily && IsOpen(Feature.Daily) ? ShowDaily : (System.Action)null, dailyCaption,
+                HasExpedition && IsOpen(Feature.Expedition) ? ShowExpedition : (System.Action)null, expeditionCaption));
             if (ConsentEnabled && Consent.NeedsAsking(Settings))
             {
                 AskConsent();
+            }
+            else
+            {
+                ShowNextIntro();
+            }
+        }
+
+        // ---- Systems that open one by one (PB-37, D-070) ----
+
+        private FeatureUnlockRules Unlocks => content.ProgressionRules != null
+            ? content.ProgressionRules.Rules.Unlocks
+            : FeatureUnlockRules.Default();
+
+        /// <summary>True when the stage that opens <paramref name="feature"/> has been won.</summary>
+        public bool IsOpen(Feature feature) => Unlocks.IsOpen(feature, Profile);
+
+        /// <summary>The intro of a newly opened system while it is open (tests close it).</summary>
+        public NoticePanel IntroPanel { get; private set; }
+
+        private string LockedTab(MainTab tab)
+        {
+            Feature feature;
+            switch (tab)
+            {
+                case MainTab.Kingdom: feature = Feature.Kingdom; break;
+                case MainTab.Commanders: feature = Feature.Commanders; break;
+                case MainTab.Quests: feature = Feature.Quests; break;
+                case MainTab.Shop: feature = Feature.Shop; break;
+                default: return "";
+            }
+            return IsOpen(feature) ? "" : FeatureUnlockRules.StageLabel(Unlocks.OpenedBy(feature));
+        }
+
+        /// <summary>Shows the intro of the next system that opened and has not been introduced, one at a time.</summary>
+        private void ShowNextIntro()
+        {
+            if (IntroPanel != null || SaveNotice != null || _screen == null)
+            {
+                return;
+            }
+            List<Feature> due = Unlocks.IntrosDue(Profile);
+            if (due.Count == 0)
+            {
+                return;
+            }
+            Feature feature = due[0];
+            Profile.MarkStepSeen(FeatureUnlockRules.IntroId(feature));
+            SaveProfile();
+            _analytics?.Send(GameEvents.FeatureUnlocked(feature.ToString().ToLowerInvariant()));
+            (string title, string body) = Intro(feature);
+            IntroPanel = NoticePanel.Create(_screen.transform, title, body, () =>
+            {
+                IntroPanel = null;
+                ShowNextIntro();
+            });
+            IntroPanel.gameObject.name = "Intro " + feature;
+        }
+
+        private static (string Title, string Body) Intro(Feature feature)
+        {
+            switch (feature)
+            {
+                case Feature.Quests:
+                    return (Loc.T("Quests are open!"), Loc.T("Three new goals every day, achievements for the long run, and a chest for every 30 stars. Tap the Quests tab to claim gold."));
+                case Feature.Kingdom:
+                    return (Loc.T("Your Kingdom is open!"), Loc.T("Spend gold on buildings. Each level makes one class stronger in every battle, or brings more gold."));
+                case Feature.Commanders:
+                    return (Loc.T("Your first commander!"), Loc.T("A commander leads your army and changes what Rally does. Choose one in the Commanders tab."));
+                case Feature.Daily:
+                    return (Loc.T("Daily Challenge is open!"), Loc.T("One new battle a day, the same for everyone, one try. Find it at the top of the map."));
+                case Feature.Shop:
+                    return (Loc.T("The Shop is open!"), Loc.T("Watch an ad for gold a few times a day, or support the game with the Supporter pack."));
+                default:
+                    return (Loc.T("Expedition is open!"), Loc.T("Five battles in a row with one army: wounds stay, rewards grow. Find it at the top of the map."));
             }
         }
 

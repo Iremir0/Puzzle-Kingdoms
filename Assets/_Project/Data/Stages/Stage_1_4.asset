@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: stage_1_4
   displayName: The Quarry
-  moves: 12
+  moves: 14
   boardSeed: 0
   enemies:
   - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
@@ -46,13 +46,25 @@ MonoBehaviour:
   enemyHpMultiplier: 1.1
   enemyDamageMultiplier: 1
   goalKind: 1
-  goalTarget: 5
+  goalTarget: 4
   layout:
   - ..a...
+  - .22...
+  - a2.2.c
   - ......
-  - x....c
-  - ......
-  - ...b..
-  - ......
+  - ..1b..
+  - 11.11.
   mapPosition: {x: 0.75, y: 0.78}
-  tutorial: []
+  tutorial:
+  - id: 1-4.blast
+    trigger: 0
+    text: 'A 2x2 square of gems makes a Blast. Slide the purple gem left, then match the Blast: it clears all around it.'
+    target: Board Area
+  - id: 1-4.prism
+    trigger: 1
+    text: 'Five in a row make a Prism. Drop the green gem down, then swap the Prism with a gem to clear that whole colour.'
+    target: Board Area
+  - id: 1-4.combo
+    trigger: 1
+    text: 'Tip: swap two special gems into each other for a combo. Blast + Blast clears a 5x5 square.'
+    target: Board Area

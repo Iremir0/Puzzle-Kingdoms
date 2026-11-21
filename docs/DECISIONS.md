@@ -821,3 +821,28 @@ Greedy bot, no Rally, 200 runs; "before" is the table of the 2026-11-21 review:
 
 `Tools/Balance` gained `--damage`, `--only` and `--set stage_2_3.hp=1.6` (hp, damage, moves, goal) to try values
 without editing assets. Alican reviews the branch (rules and data are his area).
+
+## D-070 - Systems open one per stage, each with one intro; 1-4 teaches Blast and Prism (2026-11-21)
+
+All five tabs, the Daily Challenge and the Expedition were open on the first launch, and the two modes used
+Chapter 2 enemies the player had not met. Research on first sessions: show the value in the first minutes, one new
+thing per stage. Now each of the first stages opens one system (`FeatureUnlockRules` in Logic, the list in the
+ProgressionRules asset):
+
+| System | Opens after | Where it shows |
+|---|---|---|
+| Quests | 1-1 | tab |
+| Kingdom | 1-2 | tab |
+| Commanders | 1-3 (the first commander is earned there) | tab |
+| Daily Challenge | 1-4 | map button |
+| Shop | 2-1 | tab |
+| Expedition | 2-3 (after the first Chapter 2 enemies) | map button |
+
+A locked tab is greyed and says which stage opens it ("Stage 1-2"); a locked map button is hidden. The first time a
+player is on the map with a system open, a one-card intro says what it is for, one at a time; it is recorded with the
+tutorial prompts ("intro.kingdom"), so the save format stays at version 9 and "Replay tutorial" shows them again.
+Players who already passed those stages get the intros once on their next visit to the map.
+
+The Quarry (1-4, D-048) joins the campaign between 1-3 and 2-1 as the lesson for special gems: its board has a 2×2
+square and a five-in-a-row one swap away on every seed (`TheQuarryTeachesBlastAndPrism`), with three prompts (Blast,
+Prism, combos). Goal eased to 4 stones in 14 moves (bots miss it 5%, was 17%). The campaign has 14 stages, 42 stars.
