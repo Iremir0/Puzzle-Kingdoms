@@ -43,8 +43,8 @@ MonoBehaviour:
     cell: {x: 2, y: 1}
   goldReward: 250
   stoneGems: 0
-  enemyHpMultiplier: 3.63
-  enemyDamageMultiplier: 1.45
+  enemyHpMultiplier: 2.57
+  enemyDamageMultiplier: 1.8
   goalKind: 0
   goalTarget: 0
   layout: []

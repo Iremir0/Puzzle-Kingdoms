@@ -44,7 +44,7 @@ MonoBehaviour:
   goldReward: 330
   stoneGems: 0
   enemyHpMultiplier: 1.19
-  enemyDamageMultiplier: 1.5
+  enemyDamageMultiplier: 1.7
   goalKind: 0
   goalTarget: 0
   layout: []

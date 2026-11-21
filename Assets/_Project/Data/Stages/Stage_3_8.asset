@@ -20,31 +20,31 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dc58bbfad0514bb8ad47f83d17782247, type: 2}
   - {fileID: 11400000, guid: 72933b41701440aebb60a1d23926b896, type: 2}
   - {fileID: 11400000, guid: c83e1b5a7d2f4094b6a8e0d3f17c9b25, type: 2}
-  moves: 22
+  moves: 23
   boardSeed: 0
   enemies:
-  - unit: {fileID: 11400000, guid: 8c3f5b2eaa4d4e7bc9b6f4a0d3e2c5b3, type: 2}
-    tier: 1
-    cell: {x: 1, y: 0}
   - unit: {fileID: 11400000, guid: a5d3f7c1e9b24f6890c1e3a5b7d9f2c4, type: 2}
     tier: 1
-    cell: {x: 2, y: 0}
+    cell: {x: 3, y: 0}
   - unit: {fileID: 11400000, guid: 7c2e9b4a1d6f4083b5e8a2c7d9f1e4b6, type: 2}
     tier: 1
-    cell: {x: 3, y: 0}
+    cell: {x: 2, y: 0}
   - unit: {fileID: 11400000, guid: a5d3f7c1e9b24f6890c1e3a5b7d9f2c4, type: 2}
     tier: 1
     cell: {x: 0, y: 0}
-  - unit: {fileID: 11400000, guid: c343fe633bea400189ca06625f7b3a62, type: 2}
+  - unit: {fileID: 11400000, guid: 8c3f5b2eaa4d4e7bc9b6f4a0d3e2c5b3, type: 2}
     tier: 1
-    cell: {x: 1, y: 1}
+    cell: {x: 1, y: 0}
   - unit: {fileID: 11400000, guid: 7c2e9b4a1d6f4083b5e8a2c7d9f1e4b6, type: 2}
+    tier: 1
+    cell: {x: 2, y: 1}
+  - unit: {fileID: 11400000, guid: 8c3f5b2eaa4d4e7bc9b6f4a0d3e2c5b3, type: 2}
     tier: 1
     cell: {x: 0, y: 1}
   goldReward: 285
   stoneGems: 0
   enemyHpMultiplier: 4.16
-  enemyDamageMultiplier: 1.4
+  enemyDamageMultiplier: 1.7
   goalKind: 2
   goalTarget: 35
   layout: []

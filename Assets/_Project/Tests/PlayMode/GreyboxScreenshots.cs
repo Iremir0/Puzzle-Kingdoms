@@ -212,7 +212,7 @@ namespace PuzzleKingdoms.Tests.PlayMode
             _app.UseStore(new ProfileStore(_saveFolder));
             _app.UseLanguage(Language.English);
             yield return null;
-            _app.StartStage(content.Campaign.Count - 1); // 2-10: Shield, Chief, Wolf, Shaman and Bomber
+            _app.StartStage(content.CampaignOrder().IndexOf("stage_2_10")); // Shield, Chief, Wolf, Shaman and Bomber
             yield return null;
             var puzzle = (PuzzleScreen)_app.CurrentScreen;
             Time.timeScale = 8f;
@@ -234,6 +234,105 @@ namespace PuzzleKingdoms.Tests.PlayMode
             battle.Simulator.ActivateRally();
             yield return new WaitForSeconds(5f);
             yield return Capture(Path.Combine(output, "chapter2-battle.png"));
+        }
+
+        /// <summary>
+        /// PB-42: plays every Chapter 3 stage through the real screens (puzzle by the first valid move, "Merge all",
+        /// auto formation, Rally when ready) with the prompts on, into <c>Logs/Screenshots/chapter3/</c>: the map, the
+        /// puzzle, the War Camp, the battle at the start and after 4 s, and the results. The log lists every outcome.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator CaptureChapterThree()
+        {
+#if UNITY_EDITOR
+            var content = UnityEditor.AssetDatabase.LoadAssetAtPath<GameContent>("Assets/_Project/Data/GameContent.asset");
+#else
+            GameContent content = null;
+            Assert.Ignore("editor only");
+#endif
+            string output = Path.GetFullPath("Logs/Screenshots/chapter3");
+            Directory.CreateDirectory(output);
+            _saveFolder = Path.Combine(Path.GetTempPath(), "pk-shots-" + System.Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(_saveFolder);
+            _app = new GameObject("GameApp").AddComponent<GameApp>();
+            _app.SetContent(content);
+            _app.TutorialEnabled = false;
+            _app.ConsentEnabled = false;
+            _app.UseStore(new ProfileStore(_saveFolder));
+            _app.UseLanguage(Language.English);
+            yield return null;
+            var order = content.CampaignOrder();
+            foreach (string id in order)
+            {
+                if (!id.StartsWith("stage_3_"))
+                {
+                    _app.Profile.Apply(id, new StageReward { Stars = 3 });
+                }
+            }
+            _app.ShowStageSelect();
+            yield return null;
+            ((Views.Menus.StageMapScreen)_app.CurrentScreen).OpenChapter(3);
+            yield return null;
+            yield return Capture(Path.Combine(output, "0-map.png"));
+
+            var report = new System.Text.StringBuilder();
+            for (int n = 1; n <= 10; n++)
+            {
+                string id = "stage_3_" + n;
+                string name = "3-" + n.ToString("00");
+                _app.TutorialEnabled = true;
+                _app.StartStage(order.IndexOf(id));
+                yield return null;
+                yield return null;
+                yield return Capture(Path.Combine(output, name + "-a-puzzle.png"));
+                _app.Tutorial?.Next();
+                var puzzle = (PuzzleScreen)_app.CurrentScreen;
+                Time.timeScale = 8f;
+                while (!_app.Run.Puzzle.IsFinished)
+                {
+                    _app.Run.Puzzle.Board.TryFindValidMove(out GridPos a, out GridPos b);
+                    puzzle.PlaySwap(a, b);
+                    yield return new WaitUntil(() => !puzzle.IsBusy);
+                }
+                Time.timeScale = 1f;
+                _app.ShowWarCamp();
+                yield return null;
+                _app.Run.Roster.MergeAll();
+                AutoFormation.Fill(_app.Run.Roster);
+                yield return null;
+                yield return Capture(Path.Combine(output, name + "-b-war-camp.png"));
+                _app.Tutorial?.Next();
+                _app.Run.StartBattle();
+                _app.ShowBattle();
+                var battle = (BattleScreen)_app.CurrentScreen;
+                yield return new WaitForSeconds(0.3f);
+                yield return Capture(Path.Combine(output, name + "-c-battle-start.png"));
+                _app.Tutorial?.Next();
+                _app.TutorialEnabled = false;
+                float until = Time.realtimeSinceStartup + 4f;
+                while (Time.realtimeSinceStartup < until && !battle.Simulator.IsFinished)
+                {
+                    if (battle.Simulator.Rally.CanActivate)
+                    {
+                        battle.Simulator.ActivateRally();
+                    }
+                    yield return null;
+                }
+                yield return Capture(Path.Combine(output, name + "-d-battle.png"));
+                if (_app.CurrentScreen == battle)
+                {
+                    battle.OnSkip();
+                }
+                float deadline = Time.realtimeSinceStartup + 10f;
+                yield return new WaitUntil(() => _app.CurrentScreen is Views.Menus.ResultsScreen
+                                                 || Time.realtimeSinceStartup > deadline);
+                yield return Capture(Path.Combine(output, name + "-e-results.png"));
+                report.AppendLine($"{id}: won {_app.Run.Won}, battle {battle.Simulator.Result.Ticks / 20f:0.0}s, " +
+                    $"recruited {_app.Run.Roster.Formation.Count} deployed, survivors {battle.Simulator.Result.Survivors}, " +
+                    $"reason {battle.Simulator.Result.Reason}");
+            }
+            File.WriteAllText(Path.Combine(output, "report.txt"), report.ToString());
+            Debug.Log("[GreyboxScreenshots] chapter 3: " + report);
         }
 
         /// <summary>The two screens with the most rows, on a shorter phone (1080×1800).</summary>
