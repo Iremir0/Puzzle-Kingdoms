@@ -863,3 +863,14 @@ one star chest (every 30 of 39 stars). Now:
   `Handheld.Vibrate()` so Unity adds the VIBRATE permission.
 - **"+moves for an ad"** was already there (`ExtraMovesOffer`, D-064); nothing to add.
 Settings rows were re-spaced (0.09 apart) to fit Vibration.
+
+## D-072 - Expedition perks: one lasting bonus offered after every win (2026-11-21)
+
+The Expedition already offered one of three one-off rewards after each won battle (recruits, heal, promote, Rally).
+Runs still felt alike. Now one of the three is always a **perk** that lasts until the run ends: +20% HP, damage or
+attack speed for one class the army has (`ExpeditionRules.PerkPercent`, data). Perks reach the battle as player
+bonuses, the same mechanism the Kingdom buildings use (Kingdom bonuses still do not apply in the Expedition). They are
+saved with the run (`perkKinds`, `perkUnits`, `perkAmounts` in `ExpeditionSave`; older saves load with none, so the
+save version stays 9) and listed under the road on the Expedition screen. Classes unlocked in the campaign (Defender
+after 1-3, Support after 2-5) join the Recruit rewards and the perks. Why: the pick-one-of-three pattern of Archero
+and similar games gives each run its own shape at little cost (2026-11-21 research).

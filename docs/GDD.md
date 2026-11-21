@@ -288,7 +288,8 @@ seven days. Setup and numbers: `Data/DailyChallenge.asset`. An online ranking co
 
 **Expedition (PB-26, D-062).** A second gold-edged button above the map starts a run of five battles. The army and its
 wounds carry over: survivors and benched units go on and heal a little, the fallen are lost. Before each battle comes a
-short puzzle for new recruits, after each win a pick of three rewards (recruits, heal, promote, extra Rally). The last
+short puzzle for new recruits, after each win a pick of three rewards (recruits, heal, promote, extra Rally), one of
+them always a perk that lasts the run: +20% HP, damage or attack speed for a class in the army (PB-39, D-072). The last
 battle is a boss. Losing ends the run; gold is paid when it ends. A run is saved and can be resumed. Numbers:
 `Data/ExpeditionRules.asset`.
 These are now board cards (PB-22, PB-21, PB-25, PB-26, PB-23) inside the wider growth plan

@@ -60,19 +60,47 @@ namespace PuzzleKingdoms.Views.Menus
         /// <summary>How a reward reads in a card.</summary>
         public static string Describe(ExpeditionReward reward, IReadOnlyList<UnitDef> classes)
         {
+            UnitDef def = null;
+            foreach (UnitDef candidate in classes)
+            {
+                def = candidate.Id == reward.UnitId ? candidate : def;
+            }
+            string unit = def != null ? Loc.T(def.DisplayName) : reward.UnitId;
             switch (reward.Kind)
             {
-                case ExpeditionRewardKind.Recruit:
-                    UnitDef def = null;
-                    foreach (UnitDef candidate in classes)
-                    {
-                        def = candidate.Id == reward.UnitId ? candidate : def;
-                    }
-                    return Loc.F("Recruit {0} {1}", reward.Amount, def != null ? Loc.T(def.DisplayName) : reward.UnitId);
+                case ExpeditionRewardKind.Recruit: return Loc.F("Recruit {0} {1}", reward.Amount, unit);
                 case ExpeditionRewardKind.HealAll: return Loc.T("Heal the whole army");
                 case ExpeditionRewardKind.Promote: return Loc.T("Promote your weakest unit");
+                // PB-39: perks last for the rest of the run.
+                case ExpeditionRewardKind.PerkHp:
+                case ExpeditionRewardKind.PerkDamage:
+                case ExpeditionRewardKind.PerkSpeed:
+                    return Loc.T("Perk:") + " " + PerkText(reward, unit);
                 default: return Loc.F("{0} extra Rally in the next battle", reward.Amount);
             }
+        }
+
+        /// <summary>"Warrior +20% HP": a perk without the "Perk:" prefix (PB-39).</summary>
+        private static string PerkText(ExpeditionReward perk, string unit)
+        {
+            switch (perk.Kind)
+            {
+                case ExpeditionRewardKind.PerkHp: return Loc.F("{0} +{1}% HP", unit, perk.Amount);
+                case ExpeditionRewardKind.PerkDamage: return Loc.F("{0} +{1}% damage", unit, perk.Amount);
+                default: return Loc.F("{0} +{1}% attack speed", unit, perk.Amount);
+            }
+        }
+
+        private static string UnitName(ExpeditionReward reward, IReadOnlyList<UnitDef> classes)
+        {
+            foreach (UnitDef candidate in classes)
+            {
+                if (candidate.Id == reward.UnitId)
+                {
+                    return Loc.T(candidate.DisplayName);
+                }
+            }
+            return reward.UnitId;
         }
 
         private void Build(Expedition expedition, PlayerProfile profile, Actions actions)
@@ -102,6 +130,17 @@ namespace PuzzleKingdoms.Views.Menus
             // ---- the army ----
             RectTransform army = Ui.Card(root, "Expedition Army", Palette.Panel, 0.03f, 0.43f, 0.97f, 0.79f).rectTransform;
             Ui.Label(army, Loc.F("Army: {0} units", expedition.Army.Count), 32, TextAnchor.MiddleLeft, Palette.Muted, 0.04f, 0.88f, 0.96f, 0.99f);
+            if (expedition.Perks.Count > 0)
+            {
+                // PB-39: the perks taken so far, under the path.
+                var perks = new List<string>();
+                foreach (ExpeditionReward perk in expedition.Perks)
+                {
+                    perks.Add(PerkText(perk, UnitName(perk, expedition.Rules.PlayerClasses)));
+                }
+                Text perkLine = Ui.Label(root, string.Join("  ·  ", perks), 24, TextAnchor.MiddleCenter, Palette.Gold, 0.03f, 0.775f, 0.97f, 0.8f);
+                perkLine.gameObject.name = "Perks";
+            }
             if (expedition.Army.Count == 0)
             {
                 Ui.Label(army, Loc.T("Your army is built in the puzzle before each battle."), 30, TextAnchor.MiddleCenter, Palette.Muted,

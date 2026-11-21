@@ -27,6 +27,8 @@ namespace PuzzleKingdoms.Data
         [SerializeField, Range(1, 3)] private int rallyAmount = 1;
         [SerializeField, Min(0)] private int goldPerStep = 60;
         [SerializeField, Min(0)] private int goldForWinning = 250;
+        [Tooltip("Percent a perk adds to one class's HP, damage or attack speed for the rest of the run (PB-39).")]
+        [SerializeField, Range(0, 100)] private int perkPercent = 20;
         [Tooltip("The enemies the battles pick from. Leave the boss out.")]
         [SerializeField] private List<UnitDefinition> enemyPool = new List<UnitDefinition>();
         [SerializeField] private UnitDefinition boss;
@@ -49,6 +51,7 @@ namespace PuzzleKingdoms.Data
                 RallyAmount = rallyAmount,
                 GoldPerStep = goldPerStep,
                 GoldForWinning = goldForWinning,
+                PerkPercent = perkPercent,
                 Boss = boss != null ? boss.Def : null,
             };
             foreach (UnitDefinition unit in enemyPool)

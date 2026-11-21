@@ -408,9 +408,27 @@ namespace PuzzleKingdoms.Flow
                 {
                     return false;
                 }
-                ExpeditionRules rules = content.Expedition.Rules();
+                ExpeditionRules rules = ExpeditionRulesNow();
                 return rules.EnemyPool.Count > 0 && rules.PlayerClasses.Count > 0;
             }
+        }
+
+        /// <summary>
+        /// The expedition rules with the classes this player has unlocked (PB-39): Defender and Support join the
+        /// Recruit rewards and the perks once their stage is won.
+        /// </summary>
+        private ExpeditionRules ExpeditionRulesNow()
+        {
+            ExpeditionRules rules = content.Expedition.Rules();
+            foreach (UnitDefinition unit in content.ExtraUnits)
+            {
+                if (unit != null && !string.IsNullOrEmpty(unit.UnlockStageId) && Profile.BestStars(unit.UnlockStageId) > 0
+                    && !rules.PlayerClasses.Exists(u => u.Id == unit.Def.Id))
+                {
+                    rules.PlayerClasses.Add(unit.Def);
+                }
+            }
+            return rules;
         }
 
         /// <summary>The run in progress or a fresh one; null if the expedition does not exist.</summary>
@@ -425,7 +443,7 @@ namespace PuzzleKingdoms.Flow
             }
             Run = null;
             _expeditionBattle = false;
-            ExpeditionRules rules = content.Expedition.Rules();
+            ExpeditionRules rules = ExpeditionRulesNow();
             if (_expedition == null)
             {
                 _expedition = Profile.ActiveExpedition != null ? Expedition.FromSave(Profile.ActiveExpedition, rules) : null;
@@ -484,7 +502,8 @@ namespace PuzzleKingdoms.Flow
             {
                 Run.UnitRecruited -= OnUnitRecruited;
             }
-            Run = content.CreateRun(def, new PuzzleKingdoms.Logic.SeededRandom(def.BoardSeed), null, null, _expedition.Army);
+            // PB-39: the perks taken so far act like building bonuses for this battle.
+            Run = content.CreateRun(def, new PuzzleKingdoms.Logic.SeededRandom(def.BoardSeed), _expedition.Bonuses(), null, _expedition.Army);
             Run.BonusRally = _expedition.BonusRally;
             Run.UnitRecruited += OnUnitRecruited;
             _stageSteps = new List<TutorialStep>();
