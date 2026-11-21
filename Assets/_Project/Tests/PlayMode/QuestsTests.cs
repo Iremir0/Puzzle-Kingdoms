@@ -134,16 +134,16 @@ namespace PuzzleKingdoms.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator AStarChestOpensAtThirtyStarsAndPaysOnce()
+        public IEnumerator AStarChestOpensAtTwelveStarsAndPaysOnce()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 4; i++) // PB-38: a chest every 12 stars
             {
                 _app.Profile.Apply("fake_" + i, new StageReward { Stars = 3 });
             }
             _app.ShowQuests();
             yield return null;
             var screen = (QuestsScreen)_app.CurrentScreen;
-            Assert.IsNotNull(screen.ChestButton, "30 stars make a chest");
+            Assert.IsNotNull(screen.ChestButton, "12 stars make a chest");
 
             int before = _app.Profile.Gold;
             screen.ChestButton.onClick.Invoke();

@@ -22,7 +22,7 @@ new event.
 | `stage_started` | a stage attempt begins | stage id, attempt number since the game opened |
 | `stage_won` / `stage_lost` | an attempt ends | stage id, stars, timed out, seconds on puzzle / War Camp / battle, units recruited, merges, deployed, survivors, Rally earned / used, gold |
 | `tutorial_skipped` | "Skip tutorial" | the prompt id |
-| `setting_changed` | sound, music, battle speed or language changes | setting name, new value |
+| `setting_changed` | sound, music, vibration, battle speed or language changes | setting name, new value |
 | `tutorial_step` | a tutorial prompt is shown | the prompt id |
 | `screen_opened` | a main tab is opened | the screen name |
 | `feature_unlocked` | a game system opens for the first time | the system name |

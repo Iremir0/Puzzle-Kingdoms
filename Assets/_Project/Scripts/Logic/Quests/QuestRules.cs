@@ -21,7 +21,7 @@ namespace PuzzleKingdoms.Logic.Quests
         /// <summary>How many daily quests a day has.</summary>
         public int DailyCount = 3;
         /// <summary>A star chest is earned for every this many stars (best stars summed over all stages).</summary>
-        public int StarsPerChest = 30;
+        public int StarsPerChest = 12;
         public int ChestGold = 150;
     }
 

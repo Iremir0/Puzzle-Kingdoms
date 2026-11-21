@@ -397,6 +397,7 @@ namespace PuzzleKingdoms.Views.Battle
         {
             if (_replay == null && _sim.ActivateRally())
             {
+                Haptics.Medium(); // PB-38
                 RefreshHud();
             }
         }

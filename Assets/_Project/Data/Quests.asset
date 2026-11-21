@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Quests
   m_EditorClassIdentifier: 
   dailyCount: 3
-  starsPerChest: 30
+  starsPerChest: 12
   chestGold: 150
   daily:
   - id: win1

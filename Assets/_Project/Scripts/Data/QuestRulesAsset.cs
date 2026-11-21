@@ -25,7 +25,7 @@ namespace PuzzleKingdoms.Data
         [Tooltip("How many daily quests a day has.")]
         [SerializeField, Range(1, 6)] private int dailyCount = 3;
         [Tooltip("A star chest is earned for every this many stars.")]
-        [SerializeField, Min(1)] private int starsPerChest = 30;
+        [SerializeField, Min(1)] private int starsPerChest = 12;
         [SerializeField, Min(0)] private int chestGold = 150;
         [Tooltip("Daily quests are drawn from this pool; kinds differ within a day.")]
         [SerializeField] private List<QuestData> daily = new List<QuestData>();

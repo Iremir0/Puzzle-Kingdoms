@@ -47,7 +47,8 @@ puzzle-kingdoms/
 │       │   │                        RemoteConfigFile (PB-29: consent-gated statistics, D-047)
 │       │   └── Views/            ✅ PuzzleKingdoms.Views grey-box (D-025): Common (Ui, Palette,
 │       │                            FormationGridView, GemShapes, SilhouetteMath, UnitSilhouettes, StageBadges, Tween, Sfx, TutorialOverlay,
-│       │                            SafeArea + FullBleed: screens keep clear of the notch, backgrounds reach the edges, PB-15),
+│       │                            SafeArea + FullBleed: screens keep clear of the notch, backgrounds reach the edges, PB-15,
+│       │                            Haptics: short vibrations on merge, Rally and victory, PB-38),
 │       │                            Puzzle (+ BoardEffects), WarCamp (+ BenchView, DraggableUnit), Battle,
 │       │                            Battle3D (PB-11: BattleWorld3D camera + ground + actors drawn into a texture,
 │       │                            UnitActor capsule stand-in; BattleScreen shows it, 2D behind a toggle),

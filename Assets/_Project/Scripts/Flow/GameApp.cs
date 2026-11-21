@@ -632,6 +632,7 @@ namespace PuzzleKingdoms.Flow
             Loc.Use(_languageOverride ?? Settings.LanguageFor(Loc.SystemIsTurkish));
             Sfx.EffectsOn = Settings.sound;
             Sfx.MusicOn = Settings.music;
+            Haptics.Enabled = Settings.haptics; // PB-38
             Sfx.Changed += OnSoundSwitched;
 
             // Events go nowhere without consent. Tester builds keep them, the errors and the remote-config
@@ -764,7 +765,7 @@ namespace PuzzleKingdoms.Flow
             switch (feature)
             {
                 case Feature.Quests:
-                    return (Loc.T("Quests are open!"), Loc.T("Three new goals every day, achievements for the long run, and a chest for every 30 stars. Tap the Quests tab to claim gold."));
+                    return (Loc.T("Quests are open!"), Loc.T("Three new goals every day, achievements for the long run, and a chest for every 12 stars. Tap the Quests tab to claim gold."));
                 case Feature.Kingdom:
                     return (Loc.T("Your Kingdom is open!"), Loc.T("Spend gold on buildings. Each level makes one class stronger in every battle, or brings more gold."));
                 case Feature.Commanders:
@@ -992,6 +993,7 @@ namespace PuzzleKingdoms.Flow
             Sfx.Changed -= OnSoundSwitched; // already saved; do not save twice
             Sfx.EffectsOn = Settings.sound;
             Sfx.MusicOn = Settings.music;
+            Haptics.Enabled = Settings.haptics; // PB-38
             Sfx.Changed += OnSoundSwitched;
             if (Settings.language != languageBefore)
             {
@@ -1022,6 +1024,10 @@ namespace PuzzleKingdoms.Flow
             if (before.music != after.music)
             {
                 _analytics.Send(GameEvents.SettingChanged("music", after.music ? "on" : "off"));
+            }
+            if (before.haptics != after.haptics)
+            {
+                _analytics.Send(GameEvents.SettingChanged("haptics", after.haptics ? "on" : "off"));
             }
             if (before.BattleSpeed != after.BattleSpeed)
             {
@@ -1079,6 +1085,7 @@ namespace PuzzleKingdoms.Flow
             Run = content.CreateRun(stage, null, _config,
                 content.KingdomRules != null ? Profile.Bonuses(content.KingdomRules.Rules) : null,
                 Profile.ChosenCommander(content.CommanderList())?.Variant);
+            Run.Replay = Profile.BestStars(stage.Id) > 0; // PB-38: replays pay part of the gold
             Run.UnitRecruited += OnUnitRecruited;
             _stageSteps = stage.TutorialSteps();
             _puzzleStarted = Time.realtimeSinceStartup;

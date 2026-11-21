@@ -52,12 +52,26 @@ namespace PuzzleKingdoms.Views.Menus
             Ui.Label(root, Loc.T(stageName), 48, TextAnchor.MiddleCenter, Palette.Muted, 0f, 0.84f, 1f, 0.9f);
             Text title = Ui.Label(root, won ? Loc.T("Victory!") : Loc.T("Defeat"), 110, TextAnchor.MiddleCenter,
                 won ? Palette.Gold : Palette.Bad, 0f, 0.72f, 1f, 0.84f);
-            Text starsLabel = Ui.Label(root, Stars(reward.Stars), 90, TextAnchor.MiddleCenter, Palette.Gold, 0f, 0.63f, 1f, 0.72f);
+            // PB-38: three star shapes, earned ones gold and popping in one after the other.
+            RectTransform starRow = Ui.Rect(root, "Stars", 0.25f, 0.635f, 0.75f, 0.715f);
+            for (int i = 0; i < 3; i++)
+            {
+                bool earned = i < reward.Stars;
+                Image star = Ui.Box(starRow, "Star " + (i + 1), earned ? Palette.Gold : new Color(1f, 1f, 1f, 0.15f),
+                    i / 3f + 0.02f, 0f, (i + 1) / 3f - 0.02f, 1f);
+                star.sprite = GemShapes.Get(GemShape.Star);
+                star.preserveAspect = true;
+                star.raycastTarget = false;
+                if (earned)
+                {
+                    StartCoroutine(UiJuice.PopIn(star.rectTransform, 0.35f + 0.25f * i, 0.45f));
+                }
+            }
             if (won)
             {
                 StartCoroutine(UiJuice.PopIn(title.rectTransform, 0f, 0.5f));
-                StartCoroutine(UiJuice.PopIn(starsLabel.rectTransform, 0.35f, 0.5f));
                 UiJuice.Confetti(root, 70);
+                Haptics.Success();
             }
             if (!string.IsNullOrEmpty(goalMissed))
             {
@@ -68,7 +82,7 @@ namespace PuzzleKingdoms.Views.Menus
             string lines =
                 Loc.F("Survivors: {0} / {1}", result.Survivors, result.Deployed) + "\n" +
                 Loc.F("Battle time: {0:0.0} s", battleSeconds) + (result.TimedOut ? " " + Loc.T("(time up)") : "") + "\n\n" +
-                Loc.F("Victory gold: {0}", reward.VictoryGold) + "\n" +
+                Loc.F("Victory gold: {0}", reward.VictoryGold) + (reward.Replay && won ? " " + Loc.T("(replay: half gold)") : "") + "\n" +
                 Loc.F("Dismissed units: {0}", reward.DismissGold) + "\n" +
                 Loc.F("Extra Banner points: {0}", reward.OverflowGold) + "\n" +
                 Loc.F("Total: +{0} gold   (you have {1})", reward.TotalGold, totalGold);
@@ -112,7 +126,7 @@ namespace PuzzleKingdoms.Views.Menus
             }
         }
 
-        /// <summary>"* * -" style stars; the built-in font has no star glyph.</summary>
+        /// <summary>"* * -" style stars as text (logs and tests; the screen draws star shapes since PB-38).</summary>
         public static string Stars(int stars)
         {
             var text = new System.Text.StringBuilder();

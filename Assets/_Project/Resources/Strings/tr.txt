@@ -314,9 +314,11 @@ This phone	Bu telefon
 Keep this phone	Bu telefonu tut
 Use cloud save	Bulut kaydını kullan
 Update the game	Oyunu güncelle
+(replay: half gold)	(tekrar: yarım altın)
+Vibration	Titreşim
 Stage {0}	Bölüm {0}
 Quests are open!	Görevler açıldı!
-Three new goals every day, achievements for the long run, and a chest for every 30 stars. Tap the Quests tab to claim gold.	Her gün üç yeni hedef, uzun vadeli başarımlar ve her 30 yıldızda bir sandık. Altınını almak için Görevler sekmesine dokun.
+Three new goals every day, achievements for the long run, and a chest for every 12 stars. Tap the Quests tab to claim gold.	Her gün üç yeni hedef, uzun vadeli başarımlar ve her 12 yıldızda bir sandık. Altınını almak için Görevler sekmesine dokun.
 Your Kingdom is open!	Krallığın açıldı!
 Spend gold on buildings. Each level makes one class stronger in every battle, or brings more gold.	Altınını binalara harca. Her seviye bir sınıfı her savaşta güçlendirir ya da daha çok altın getirir.
 Your first commander!	İlk komutanın!

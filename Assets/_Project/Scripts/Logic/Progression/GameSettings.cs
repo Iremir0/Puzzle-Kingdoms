@@ -18,6 +18,8 @@ namespace PuzzleKingdoms.Logic.Progression
         public bool sound = true;
         public bool music = true;
         public int battleSpeed = 1;
+        /// <summary>Short vibrations on merges, Rally and victory (PB-38). A new field: older files load it on.</summary>
+        public bool haptics = true;
 
         /// <summary>
         /// "en", "tr", or empty for "follow the phone" (PB-32). A new field: files written before it
