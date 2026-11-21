@@ -874,3 +874,17 @@ saved with the run (`perkKinds`, `perkUnits`, `perkAmounts` in `ExpeditionSave`;
 save version stays 9) and listed under the road on the Expedition screen. Classes unlocked in the campaign (Defender
 after 1-3, Support after 2-5) join the Recruit rewards and the perks. Why: the pick-one-of-three pattern of Archero
 and similar games gives each run its own shape at little cost (2026-11-21 research).
+
+## D-073 - Stages are generated from blueprints and tuned by a bot (2026-11-21)
+
+Hand-making and hand-tuning a stage takes most of a day; the game has 14. New stages start from a **blueprint**
+(`StageBlueprint`: the enemies the lesson needs, a pool for the rest, army size, how many tier 2, moves, goal,
+covers) and a seed; `StageGenerator` places melee in front, ranged and healers behind, a boss at the back centre.
+`StageTuner` then plays the stage with the greedy puzzle bot that presses Merge all and never uses Rally, and bisects
+the enemy HP multiplier until that bot's win rate lands in a band (more enemy HP never makes a stage easier). The
+band, not a single number, is the design choice per stage: about 85-95% for a stage that teaches, 75-85% for a hard
+one, 65-80% for a boss. `Tools/Balance --tune 80-90 [--only ids] [--write]` does it for campaign stages from the
+terminal and writes the new multiplier into the asset. Generated stages are data like any other; a designer still
+reads and plays each one, and the generator never runs in the game. Why: the review found content (about one hour)
+the biggest gap, and puzzle games of this kind reach launch with many more stages by generating candidates and
+keeping those a bot finds fair (2026-11-21 research).

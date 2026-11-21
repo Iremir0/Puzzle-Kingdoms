@@ -23,11 +23,13 @@ puzzle-kingdoms/
 │       │   │   │                    Rally, BattleEvent, BattleResult
 │       │   │   ├── Analytics/    ✅ Consent (opt-in, text version), AnalyticsEvent (JSON line), GameEvents, RemoteConfig (PB-29, D-047)
 │       │   │   ├── Localization/ ✅ Language + Languages (codes, phone default), Localizer (English-keyed table, numbers; D-046)
-│       │   │   ├── Stages/       ✅ StageDef, EnemySlot, StageTuning (remote-config overrides), StageGoal (PB-19)
+│       │   │   ├── Stages/       ✅ StageDef, EnemySlot, StageTuning (remote-config overrides), StageGoal (PB-19),
+│       │   │   │                   StageBlueprint + StageGenerator (seeded stages, PB-40)
 │       │   │   ├── Progression/  ✅ ProgressionRules, StageReward, PlayerProfile (+ save snapshot, seen tutorial),
 │       │   │   │                   GameSettings, TutorialStep + TutorialGuide (D-040)
 │       │   │   └── Flow/         ✅ StageRun: Puzzle → War Camp → Battle → reward; StageAttempt (playtest record);
-│       │   │                        BalanceRunner (balance bots shared by Tools/Balance and the Stage Editor)
+│       │   │                        BalanceRunner (balance bots shared by Tools/Balance and the Stage Editor);
+│       │   │                        StageTuner (enemy HP for a win-rate band, PB-40)
 │       │   ├── Data/             ✅ PuzzleKingdoms.Data: UnitDefinition, UnitLook, StageDefinition, GameContent, SoundBank,
 │       │   │                        Puzzle/Army/Battle/ProgressionRulesAsset (ScriptableObjects)
 │       │   ├── Editor/           ✅ PuzzleKingdoms.Editor: ProjectSetup (player settings + URP asset),
