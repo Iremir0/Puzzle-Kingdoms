@@ -84,12 +84,14 @@ namespace PuzzleKingdoms.Flow
         private bool CanRewardNow => Profile.AdLedger.Supporter || Ads.IsReady;
 
         /// <summary>Gives a reward after an ad (or at once for a Supporter). <paramref name="apply"/> must return true when granted.</summary>
-        private void Reward(System.Func<bool> apply, System.Action granted)
+        private void Reward(string placement, System.Func<bool> apply, System.Action granted)
         {
+            _analytics.Send(GameEvents.AdRequested(placement, Profile.AdLedger.Supporter));
             void Grant()
             {
                 if (apply())
                 {
+                    _analytics.Send(GameEvents.AdRewarded(placement));
                     SaveProfile();
                     granted?.Invoke();
                 }
@@ -124,7 +126,7 @@ namespace PuzzleKingdoms.Flow
             {
                 Available = () => Run != null && Run.CanGrantExtraMoves && CanRewardNow,
                 Caption = AdCaption(Loc.F("+{0} moves", rules.ExtraMoves)),
-                Request = granted => Reward(() => Run.TryGrantExtraMoves(rules.ExtraMoves), granted),
+                Request = granted => Reward("extra_moves", () => Run.TryGrantExtraMoves(rules.ExtraMoves), granted),
             };
         }
 
@@ -139,7 +141,7 @@ namespace PuzzleKingdoms.Flow
             {
                 Available = () => Run != null && Run.CanGrantExtraRally && CanRewardNow,
                 Caption = AdCaption(Loc.F("+{0} Rally", rules.ExtraRally)),
-                Request = granted => Reward(() => Run.TryGrantExtraRally(rules.ExtraRally), granted),
+                Request = granted => Reward("extra_rally", () => Run.TryGrantExtraRally(rules.ExtraRally), granted),
             };
         }
 
@@ -161,7 +163,7 @@ namespace PuzzleKingdoms.Flow
             };
             Show(ShopScreen.Create(_screenRoot, info, new ShopScreen.Actions
             {
-                WatchGold = () => Reward(() => Profile.TakeGoldAd(Today, rules), ShowShop),
+                WatchGold = () => Reward("shop_gold", () => Profile.TakeGoldAd(Today, rules), ShowShop),
                 BuySupporter = () => Billing.BuySupporter(ok => OnSupporterResult(ok)),
                 Restore = () => Billing.RestoreSupporter(ok => OnSupporterResult(ok)),
             }, OnTab));
@@ -216,12 +218,37 @@ namespace PuzzleKingdoms.Flow
             }
         }
 
+        private float _sessionStart;
+
         private void OnApplicationPause(bool paused)
         {
             if (paused)
             {
+                _analytics?.Send(GameEvents.SessionPaused(Time.realtimeSinceStartup - _sessionStart, FurthestStage()));
                 FlushCloud();
             }
+            else
+            {
+                _sessionStart = Time.realtimeSinceStartup;
+            }
+        }
+
+        /// <summary>The last campaign stage with a star, or "" (PB-36: how far a session got).</summary>
+        private string FurthestStage()
+        {
+            string furthest = "";
+            if (Profile == null)
+            {
+                return furthest;
+            }
+            foreach (StageDefinition stage in content.Campaign)
+            {
+                if (stage != null && Profile.BestStars(stage.Id) > 0)
+                {
+                    furthest = stage.Id;
+                }
+            }
+            return furthest;
         }
 
         /// <summary>Uploads the profile if it changed since the last upload (no-op when signed out).</summary>
@@ -434,6 +461,7 @@ namespace PuzzleKingdoms.Flow
             if (_expedition != null)
             {
                 bool won = _expedition.Phase == ExpeditionPhase.Won;
+                _analytics.Send(GameEvents.ExpeditionEnded(_expedition.Step, won, _expedition.GoldEarned));
                 Profile.EndExpedition(_expedition.Step, won, _expedition.GoldEarned);
                 SaveProfile();
                 _expedition = null;
@@ -701,17 +729,20 @@ namespace PuzzleKingdoms.Flow
 
         private void OnQuestClaimed()
         {
+            _analytics.Send(GameEvents.QuestClaimed(Profile.Gold, Profile.TotalStars));
             SaveProfile();
             TabBar.QuestBadge = Quests.ClaimableCount(Profile.TotalStars);
         }
 
         private void OnCommanderChosen(string commanderId)
         {
+            _analytics.Send(GameEvents.CommanderChosen(commanderId ?? ""));
             SaveProfile();
         }
 
         private void OnTab(MainTab tab)
         {
+            _analytics.Send(GameEvents.ScreenOpened(tab.ToString().ToLowerInvariant()));
             if (tab == MainTab.Kingdom)
             {
                 ShowKingdom();
@@ -745,6 +776,7 @@ namespace PuzzleKingdoms.Flow
 
         private void OnBuildingUpgraded(string buildingId)
         {
+            _analytics.Send(GameEvents.BuildingUpgraded(buildingId, Profile.BuildingLevel(buildingId), Profile.Gold));
             SaveProfile();
         }
 
@@ -846,6 +878,7 @@ namespace PuzzleKingdoms.Flow
 
         private void OnStepShown(TutorialStep step)
         {
+            _analytics.Send(GameEvents.TutorialStep(step.Id));
             Profile.MarkStepSeen(step.Id);
             SaveProfile();
         }

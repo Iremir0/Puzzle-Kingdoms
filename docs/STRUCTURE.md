@@ -8,7 +8,7 @@ puzzle-kingdoms/
 ├── CLAUDE.md                     ✅ rules for Claude Code sessions
 ├── .github/workflows/            ✅ logic-tests.yml: GitHub runs the logic tests and a balance table on every push (PB-4)
 ├── CREDITS.md                    ✅ third-party licenses (fill before adding assets)
-├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, task board, PLAYTESTS, ART (draft), PRIVACY (collected data)
+├── docs/                         ✅ GDD, architecture, structure, conventions, setup, decisions, roadmap, task board, PLAYTESTS, ART (draft), PRIVACY (collected data), ANALYTICS (events and how to read them)
 │   └── cards/                    ✅ one detail file per board card (PB-n.md) + img/ mockups (SVG)
 │
 ├── Assets/
