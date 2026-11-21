@@ -19,7 +19,7 @@ puzzle-kingdoms/
 │       │   │   ├── Puzzle/       ✅ BoardModel (+ chains, ice, combos: PB-20), BoardLayout (painted start boards, covers), ComboKind, MatchGroup, SpecialKind, MoveResult, MoveReplay, RecruitmentMeter,
 │       │   │   │                    PuzzleSession, PuzzleRules
 │       │   │   ├── Army/         ✅ UnitDef, ArmyRules, ArmyUnit, Formation, Roster (+ Undo), MergeRules, AutoFormation, BenchGroup
-│       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage, (+ shield, heal, back-row, splash: PB-18)
+│       │   │   ├── Combat/       ✅ BattleRules, BattleSimulator, Combatant, Targeting, Damage, (+ shield, heal, back-row, splash: PB-18; regen, enrage, death blast: PB-41)
 │       │   │   │                    Rally, BattleEvent, BattleResult
 │       │   │   ├── Analytics/    ✅ Consent (opt-in, text version), AnalyticsEvent (JSON line), GameEvents, RemoteConfig (PB-29, D-047)
 │       │   │   ├── Localization/ ✅ Language + Languages (codes, phone default), Localizer (English-keyed table, numbers; D-046)
@@ -59,7 +59,7 @@ puzzle-kingdoms/
 │       ├── Resources/            ✅ UiFont.ttf (Lilita One, D-044); Strings/tr.txt: Turkish texts (PB-32, D-046)
 │       ├── Data/                 ✅ .asset files
 │       │   ├── Units/            Warrior, Archer, Mage
-│       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief
+│       │   ├── Enemies/          GoblinGrunt, GoblinArcher, GoblinBrute, GoblinChief; Chapter 2 and Chapter 3 (BogTroll, GoblinBerserker, MarshSapper, TrollKing)
 │       │   ├── Stages/           Stage_1_1 … Stage_1_3 (+ map position, tutorial prompts); Stage_1_4 The Quarry, Stage_2_1 Frozen Gate, Stage_2_2 The Chief's Forge (drafts, not in the campaign)
 │       │   ├── GameContent.asset   root: units in gem order, campaign, rules
 │       │   ├── BattleModels.asset  3D battle models per UnitLook (PB-11, built by BattleModelBuilder)

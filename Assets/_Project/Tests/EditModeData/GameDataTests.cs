@@ -54,7 +54,7 @@ namespace PuzzleKingdoms.Tests.Data
         public void AllUnitsHaveSaneValues()
         {
             List<UnitDefinition> units = AllUnits().ToList();
-            Assert.AreEqual(13, units.Count, "3 player classes + Defender and Support + 4 Chapter 1 goblins + 4 Chapter 2 enemies");
+            Assert.AreEqual(17, units.Count, "3 player classes + Defender and Support + 4 Chapter 1 goblins + 4 Chapter 2 and 4 Chapter 3 enemies");
             foreach (UnitDefinition asset in units)
             {
                 UnitDef def = asset.Def;

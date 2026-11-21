@@ -40,6 +40,16 @@ namespace PuzzleKingdoms.Data
         [SerializeField, Range(0f, 1f)] private float splashFraction = 0.5f;
         [Tooltip("Enemies this close to this unit attack it first (taunt); 0 = none (defender, PB-21).")]
         [SerializeField, Min(0f)] private float tauntRadius;
+        [Header("Chapter 3 behaviours (PB-41); all off by default")]
+        [Tooltip("Share of its max HP restored every second; 0 = none (bog troll).")]
+        [SerializeField, Range(0f, 0.2f)] private float regenPercent;
+        [Tooltip("At or below this share of its HP the unit attacks faster; 0 = never (berserker).")]
+        [SerializeField, Range(0f, 0.95f)] private float enrageBelow;
+        [SerializeField, Min(1f)] private float enrageSpeed = 2f;
+        [Tooltip("Enemies this close take a blast when the unit dies; 0 = none (sapper).")]
+        [SerializeField, Min(0f)] private float deathBurstRadius;
+        [Tooltip("The blast as a multiple of the unit's own damage.")]
+        [SerializeField, Min(0f)] private float deathBurstDamage = 3f;
         [Tooltip("Id of the stage whose first win unlocks this class (PB-21); empty = always available.")]
         [SerializeField] private string unlockStageId = "";
 
@@ -78,6 +88,11 @@ namespace PuzzleKingdoms.Data
             SplashRadius = splashRadius,
             SplashFraction = splashFraction,
             TauntRadius = tauntRadius,
+            RegenPercent = regenPercent,
+            EnrageBelow = enrageBelow,
+            EnrageSpeed = enrageSpeed,
+            DeathBurstRadius = deathBurstRadius,
+            DeathBurstDamage = deathBurstDamage,
         };
 
         private void OnValidate() => _def = null;

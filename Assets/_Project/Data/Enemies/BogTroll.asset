@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f9d86e71ccb4b4594246841039aeb02, type: 3}
+  m_Name: BogTroll
+  m_EditorClassIdentifier:
+  id: bog_troll
+  displayName: Bog Troll
+  maxHp: 900
+  damage: 18
+  damageType: 0
+  attackInterval: 1.4
+  attackRange: 1
+  moveSpeed: 0.8
+  armor: 0.1
+  ward: 0
+  rangedDamageReduction: 0
+  healAmount: 0
+  healInterval: 2
+  healRange: 3.5
+  targetsBackRow: 0
+  splashRadius: 0
+  splashFraction: 0.5
+  tauntRadius: 0
+  regenPercent: 0.02
+  enrageBelow: 0
+  enrageSpeed: 2
+  deathBurstRadius: 0
+  deathBurstDamage: 3
+  unlockStageId:
+  color: {r: 0.42, g: 0.55, b: 0.4, a: 1}
+  look: 14

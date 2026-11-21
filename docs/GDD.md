@@ -193,6 +193,26 @@ All Chapter 1 goblins deal Physical damage and have 0% Ward.
 | Wolf Rider | 336 | 14 | Physical | 0.9 | 1.0 | 2.0 | 0% | 0% |
 | Goblin Bomber | 252 | 22 | Physical | 2.0 | 3.0 | 0.9 | 0% | 0% |
 
+**Chapter 3 enemies (PB-41, D-074).** Each asks for a new way to spend your damage:
+
+| Enemy | Role | Behaviour | Trait taught |
+|---|---|---|---|
+| Bog Troll | regenerating tank | restores 2% of its max HP every second | put your damage together: merge, Mages, Rally |
+| Goblin Berserker | fast melee | attacks twice as fast at 50% HP or less | finish what you start; a Defender holds it |
+| Marsh Sapper | runner | when it dies, hurts every unit within 1.6 cells for 3x its damage | kill it from range |
+| Troll King | boss | restores 1% a second, attacks 1.6x as fast at 40% HP or less | everything at once |
+
+| Enemy | HP | Damage | Interval (s) | Range | Speed | Armor |
+|---|---|---|---|---|---|---|
+| Bog Troll | 900 | 18 | 1.4 | 1.0 | 0.8 | 10% |
+| Goblin Berserker | 420 | 14 | 1.0 | 1.0 | 1.3 | 0% |
+| Marsh Sapper | 200 | 12 | 1.2 | 1.0 | 1.6 | 0% |
+| Troll King | 2400 | 34 | 1.3 | 1.2 | 0.9 | 20% |
+
+All deal Physical damage. Regeneration and the blast scale with the battle's damage scale like heals and hits, and
+regeneration lands with the heals, so a troll killed this tick is not saved. Until their models exist the battle
+borrows the Brute, Grunt, Bomber and Chief models and silhouettes.
+
 "Ranged" means an attack range above 1.5 cells. Heals land after the hits of a tick, so a unit killed
 this tick is not saved. "Back row" is the formation row a unit started in. Until the four Meshy models
 exist (ART.md Â§7) the grey-box silhouettes of Brute, Archer and Grunt stand in for them.

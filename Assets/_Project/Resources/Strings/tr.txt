@@ -167,6 +167,10 @@ Shield Goblin	Kalkanlı Goblin
 Goblin Shaman	Goblin Şaman
 Wolf Rider	Kurt Binicisi
 Goblin Bomber	Goblin Bombacı
+Bog Troll	Bataklık Trolü
+Goblin Berserker	Çılgın Goblin
+Marsh Sapper	Bataklık Lağımcısı
+Troll King	Trol Kral
 Shield Wall	Kalkan Duvarı
 Healer's Camp	Şifacı Kampı
 Wolf Pack	Kurt Sürüsü

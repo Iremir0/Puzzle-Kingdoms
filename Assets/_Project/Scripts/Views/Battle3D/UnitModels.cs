@@ -20,10 +20,23 @@ namespace PuzzleKingdoms.Views.Battle3D
         {
             if (_set != null)
             {
-                return _set.TryGet(look, out entry);
+                return _set.TryGet(look, out entry) || _set.TryGet(StandIn(look), out entry);
             }
             entry = default;
             return false;
+        }
+
+        /// <summary>The model a look borrows until it has its own (PB-41, Chapter 3); itself when there is none.</summary>
+        public static UnitLook StandIn(UnitLook look)
+        {
+            switch (look)
+            {
+                case UnitLook.BogTroll: return UnitLook.GoblinBrute;
+                case UnitLook.GoblinBerserker: return UnitLook.GoblinGrunt;
+                case UnitLook.MarshSapper: return UnitLook.GoblinBomber;
+                case UnitLook.TrollKing: return UnitLook.GoblinChief;
+                default: return look;
+            }
         }
     }
 }

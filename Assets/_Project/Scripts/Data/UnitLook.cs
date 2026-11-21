@@ -22,5 +22,10 @@ namespace PuzzleKingdoms.Data
         // Player classes of PB-21.
         Defender = 12,
         Support = 13,
+        // Chapter 3 (PB-41): drawn with an older silhouette and model until their own exist.
+        BogTroll = 14,
+        GoblinBerserker = 15,
+        MarshSapper = 16,
+        TrollKing = 17,
     }
 }

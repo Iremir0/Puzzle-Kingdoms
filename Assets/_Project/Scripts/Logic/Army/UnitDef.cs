@@ -53,6 +53,19 @@ namespace PuzzleKingdoms.Logic.Army
         /// </summary>
         public float TauntRadius;
 
+        // PB-41 behaviours (D-074), Chapter 3. All default to "off".
+
+        /// <summary>Share of its max HP the unit restores to itself every second. 0 = none. Bog troll.</summary>
+        public float RegenPercent;
+        /// <summary>At or below this share of its max HP the unit attacks faster. 0 = never. Berserker.</summary>
+        public float EnrageBelow;
+        /// <summary>Attack speed multiplier while enraged.</summary>
+        public float EnrageSpeed = 2f;
+        /// <summary>When the unit dies, enemies this close take <see cref="DeathBurstDamage"/>. 0 = none. Sapper.</summary>
+        public float DeathBurstRadius;
+        /// <summary>The death burst as a multiple of the unit's own damage (armor applies).</summary>
+        public float DeathBurstDamage = 3f;
+
         /// <summary>Attack range above which an attacker counts as ranged.</summary>
         public const float RangedThreshold = 1.5f;
 
@@ -80,6 +93,11 @@ namespace PuzzleKingdoms.Logic.Army
             SplashRadius = SplashRadius,
             SplashFraction = SplashFraction,
             TauntRadius = TauntRadius,
+            RegenPercent = RegenPercent,
+            EnrageBelow = EnrageBelow,
+            EnrageSpeed = EnrageSpeed,
+            DeathBurstRadius = DeathBurstRadius,
+            DeathBurstDamage = DeathBurstDamage,
         };
     }
 }

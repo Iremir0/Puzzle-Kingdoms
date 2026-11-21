@@ -98,6 +98,23 @@ namespace PuzzleKingdoms.Views.Battle3D
                         Burst(at, new Color(0.7f, 0.7f, 0.72f), 6, 0.4f, 0.5f, 1.1f);
                     }
                 }
+                if (e.Type == BattleEventType.Exploded && e.SourceId >= 0 && e.SourceId < _actors.Count
+                    && e.TargetId >= 0 && e.TargetId < _actors.Count)
+                {
+                    // PB-41 sapper: a fiery blast where it fell, and the units it reached flinch.
+                    Vector3 blastAt = _actors[e.SourceId].Position + Vector3.up * 0.4f;
+                    Burst(blastAt, new Color(1f, 0.55f, 0.15f), 8, 0.3f, 0.5f, 1.6f);
+                    Shake(0.15f, 0.08f);
+                    _actors[e.TargetId].Flash();
+                    _actors[e.TargetId].PlayHit();
+                    continue;
+                }
+                if (e.Type == BattleEventType.Enraged && e.SourceId >= 0 && e.SourceId < _actors.Count)
+                {
+                    // PB-41 berserker: red sparks when it starts to attack faster.
+                    Burst(_actors[e.SourceId].Position + Vector3.up * 0.9f, new Color(0.95f, 0.2f, 0.15f), 8, 0.16f, 0.5f, 1.2f);
+                    continue;
+                }
                 if (e.Type == BattleEventType.RallyStarted)
                 {
                     StartRally();
