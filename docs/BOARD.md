@@ -51,7 +51,6 @@ is a piece of the game you can play or show, not a single code change.
 | [PB-22](cards/PB-22.md) | Kingdom and buildings | Alican | M7 | L | `feature/PB-22-kingdom` | Wave 2 (D-052). Merged into `main` 2026-11-18. Built: 4 buildings as data, bonuses in battle and gold, save v3, Kingdom screen, tab bar, Balance `--kingdom N`; left: look at the screens on a phone shape, Commanders and Shop tabs wait for PB-23 and PB-30 |
 | [PB-15](cards/PB-15.md) | Phone performance and layout | Emir | M6 | L | `feature/PB-15-phone-perf-layout` | Third card for Emir (PB-1 and PB-7 only wait for a phone). In `main` 2026-11-20, done without a phone: safe area (`SafeArea`, `FullBleed`), battle effects pooled with shared materials, no per-tick event list, hint scan throttled, a save from a newer build is locked instead of replaced (D-067); left: profile on 2 phones, 4 aspect ratios in the Device Simulator |
 | [PB-23](cards/PB-23.md) | Commander heroes | Alican | M7 | L | `feature/PB-23-commanders` | Wave 2 (D-053). Merged into `main` 2026-11-18. Built: Shield Wall, Arrow Rain, Fireball as Rally variants, commanders unlocked by stages and chosen on the Commanders tab, save v4, balance per commander; left: 3 Meshy commander models, real 3D effects, a look at the screens |
-| [PB-42](cards/PB-42.md) | Chapter 3: Troll Marsh | Emir | M8 | L | `feature/PB-42-chapter-3` | Ten stages made with PB-40 and the PB-41 enemies, tier 2 enemies, map and prompts |
 
 ## Ready (next up, in priority order)
 
@@ -119,6 +118,7 @@ private until shared).
 | [PB-39](cards/PB-39.md) | Expedition perks: one lasting +20% bonus offered after every win, unlocked classes join (D-072, 2026-11-21) |
 | [PB-40](cards/PB-40.md) | Stage generator from blueprints and a bot that tunes enemy HP to a win-rate band, balance --tune/--write (D-073, 2026-11-21) |
 | [PB-41](cards/PB-41.md) | Chapter 3 enemies: Bog Troll regenerates, Berserker enrages, Sapper explodes, Troll King boss; stand-in looks (D-074, 2026-11-21) |
+| [PB-42](cards/PB-42.md) | Chapter 3 Troll Marsh: ten stages made by --generate from a plan and tuned by the bot (78-92% with merges), tier 2 enemies, map title, prompts (2026-11-21; not played by hand yet) |
 
 ---
 
